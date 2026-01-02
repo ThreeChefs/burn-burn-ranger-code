@@ -2,50 +2,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class SoundManager : GlobalSingletonManager<SoundManager>
 {
-    // 리소스에 넣지 않는 방식으로 변경
-    [Header("사용할 클립 목록")] 
-    [SerializeField] private AudioClipGroup[] sfxGroupAsset;
-    [SerializeField] private AudioClipGroup[] bgmGroupAsset;
-
-    [Header("Other Settings")]
-    [SerializeField] int sfxAudioSourcePoolCount = 10;
+    // SODatabase 로 프리팹 수정하지 않고 사용할 수 있도록 변경
+    [Header("사용할 클립 목록")]
+    [SerializeField] private SoDatabase _sfxGroupAssetTable;
+    [SerializeField] private SoDatabase _bgmGroupAssetTable;
     
-    public float MasterVolume => masterVolume;
-    public float SfxVolume => sfxVolume;
-    public float BgmVolume => bgmVolume;
-    private float sfxVolume = 1.0f;
-    private float bgmVolume = 1.0f;
-    private float masterVolume = 1.0f;
+    [Header("Other Settings")]
+    [SerializeField] int _sfxAudioSourcePoolCount = 10;
+    
+    public float MasterVolume => _masterVolume;
+    public float SfxVolume => _sfxVolume;
+    public float BgmVolume => _bgmVolume;
+    private float _sfxVolume = 1.0f;
+    private float _bgmVolume = 1.0f;
+    private float _masterVolume = 1.0f;
 
-    static string sfxVolumeName = "SfxVolume";
-    static string bgmVolumeName = "BgmVolume";
-    static string masterVolumeName = "MasterVolume";
+    static string _sfxVolumeName = "SfxVolume";
+    static string _bgmVolumeName = "BgmVolume";
+    static string _masterVolumeName = "MasterVolume";
 
 
     Dictionary<SfxName, AudioClipGroup> SFXTable = new Dictionary<SfxName, AudioClipGroup>();
     Dictionary<BgmName, AudioClipGroup> BgmTable = new Dictionary<BgmName, AudioClipGroup>();
 
-    AudioSource bgmAudioSource;
-    private List<AudioSource> sfxAudioSources;
-
-
-    // 리소스에서 옮기지 않는 방법으로 변경 필요
+    AudioSource _bgmAudioSource;
+    private List<AudioSource> _sfxAudioSources;
+    
+    
     protected override void Init()
     {
-        bgmAudioSource = gameObject.AddComponent<AudioSource>();
-        sfxAudioSources = new List<AudioSource>();
+        _bgmAudioSource = gameObject.AddComponent<AudioSource>();
+        _sfxAudioSources = new List<AudioSource>();
 
 
         // 일단 풀에 10개 넣어
-        for (int i = 0; i < sfxAudioSourcePoolCount; ++i)
+        for (int i = 0; i < _sfxAudioSourcePoolCount; ++i)
         {
             AudioSource aSource = gameObject.AddComponent<AudioSource>();
             aSource.playOnAwake = false;
-            sfxAudioSources.Add(aSource);
+            _sfxAudioSources.Add(aSource);
         }
 
         ReadAudioClips();
@@ -59,20 +57,24 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
         BgmTable = ((BgmName[])Enum.GetValues(typeof(BgmName))).ToDictionary(part => part,
             part => (AudioClipGroup)null);
-
-        for (int i = 0; i < bgmGroupAsset.Length; i++)
+        
+        
+        List<AudioClipGroup> bgmGroupAssetList = _bgmGroupAssetTable.GetDatabase<AudioClipGroup>();
+        List<AudioClipGroup> sfxGroupAssetList = _sfxGroupAssetTable.GetDatabase<AudioClipGroup>();
+        
+        for (int i = 0; i < bgmGroupAssetList.Count; i++)
         {
-            if (Enum.TryParse(bgmGroupAsset[i].name, out BgmName bgmName))
+            if (Enum.TryParse(bgmGroupAssetList[i].name, out BgmName bgmName))
             {
-                BgmTable[bgmName] = bgmGroupAsset[i];
+                BgmTable[bgmName] = bgmGroupAssetList[i];
             }
         }
 
-        for (int i = 0; i < sfxGroupAsset.Length; i++)
+        for (int i = 0; i < sfxGroupAssetList.Count; i++)
         {
-            if (Enum.TryParse(sfxGroupAsset[i].name, ignoreCase: true, out SfxName sfxName))
+            if (Enum.TryParse(sfxGroupAssetList[i].name, ignoreCase: true, out SfxName sfxName))
             {
-                SFXTable[sfxName] = sfxGroupAsset[i];
+                SFXTable[sfxName] = sfxGroupAssetList[i];
             }
         }
     }
@@ -85,7 +87,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aClip = clip.GetClip(idx);
         }
 
-        PlaySound(GetSFXAudioSource(), aClip, GetVolume(sfxVolume, volume));
+        PlaySound(GetSFXAudioSource(), aClip, GetVolume(_sfxVolume, volume));
     }
 
     public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f)
@@ -96,7 +98,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aClip = clip.GetRandomClip();
         }
 
-        PlaySound(GetSFXAudioSource(), aClip, GetVolume(sfxVolume, volume));
+        PlaySound(GetSFXAudioSource(), aClip, GetVolume(_sfxVolume, volume));
     }
 
     /// <summary>
@@ -110,7 +112,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aClip = clip.GetClip(idx);
         }
 
-        PlaySound(aSource, aClip, GetVolume(sfxVolume, volume));
+        PlaySound(aSource, aClip, GetVolume(_sfxVolume, volume));
     }
 
     public void PlayBgmAtAudioSource(AudioSource aSource, BgmName bgmName, int idx = 0, float volume = 1.0f,
@@ -122,7 +124,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aClip = clip.GetClip(idx);
         }
 
-        PlaySound(aSource, aClip, GetVolume(bgmVolume, volume), loop, pitch);
+        PlaySound(aSource, aClip, GetVolume(_bgmVolume, volume), loop, pitch);
     }
 
     public void PlayBgm(BgmName bgmName, float volume = 1.0f, bool loop = true, float pitch = 1.0f)
@@ -133,7 +135,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aClip = clip.GetClip();
         }
 
-        PlaySound(bgmAudioSource, aClip, GetVolume(bgmVolume, volume), loop, pitch);
+        PlaySound(_bgmAudioSource, aClip, GetVolume(_bgmVolume, volume), loop, pitch);
     }
 
 
@@ -156,7 +158,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     
     public void SetNowBgmPitch(float pitch)
     {
-        bgmAudioSource.pitch = pitch;
+        _bgmAudioSource.pitch = pitch;
     }
 
     public void AllStop()
@@ -167,12 +169,12 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void StopBgm()
     {
-        bgmAudioSource.Stop();
+        _bgmAudioSource.Stop();
     }
 
     public void StopAllSfx()
     {
-        foreach (AudioSource aSource in sfxAudioSources)
+        foreach (AudioSource aSource in _sfxAudioSources)
         {
             aSource.Stop();
         }
@@ -185,7 +187,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         AudioSource shortestSource = null;
         float shortestRemainTime = float.MaxValue;
 
-        foreach (AudioSource audioSource in sfxAudioSources)
+        foreach (AudioSource audioSource in _sfxAudioSources)
         {
             if (audioSource.isPlaying == false)
             {
@@ -214,14 +216,14 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     
     void SetBgmVolume()
     {
-        bgmAudioSource.volume = GetVolume(BgmVolume, 1.0f);
+        _bgmAudioSource.volume = GetVolume(BgmVolume, 1.0f);
     }
 
     void SetSavedVolume()
     {
-        masterVolume = PlayerPrefs.GetFloat(masterVolumeName, 1.0f);
-        sfxVolume = PlayerPrefs.GetFloat(sfxVolumeName, 1.0f);
-        bgmVolume = PlayerPrefs.GetFloat(bgmVolumeName, 1.0f);
+        _masterVolume = PlayerPrefs.GetFloat(_masterVolumeName, 1.0f);
+        _sfxVolume = PlayerPrefs.GetFloat(_sfxVolumeName, 1.0f);
+        _bgmVolume = PlayerPrefs.GetFloat(_bgmVolumeName, 1.0f);
     }
 
     float GetVolume(float settingVolume, float customVolume)
@@ -231,21 +233,21 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void SetMasterVolume(float volume)
     {
-        masterVolume = Mathf.Clamp(volume, 0, 1.0f);
-        PlayerPrefs.SetFloat(masterVolumeName, MasterVolume);
+        _masterVolume = Mathf.Clamp(volume, 0, 1.0f);
+        PlayerPrefs.SetFloat(_masterVolumeName, MasterVolume);
         SetBgmVolume();
     }
 
     public void SetSfxVolume(float volume)
     {
-        sfxVolume = Mathf.Clamp(volume, 0, 1.0f);
-        PlayerPrefs.SetFloat(sfxVolumeName, MasterVolume);
+        _sfxVolume = Mathf.Clamp(volume, 0, 1.0f);
+        PlayerPrefs.SetFloat(_sfxVolumeName, MasterVolume);
     }
 
     public void SetBgmVolume(float volume)
     {
-        bgmVolume = Mathf.Clamp(volume, 0, 1.0f);
-        PlayerPrefs.SetFloat(bgmVolumeName, MasterVolume);
+        _bgmVolume = Mathf.Clamp(volume, 0, 1.0f);
+        PlayerPrefs.SetFloat(_bgmVolumeName, MasterVolume);
         SetBgmVolume();
     }
 
