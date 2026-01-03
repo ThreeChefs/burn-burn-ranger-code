@@ -14,7 +14,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 
     // 스킬 사용 조건
     protected float cooldownTimer = 0f;
-    public bool IsUsable => IsCooldownReady() && HasEnoughResource();
+    public bool IsUsable => IsCooldownReady();
 
     // 타겟
     protected List<IDamageable> targets;
