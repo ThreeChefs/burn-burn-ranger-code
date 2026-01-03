@@ -1,7 +1,7 @@
-using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
@@ -9,10 +9,8 @@ public class StageManager : SceneSingletonManager<StageManager>
     private StagePlayer _player;
 
     // 스테이지 맵을 생성해주는 거
-    // 몬스터 소환 조건
-    // 몬스터 소환
     // 화면 내 맵을 들고 있어야하는데
-    // 웨이브에 대한 것도 만들어야 하네
+    
     [SerializeField] private StagePlayer _stagePlayerPrefab;
     
     [SerializeField] private SoDatabase _stageDataBase;
@@ -105,10 +103,19 @@ public class StageManager : SceneSingletonManager<StageManager>
     
     
     public void SpawnWaveMonster(MonsterTypeData monsterTypeData)
-    {   
+    {
+        Vector3 dir = Random.onUnitSphere;
+        dir.y = 0;
+        dir.Normalize();
+        
+        Vector3 randomPos = _player.transform.position + (dir * Random.Range(1f, 2f));
+        GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
+        
+        if (monster.TryGetComponent(out Monster monsterComponent))
+        {
+        }
         // 화면에 보이는 범위를 가져와야할 듯
         // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
-        
     }
     
     public void SpawnBossMonster(MonsterTypeData monsterTypeData)
