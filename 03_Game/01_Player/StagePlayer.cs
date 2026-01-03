@@ -6,16 +6,30 @@ using UnityEngine.InputSystem;
 /// </summary>
 [RequireComponent(typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(PlayerInput))]
-public class StagePlayer : Player, IDamageable
+public class StagePlayer : MonoBehaviour, IDamageable
 {
-    [Header("움직임")]
+    public PlayerCondition Condition { get; private set; }
+
     private PlayerStat _speed;
     private Vector2 _inputVector;
 
-    protected override void Awake()
+    private bool _isLeft;
+    protected bool IsLeft
     {
-        base.Awake();
+        get { return _isLeft; }
+        set
+        {
+            if (_isLeft != value)
+            {
+                _isLeft = value;
+                Flip();
+            }
+        }
+    }
 
+    private void Awake()
+    {
+        Condition = PlayerManager.Instance.Condition;
         _speed = Condition[StatType.Speed];
     }
 
@@ -47,13 +61,19 @@ public class StagePlayer : Player, IDamageable
     }
     #endregion
 
+    #region sprite 관리
+    private void Flip()
+    {
+
+    }
+    #endregion
+
     public void TakeDamage(float value)
     {
         PlayerStat health = Condition[StatType.Health];
         if (health.TryUse(value))
         {
             Logger.Log($"플레이어 hp: {health.CurValue} / {health.MaxValue}");
-
         }
         else
         {
@@ -63,9 +83,10 @@ public class StagePlayer : Player, IDamageable
 
     #region 에디터 전용
 #if UNITY_EDITOR
-    protected override void Reset()
+    private void Reset()
     {
-        base.Reset();
+        TryGetComponent<Rigidbody2D>(out var rigidbody2D);
+        rigidbody2D.gravityScale = 0;
 
         CapsuleCollider2D collider = GetComponent<CapsuleCollider2D>();
         collider.offset = new Vector2(-0.03598577f, 0.2159152f);
