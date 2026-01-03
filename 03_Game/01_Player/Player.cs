@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     {
 
     }
+
     public void FixedUpdate()
     {
         Move();
@@ -22,17 +23,18 @@ public class Player : MonoBehaviour
 
     public void Move()
     {
-        Vector2 nextVec = _inputVector.normalized * _speed * Time.fixedDeltaTime;
+        Vector2 nextVec = _speed * Time.fixedDeltaTime * _inputVector.normalized;
         Vector2 pos = transform.position;
         Vector2 newPos = pos + nextVec;
         transform.position = newPos;
     }
 
-    public void OnMove(InputValue value)
+    private void OnMove(InputValue value)
     {
         _inputVector = value.Get<Vector2>();
     }
     #region Move
+
     #endregion
 
     #region 에디터 전용
