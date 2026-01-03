@@ -38,6 +38,8 @@ public class Player : MonoBehaviour, IDamageable
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
+        TryGetComponent<Rigidbody2D>(out var rigidbody2D);
+        rigidbody2D.gravityScale = 0;
     }
 #endif
     #endregion

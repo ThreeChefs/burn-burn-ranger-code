@@ -37,6 +37,8 @@ public class StagePlayer : Player
 #if UNITY_EDITOR
     protected override void Reset()
     {
+        base.Reset();
+
         CapsuleCollider2D collider = GetComponent<CapsuleCollider2D>();
         collider.offset = new Vector2(-0.03598577f, 0.2159152f);
         collider.size = new Vector2(0.805023f, 1.287887f);
