@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /// </summary>
 [RequireComponent(typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(PlayerInput))]
-public class StagePlayer : Player
+public class StagePlayer : Player, IDamageable
 {
     [Header("움직임")]
     [SerializeField] private float _speed = 5f;
@@ -32,6 +32,20 @@ public class StagePlayer : Player
         _inputVector = value.Get<Vector2>();
     }
     #endregion
+
+    public void TakeDamage(float value)
+    {
+        PlayerStat health = Condition[StatType.Health];
+        if (health.TryUse(value))
+        {
+            Logger.Log($"플레이어 hp: {health.CurValue / health.MaxValue}");
+
+        }
+        else
+        {
+            Logger.Log("플레이어 DIE");
+        }
+    }
 
     #region 에디터 전용
 #if UNITY_EDITOR
