@@ -10,16 +10,16 @@ public enum StatModifierType
 }
 public class StatModifier 
 {
-    public StatSortType statSortType;
+    public StatType statType;
     public StatModifierType statModifierType;
     public float value;
     public Object source; // 버프를 적용시킬 아이템 
 
-    public StatModifier(StatModifierType statModifierType, float value, StatSortType statSortType, Object source)
+    public StatModifier(StatModifierType statModifierType, float value, StatType statType, Object source)
     {
         this.statModifierType = statModifierType;
         this.value = value;
-        this.statSortType = statSortType;
+        this.statType = statType;
         this.source = source;
     }
 }

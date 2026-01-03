@@ -1,3 +1,4 @@
-public interface IDamageable
+﻿public interface IDamageable
 {
+   
 }
