@@ -1,43 +1,44 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 /// <summary>
-/// 플레이어
+/// 기본 플레이어
 /// </summary>
-[RequireComponent(typeof(CapsuleCollider2D))]
 public class Player : MonoBehaviour
 {
-    [Header("움직임")]
-    [SerializeField] private float _speed = 5f;
-    private Vector2 _inputVector;
+    [Header("이미지")]
+    private bool _isLeft;
+    protected bool IsLeft
+    {
+        get { return _isLeft; }
+        set
+        {
+            if (_isLeft != value)
+            {
+                _isLeft = value;
+                Flip();
+            }
+        }
+    }
 
-    private void Awake()
+    public PlayerCondition Condition { get; protected set; }
+
+    protected virtual void Awake()
     {
 
     }
 
-    public void FixedUpdate()
+    #region sprite 관리
+    private void Flip()
     {
-        Move();
-    }
 
-    public void Move()
-    {
-        Vector2 nextVec = _speed * Time.fixedDeltaTime * _inputVector.normalized;
-        Vector2 pos = transform.position;
-        Vector2 newPos = pos + nextVec;
-        transform.position = newPos;
     }
-
-    private void OnMove(InputValue value)
-    {
-        _inputVector = value.Get<Vector2>();
-    }
-    #region Move
-
     #endregion
 
     #region 에디터 전용
-
+#if UNITY_EDITOR
+    protected virtual void Reset()
+    {
+    }
+#endif
     #endregion
 }
