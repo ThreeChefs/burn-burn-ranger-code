@@ -5,6 +5,9 @@ using UnityEngine;
 /// </summary>
 public class Player : MonoBehaviour
 {
+    [Header("SO Data")]
+    [SerializeField] private StatData _statData;
+
     [Header("이미지")]
     private bool _isLeft;
     protected bool IsLeft
@@ -24,7 +27,7 @@ public class Player : MonoBehaviour
 
     protected virtual void Awake()
     {
-
+        Condition = new(_statData);
     }
 
     #region sprite 관리
@@ -40,6 +43,8 @@ public class Player : MonoBehaviour
     {
         TryGetComponent<Rigidbody2D>(out var rigidbody2D);
         rigidbody2D.gravityScale = 0;
+
+        _statData = AssetLoader.FindAndLoadByName<StatData>("PlayerStatData");
     }
 #endif
     #endregion

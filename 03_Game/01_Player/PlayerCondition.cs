@@ -9,15 +9,13 @@ using UnityEngine;
 public class PlayerCondition
 {
     #region 필드
-    public string Name { get; private set; }
-
     // 레벨
     public int Level { get; private set; }
     public float CurrentExp { get; private set; }
     public float RequiredExp { get; private set; }
 
     // 스탯
-    private readonly Dictionary<StatType, PlayerStat> _statDict;
+    private Dictionary<StatType, PlayerStat> _statDict;
     public PlayerStat this[StatType type] => _statDict[type];
 
     public float CurrentHealth => _statDict[StatType.Health].CurValue;
@@ -34,43 +32,44 @@ public class PlayerCondition
     /// todo: 추후 json 데이터로 관리 & 플레이어 기본 데이터 주소로 불러오기
     /// </summary>
     /// <param name="data"></param>
-    //public PlayerCondition(PlayerStatData data)
-    //{
-    //    Name = data.PlayerName;
+    public PlayerCondition(StatData data)
+    {
+        ConvertStatListToDict(data.Stats);
 
-    //    ConvertStatListToDict(data.Stats);
-
-    //    // todo: 데이터 연동
-    //    Level = 1;
-    //    CurrentExp = 0f;
-    //    RequiredExp = GetRequiredExp(Level);
-    //}
+        // todo: 데이터 연동
+        Level = 1;
+        CurrentExp = 0f;
+        RequiredExp = GetRequiredExp(Level);
+    }
 
     /// <summary>
     /// 스텟 타입과 값을 딕셔너리로 관리하기 위해 초기화
     /// </summary>
     /// <param name="stats"></param>
     /// <exception cref="StatNegativeValueException"></exception>
-    //private void ConvertStatListToDict(List<StatEntry> stats)
-    //{
-    //    _statDict = new();
+    private void ConvertStatListToDict(List<StatEntry> stats)
+    {
+        _statDict = new();
 
-    //    foreach (StatEntry entry in stats)
-    //    {
-    //        if (entry.BaseValue < 0)
-    //        {
-    //            throw new StatNegativeValueException(entry.StatType, entry.BaseValue);
-    //        }
+        foreach (StatEntry entry in stats)
+        {
+            if (entry.BaseValue < 0)
+            {
+                throw new StatNegativeValueException(entry.StatType, entry.BaseValue);
+            }
 
-    //        _statDict[entry.StatType] = new Stat(entry.BaseValue, entry.StatType);
-    //    }
+            _statDict[entry.StatType] = new PlayerStat(entry.BaseValue, entry.StatType);
+        }
 
-    //    // 필수 스텟 확인
-    //    CheckRequiredStat(StatType.Health);
-    //    CheckRequiredStat(StatType.Stamina);
-    //    CheckRequiredStat(StatType.Attack);
-    //    CheckRequiredStat(StatType.Defense);
-    //}
+        // 누락 스텟 확인
+        CheckRequiredStat(StatType.Health);
+        CheckRequiredStat(StatType.Attack);
+        CheckRequiredStat(StatType.Defense);
+        CheckRequiredStat(StatType.Speed);
+        CheckRequiredStat(StatType.AddEXP);
+        CheckRequiredStat(StatType.AddGold);
+        CheckRequiredStat(StatType.DropItemRange);
+    }
 
     /// <summary>
     /// 필수 스탯 값이 데이터에 존재하는지 확인

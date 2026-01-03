@@ -15,12 +15,7 @@ public class PlayerStat : BaseStat
     // 이벤트
     public event Action<float> OnMaxValueChanged;
 
-    public PlayerStat(float value, StatType type)
-    {
-        BaseValue = value;
-        CurValue = value;
-        this.type = type;
-    }
+    public PlayerStat(float value, StatType type) : base(value, type) { }
 
     /// <summary>
     /// [public] Stat 보유 클래스가 사라질 경우 메모리 정리를 위해 호출

@@ -9,11 +9,15 @@ using UnityEngine.InputSystem;
 public class StagePlayer : Player, IDamageable
 {
     [Header("움직임")]
-    [SerializeField] private float _speed = 5f;
+    private PlayerStat _speed;
     private Vector2 _inputVector;
 
-    [Header("HP")]
-    [SerializeField] private float _heath = 100f;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _speed = Condition[StatType.Speed];
+    }
 
     private void FixedUpdate()
     {
@@ -23,7 +27,7 @@ public class StagePlayer : Player, IDamageable
     #region Move
     private void Move()
     {
-        Vector2 nextVec = _speed * Time.fixedDeltaTime * _inputVector.normalized;
+        Vector2 nextVec = _speed.CurValue * Time.fixedDeltaTime * _inputVector.normalized;
         IsLeft = nextVec.x > 0;
         Vector2 pos = transform.position;
         Vector2 newPos = pos + nextVec;
@@ -45,27 +49,16 @@ public class StagePlayer : Player, IDamageable
 
     public void TakeDamage(float value)
     {
-        _heath -= value;
-        if (_heath > 0)
+        PlayerStat health = Condition[StatType.Health];
+        if (health.TryUse(value))
         {
-            Logger.Log($"플레이어 hp: {_heath}");
+            Logger.Log($"플레이어 hp: {health.CurValue} / {health.MaxValue}");
 
         }
         else
         {
             Logger.Log("플레이어 DIE");
         }
-
-        //PlayerStat health = Condition[StatType.Health];
-        //if (health.TryUse(value))
-        //{
-        //    Logger.Log($"플레이어 hp: {health.CurValue / health.MaxValue}");
-
-        //}
-        //else
-        //{
-        //    Logger.Log("플레이어 DIE");
-        //}
     }
 
     #region 에디터 전용
@@ -80,7 +73,7 @@ public class StagePlayer : Player, IDamageable
 
         PlayerInput input = GetComponent<PlayerInput>();
         input.actions = AssetLoader.FindAndLoadByName<InputActionAsset>("Player");
-        input.notificationBehavior = PlayerNotifications.SendMessages;
+        input.notificationBehavior = PlayerNotifications.InvokeUnityEvents;
     }
 #endif
     #endregion
