@@ -29,6 +29,8 @@ public class Monster : MonoBehaviour, IDamageable
     private void Start()
     {
         ApplyData();
+        Debug.Log($"[Spawn] {name} data={(monsterdata ? monsterdata.name : "NULL")}");
+        ApplyData();
     }
 
     private void ApplyData()
@@ -65,7 +67,10 @@ public class Monster : MonoBehaviour, IDamageable
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            Die();
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -77,6 +82,7 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (collision.collider.TryGetComponent<StagePlayer>(out var player))
         {
+            Debug.Log($"{name} hit! data={monsterdata.name}, type={monsterdata.monsterType}, atk={_attack}");
             player.TakeDamage(_attack);
             StartCoroutine(HitCooldown());
         }
@@ -108,6 +114,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void Die()
     {
+
         Logger.Log("뒤짐");
         DropItem();
         Destroy(gameObject);
