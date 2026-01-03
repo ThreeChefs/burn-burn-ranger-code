@@ -115,7 +115,7 @@ public class PlayerCondition
     /// <param name="exp"></param>
     public void AddExp(int exp)
     {
-        CurrentExp += exp;
+        CurrentExp += exp * _statDict[StatType.AddEXP].CurValue;
         while (CurrentExp > RequiredExp)
         {
             LevelUp();
