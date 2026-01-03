@@ -27,9 +27,16 @@ public class StagePlayer : Player, IDamageable
         transform.position = newPos;
     }
 
-    private void OnMove(InputValue value)
+    public void OnMove(InputAction.CallbackContext context)
     {
-        _inputVector = value.Get<Vector2>();
+        if (context.phase == InputActionPhase.Performed)
+        {
+            _inputVector = context.ReadValue<Vector2>();
+        }
+        else if (context.phase == InputActionPhase.Canceled)
+        {
+            _inputVector = Vector2.zero;
+        }
     }
     #endregion
 
