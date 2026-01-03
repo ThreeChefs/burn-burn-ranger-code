@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 기본 플레이어
 /// </summary>
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     [Header("이미지")]
     private bool _isLeft;
