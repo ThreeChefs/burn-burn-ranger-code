@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New StatData", menuName = "SO/Stats/Character Stats")]
+[CreateAssetMenu(fileName = "New StatData", menuName = "SO/Stats/Stat Data")]
 public class StatData : ScriptableObject
 {
     [field: SerializeField] public List<StatEntry> Stats { get; private set; }
