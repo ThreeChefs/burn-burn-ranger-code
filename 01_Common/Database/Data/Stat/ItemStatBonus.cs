@@ -4,7 +4,7 @@ using UnityEngine;
 [System.Serializable]
 public class ItemStatBonus 
 {
-    public StatSortType statSortType;
+    public StatType statType;
     public StatModifierType statModifierType;
     public float value;
 }
