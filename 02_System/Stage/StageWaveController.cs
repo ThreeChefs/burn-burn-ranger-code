@@ -10,14 +10,10 @@ public class StageWaveController
     public StageWaveData nowWave => _nowWave;
     private float _nowSpawnDelay = 0;
 
-    StageManager _stageManager;
-
-
-    public StageWaveController(StageManager stageManager)
-    {
-        _stageManager = stageManager;
-    }
-
+    public event Action<MonsterTypeData> SpawnWaveMonsterAction;
+    public event Action<MonsterTypeData> SpawnBossMonsterAction;
+    
+    
     public void EnterWave(StageWaveData wave)
     {
         _nowWave = wave;
@@ -57,7 +53,7 @@ public class StageWaveController
         {
             for (int i = 0; i < _nowWave.MonsterTypeData.Count; ++i)
             {
-                _stageManager.SpawnWaveMonster(_nowWave.MonsterTypeData[i]);
+                SpawnWaveMonsterAction?.Invoke(_nowWave.MonsterTypeData[i]);
             }
         }
         else
@@ -65,10 +61,10 @@ public class StageWaveController
             for (int i = 0; i < _nowWave.SpawnCount; ++i)
             {
                 int monsterIdx = Random.Range(0, _nowWave.MonsterTypeData.Count);
-                _stageManager.SpawnWaveMonster(_nowWave.MonsterTypeData[monsterIdx]);
+                SpawnBossMonsterAction?.Invoke(_nowWave.MonsterTypeData[monsterIdx]);
+                
             }
         }
 
-        //_stageManager.SpawnWaveMonster(_nowWave.MonsterTypeData, _nowWave.SpawnCount);
     }
 }
