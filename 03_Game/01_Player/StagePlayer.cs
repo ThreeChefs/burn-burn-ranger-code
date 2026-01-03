@@ -12,6 +12,9 @@ public class StagePlayer : Player, IDamageable
     [SerializeField] private float _speed = 5f;
     private Vector2 _inputVector;
 
+    [Header("HP")]
+    [SerializeField] private float _heath = 100f;
+
     private void FixedUpdate()
     {
         Move();
@@ -42,16 +45,27 @@ public class StagePlayer : Player, IDamageable
 
     public void TakeDamage(float value)
     {
-        PlayerStat health = Condition[StatType.Health];
-        if (health.TryUse(value))
+        _heath -= value;
+        if (_heath > 0)
         {
-            Logger.Log($"플레이어 hp: {health.CurValue / health.MaxValue}");
+            Logger.Log($"플레이어 hp: {_heath}");
 
         }
         else
         {
             Logger.Log("플레이어 DIE");
         }
+
+        //PlayerStat health = Condition[StatType.Health];
+        //if (health.TryUse(value))
+        //{
+        //    Logger.Log($"플레이어 hp: {health.CurValue / health.MaxValue}");
+
+        //}
+        //else
+        //{
+        //    Logger.Log("플레이어 DIE");
+        //}
     }
 
     #region 에디터 전용
