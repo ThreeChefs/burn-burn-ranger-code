@@ -10,7 +10,9 @@ public class SkillSystem : MonoBehaviour
     private List<SkillData> _cache;
 
     // 스킬 상태 관리
-    protected readonly List<BaseSkill> havingSkills = new();
+    protected readonly Dictionary<int, BaseSkill> havingSkills = new();
+    protected int activeSkillCount;
+    protected int passiveSkillCount;
 
     private void Awake()
     {
@@ -25,7 +27,7 @@ public class SkillSystem : MonoBehaviour
     // 
 
     /// <summary>
-    /// [public] 스킬 획득
+    /// [public] 스킬 선택하기
     /// </summary>
     /// <param name="id"></param>
     public bool TrySelectSkill<T>(int id) where T : BaseSkill
@@ -36,19 +38,27 @@ public class SkillSystem : MonoBehaviour
             return false;
         }
 
-        BaseSkill find = havingSkills.Find(skill => skill == _cache[id]);
-
-        if (find != null)
+        if (havingSkills.TryGetValue(id, out var skill))
         {
-            Logger.LogWarning("이미 존재하는 스킬");
-            return false;
+            skill.LevelUp();
+            return true;
         }
 
         T baseSkill = gameObject.AddComponent<T>();
+        havingSkills.Add(id, baseSkill);
+        SkillData data = _cache[id];
+        baseSkill.Init(data);
 
-        havingSkills.Add(baseSkill);
-
-        baseSkill.Init(_cache[id]);
+        switch (data.Type)
+        {
+            case SkillType.Active:
+            case SkillType.Combination:
+                activeSkillCount++;
+                break;
+            case SkillType.Passive:
+                passiveSkillCount++;
+                break;
+        }
 
         return true;
     }
