@@ -16,6 +16,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     [SerializeField] private SoDatabase _stageDataBase;
     private List<StageData> _stageDatas = new List<StageData>();
     
+    // todo : WaveQueue 도 WaveController 에 집어넣어놓기
     Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
     StageData _nowStage;
     
@@ -30,6 +31,8 @@ public class StageManager : SceneSingletonManager<StageManager>
     public event Action OnGameStartAction;
     public event Action OnGameEndAction;
     
+    
+    List<Monster> _spawnedMonsters = new List<Monster>();
 
     protected override void Awake()
     {
@@ -73,6 +76,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         if (_isPlaying == false) return;
         
+        // 보스 웨이브 중일 때에는 playTime이 안 늘어났음
         _playTime += Time.deltaTime;
         WaveUpdate();
     }
@@ -94,7 +98,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             if (_waveQueue.Peek().WaveStartTime <= _playTime)
             {
-                _waveController.EnterWave(_waveQueue.Dequeue().StageWaveData);
+                StageWaveEntry nextWaveData = _waveQueue.Dequeue();
+                _waveController.EnterWave(nextWaveData.StageWaveData);
             }
         }
         
@@ -113,6 +118,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         
         if (monster.TryGetComponent(out Monster monsterComponent))
         {
+            _spawnedMonsters.Add(monsterComponent);
         }
         // 화면에 보이는 범위를 가져와야할 듯
         // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
@@ -120,7 +126,18 @@ public class StageManager : SceneSingletonManager<StageManager>
     
     public void SpawnBossMonster(MonsterTypeData monsterTypeData)
     {
-        // 위치 지정
+        // 위치 지정 필요
+        // 일단은 그냥 스폰
+        
+        //todo PoolManager에 DeactiveAll... 있음
+        for (int i = 0; i < _spawnedMonsters.Count; i++)
+        {
+            Destroy(_spawnedMonsters[i].gameObject);
+        }
+        _spawnedMonsters.Clear();
+        
+        SpawnWaveMonster(monsterTypeData);
+        
     }
     
     
