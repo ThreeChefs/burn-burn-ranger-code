@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
-    public Player Player => _player;
-    private Player _player;
+    public StagePlayer Player => _player;
+    private StagePlayer _player;
 
     // 스테이지 맵을 생성해주는 거
-    // 몬스터 소환 조건
-    // 몬스터 소환
     // 화면 내 맵을 들고 있어야하는데
-    // 웨이브에 대한 것도 만들어야 하네
+    
+    [SerializeField] private StagePlayer _stagePlayerPrefab;
     
     [SerializeField] private SoDatabase _stageDataBase;
     private List<StageData> _stageDatas = new List<StageData>();
     
-    Queue<StageWaveData> _waveQueue = new Queue<StageWaveData>();
-    
+    // todo : WaveQueue 도 WaveController 에 집어넣어놓기
+    Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
     StageData _nowStage;
     
     private StageWaveController _waveController;
@@ -28,6 +28,11 @@ public class StageManager : SceneSingletonManager<StageManager>
     private bool _isPlaying = false;
     public bool IsPlaying => _isPlaying;
     
+    public event Action OnGameStartAction;
+    public event Action OnGameEndAction;
+    
+    
+    List<Monster> _spawnedMonsters = new List<Monster>();
 
     protected override void Awake()
     {
@@ -39,25 +44,31 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         // 어떻게 꽂아 넣을지 고민 필요
         // 플레이어를 생성하면 좋을 것 같음.
-        _player = FindObjectOfType<Player>();
         _stageDatas = _stageDataBase.GetDatabase<StageData>();      // Database 만 넣어둔 애 들고다니면 곤란할까요
         
         SetStageData(0);
+        
+        _player = Instantiate(_stagePlayerPrefab);
+        _waveController = new StageWaveController();
+        
+        _waveController.SpawnBossMonsterAction += SpawnBossMonster;
+        _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
     }
     
     void SetStageData(int stageNum)
     {
         _nowStage =_stageDatas[stageNum];
-        _waveQueue = new Queue<StageWaveData>();
-        for (int i = 0; i < _nowStage.MonsterWaves.Count; i++)
+        
+        _waveQueue = new Queue<StageWaveEntry>();
+        for (int i = 0; i < _nowStage.StageWaves.Count; i++)
         {
-            _waveQueue.Enqueue(_nowStage.MonsterWaves[i]);
+            _waveQueue.Enqueue(_nowStage.StageWaves[i]);
         }
     }
 
     private void Start()
     {
-        //언제 게임 시작하지
+        // 언제 게임 시작하지
         GameStart();
     }
     
@@ -65,41 +76,68 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         if (_isPlaying == false) return;
         
+        // 보스 웨이브 중일 때에는 playTime이 안 늘어났음
         _playTime += Time.deltaTime;
-        
         WaveUpdate();
     }
 
     void GameStart()
     {
         _isPlaying = true;
+        OnGameStartAction?.Invoke();
     }
 
     public void GameEnd(bool isClear)
     {
-            
+        OnGameEndAction?.Invoke();
     }
     
     void WaveUpdate()
     {
-        if (_waveQueue.Peek().WaveStartTime <= _playTime)
+        if (_waveQueue.Count > 0)
         {
-            _waveController.EnterWave(_waveQueue.Dequeue());
+            if (_waveQueue.Peek().WaveStartTime <= _playTime)
+            {
+                StageWaveEntry nextWaveData = _waveQueue.Dequeue();
+                _waveController.EnterWave(nextWaveData.StageWaveData);
+            }
         }
         
-        _waveController.Update();
+        _waveController?.Update();
     }
     
     
     public void SpawnWaveMonster(MonsterTypeData monsterTypeData)
-    {   
+    {
+        Vector3 dir = Random.onUnitSphere;
+        dir.y = 0;
+        dir.Normalize();
+        
+        Vector3 randomPos = _player.transform.position + (dir * Random.Range(1f, 2f));
+        GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
+        
+        if (monster.TryGetComponent(out Monster monsterComponent))
+        {
+            _spawnedMonsters.Add(monsterComponent);
+        }
         // 화면에 보이는 범위를 가져와야할 듯
         // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
-        
     }
+    
     public void SpawnBossMonster(MonsterTypeData monsterTypeData)
     {
-        // 위치 지정
+        // 위치 지정 필요
+        // 일단은 그냥 스폰
+        
+        //todo PoolManager에 DeactiveAll... 있음
+        for (int i = 0; i < _spawnedMonsters.Count; i++)
+        {
+            Destroy(_spawnedMonsters[i].gameObject);
+        }
+        _spawnedMonsters.Clear();
+        
+        SpawnWaveMonster(monsterTypeData);
+        
     }
     
     
