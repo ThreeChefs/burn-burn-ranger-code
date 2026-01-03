@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Enermy : MonoBehaviour
+public class Monster : MonoBehaviour, IDamageable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
@@ -46,6 +45,7 @@ public class Enermy : MonoBehaviour
     }
     private void FixedUpdate()
     {
+
         if (target == null)
             return;
 
@@ -57,26 +57,27 @@ public class Enermy : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (target == null) return;
         spriter.flipX = target.position.x < rb.position.x;
     }
-  
+
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(!_canHit)
+        if (!_canHit)
         {
             return;
         }
-        
-        if(collision.collider.TryGetComponent<IDamageable>(out var damageable))
+
+        if (collision.collider.TryGetComponent<StagePlayer>(out var player))
         {
-           
+            player.TakeDamage(_attack);
             StartCoroutine(HitCooldown());
         }
     }
@@ -86,5 +87,38 @@ public class Enermy : MonoBehaviour
         _canHit = false;
         yield return new WaitForSeconds(hitCooldown);
         _canHit = true;
+    }
+
+    public void TakeDamage(float value)
+    {
+        if (_hp <= 0f)
+        {
+            return;
+        }
+        _hp -= value;
+        if (_hp > 0f)
+        {
+            Logger.Log($"Enemy HP : {_hp}");
+        }
+        else
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Logger.Log("뒤짐");
+        DropItem();
+        Destroy(gameObject);
+    }
+
+
+    private void DropItem()
+    {
+        for (int i = 0; i < monsterdata.dropCount; i++)
+        {
+            MonsterDropItem.Instance.Spawn(monsterdata.dropItemType, transform.position);
+        }
     }
 }

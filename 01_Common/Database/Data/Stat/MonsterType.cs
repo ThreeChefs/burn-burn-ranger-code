@@ -1,14 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum MonsterType
 {
+    [Header("Monster Type")]
     Normal,
-    
     Miniboss,
-    Boss
+    Boss,
+}
+public enum DropItemType
+{
+    GreenGEM,
+    BlueGEM,
+    YellowGEM
+
+
 }
 [CreateAssetMenu(fileName = "MonsterTypeData", menuName = "Monster/Monster Type", order = 1)]
 public class MonsterTypeData : ScriptableObject
@@ -24,5 +29,9 @@ public class MonsterTypeData : ScriptableObject
 
     [Header("Visual / Prefab")]
     public GameObject prefab;
+
+    [Header("Drop")]
+    public DropItemType dropItemType;
+    public int dropCount = 1;
 }
 
