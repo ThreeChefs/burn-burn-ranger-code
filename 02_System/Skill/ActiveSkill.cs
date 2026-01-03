@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class ActiveSkill : BaseSkill
 {
-    // 스킬 사용 조건
+    // 쿨타임
     private float _cooldownTimer = 0f;
+    private float Cooldown => ((ActiveSkillData)skillData).Cooldown;
 
     // 타겟
     private List<IDamageable> _targets;
@@ -12,6 +13,8 @@ public class ActiveSkill : BaseSkill
     public override void Init(SkillData data)
     {
         base.Init(data);
+
+        _targets = new();
     }
 
     protected override void Update()
@@ -19,7 +22,7 @@ public class ActiveSkill : BaseSkill
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
-        if (_cooldownTimer > ((ActiveSkillData)skillData).Cooldown)
+        if (_cooldownTimer > Cooldown)
         {
             _cooldownTimer = 0f;
             UseSkill();
