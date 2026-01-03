@@ -9,6 +9,11 @@ public class SkillData : ScriptableObject
     [field: SerializeField] public string Name { get; protected set; }
     [field: Tooltip("스킬 설명")]
     [field: SerializeField] public string Description { get; protected set; }
+    [field: Tooltip("스킬 이미지")]
+    [field: SerializeField] public Sprite Sprite { get; protected set; }
+    [field: Tooltip("해금 스테이지")]
+    [field: SerializeField] public int UnlockStageId { get; protected set; }
+
     [field: Tooltip("스킬 타입 (액티브 / 패시브)")]
     [field: SerializeField] public SkillType Type { get; protected set; }
     [field: Tooltip("돌파 조합 스킬 정보")]
