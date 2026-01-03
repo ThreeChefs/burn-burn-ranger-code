@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 public class MonsterDropItem : MonoBehaviour
 {
     public static MonsterDropItem Instance;
+    [System.Serializable]
 
     public class DropPrefab
     {
