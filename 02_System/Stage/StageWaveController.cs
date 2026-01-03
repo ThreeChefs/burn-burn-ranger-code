@@ -37,7 +37,7 @@ public class StageWaveController
 
         _nowSpawnDelay += Time.deltaTime;
 
-        if (_nowWave.SpawnDelay >= _nowWave.SpawnDelay)
+        if (_nowWave.SpawnDelay <= _nowSpawnDelay)
         {
             SpawnMonster();
             _nowSpawnDelay = 0;
@@ -53,7 +53,7 @@ public class StageWaveController
         {
             for (int i = 0; i < _nowWave.MonsterTypeData.Count; ++i)
             {
-                SpawnWaveMonsterAction?.Invoke(_nowWave.MonsterTypeData[i]);
+                SpawnBossMonsterAction?.Invoke(_nowWave.MonsterTypeData[i]);
             }
         }
         else
@@ -61,10 +61,9 @@ public class StageWaveController
             for (int i = 0; i < _nowWave.SpawnCount; ++i)
             {
                 int monsterIdx = Random.Range(0, _nowWave.MonsterTypeData.Count);
-                SpawnBossMonsterAction?.Invoke(_nowWave.MonsterTypeData[monsterIdx]);
+                SpawnWaveMonsterAction?.Invoke(_nowWave.MonsterTypeData[monsterIdx]);
                 
             }
         }
-
     }
 }
