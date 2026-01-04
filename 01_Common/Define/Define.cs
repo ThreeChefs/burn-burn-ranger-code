@@ -5,6 +5,11 @@ public static class Define
     // 랜덤
     public static Random Random = new();
 
+    public static float RandomRange(float min, float max)
+    {
+        return min + (float)Random.NextDouble() * (max - min);
+    }
+
     // 스킬
     public const int SkillMaxLevel = 5;
     public const int ActiveSkillMaxCount = 6;
