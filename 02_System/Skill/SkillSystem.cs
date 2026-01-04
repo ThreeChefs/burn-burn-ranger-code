@@ -80,6 +80,7 @@ public class SkillSystem
             return false;
         }
 
+        // 스킬 획득 후 초기화
         _ownedSkills.Add(id, baseSkill);
         _skillSelectableMap.Add(id, true);
         baseSkill.Init(data);
@@ -102,7 +103,6 @@ public class SkillSystem
 
     private ActiveSkill GetCombinationSkill(int id)
     {
-        // todo: 획득한 id 검사해서 active 스킬 중에 제거해야할 것은 없애야 함
         foreach (int combinationId in _skillDataCache[id].CombinationIds)
         {
             if (_skillDataCache[combinationId].Type == SkillType.Active)
@@ -148,7 +148,7 @@ public class SkillSystem
             return skillSelectDtos.Random(count);
         }
 
-        // 스킬 전부 획득
+        // todo: 스킬 전부 획득
         if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
         {
 
