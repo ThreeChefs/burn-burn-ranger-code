@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 스킬 선택 및 부여를 관리하는 시스템
@@ -35,7 +36,6 @@ public class SkillSystem
             .ForEach(skillData =>
             {
                 _skillDataCache[skillData.Id] = skillData;
-                _skillSelectableMap[skillData.Id] = true;
             });
         _ownedSkills.Clear();
         _combinationRequirementMap.Clear();
@@ -57,17 +57,19 @@ public class SkillSystem
             return false;
         }
 
+        // 이미 스킬이 있는 경우 레벨업
         if (_ownedSkills.TryGetValue(id, out var skill))
         {
             skill.LevelUp();
-            UpdateCombinationSkillCondition(id);
+            UpdateSkillSelectCondition(id);
             return true;
         }
 
+        // 없는 경우 스킬 획득
         BaseSkill baseSkill = (data.Type) switch
         {
             SkillType.Active => GetActiveSkill(),
-            SkillType.Combination => GetCombinationSkill(),
+            SkillType.Combination => GetCombinationSkill(id),
             SkillType.Passive => GetPassiveSkill(),
             _ => null
         };
@@ -79,8 +81,9 @@ public class SkillSystem
         }
 
         _ownedSkills.Add(id, baseSkill);
+        _skillSelectableMap.Add(id, true);
         baseSkill.Init(data);
-        UpdateCombinationSkillCondition(id);
+        UpdateSkillSelectCondition(id);
 
         return true;
     }
@@ -97,9 +100,22 @@ public class SkillSystem
         return _player.gameObject.AddComponent<PassiveSkill>();
     }
 
-    private ActiveSkill GetCombinationSkill()
+    private ActiveSkill GetCombinationSkill(int id)
     {
         // todo: 획득한 id 검사해서 active 스킬 중에 제거해야할 것은 없애야 함
+        foreach (int combinationId in _skillDataCache[id].CombinationIds)
+        {
+            if (_skillDataCache[combinationId].Type == SkillType.Active)
+            {
+                _activeSkillCount--;
+            }
+            else if (_skillDataCache[combinationId].Type == SkillType.Passive)
+            {
+                _passiveSkillCount--;
+            }
+            GameObject.Destroy(_ownedSkills[combinationId].gameObject);
+        }
+
         _activeSkillCount++;
         return _player.gameObject.AddComponent<ActiveSkill>();
     }
@@ -142,10 +158,10 @@ public class SkillSystem
     }
 
     /// <summary>
-    /// id번 스킬 획득 시 조합 스킬 조건을 갱신합니다.
+    /// id번 스킬 획득 시 스킬 획득 조건을 갱신합니다.
     /// </summary>
     /// <param name="id"></param>
-    private void UpdateCombinationSkillCondition(int id)
+    private void UpdateSkillSelectCondition(int id)
     {
         BaseSkill skill = _ownedSkills[id];
         SkillData data = _skillDataCache[id];
@@ -156,14 +172,19 @@ public class SkillSystem
                 // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    ApplyCombinationSkillDict(data.CombinationIds);
+                    _skillSelectableMap[id] = false;                // 획득 불가능
+                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
             case SkillType.Passive:
                 // 패시브 스킬일 경우 1레벨일 때 잠금 해제
                 if (skill.CurLevel == 1)
                 {
-                    ApplyCombinationSkillDict(data.CombinationIds);
+                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
+                }
+                else if (skill.CurLevel == Define.SkillMaxLevel)
+                {
+                    _skillSelectableMap[id] = false;                // 획득 불가능
                 }
                 break;
             case SkillType.Combination:
