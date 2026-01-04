@@ -1,77 +1,196 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// 스킬 선택 및 부여를 관리하는 시스템
 /// </summary>
-public class SkillSystem : MonoBehaviour
+public class SkillSystem
 {
-    [SerializeField] private SoDatabase _skillDatabase;
-    private List<SkillData> _cache;
+    private SoDatabase _skillDatabase;
+    private readonly Dictionary<int, SkillData> _skillDataCache = new();
 
     // 스킬 상태 관리
-    protected readonly Dictionary<int, BaseSkill> havingSkills = new();
-    protected int activeSkillCount;
-    protected int passiveSkillCount;
+    private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
+    private readonly Dictionary<int, bool> _skillSelectableMap = new();
+    private readonly Dictionary<int, int> _combinationRequirementMap = new();
+    private int _activeSkillCount;
+    private int _passiveSkillCount;
 
-    private void Awake()
+    private readonly StagePlayer _player;
+
+    #region 초기화
+    public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
     {
-        _cache = _skillDatabase.GetDatabase<SkillData>();
+        _skillDatabase = skillDatabase;
+        _player = player;
+
+        Init();
     }
 
-    // todo list
-    // 1. 스킬 선택하기
-    // - 등급과 설명 보여주기
-    // -- 보유 스킬일 경우 / 보유하지 않을 경우 
-    // 2. 스킬 보관하기
-    // 
+    private void Init()
+    {
+        // 딕셔너리 초기화
+        _skillDataCache.Clear();
+        _skillSelectableMap.Clear();
+        _skillDatabase.GetDatabase<SkillData>()
+            .ForEach(skillData =>
+            {
+                _skillDataCache[skillData.Id] = skillData;
+                _skillSelectableMap[skillData.Id] = true;
+            });
+        _ownedSkills.Clear();
+        _combinationRequirementMap.Clear();
+
+        // todo: 기본 스킬 주기
+        // ex. 쿠나이
+    }
+    #endregion
 
     /// <summary>
     /// [public] 스킬 선택하기
     /// </summary>
     /// <param name="id"></param>
-    public bool TrySelectSkill<T>(int id) where T : BaseSkill
+    public bool TrySelectSkill(int id)
     {
-        if (_cache.Count < id)
+        if (_skillDataCache.TryGetValue(id, out SkillData data))
         {
             Logger.LogWarning($"얻을 수 없는 스킬 데이터: {id}");
             return false;
         }
 
-        if (havingSkills.TryGetValue(id, out var skill))
+        if (_ownedSkills.TryGetValue(id, out var skill))
         {
             skill.LevelUp();
+            UpdateCombinationSkillCondition(id);
             return true;
         }
 
-        T baseSkill = gameObject.AddComponent<T>();
-        havingSkills.Add(id, baseSkill);
-        SkillData data = _cache[id];
-        baseSkill.Init(data);
-
-        switch (data.Type)
+        BaseSkill baseSkill = (data.Type) switch
         {
-            case SkillType.Active:
-            case SkillType.Combination:
-                activeSkillCount++;
-                break;
-            case SkillType.Passive:
-                passiveSkillCount++;
-                break;
+            SkillType.Active => GetActiveSkill(),
+            SkillType.Combination => GetCombinationSkill(),
+            SkillType.Passive => GetPassiveSkill(),
+            _ => null
+        };
+
+        if (baseSkill == null)
+        {
+            Logger.Log("base skill 생성 실패");
+            return false;
         }
+
+        _ownedSkills.Add(id, baseSkill);
+        baseSkill.Init(data);
+        UpdateCombinationSkillCondition(id);
 
         return true;
     }
 
-    #region 에디터 전용
-#if UNITY_EDITOR
-    protected virtual void Reset()
+    private ActiveSkill GetActiveSkill()
     {
-        if (_skillDatabase == null)
+        _activeSkillCount++;
+        return _player.gameObject.AddComponent<ActiveSkill>();
+    }
+
+    private PassiveSkill GetPassiveSkill()
+    {
+        _passiveSkillCount++;
+        return _player.gameObject.AddComponent<PassiveSkill>();
+    }
+
+    private ActiveSkill GetCombinationSkill()
+    {
+        // todo: 획득한 id 검사해서 active 스킬 중에 제거해야할 것은 없애야 함
+        _activeSkillCount++;
+        return _player.gameObject.AddComponent<ActiveSkill>();
+    }
+
+    public List<SkillSelectDto> ShowSelectableSkills(int count)
+    {
+        List<SkillSelectDto> skillSelectDtos = new();
+
+        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
         {
-            _skillDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("PlayerSkillDatabase");
+            if (combinationSkillTerm.Value == 2)
+            {
+                SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
+                skillSelectDtos.Add(new SkillSelectDto(
+                    skillData.Id,
+                    1,
+                    skillData.name,
+                    skillData.Description,
+                    skillData.Sprite,
+                    null));
+            }
+        }
+
+        if (skillSelectDtos.Count == count)
+        {
+            return skillSelectDtos;
+        }
+        else if (skillSelectDtos.Count > count)
+        {
+            return skillSelectDtos.Random(count);
+        }
+
+        // 스킬 전부 획득
+        if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
+        {
+
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// id번 스킬 획득 시 조합 스킬 조건을 갱신합니다.
+    /// </summary>
+    /// <param name="id"></param>
+    private void UpdateCombinationSkillCondition(int id)
+    {
+        BaseSkill skill = _ownedSkills[id];
+        SkillData data = _skillDataCache[id];
+
+        switch (data.Type)
+        {
+            case SkillType.Active:
+                // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
+                if (skill.CurLevel == Define.SkillMaxLevel)
+                {
+                    ApplyCombinationSkillDict(data.CombinationIds);
+                }
+                break;
+            case SkillType.Passive:
+                // 패시브 스킬일 경우 1레벨일 때 잠금 해제
+                if (skill.CurLevel == 1)
+                {
+                    ApplyCombinationSkillDict(data.CombinationIds);
+                }
+                break;
+            case SkillType.Combination:
+                if (_combinationRequirementMap.ContainsKey(id))
+                {
+                    _combinationRequirementMap.Remove(id);
+                }
+                break;
         }
     }
-#endif
-    #endregion
+
+    /// <summary>
+    /// 스킬 조합 조건 딕셔너리에 정보 저장
+    /// </summary>
+    /// <param name="combinationIds"></param>
+    private void ApplyCombinationSkillDict(int[] combinationIds)
+    {
+        foreach (int combinationId in combinationIds)
+        {
+            if (_combinationRequirementMap.ContainsKey(combinationId))
+            {
+                _combinationRequirementMap[combinationId]++;
+            }
+            else
+            {
+                _combinationRequirementMap.Add(combinationId, 1);
+            }
+        }
+    }
 }
