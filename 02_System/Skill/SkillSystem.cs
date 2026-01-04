@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// 스킬 선택 및 부여를 관리하는 시스템
 /// </summary>
-public class SkillSystem : MonoBehaviour
+public class SkillSystem
 {
-    [SerializeField] private SoDatabase _skillDatabase;
+    private SoDatabase _skillDatabase;
     private readonly Dictionary<int, SkillData> _skillDataCache = new();
 
     // 스킬 상태 관리
@@ -16,8 +15,20 @@ public class SkillSystem : MonoBehaviour
     private int _activeSkillCount;
     private int _passiveSkillCount;
 
-    private void Awake()
+    private readonly StagePlayer _player;
+
+    #region 초기화
+    public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
     {
+        _skillDatabase = skillDatabase;
+        _player = player;
+
+        Init();
+    }
+
+    private void Init()
+    {
+        // 딕셔너리 초기화
         _skillDataCache.Clear();
         _skillSelectableMap.Clear();
         _skillDatabase.GetDatabase<SkillData>()
@@ -28,7 +39,11 @@ public class SkillSystem : MonoBehaviour
             });
         _ownedSkills.Clear();
         _combinationRequirementMap.Clear();
+
+        // todo: 기본 스킬 주기
+        // ex. 쿠나이
     }
+    #endregion
 
     /// <summary>
     /// [public] 스킬 선택하기
@@ -73,20 +88,20 @@ public class SkillSystem : MonoBehaviour
     private ActiveSkill GetActiveSkill()
     {
         _activeSkillCount++;
-        return gameObject.AddComponent<ActiveSkill>();
+        return _player.gameObject.AddComponent<ActiveSkill>();
     }
 
     private PassiveSkill GetPassiveSkill()
     {
         _passiveSkillCount++;
-        return gameObject.AddComponent<PassiveSkill>();
+        return _player.gameObject.AddComponent<PassiveSkill>();
     }
 
     private ActiveSkill GetCombinationSkill()
     {
         // todo: 획득한 id 검사해서 active 스킬 중에 제거해야할 것은 없애야 함
         _activeSkillCount++;
-        return gameObject.AddComponent<ActiveSkill>();
+        return _player.gameObject.AddComponent<ActiveSkill>();
     }
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
@@ -178,16 +193,4 @@ public class SkillSystem : MonoBehaviour
             }
         }
     }
-
-    #region 에디터 전용
-#if UNITY_EDITOR
-    protected virtual void Reset()
-    {
-        if (_skillDatabase == null)
-        {
-            _skillDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("PlayerSkillDatabase");
-        }
-    }
-#endif
-    #endregion
 }
