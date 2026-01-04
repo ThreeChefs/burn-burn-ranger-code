@@ -17,11 +17,6 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Condition = new(_statData);
     }
 
-    private void Start()
-    {
-        SpawnPlayer();
-    }
-
     /// <summary>
     /// [public] 스테이지에서 플레이어를 소환하기 위한 용도
     /// </summary>
