@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -14,6 +14,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private Vector2 _inputVector;
 
     private bool _isLeft;
+    internal readonly object tranform;
+
     protected bool IsLeft
     {
         get { return _isLeft; }

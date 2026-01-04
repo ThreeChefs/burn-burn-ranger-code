@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,16 +6,13 @@ using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
-    public StagePlayer Player => _player;
-    private StagePlayer _player;
+    [SerializeField] private SoDatabase _stageDataBase;
+    private List<StageData> _stageDatas = new List<StageData>();
 
     // 스테이지 맵을 생성해주는 거
     // 화면 내 맵을 들고 있어야하는데
     
-    [SerializeField] private StagePlayer _stagePlayerPrefab;
-    
-    [SerializeField] private SoDatabase _stageDataBase;
-    private List<StageData> _stageDatas = new List<StageData>();
+    private StagePlayer _player;
     
     // todo : WaveQueue 도 WaveController 에 집어넣어놓기
     Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
@@ -30,10 +28,8 @@ public class StageManager : SceneSingletonManager<StageManager>
     
     public event Action OnGameStartAction;
     public event Action OnGameEndAction;
-    
-    
     List<Monster> _spawnedMonsters = new List<Monster>();
-
+    
     protected override void Awake()
     {
         base.Awake();
@@ -45,18 +41,22 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 어떻게 꽂아 넣을지 고민 필요
         // 플레이어를 생성하면 좋을 것 같음.
         _stageDatas = _stageDataBase.GetDatabase<StageData>();      // Database 만 넣어둔 애 들고다니면 곤란할까요
-        
-        SetStageData(0);
-        
-        _player = Instantiate(_stagePlayerPrefab);
+
+        _player = PlayerManager.Instance.SpawnPlayer();
         _waveController = new StageWaveController();
-        
         _waveController.SpawnBossMonsterAction += SpawnBossMonster;
         _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
+        
     }
     
-    void SetStageData(int stageNum)
+    bool SetStageData(int stageNum)
     {
+        if (_stageDatas.Count < stageNum)
+        {
+            Logger.Log("스테이지 없읍!");
+            return false;
+        }
+            
         _nowStage =_stageDatas[stageNum];
         
         _waveQueue = new Queue<StageWaveEntry>();
@@ -64,11 +64,16 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             _waveQueue.Enqueue(_nowStage.StageWaves[i]);
         }
+
+        return true;
     }
 
     private void Start()
     {
-        // 언제 게임 시작하지
+        if (IsTest) return;
+        
+        // todo : 이전 Scene에서 선택한 스테이지번호 넘겨주기
+        SetStageData(0);
         GameStart();
     }
     
@@ -113,11 +118,12 @@ public class StageManager : SceneSingletonManager<StageManager>
         dir.y = 0;
         dir.Normalize();
         
-        Vector3 randomPos = _player.transform.position + (dir * Random.Range(1f, 2f));
+        Vector3 randomPos = _player.transform.position + (dir * Random.Range(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
         GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
         
         if (monster.TryGetComponent(out Monster monsterComponent))
         {
+            monsterComponent.ApplyData(monsterTypeData);
             _spawnedMonsters.Add(monsterComponent);
         }
         // 화면에 보이는 범위를 가져와야할 듯
@@ -139,6 +145,24 @@ public class StageManager : SceneSingletonManager<StageManager>
         SpawnWaveMonster(monsterTypeData);
         
     }
+
+    [Title("Test")]
+    public bool IsTest = false;
+    public int TestStageNum = 0;
     
+    [Button("Test Stage Start")]
+    public void TestStart()
+    {
+        if (_isPlaying)
+        {
+            Logger.Log("이미 플레이 중");
+            return;
+        }
+        
+        if (SetStageData(TestStageNum))
+        {
+            GameStart();
+        }
+    }
     
 }
