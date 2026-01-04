@@ -8,7 +8,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     #region 필드
     // 스킬 데이터
     protected SkillData skillData;
-    protected int skillLevel;
+    public int CurLevel { get; protected set; }
 
     #endregion
 
@@ -25,9 +25,9 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 
     public void LevelUp()
     {
-        if (skillLevel < Define.SkillMaxLevel)
+        if (CurLevel < Define.SkillMaxLevel)
         {
-            skillLevel++;
+            CurLevel++;
         }
     }
 }
