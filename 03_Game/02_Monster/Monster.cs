@@ -5,7 +5,7 @@ public class Monster : MonoBehaviour, IDamageable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
-    public Rigidbody2D target;
+    private StagePlayer target;
     public BaseStat Speed { get; private set; }
     public BaseStat Hp { get; private set; }
     public BaseStat Attack { get; private set; }
@@ -26,13 +26,14 @@ public class Monster : MonoBehaviour, IDamageable
     private void Start()
     {
         ApplyData(monsterdata);
-        Debug.Log($"[Spawn] {name} data={(monsterdata ? monsterdata.name : "NULL")}");
-        ApplyData(monsterdata);
+        target = PlayerManager.Instance.StagePlayer;
+
+
     }
 
     public void ApplyData(MonsterTypeData monsterTypeData)
     {
-        if (monsterdata == null)
+        if (monsterTypeData == null)
         {
             Debug.LogError($"{name} : MonsterTypeData가 연결되지 않았습니다!");
             enabled = false;
@@ -49,7 +50,7 @@ public class Monster : MonoBehaviour, IDamageable
         if (target == null)
             return;
 
-        Vector2 directionVector = target.position - rb.position;
+        Vector2 directionVector = (Vector2)target.transform.position - rb.position;
         Vector2 nextVector = directionVector.normalized * Speed.CurValue * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + nextVector); //플레이어 키입력값을 더한이동 + 몬스터방향값을 더한이동
         rb.velocity = Vector2.zero;
@@ -58,7 +59,7 @@ public class Monster : MonoBehaviour, IDamageable
     private void LateUpdate()
     {
         if (target == null) return;
-        spriter.flipX = target.position.x < rb.position.x;
+        spriter.flipX = target.transform.position.x < rb.position.x;
     }
 
 
@@ -113,7 +114,7 @@ public class Monster : MonoBehaviour, IDamageable
     private void Die()
     {
 
-        Logger.Log("뒤짐");
+        Logger.Log("사망");
         DropItem();
         Destroy(gameObject);
     }
