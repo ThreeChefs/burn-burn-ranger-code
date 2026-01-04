@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Monster : MonoBehaviour, IDamageable
@@ -15,7 +16,7 @@ public class Monster : MonoBehaviour, IDamageable
     SpriteRenderer spriter;
     [SerializeField] private float hitCooldown = 0.5f;
     private bool _canHit = true;
-
+    public event Action onDieAction;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -116,7 +117,8 @@ public class Monster : MonoBehaviour, IDamageable
 
         Logger.Log("사망");
         DropItem();
-        Destroy(gameObject);
+        onDieAction?.Invoke();
+        //Destroy(gameObject);
     }
 
 
