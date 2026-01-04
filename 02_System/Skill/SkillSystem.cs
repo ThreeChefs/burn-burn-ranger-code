@@ -7,20 +7,27 @@ using UnityEngine;
 public class SkillSystem : MonoBehaviour
 {
     [SerializeField] private SoDatabase _skillDatabase;
-    private Dictionary<int, SkillData> _cache;
+    private readonly Dictionary<int, SkillData> _skillDataCache = new();
 
     // 스킬 상태 관리
-    private readonly Dictionary<int, BaseSkill> _havingSkills = new();
-    private readonly Dictionary<int, int> _combinationSkillTerms = new();
+    private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
+    private readonly Dictionary<int, bool> _skillSelectableMap = new();
+    private readonly Dictionary<int, int> _combinationRequirementMap = new();
     private int _activeSkillCount;
     private int _passiveSkillCount;
 
     private void Awake()
     {
+        _skillDataCache.Clear();
+        _skillSelectableMap.Clear();
         _skillDatabase.GetDatabase<SkillData>()
-            .ForEach(skillData => _cache[skillData.Id] = skillData);
-        _havingSkills.Clear();
-        _combinationSkillTerms.Clear();
+            .ForEach(skillData =>
+            {
+                _skillDataCache[skillData.Id] = skillData;
+                _skillSelectableMap[skillData.Id] = true;
+            });
+        _ownedSkills.Clear();
+        _combinationRequirementMap.Clear();
     }
 
     /// <summary>
@@ -29,13 +36,13 @@ public class SkillSystem : MonoBehaviour
     /// <param name="id"></param>
     public bool TrySelectSkill(int id)
     {
-        if (_cache.TryGetValue(id, out SkillData data))
+        if (_skillDataCache.TryGetValue(id, out SkillData data))
         {
             Logger.LogWarning($"얻을 수 없는 스킬 데이터: {id}");
             return false;
         }
 
-        if (_havingSkills.TryGetValue(id, out var skill))
+        if (_ownedSkills.TryGetValue(id, out var skill))
         {
             skill.LevelUp();
             UpdateCombinationSkillCondition(id);
@@ -56,7 +63,7 @@ public class SkillSystem : MonoBehaviour
             return false;
         }
 
-        _havingSkills.Add(id, baseSkill);
+        _ownedSkills.Add(id, baseSkill);
         baseSkill.Init(data);
         UpdateCombinationSkillCondition(id);
 
@@ -86,11 +93,11 @@ public class SkillSystem : MonoBehaviour
     {
         List<SkillSelectDto> skillSelectDtos = new();
 
-        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationSkillTerms)
+        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
         {
             if (combinationSkillTerm.Value == 2)
             {
-                SkillData skillData = _cache[combinationSkillTerm.Key];
+                SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
                     1,
@@ -125,8 +132,8 @@ public class SkillSystem : MonoBehaviour
     /// <param name="id"></param>
     private void UpdateCombinationSkillCondition(int id)
     {
-        BaseSkill skill = _havingSkills[id];
-        SkillData data = _cache[id];
+        BaseSkill skill = _ownedSkills[id];
+        SkillData data = _skillDataCache[id];
 
         switch (data.Type)
         {
@@ -145,9 +152,9 @@ public class SkillSystem : MonoBehaviour
                 }
                 break;
             case SkillType.Combination:
-                if (_combinationSkillTerms.ContainsKey(id))
+                if (_combinationRequirementMap.ContainsKey(id))
                 {
-                    _combinationSkillTerms.Remove(id);
+                    _combinationRequirementMap.Remove(id);
                 }
                 break;
         }
@@ -161,13 +168,13 @@ public class SkillSystem : MonoBehaviour
     {
         foreach (int combinationId in combinationIds)
         {
-            if (_combinationSkillTerms.ContainsKey(combinationId))
+            if (_combinationRequirementMap.ContainsKey(combinationId))
             {
-                _combinationSkillTerms[combinationId]++;
+                _combinationRequirementMap[combinationId]++;
             }
             else
             {
-                _combinationSkillTerms.Add(combinationId, 1);
+                _combinationRequirementMap.Add(combinationId, 1);
             }
         }
     }
