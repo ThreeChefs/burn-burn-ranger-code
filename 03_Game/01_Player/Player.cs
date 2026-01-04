@@ -8,21 +8,6 @@ public class Player : MonoBehaviour
     [Header("SO Data")]
     [SerializeField] private StatData _statData;
 
-    [Header("이미지")]
-    private bool _isLeft;
-    protected bool IsLeft
-    {
-        get { return _isLeft; }
-        set
-        {
-            if (_isLeft != value)
-            {
-                _isLeft = value;
-                Flip();
-            }
-        }
-    }
-
     public PlayerCondition Condition { get; protected set; }
 
     protected virtual void Awake()
@@ -30,20 +15,10 @@ public class Player : MonoBehaviour
         Condition = new(_statData);
     }
 
-    #region sprite 관리
-    private void Flip()
-    {
-
-    }
-    #endregion
-
     #region 에디터 전용
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
-        TryGetComponent<Rigidbody2D>(out var rigidbody2D);
-        rigidbody2D.gravityScale = 0;
-
         _statData = AssetLoader.FindAndLoadByName<StatData>("PlayerStatData");
     }
 #endif
