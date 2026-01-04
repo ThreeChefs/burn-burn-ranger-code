@@ -12,23 +12,28 @@ public class StageManager : SceneSingletonManager<StageManager>
     // 스테이지 맵을 생성해주는 거
     // 화면 내 맵을 들고 있어야하는데
     
+    
     private StagePlayer _player;
-    
-    // todo : WaveQueue 도 WaveController 에 집어넣어놓기
-    Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
     StageData _nowStage;
-    
     private StageWaveController _waveController;
-
-    public float PlayTime => _playTime;
-    private float _playTime = 0;
+    
+    public float PlayTime
+    {
+        get
+        {
+            if (_waveController == null) return 0f;
+            else return _waveController.PlayeTime;
+        }
+    }
 
     private bool _isPlaying = false;
     public bool IsPlaying => _isPlaying;
     
     public event Action OnGameStartAction;
     public event Action OnGameEndAction;
+    
     List<Monster> _spawnedMonsters = new List<Monster>();
+    
     
     protected override void Awake()
     {
@@ -43,9 +48,6 @@ public class StageManager : SceneSingletonManager<StageManager>
         _stageDatas = _stageDataBase.GetDatabase<StageData>();      // Database 만 넣어둔 애 들고다니면 곤란할까요
 
         _player = PlayerManager.Instance.SpawnPlayer();
-        _waveController = new StageWaveController();
-        _waveController.SpawnBossMonsterAction += SpawnBossMonster;
-        _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
         
     }
     
@@ -58,12 +60,23 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
             
         _nowStage =_stageDatas[stageNum];
-        
-        _waveQueue = new Queue<StageWaveEntry>();
-        for (int i = 0; i < _nowStage.StageWaves.Count; i++)
+
+
+        if (_waveController != null)
         {
-            _waveQueue.Enqueue(_nowStage.StageWaves[i]);
+            _waveController.SpawnBossMonsterAction -= SpawnBossMonster;
+            _waveController.SpawnWaveMonsterAction -= SpawnWaveMonster;
         }
+        
+        _waveController = new StageWaveController(_nowStage);
+        _waveController.SpawnBossMonsterAction += SpawnBossMonster;
+        _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
+        
+        // _waveQueue = new Queue<StageWaveEntry>();
+        // for (int i = 0; i < _nowStage.StageWaves.Count; i++)
+        // {
+        //     _waveQueue.Enqueue(_nowStage.StageWaves[i]);
+        // }
 
         return true;
     }
@@ -81,9 +94,8 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         if (_isPlaying == false) return;
         
-        // 보스 웨이브 중일 때에는 playTime이 안 늘어났음
-        _playTime += Time.deltaTime;
-        WaveUpdate();
+        _waveController?.Update();
+        
     }
 
     void GameStart()
@@ -97,22 +109,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameEndAction?.Invoke();
     }
     
-    void WaveUpdate()
-    {
-        if (_waveQueue.Count > 0)
-        {
-            if (_waveQueue.Peek().WaveStartTime <= _playTime)
-            {
-                StageWaveEntry nextWaveData = _waveQueue.Dequeue();
-                _waveController.EnterWave(nextWaveData.StageWaveData);
-            }
-        }
-        
-        _waveController?.Update();
-    }
     
-    
-    public void SpawnWaveMonster(MonsterTypeData monsterTypeData)
+    public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
     {
         Vector3 dir = Random.onUnitSphere;
         dir.y = 0;
@@ -125,12 +123,15 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             monsterComponent.ApplyData(monsterTypeData);
             _spawnedMonsters.Add(monsterComponent);
+            return monsterComponent;
         }
         // 화면에 보이는 범위를 가져와야할 듯
         // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
+
+        return null;
     }
     
-    public void SpawnBossMonster(MonsterTypeData monsterTypeData)
+    public Monster SpawnBossMonster(MonsterTypeData monsterTypeData)
     {
         // 위치 지정 필요
         // 일단은 그냥 스폰
@@ -142,7 +143,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
         _spawnedMonsters.Clear();
         
-        SpawnWaveMonster(monsterTypeData);
+        return SpawnWaveMonster(monsterTypeData);
         
     }
 
