@@ -32,14 +32,14 @@ public static class ArrayExtension
         if (array == null || array.Length == 0)
             return default;
 
-        return array[UnityEngine.Random.Range(0, array.Length)];
+        return array[Define.Random.Next(0, array.Length)];
     }
 
     public static T[] Shuffle<T>(this T[] array)
     {
         for (int i = 0; i < array.Length; i++)
         {
-            int r = UnityEngine.Random.Range(i, array.Length);
+            int r = Define.Random.Next(i, array.Length);
             (array[i], array[r]) = (array[r], array[i]);
         }
         return array;
@@ -54,7 +54,32 @@ public static class ListExtension
     {
         if (list == null || list.Count == 0) { return default; }
 
-        return list[UnityEngine.Random.Range(0, list.Count)];
+        return list[Define.Random.Next(0, list.Count)];
+    }
+
+    public static List<T> Random<T>(this List<T> list, int count)
+    {
+        if (list == null)
+        {
+            throw new System.ArgumentNullException(nameof(list));
+        }
+
+        if (list.Count == 0 || count <= 0)
+        {
+            return new List<T>();
+        }
+
+        count = Math.Min(count, list.Count);
+
+        List<T> temp = new(list);
+
+        for (int i = temp.Count - 1; i > 0; i--)
+        {
+            int j = Define.Random.Next(0, i + 1);
+            (temp[i], temp[j]) = (temp[j], temp[i]);
+        }
+
+        return temp.GetRange(0, count);
     }
 }
 #endregion
