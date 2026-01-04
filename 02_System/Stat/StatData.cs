@@ -4,7 +4,44 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New StatData", menuName = "SO/Stats/Character Stats")]
 public class StatData : ScriptableObject
 {
-    [field: SerializeField] public List<StatEntry> Stats { get; private set; }
+    [field: SerializeField]
+    public List<StatEntry> Stats { get; private set; }
+
+
+    private Dictionary<StatType, float> _statDict;
+
+    private void OnEnable()
+    {
+        BuildCache();
+    }
+
+    private void BuildCache()
+    {
+        _statDict = new Dictionary<StatType, float>();
+
+        if (Stats == null) return;
+
+        foreach (var entry in Stats)
+        {
+            if (_statDict.ContainsKey(entry.StatType))
+            {
+                Debug.LogWarning($"[StatData] 중복 StatType 발견: {entry.StatType}", this);
+                continue;
+            }
+
+            _statDict.Add(entry.StatType, entry.BaseValue);
+        }
+    }
+
+    public float Get(StatType type, float defaultValue = 0f)
+    {
+        if (_statDict == null)
+            BuildCache();
+
+        return _statDict.TryGetValue(type, out var value)
+            ? value
+            : defaultValue;
+    }
 }
 
 [System.Serializable]

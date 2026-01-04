@@ -5,13 +5,10 @@ public class Monster : MonoBehaviour, IDamageable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
-
-
     public Rigidbody2D target;
-
-    private float _speed;
-    private float _hp;
-    private float _attack;
+    public BaseStat Speed { get; private set; }
+    public BaseStat Hp { get; private set; }
+    public BaseStat Attack { get; private set; }
     bool isLive;
 
     Rigidbody2D rb;
@@ -28,12 +25,12 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        ApplyData();
+        ApplyData(monsterdata);
         Debug.Log($"[Spawn] {name} data={(monsterdata ? monsterdata.name : "NULL")}");
-        ApplyData();
+        ApplyData(monsterdata);
     }
 
-    private void ApplyData()
+    public void ApplyData(MonsterTypeData monsterTypeData)
     {
         if (monsterdata == null)
         {
@@ -41,9 +38,10 @@ public class Monster : MonoBehaviour, IDamageable
             enabled = false;
             return;
         }
-        _speed = monsterdata.baseSpeed;
-        _hp = monsterdata.baseHealth;
-        _attack = monsterdata.baseAttack;
+        monsterdata = monsterTypeData;
+        Speed = new BaseStat(monsterTypeData.Get(StatType.Speed), StatType.Speed);
+        Hp = new BaseStat(monsterTypeData.Get(StatType.Health), StatType.Health);
+        Attack = new BaseStat(monsterTypeData.Get(StatType.Attack), StatType.Attack);
     }
     private void FixedUpdate()
     {
@@ -52,7 +50,7 @@ public class Monster : MonoBehaviour, IDamageable
             return;
 
         Vector2 directionVector = target.position - rb.position;
-        Vector2 nextVector = directionVector.normalized * _speed * Time.fixedDeltaTime;
+        Vector2 nextVector = directionVector.normalized * Speed.CurValue * Time.fixedDeltaTime;
         rb.MovePosition(rb.position + nextVector); //플레이어 키입력값을 더한이동 + 몬스터방향값을 더한이동
         rb.velocity = Vector2.zero;
     }
@@ -82,8 +80,8 @@ public class Monster : MonoBehaviour, IDamageable
 
         if (collision.collider.TryGetComponent<StagePlayer>(out var player))
         {
-            Debug.Log($"{name} hit! data={monsterdata.name}, type={monsterdata.monsterType}, atk={_attack}");
-            player.TakeDamage(_attack);
+            Debug.Log($"{name} hit! data={monsterdata.name}, type={monsterdata.monsterType}, atk={Attack}");
+            player.TakeDamage(Attack.CurValue);
             StartCoroutine(HitCooldown());
         }
     }
@@ -97,16 +95,16 @@ public class Monster : MonoBehaviour, IDamageable
 
     public void TakeDamage(float value)
     {
-        if (_hp <= 0f)
-        {
+        if (Hp == null)
             return;
-        }
-        _hp -= value;
-        if (_hp > 0f)
-        {
-            Logger.Log($"Enemy HP : {_hp}");
-        }
-        else
+
+
+        if (!Hp.TryUse(value))
+            return;
+
+        Logger.Log($"Enemy HP : {Hp.CurValue}");
+
+        if (Hp.CurValue <= 0f)
         {
             Die();
         }
