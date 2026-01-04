@@ -23,19 +23,24 @@ public class StageWaveController
 
     public event Func<MonsterTypeData, Monster> SpawnWaveMonsterAction;
     public event Func<MonsterTypeData, Monster> SpawnBossMonsterAction;
-    private Monster _nowBossMonster;
+    public event Action OnStageEndAction;
     
+    
+    private List<Monster> _nowBossMonsters;
+
 
     public StageWaveController(StageData nowStageData)
     {
         if (nowStageData == null) return;
 
+        _nowBossMonsters  = new List<Monster>();
+        
         _waveQueue = new Queue<StageWaveEntry>();
         for (int i = 0; i < nowStageData.StageWaves.Count; i++)
         {
             _waveQueue.Enqueue(nowStageData.StageWaves[i]);
         }
-        
+
         EnterWave(_waveQueue.Dequeue().StageWaveData);
     }
 
@@ -62,7 +67,7 @@ public class StageWaveController
                 break;
         }
 
-    
+
         if (_nowContinuousWave != null)
         {
             switch (_nowContinuousWave.WaveType)
@@ -84,7 +89,7 @@ public class StageWaveController
         if (_nowWave.WaveType != WaveType.Boss)
         {
             _playTime += Time.deltaTime;
-            
+
             // 상시 스폰 웨이브일 때, 스폰 시간 갱신
             if (_nowContinuousWave.WaveType == WaveType.Continuous || _nowContinuousWave.WaveType == WaveType.Super)
             {
@@ -99,7 +104,7 @@ public class StageWaveController
                     }
                 }
             }
-            
+
             // 다음 웨이브 시간 확인
             if (_waveQueue.Count > 0)
             {
@@ -109,21 +114,14 @@ public class StageWaveController
                     EnterWave(nextWaveData.StageWaveData);
                 }
             }
-            
         }
         else
         {
-            if (_nowBossMonster != null)
+            if (_nowBossMonsters != null)
             {
                 //_nowBossMonster.
             }
         }
-        
-        
-        
-       
-
-     
     }
 
     void SpawnMonster()
@@ -134,7 +132,7 @@ public class StageWaveController
 
         for (int i = 0; i < _nowContinuousWave.SpawnCount; ++i)
         {
-            int monsterIdx = Random.Range(0, _nowContinuousWave.MonsterTypeData.Count);
+            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.MonsterTypeData.Count);
             SpawnWaveMonsterAction?.Invoke(_nowContinuousWave.MonsterTypeData[monsterIdx]);
         }
     }
@@ -143,9 +141,36 @@ public class StageWaveController
     {
         for (int i = 0; i < bossWave.MonsterTypeData.Count; ++i)
         {
-            _nowBossMonster = SpawnBossMonsterAction?.Invoke(bossWave.MonsterTypeData[i]);
+            Monster spawnedMonster = SpawnBossMonsterAction?.Invoke(bossWave.MonsterTypeData[i]);
+            if (spawnedMonster != null)
+            {
+                _nowBossMonsters.Add(spawnedMonster);
+                spawnedMonster.onDieAction += OnDieBossMonster;
+            }
+            
         }
     }
 
+    void OnDieBossMonster(Monster monster)
+    {
+        if (_nowBossMonsters.Contains(monster))
+        {
+            _nowBossMonsters.Remove(monster);
+        }
+        
+        // 보스가 모두 죽었다면 다음 웨이브
+        // 다음 웨이브가 없으면 스테이지 종료
+        if (_nowBossMonsters.Count == 0)
+        {
+            if (_waveQueue.Count > 0)
+            {
+                EnterWave(_waveQueue.Dequeue().StageWaveData);
+            }
+            else
+            {
+                OnStageEndAction?.Invoke();
+            }
+        }
+    }
     // boss 죽었는지 확인하고 다음 wave 가야해
 }
