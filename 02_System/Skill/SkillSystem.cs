@@ -84,9 +84,31 @@ public class SkillSystem : MonoBehaviour
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
     {
-        List<SkillSelectDto> skillUIDtos = new();
+        List<SkillSelectDto> skillSelectDtos = new();
 
-        // todo: 스킬 조합 가능한지 확인하기
+        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationSkillTerms)
+        {
+            if (combinationSkillTerm.Value == 2)
+            {
+                SkillData skillData = _cache[combinationSkillTerm.Key];
+                skillSelectDtos.Add(new SkillSelectDto(
+                    skillData.Id,
+                    1,
+                    skillData.name,
+                    skillData.Description,
+                    skillData.Sprite,
+                    null));
+            }
+        }
+
+        if (skillSelectDtos.Count == count)
+        {
+            return skillSelectDtos;
+        }
+        else if (skillSelectDtos.Count > count)
+        {
+            return skillSelectDtos.Random(count);
+        }
 
         // 스킬 전부 획득
         if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
