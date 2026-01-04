@@ -11,8 +11,8 @@ public class SkillSystem
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
-    private readonly Dictionary<int, bool> _skillSelectableMap = new();
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
+    private readonly List<int> _selectableOwnedSkillIds = new();
     private int _activeSkillCount;
     private int _passiveSkillCount;
 
@@ -31,7 +31,7 @@ public class SkillSystem
     {
         // 딕셔너리 초기화
         _skillDataCache.Clear();
-        _skillSelectableMap.Clear();
+        _selectableOwnedSkillIds.Clear();
         _skillDatabase.GetDatabase<SkillData>()
             .ForEach(skillData =>
             {
@@ -82,7 +82,7 @@ public class SkillSystem
 
         // 스킬 획득 후 초기화
         _ownedSkills.Add(id, baseSkill);
-        _skillSelectableMap.Add(id, true);
+        _selectableOwnedSkillIds.Add(id);
         baseSkill.Init(data);
         UpdateSkillSelectCondition(id);
 
@@ -154,6 +154,8 @@ public class SkillSystem
 
         }
 
+        // todo: 스킬 전부 획득하지 않았을 경우
+
         return null;
     }
 
@@ -172,7 +174,7 @@ public class SkillSystem
                 // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _skillSelectableMap[id] = false;                // 획득 불가능
+                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
                     ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
@@ -184,7 +186,7 @@ public class SkillSystem
                 }
                 else if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _skillSelectableMap[id] = false;                // 획득 불가능
+                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
                 }
                 break;
             case SkillType.Combination:
