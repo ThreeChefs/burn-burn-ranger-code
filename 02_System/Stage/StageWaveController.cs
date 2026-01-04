@@ -28,16 +28,19 @@ public class StageWaveController
             _nowContinuousWave = null;
             SpawnBossMonster(wave);
         }
-        
-        switch (_nowContinuousWave.WaveType)
-        {
-            case WaveType.Super:
-                // todo : 몬스터가 몰려옵니다~
-                break;
 
-            case WaveType.Boss:
-                // todo : 보스 몬스터 알림
-                break;
+        if (_nowContinuousWave != null)
+        {
+            switch (_nowContinuousWave.WaveType)
+            {
+                case WaveType.Super:
+                    // todo : 몬스터가 몰려옵니다~
+                    break;
+
+                case WaveType.Boss:
+                    // todo : 보스 몬스터 알림
+                    break;
+            }
         }
     }
 
