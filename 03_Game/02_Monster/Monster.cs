@@ -16,7 +16,7 @@ public class Monster : MonoBehaviour, IDamageable
     SpriteRenderer spriter;
     [SerializeField] private float hitCooldown = 0.5f;
     private bool _canHit = true;
-    public event Action onDieAction;
+    public event Action<Monster> onDieAction;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -117,7 +117,7 @@ public class Monster : MonoBehaviour, IDamageable
 
         Logger.Log("사망");
         DropItem();
-        onDieAction?.Invoke();
+        onDieAction?.Invoke(this);
         //Destroy(gameObject);
     }
 
