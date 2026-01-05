@@ -5,7 +5,9 @@ public class Kunai : BaseProjectile
     public override void Spawn(Vector2 pos)
     {
         base.Spawn(pos);
-        transform.rotation = Quaternion.LookRotation(target.position);
+        Vector2 dir = (target.position - transform.position).normalized;
+        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     protected override void Move(Vector2 dir)
@@ -14,11 +16,11 @@ public class Kunai : BaseProjectile
         transform.position += targetPos;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform.TryGetComponent<IDamageable>(out var damageable))
+        if (collision.transform.TryGetComponent<Monster>(out var monster))
         {
-            Attack(damageable);
+            Attack(monster);
             passCount--;
             if (passCount == 0)
             {

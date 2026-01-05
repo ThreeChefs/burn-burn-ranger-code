@@ -38,8 +38,8 @@ public class BaseProjectile : BasePool, IAttackable
 
     public virtual void Spawn(Vector2 pos)
     {
-        transform.position = pos + offset;
         target = StageManager.Instance.GetNearestMonster();
+        transform.position = pos + offset * (target.position - transform.position).normalized;
     }
     #endregion
 
@@ -58,7 +58,7 @@ public class BaseProjectile : BasePool, IAttackable
     protected virtual void MoveAndRotate()
     {
         if (target == null) return;
-        Vector2 dir = (transform.position - target.position).normalized;
+        Vector2 dir = (target.position - transform.position).normalized;
         Move(dir);
         Rotate(dir);
     }
