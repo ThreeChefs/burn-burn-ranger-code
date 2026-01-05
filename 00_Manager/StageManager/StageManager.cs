@@ -47,7 +47,6 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 플레이어를 생성하면 좋을 것 같음.
         _stageDatas = _stageDataBase.GetDatabase<StageData>(); // Database 만 넣어둔 애 들고다니면 곤란할까요
 
-        _player = PlayerManager.Instance.SpawnPlayer();
     }
 
     bool SetStageData(int stageNum)
@@ -79,6 +78,9 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     private void Start()
     {
+        _player = PlayerManager.Instance.SpawnPlayer();
+        
+        
         if (IsTest) return;
 
         // todo : 이전 Scene에서 선택한 스테이지번호 넘겨주기
