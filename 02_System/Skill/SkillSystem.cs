@@ -6,8 +6,9 @@ using UnityEngine;
 /// </summary>
 public class SkillSystem
 {
-    private SoDatabase _skillDatabase;
+    private readonly SoDatabase _skillDatabase;
     private readonly Dictionary<int, SkillData> _skillDataCache = new();
+    private readonly StagePlayer _player;
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
@@ -15,8 +16,6 @@ public class SkillSystem
     private readonly List<int> _selectableOwnedSkillIds = new();
     private int _activeSkillCount;
     private int _passiveSkillCount;
-
-    private readonly StagePlayer _player;
 
     #region 초기화
     public SkillSystem(SoDatabase skillDatabase, StagePlayer player)

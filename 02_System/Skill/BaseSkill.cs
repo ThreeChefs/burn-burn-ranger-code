@@ -17,15 +17,21 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     public virtual void Init(SkillData data)
     {
         skillData = data;
-        CurLevel = 1;
+        LevelUp();
     }
     #endregion
 
+    #region Unity API
     protected virtual void Update()
     {
     }
 
-    public void LevelUp()
+    protected virtual void OnDestroy()
+    {
+    }
+    #endregion
+
+    public virtual void LevelUp()
     {
         if (CurLevel < Define.SkillMaxLevel)
         {
