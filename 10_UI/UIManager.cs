@@ -34,7 +34,8 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        
+        _mainCanvas = Instantiate(_originCanvasPrefab);
+
     }
 
     
@@ -49,8 +50,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
         BaseUI ui = GetOriginUI(uiPanelType);
         
         if (ui != null)
-        {
-            return Instantiate(ui);
+        {   
+            BaseUI spawnedUI = Instantiate(ui);
+            spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            return spawnedUI;
         }
 
         return null;
