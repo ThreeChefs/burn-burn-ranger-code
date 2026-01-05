@@ -1,5 +1,3 @@
-using UnityEngine;
-
-public class Kunai : MonoBehaviour
+public class Kunai : BaseProjectile
 {
 }

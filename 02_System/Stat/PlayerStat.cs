@@ -39,4 +39,9 @@ public class PlayerStat : BaseStat
         OnCurValueChanged?.Invoke(CurValue);
         OnMaxValueChanged?.Invoke(MaxValue);
     }
+
+    public void UpdateBuffValue(float value)
+    {
+        BuffValue = value;
+    }
 }
