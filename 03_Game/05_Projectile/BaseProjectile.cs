@@ -7,6 +7,7 @@ public class BaseProjectile : BasePool, IAttackable
     protected ProjectileType type;
     protected Vector2 offset;
     protected float[] levelValue;
+    protected float speed;
 
     protected PlayerStat attack;
 
@@ -17,6 +18,10 @@ public class BaseProjectile : BasePool, IAttackable
     {
         attack = PlayerManager.Instance.Condition[StatType.Attack];
     }
+
+    protected virtual void Update()
+    {
+    }
     #endregion
 
     #region 초기화
@@ -25,6 +30,7 @@ public class BaseProjectile : BasePool, IAttackable
         this.skill = skill;
         type = data.ProjectileType;
         offset = data.Offset;
+        speed = data.Speed;
     }
 
     public virtual void Spawn(Vector2 pos)
