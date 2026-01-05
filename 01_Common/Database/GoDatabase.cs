@@ -23,4 +23,21 @@ public class GoDatabase : ScriptableObject
 
         return newList;
     }
+
+    public List<T> GetDatabaseComponent<T>()
+    {
+        List<T> newList = new();
+
+        foreach (GameObject go in _list)
+        {
+            if (go != null)
+            {
+                if (go.GetComponent<T>() != null)
+                {
+                    newList.Add(go.GetComponent<T>());
+                }
+            }
+        }
+        return newList;
+    }
 }

@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class PoolManager : GlobalSingletonManager<PoolManager>
 {
-    [SerializeField] List<BasePool> poolsOrigin;    // Pool Prefabs. poolOriginDic에 초기화 할 때에만 사용!
+    [SerializeField] GoDatabase poolsOrigin;    // Pool Prefabs 를 담은 DatabaseSO, poolOriginDic에 초기화 할 때에만 사용!
     
     Dictionary<PoolType, BasePool> poolOriginDic;   // Key 로 담아둔 Origin Pool 들. Instantiate 해서 사용해야함
     Dictionary<PoolType, BasePool> nowPoolDic;      // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
@@ -17,11 +17,12 @@ public class PoolManager : GlobalSingletonManager<PoolManager>
         poolOriginDic = ((PoolType[])Enum.GetValues(typeof(PoolType))).ToDictionary(part => part,
             part => (BasePool)null);
 
-        for (int i = 0; i < poolsOrigin.Count; i++)
+        List<BasePool> pools = new List<BasePool>();
+        for (int i = 0; i < pools.Count; i++)
         {
-            if (Enum.TryParse(poolsOrigin[i].name, true, out PoolType poolType))
+            if (Enum.TryParse(pools[i].name, true, out PoolType poolType))
             {
-                poolOriginDic[poolType] = poolsOrigin[i];
+                poolOriginDic[poolType] = pools[i];
             }
         }
         
