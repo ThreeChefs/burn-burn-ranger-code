@@ -129,6 +129,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         dir.Normalize();
 
         Vector3 randomPos = _player.transform.position + (dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
+        randomPos.z = 0;
         GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
 
         if (monster.TryGetComponent(out Monster monsterComponent))
