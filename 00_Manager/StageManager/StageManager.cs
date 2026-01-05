@@ -54,7 +54,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     bool SetStageData(int stageNum)
     {
-        if (_stageDatas.Count < stageNum)
+        if (_stageDatas.Count <= stageNum)
         {
             Logger.Log("스테이지 없읍!");
             return false;
@@ -87,12 +87,22 @@ public class StageManager : SceneSingletonManager<StageManager>
         if (IsTest) return;
 
         // todo : 이전 Scene에서 선택한 스테이지번호 넘겨주기
-        SetStageData(0);
+        SetStageData(GameManager.Instance.SelectedStageNumber - 1);
         GameStart();
     }
 
     private void Update()
     {
+        #if UNITY_EDITOR
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            GameManager.Instance.Scene.ReLoadSceneAsync();
+        }
+        
+        #endif
+        
+        
         if (_isPlaying == false) return;
         _waveController?.Update();
     }

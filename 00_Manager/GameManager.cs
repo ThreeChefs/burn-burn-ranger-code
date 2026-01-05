@@ -8,4 +8,19 @@ public class GameManager : GlobalSingletonManager<GameManager>
     {
         Data.Save();
     }
+
+
+    #region StageSelect
+    
+    private int _selectedStageNumber = 0;
+    public  int SelectedStageNumber => _selectedStageNumber;
+
+    public void SetSelectedStage(int stageNumber)
+    {
+        _selectedStageNumber = stageNumber;
+    }
+
+    #endregion
+    
+    
 }
