@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -28,6 +29,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
             }
         }
     }
+
+    // 이벤트
+    public event Action OnDieAction;
 
     private void Awake()
     {
@@ -80,6 +84,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         else
         {
             Logger.Log("플레이어 DIE");
+            OnDieAction?.Invoke();
         }
     }
 
