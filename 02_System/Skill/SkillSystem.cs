@@ -52,7 +52,7 @@ public class SkillSystem
     /// <param name="id"></param>
     public bool TrySelectSkill(int id)
     {
-        if (_skillDataCache.TryGetValue(id, out SkillData data))
+        if (!_skillDataCache.TryGetValue(id, out SkillData data))
         {
             Logger.LogWarning($"얻을 수 없는 스킬 데이터: {id}");
             return false;
