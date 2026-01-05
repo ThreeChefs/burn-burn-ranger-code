@@ -45,6 +45,7 @@ public class SkillSystem
     }
     #endregion
 
+    #region 스킬 획득
     /// <summary>
     /// [public] 스킬 선택하기
     /// </summary>
@@ -89,20 +90,34 @@ public class SkillSystem
         return true;
     }
 
+    /// <summary>
+    /// 액티브 스킬 획득
+    /// </summary>
+    /// <returns></returns>
     private ActiveSkill GetActiveSkill()
     {
         _activeSkillCount++;
         return _player.gameObject.AddComponent<ActiveSkill>();
     }
 
+    /// <summary>
+    /// 패시브 스킬 획득
+    /// </summary>
+    /// <returns></returns>
     private PassiveSkill GetPassiveSkill()
     {
         _passiveSkillCount++;
         return _player.gameObject.AddComponent<PassiveSkill>();
     }
 
+    /// <summary>
+    /// 조합 스킬 획득
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     private ActiveSkill GetCombinationSkill(int id)
     {
+        // 액티브 스킬 삭제 후 조합 스킬 획득
         foreach (int combinationId in _skillDataCache[id].CombinationIds)
         {
             if (_skillDataCache[combinationId].Type == SkillType.Active)
@@ -119,46 +134,9 @@ public class SkillSystem
         _activeSkillCount++;
         return _player.gameObject.AddComponent<ActiveSkill>();
     }
+    #endregion
 
-    public List<SkillSelectDto> ShowSelectableSkills(int count)
-    {
-        List<SkillSelectDto> skillSelectDtos = new();
-
-        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
-        {
-            if (combinationSkillTerm.Value == 2)
-            {
-                SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
-                skillSelectDtos.Add(new SkillSelectDto(
-                    skillData.Id,
-                    1,
-                    skillData.name,
-                    skillData.Description,
-                    skillData.Sprite,
-                    null));
-            }
-        }
-
-        if (skillSelectDtos.Count == count)
-        {
-            return skillSelectDtos;
-        }
-        else if (skillSelectDtos.Count > count)
-        {
-            return skillSelectDtos.Random(count);
-        }
-
-        // todo: 스킬 전부 획득
-        if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
-        {
-
-        }
-
-        // todo: 스킬 전부 획득하지 않았을 경우
-
-        return null;
-    }
-
+    #region 스킬 획득 조건 관리
     /// <summary>
     /// id번 스킬 획득 시 스킬 획득 조건을 갱신합니다.
     /// </summary>
@@ -215,5 +193,45 @@ public class SkillSystem
                 _combinationRequirementMap.Add(combinationId, 1);
             }
         }
+    }
+    #endregion
+
+    public List<SkillSelectDto> ShowSelectableSkills(int count)
+    {
+        List<SkillSelectDto> skillSelectDtos = new();
+
+        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
+        {
+            if (combinationSkillTerm.Value == 2)
+            {
+                SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
+                skillSelectDtos.Add(new SkillSelectDto(
+                    skillData.Id,
+                    1,
+                    skillData.name,
+                    skillData.Description,
+                    skillData.Sprite,
+                    null));
+            }
+        }
+
+        if (skillSelectDtos.Count == count)
+        {
+            return skillSelectDtos;
+        }
+        else if (skillSelectDtos.Count > count)
+        {
+            return skillSelectDtos.Random(count);
+        }
+
+        // todo: 스킬 전부 획득
+        if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
+        {
+
+        }
+
+        // todo: 스킬 전부 획득하지 않았을 경우
+
+        return null;
     }
 }
