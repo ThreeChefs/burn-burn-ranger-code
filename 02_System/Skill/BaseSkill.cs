@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 
 /// <summary>
 /// 스킬 기본 클래스
@@ -7,8 +8,8 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 {
     #region 필드
     // 스킬 데이터
-    protected SkillData skillData;
-    public int CurLevel { get; protected set; }
+    [SerializeField, ReadOnly] protected SkillData skillData;
+    [field: SerializeField, ReadOnly] public int CurLevel { get; protected set; }
 
     #endregion
 
