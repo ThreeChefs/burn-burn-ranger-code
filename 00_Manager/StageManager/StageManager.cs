@@ -157,6 +157,28 @@ public class StageManager : SceneSingletonManager<StageManager>
         Destroy(monster.gameObject);
     }
 
+    public Monster GetNearestMonster()
+    {
+        if(_spawnedMonsters.Count == 0)
+            return null;
+
+        if (_player == null) return null;
+        
+        Monster nearestMonster = _spawnedMonsters[0];
+        float distance = Vector2.Distance(nearestMonster.transform.position, _player.transform.position);
+        
+        for (int i = 1; i < _spawnedMonsters.Count; i++)
+        {
+            float nowDistance = Vector2.Distance(nearestMonster.transform.position, _spawnedMonsters[i].transform.position);
+            if (distance >= nowDistance)
+            {
+                nearestMonster = _spawnedMonsters[i];
+                distance = nowDistance;
+            }
+        }
+        return nearestMonster;
+    }
+    
 
     #region Test
 
