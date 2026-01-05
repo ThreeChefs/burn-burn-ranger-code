@@ -5,7 +5,10 @@ public class ActiveSkill : BaseSkill
 {
     // 쿨타임
     private float _cooldownTimer = 0f;
-    private float Cooldown => ((ActiveSkillData)skillData).Cooldown;
+    private float _cooldown;
+
+    // 총알
+    private GameObject _projectilePrefab;
 
     // 타겟
     private List<IDamageable> _targets;
@@ -13,6 +16,10 @@ public class ActiveSkill : BaseSkill
     public override void Init(SkillData data)
     {
         base.Init(data);
+
+        var activeSkillData = data as ActiveSkillData;
+        _cooldown = activeSkillData.Cooldown;
+        _projectilePrefab = activeSkillData.Projectile;
 
         _targets = new();
     }
@@ -22,7 +29,7 @@ public class ActiveSkill : BaseSkill
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
-        if (_cooldownTimer > Cooldown)
+        if (_cooldownTimer > _cooldown)
         {
             _cooldownTimer = 0f;
             UseSkill();
@@ -34,6 +41,6 @@ public class ActiveSkill : BaseSkill
     /// </summary>
     private void UseSkill()
     {
-        _targets.ForEach(t => t.TakeDamage(100f));
+        Instantiate(_projectilePrefab);
     }
 }
