@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class BaseProjectile : BasePool, IAttackable
@@ -9,7 +10,7 @@ public class BaseProjectile : BasePool, IAttackable
 
     protected PlayerStat attack;
 
-    protected IDamageable target;
+    [SerializeField, ReadOnly] protected IDamageable target;
 
     #region Unity API
     private void Start()

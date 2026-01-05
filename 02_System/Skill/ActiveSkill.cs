@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class ActiveSkill : BaseSkill
 {
+    private bool _isReady = true;
+
     private ActiveSkillData _activeSkillData;
 
     // 쿨타임
@@ -22,6 +24,12 @@ public class ActiveSkill : BaseSkill
 
     protected override void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _isReady = !_isReady;
+        }
+        if (_isReady) return;
+
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
