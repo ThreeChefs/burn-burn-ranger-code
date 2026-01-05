@@ -43,5 +43,6 @@ public class PlayerStat : BaseStat
     public void UpdateBuffValue(float value)
     {
         BuffValue = value;
+        CurValue = Mathf.Min(CurValue + BuffValue, MaxValue);
     }
 }
