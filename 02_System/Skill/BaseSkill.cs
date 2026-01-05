@@ -16,6 +16,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     public virtual void Init(SkillData data)
     {
         skillData = data;
+        CurLevel = 1;
     }
     #endregion
 
