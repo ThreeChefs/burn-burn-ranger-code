@@ -10,4 +10,6 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public int[] ProjectilesCounts { get; private set; } = new int[Define.SkillMaxLevel];
     [field: Tooltip("탄환 오브젝트")]
     [field: SerializeField] public GameObject Projectile { get; private set; }
+    [field: Tooltip("탄환 생성 오프셋")]
+    [field: SerializeField] public Vector2 Offset { get; private set; }
 }
