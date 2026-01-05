@@ -167,7 +167,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         Destroy(monster.gameObject);
     }
 
-    public Monster GetNearestMonster()
+    // todo : 몬스터말고 상자같은 애가 나올 수 있음. 내부 로직은 변경 예정 / 함수이름도 바꿀 예정
+    public Transform GetNearestMonster()
     {
         if(_spawnedMonsters.Count == 0)
             return null;
@@ -186,7 +187,7 @@ public class StageManager : SceneSingletonManager<StageManager>
                 distance = nowDistance;
             }
         }
-        return nearestMonster;
+        return nearestMonster.transform;
     }
     
 
