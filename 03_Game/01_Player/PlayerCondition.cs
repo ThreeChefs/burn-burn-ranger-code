@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// 플레이어 상태 관리
@@ -9,10 +8,8 @@ using UnityEngine;
 public class PlayerCondition
 {
     #region 필드
-    // 레벨
-    public int Level { get; private set; }
-    public float CurrentExp { get; private set; }
-    public float RequiredExp { get; private set; }
+    // 레벨 (스테이지 외부)
+    public LevelSystem GlobalLevel { get; private set; }
 
     // 스탯
     private Dictionary<StatType, PlayerStat> _statDict;
@@ -20,10 +17,6 @@ public class PlayerCondition
 
     public float CurrentHealth => _statDict[StatType.Health].CurValue;
     public float CurrentStamina => _statDict[StatType.Stamina].CurValue;
-
-    // 이벤트
-    public event Action<int> OnLevelChanged;
-    public event Action<float> OnExpChanged;
     #endregion
 
     #region 초기화 & 파괴
@@ -34,12 +27,8 @@ public class PlayerCondition
     /// <param name="data"></param>
     public PlayerCondition(StatData data)
     {
+        GlobalLevel = new(1, 0f);
         ConvertStatListToDict(data.Stats);
-
-        // todo: 데이터 연동
-        Level = 1;
-        CurrentExp = 0f;
-        RequiredExp = GetRequiredExp(Level);
     }
 
     /// <summary>
@@ -89,10 +78,7 @@ public class PlayerCondition
     /// </summary>
     public void OnDestroy()
     {
-        // 이벤트 초기화
-        OnLevelChanged = null;
-        OnExpChanged = null;
-
+        GlobalLevel.OnDestroy();
         foreach (PlayerStat stat in _statDict.Values)
         {
             stat.OnDestroy();
@@ -110,20 +96,6 @@ public class PlayerCondition
     public bool TryUse(StatType type, float amount) => _statDict[type].TryUse(amount);
 
     /// <summary>
-    /// [public] 경험치 회득
-    /// </summary>
-    /// <param name="exp"></param>
-    public void AddExp(int exp)
-    {
-        CurrentExp += exp * _statDict[StatType.AddEXP].CurValue;
-        while (CurrentExp > RequiredExp)
-        {
-            LevelUp();
-        }
-        OnExpChanged?.Invoke(CurrentExp / RequiredExp);
-    }
-
-    /// <summary>
     /// [public] 장비 장착 시 호출
     /// 장비 아이템에서 변경하는 StatType의 value만큼을 적용
     /// </summary>
@@ -135,27 +107,8 @@ public class PlayerCondition
     }
     #endregion
 
-    #region 레벨 관리
-    /// <summary>
-    /// 레벨업 경험치 받아오기
-    /// </summary>
-    /// <param name="level"></param>
-    /// <returns></returns>
-    private float GetRequiredExp(int level)
+    public void AddExp(float exp)
     {
-        float baseExp = 100f;
-        float quad = 20f * level * level;
-        float expo = Mathf.Pow(1.05f, level);
-
-        return (baseExp + quad) * expo;
+        Logger.Log("함수 다른 거 써주세요!!!!!!!!!!!!!!!!!");
     }
-
-    private void LevelUp()
-    {
-        CurrentExp -= RequiredExp;
-        Level++;
-        OnLevelChanged?.Invoke(Level);
-        RequiredExp = GetRequiredExp(Level);
-    }
-    #endregion
 }

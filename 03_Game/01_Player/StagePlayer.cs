@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 /// <summary>
@@ -8,14 +9,18 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class StagePlayer : MonoBehaviour, IDamageable
 {
+    // 캐싱
     public PlayerCondition Condition { get; private set; }
 
+    // 레벨
+    public LevelSystem StageLevel { get; private set; }
+
+    // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
 
+    // 이미지
     private bool _isLeft;
-    internal readonly object tranform;
-
     protected bool IsLeft
     {
         get { return _isLeft; }
@@ -29,9 +34,14 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
     }
 
+    // 이벤트
+    public event Action OnDieAction;
+
+    #region Unity API
     private void Awake()
     {
         Condition = PlayerManager.Instance.Condition;
+        StageLevel = new(1, 0f);
         _speed = Condition[StatType.Speed];
     }
 
@@ -39,6 +49,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         Move();
     }
+
+    private void OnDestroy()
+    {
+        StageLevel.OnDestroy();
+    }
+    #endregion
 
     #region Move
     private void Move()
@@ -80,8 +96,16 @@ public class StagePlayer : MonoBehaviour, IDamageable
         else
         {
             Logger.Log("플레이어 DIE");
+            OnDieAction?.Invoke();
         }
     }
+
+    #region 레벨
+    public void AddExp(float exp)
+    {
+        StageLevel.AddExp(exp * Condition[StatType.AddEXP].MaxValue);
+    }
+    #endregion
 
     #region 에디터 전용
 #if UNITY_EDITOR

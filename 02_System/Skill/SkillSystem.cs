@@ -45,6 +45,7 @@ public class SkillSystem
     }
     #endregion
 
+    #region 스킬 획득
     /// <summary>
     /// [public] 스킬 선택하기
     /// </summary>
@@ -89,26 +90,41 @@ public class SkillSystem
         return true;
     }
 
+    /// <summary>
+    /// 액티브 스킬 획득
+    /// </summary>
+    /// <returns></returns>
     private ActiveSkill GetActiveSkill()
     {
         _activeSkillCount++;
         return _player.gameObject.AddComponent<ActiveSkill>();
     }
 
+    /// <summary>
+    /// 패시브 스킬 획득
+    /// </summary>
+    /// <returns></returns>
     private PassiveSkill GetPassiveSkill()
     {
         _passiveSkillCount++;
         return _player.gameObject.AddComponent<PassiveSkill>();
     }
 
+    /// <summary>
+    /// 조합 스킬 획득
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     private ActiveSkill GetCombinationSkill(int id)
     {
+        // 액티브 스킬 삭제 후 조합 스킬 획득
         foreach (int combinationId in _skillDataCache[id].CombinationIds)
         {
             if (_skillDataCache[combinationId].Type == SkillType.Active)
             {
                 _activeSkillCount--;
                 GameObject.Destroy(_ownedSkills[combinationId].gameObject);
+                _ownedSkills.Remove(combinationId);
             }
             else if (_skillDataCache[combinationId].Type == SkillType.Passive)
             {
@@ -119,6 +135,67 @@ public class SkillSystem
         _activeSkillCount++;
         return _player.gameObject.AddComponent<ActiveSkill>();
     }
+    #endregion
+
+    #region 스킬 획득 조건 관리
+    /// <summary>
+    /// id번 스킬 획득 시 스킬 획득 조건을 갱신합니다.
+    /// </summary>
+    /// <param name="id"></param>
+    private void UpdateSkillSelectCondition(int id)
+    {
+        BaseSkill skill = _ownedSkills[id];
+        SkillData data = _skillDataCache[id];
+
+        switch (data.Type)
+        {
+            case SkillType.Active:
+                // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
+                if (skill.CurLevel == Define.SkillMaxLevel)
+                {
+                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
+                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
+                }
+                break;
+            case SkillType.Passive:
+                // 패시브 스킬일 경우 1레벨일 때 잠금 해제
+                if (skill.CurLevel == 1)
+                {
+                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
+                }
+                else if (skill.CurLevel == Define.SkillMaxLevel)
+                {
+                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
+                }
+                break;
+            case SkillType.Combination:
+                if (_combinationRequirementMap.ContainsKey(id))
+                {
+                    _combinationRequirementMap.Remove(id);
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 스킬 조합 조건 딕셔너리에 정보 저장
+    /// </summary>
+    /// <param name="combinationIds"></param>
+    private void ApplyCombinationSkillDict(int[] combinationIds)
+    {
+        foreach (int combinationId in combinationIds)
+        {
+            if (_combinationRequirementMap.ContainsKey(combinationId))
+            {
+                _combinationRequirementMap[combinationId]++;
+            }
+            else
+            {
+                _combinationRequirementMap.Add(combinationId, 1);
+            }
+        }
+    }
+    #endregion
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
     {
@@ -156,64 +233,20 @@ public class SkillSystem
 
         // todo: 스킬 전부 획득하지 않았을 경우
 
-        return null;
-    }
-
-    /// <summary>
-    /// id번 스킬 획득 시 스킬 획득 조건을 갱신합니다.
-    /// </summary>
-    /// <param name="id"></param>
-    private void UpdateSkillSelectCondition(int id)
-    {
-        BaseSkill skill = _ownedSkills[id];
-        SkillData data = _skillDataCache[id];
-
-        switch (data.Type)
+        // 테스트용
+        skillSelectDtos.Clear();
+        SkillData testSkillData = _skillDataCache[30];
+        BaseSkill baseSkill = _ownedSkills[30];
+        for (int i = 0; i < 3; i++)
         {
-            case SkillType.Active:
-                // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
-                if (skill.CurLevel == Define.SkillMaxLevel)
-                {
-                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
-                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
-                }
-                break;
-            case SkillType.Passive:
-                // 패시브 스킬일 경우 1레벨일 때 잠금 해제
-                if (skill.CurLevel == 1)
-                {
-                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
-                }
-                else if (skill.CurLevel == Define.SkillMaxLevel)
-                {
-                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
-                }
-                break;
-            case SkillType.Combination:
-                if (_combinationRequirementMap.ContainsKey(id))
-                {
-                    _combinationRequirementMap.Remove(id);
-                }
-                break;
+            skillSelectDtos.Add(new SkillSelectDto(
+                testSkillData.Id,
+                baseSkill.CurLevel,
+                testSkillData.name,
+                testSkillData.Description,
+                testSkillData.Sprite,
+                null));
         }
-    }
-
-    /// <summary>
-    /// 스킬 조합 조건 딕셔너리에 정보 저장
-    /// </summary>
-    /// <param name="combinationIds"></param>
-    private void ApplyCombinationSkillDict(int[] combinationIds)
-    {
-        foreach (int combinationId in combinationIds)
-        {
-            if (_combinationRequirementMap.ContainsKey(combinationId))
-            {
-                _combinationRequirementMap[combinationId]++;
-            }
-            else
-            {
-                _combinationRequirementMap.Add(combinationId, 1);
-            }
-        }
+        return skillSelectDtos;
     }
 }
