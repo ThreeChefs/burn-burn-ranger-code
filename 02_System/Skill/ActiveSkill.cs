@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ActiveSkill : BaseSkill
 {
-    protected new ActiveSkillData skillData;
+    private ActiveSkillData _activeskillData;
 
     // 쿨타임
     private float _cooldownTimer = 0f;
@@ -19,8 +19,9 @@ public class ActiveSkill : BaseSkill
     {
         base.Init(data);
 
-        _cooldown = skillData.Cooldown;
-        _projectilePrefab = skillData.Projectile;
+        _activeskillData = data as ActiveSkillData;
+        _cooldown = _activeskillData.Cooldown;
+        _projectilePrefab = _activeskillData.Projectile;
 
         _targets = new();
     }
@@ -42,9 +43,10 @@ public class ActiveSkill : BaseSkill
     /// </summary>
     private void UseSkill()
     {
-        for (int i = 0; i < skillData.ProjectilesCounts[CurLevel - 1]; i++)
+        for (int i = 0; i < _activeskillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
             Instantiate(_projectilePrefab);
+            // todo: 위치는 플레이어한테 지정
         }
     }
 }

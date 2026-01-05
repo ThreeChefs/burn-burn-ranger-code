@@ -9,7 +9,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     #region 필드
     // 스킬 데이터
     [SerializeField, ReadOnly] protected SkillData skillData;
-    [field: SerializeField, ReadOnly] public int CurLevel { get; protected set; }
+    [field: SerializeField] public int CurLevel { get; protected set; }
 
     #endregion
 
