@@ -28,9 +28,12 @@ public class StageManager : SceneSingletonManager<StageManager>
             else return _waveController.PlayeTime;
         }
     }
-
+    
     private bool _isPlaying = false;
     public bool IsPlaying => _isPlaying;
+
+    private int _killCount = 0;
+    public int KillCount => _killCount;
 
     public event Action OnGameStartAction;
     public event Action OnGameEndAction;
@@ -159,6 +162,8 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public void DestroyMonster(Monster monster)
     {
+        _killCount += 1;
+        
         if (_spawnedMonsters.Contains(monster))
         {
             _spawnedMonsters.Remove(monster);
