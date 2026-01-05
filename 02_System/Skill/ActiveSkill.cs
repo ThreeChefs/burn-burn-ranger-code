@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class ActiveSkill : BaseSkill
 {
+    protected new ActiveSkillData skillData;
+
     // 쿨타임
     private float _cooldownTimer = 0f;
     private float _cooldown;
@@ -17,9 +19,8 @@ public class ActiveSkill : BaseSkill
     {
         base.Init(data);
 
-        var activeSkillData = data as ActiveSkillData;
-        _cooldown = activeSkillData.Cooldown;
-        _projectilePrefab = activeSkillData.Projectile;
+        _cooldown = skillData.Cooldown;
+        _projectilePrefab = skillData.Projectile;
 
         _targets = new();
     }
@@ -41,6 +42,9 @@ public class ActiveSkill : BaseSkill
     /// </summary>
     private void UseSkill()
     {
-        Instantiate(_projectilePrefab);
+        for (int i = 0; i < skillData.ProjectilesCounts[CurLevel - 1]; i++)
+        {
+            Instantiate(_projectilePrefab);
+        }
     }
 }
