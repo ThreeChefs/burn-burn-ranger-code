@@ -40,6 +40,10 @@ public class PlayerStat : BaseStat
         OnMaxValueChanged?.Invoke(MaxValue);
     }
 
+    /// <summary>
+    /// [public] 스킬(버프) 또는 외부 요인으로 인해 변경된 스텟 값 적용
+    /// </summary>
+    /// <param name="value"></param>
     public void UpdateBuffValue(float value)
     {
         BuffValue = value;
