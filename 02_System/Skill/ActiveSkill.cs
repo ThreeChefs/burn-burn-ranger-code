@@ -39,8 +39,11 @@ public class ActiveSkill : BaseSkill
     {
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
+            // todo: pool에 넣어서 초기화
             GameObject newGo = Instantiate(_projectilePrefab);
-            newGo.transform.position = (Vector2)transform.position + _activeSkillData.Offset;
+            var projectile = newGo.GetComponent<BaseProjectile>();
+            projectile.Init(this, _activeSkillData);
+            projectile.Spawn(transform.position);
         }
     }
 }
