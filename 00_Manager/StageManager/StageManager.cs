@@ -7,15 +7,18 @@ using Random = UnityEngine.Random;
 public class StageManager : SceneSingletonManager<StageManager>
 {
     [SerializeField] private SoDatabase _stageDataBase;
+    [SerializeField] private SoDatabase _skillDataBase;     // todo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
     private List<StageData> _stageDatas = new List<StageData>();
 
     // 스테이지 맵을 생성해주는 거
     // 화면 내 맵을 들고 있어야하는데
-
-
+    
     private StagePlayer _player;
     StageData _nowStage;
     private StageWaveController _waveController;
+
+    private SkillSystem SkillSystem => _skillSystem;
+    SkillSystem _skillSystem;
 
     public float PlayTime
     {
@@ -46,7 +49,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 어떻게 꽂아 넣을지 고민 필요
         // 플레이어를 생성하면 좋을 것 같음.
         _stageDatas = _stageDataBase.GetDatabase<StageData>(); // Database 만 넣어둔 애 들고다니면 곤란할까요
-
+        
     }
 
     bool SetStageData(int stageNum)
@@ -79,7 +82,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     private void Start()
     {
         _player = PlayerManager.Instance.SpawnPlayer();
-        
+        _skillSystem = new SkillSystem(_skillDataBase, _player);
         
         if (IsTest) return;
 
@@ -91,7 +94,6 @@ public class StageManager : SceneSingletonManager<StageManager>
     private void Update()
     {
         if (_isPlaying == false) return;
-
         _waveController?.Update();
     }
 
