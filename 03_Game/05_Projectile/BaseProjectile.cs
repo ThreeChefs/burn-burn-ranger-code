@@ -7,6 +7,7 @@ public class BaseProjectile : BasePool, IAttackable
     protected Vector2 offset;
     protected float[] levelValue;
     protected float speed;
+    protected int passCount;
 
     protected PlayerStat attack;
 
@@ -18,8 +19,9 @@ public class BaseProjectile : BasePool, IAttackable
         attack = PlayerManager.Instance.Condition[StatType.Attack];
     }
 
-    protected virtual void Update()
+    protected virtual void FixedUpdate()
     {
+        MoveAndRotate();
     }
     #endregion
 
@@ -29,7 +31,9 @@ public class BaseProjectile : BasePool, IAttackable
         this.skill = skill;
         type = data.ProjectileType;
         offset = data.Offset;
+        levelValue = data.LevelValue;
         speed = data.Speed;
+        passCount = data.PassCount;
     }
 
     public virtual void Spawn(Vector2 pos)
@@ -50,4 +54,20 @@ public class BaseProjectile : BasePool, IAttackable
         return attack.CurValue * levelValue[skill.CurLevel - 1];
     }
     #endregion
+
+    protected virtual void MoveAndRotate()
+    {
+        if (target == null) return;
+        Vector2 dir = (transform.position - target.position).normalized;
+        Move(dir);
+        Rotate(dir);
+    }
+
+    protected virtual void Move(Vector2 dir)
+    {
+    }
+
+    protected virtual void Rotate(Vector2 dir)
+    {
+    }
 }
