@@ -108,12 +108,12 @@ public class SkillSystem
             if (_skillDataCache[combinationId].Type == SkillType.Active)
             {
                 _activeSkillCount--;
+                GameObject.Destroy(_ownedSkills[combinationId].gameObject);
             }
             else if (_skillDataCache[combinationId].Type == SkillType.Passive)
             {
                 _passiveSkillCount--;
             }
-            GameObject.Destroy(_ownedSkills[combinationId].gameObject);
         }
 
         _activeSkillCount++;
