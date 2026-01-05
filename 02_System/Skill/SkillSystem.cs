@@ -124,6 +124,7 @@ public class SkillSystem
             {
                 _activeSkillCount--;
                 GameObject.Destroy(_ownedSkills[combinationId].gameObject);
+                _ownedSkills.Remove(combinationId);
             }
             else if (_skillDataCache[combinationId].Type == SkillType.Passive)
             {
@@ -152,7 +153,7 @@ public class SkillSystem
                 // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
+                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
                     ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
@@ -164,7 +165,7 @@ public class SkillSystem
                 }
                 else if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _selectableOwnedSkillIds.Remove(id);                // 획득 불가능
+                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
                 }
                 break;
             case SkillType.Combination:
@@ -232,6 +233,20 @@ public class SkillSystem
 
         // todo: 스킬 전부 획득하지 않았을 경우
 
-        return null;
+        // 테스트용
+        skillSelectDtos.Clear();
+        SkillData testSkillData = _skillDataCache[30];
+        BaseSkill baseSkill = _ownedSkills[30];
+        for (int i = 0; i < 3; i++)
+        {
+            skillSelectDtos.Add(new SkillSelectDto(
+                testSkillData.Id,
+                baseSkill.CurLevel,
+                testSkillData.name,
+                testSkillData.Description,
+                testSkillData.Sprite,
+                null));
+        }
+        return skillSelectDtos;
     }
 }
