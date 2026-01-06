@@ -1,3 +1,5 @@
+﻿using UnityEngine;
+
 /// <summary>
 /// 플레이어가 사용하는 투사체
 /// </summary>
@@ -12,5 +14,10 @@ public class PlayerProjectile : BaseProjectile
         levelValue = data.LevelValue;
 
         base.Init(PlayerManager.Instance.Condition[StatType.Attack]);
+    }
+
+    internal override void Spawn(Vector2 spawnPos, Transform transform)
+    {
+        throw new System.NotImplementedException();
     }
 }

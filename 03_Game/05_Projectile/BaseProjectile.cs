@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 /// 공용으로 사용하는 투사체
@@ -90,5 +90,7 @@ public abstract class BaseProjectile : BasePool, IAttackable
     protected virtual void Reset()
     {
     }
+
+    internal abstract void Spawn(Vector2 spawnPos, Transform transform);
 #endif
 }

@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7dc216a15388e7048a80534a420d28c1, type: 3}
   m_Name: MonsterTypeData
   m_EditorClassIdentifier: 
+  <Stats>k__BackingField: []
   monsterType: 0
   prefab: {fileID: 0}
   dropItemType: 0

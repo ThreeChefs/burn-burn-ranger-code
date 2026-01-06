@@ -6,13 +6,13 @@ public class Monster : MonoBehaviour, IDamageable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
-    private StagePlayer target;
+    public StagePlayer target;
     public BaseStat Speed { get; private set; }
     public BaseStat Hp { get; private set; }
     public BaseStat Attack { get; private set; }
     bool isLive;
 
-    Rigidbody2D rb;
+    protected Rigidbody2D rb;
     SpriteRenderer spriter;
     [SerializeField] private float hitCooldown = 0.5f;
     private bool _canHit = true;
@@ -32,6 +32,11 @@ public class Monster : MonoBehaviour, IDamageable
 
     }
 
+
+    public void Reset()
+    {
+        gameObject.layer = LayerMask.NameToLayer("Monster");
+    }
     public void ApplyData(MonsterTypeData monsterTypeData)
     {
         if (monsterTypeData == null)
@@ -45,7 +50,7 @@ public class Monster : MonoBehaviour, IDamageable
         Hp = new BaseStat(monsterTypeData.Get(StatType.Health), StatType.Health);
         Attack = new BaseStat(monsterTypeData.Get(StatType.Attack), StatType.Attack);
     }
-    private void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
 
         if (target == null)
