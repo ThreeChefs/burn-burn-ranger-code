@@ -92,6 +92,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (health.TryUse(value))
         {
             Logger.Log($"플레이어 hp: {health.CurValue} / {health.MaxValue}");
+
+            if (health.CurValue == 0)
+            {
+                Logger.Log("플레이어 DIE");
+                OnDieAction?.Invoke();
+            }
         }
         else
         {
