@@ -15,17 +15,4 @@ public class Kunai : BaseProjectile
         Vector3 targetPos = speed * Time.fixedDeltaTime * dir;
         transform.position += targetPos;
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.transform.TryGetComponent<Monster>(out var monster))
-        {
-            Attack(monster);
-            passCount--;
-            if (passCount == 0)
-            {
-                Destroy(gameObject);
-            }
-        }
-    }
 }

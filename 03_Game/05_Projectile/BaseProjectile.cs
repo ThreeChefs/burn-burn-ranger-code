@@ -11,6 +11,7 @@ public class BaseProjectile : BasePool, IAttackable
 
     protected PlayerStat attack;
 
+    [SerializeField] protected LayerMask targetLayer;
     [SerializeField] protected Transform target;
 
     #region Unity API
@@ -44,6 +45,20 @@ public class BaseProjectile : BasePool, IAttackable
     #endregion
 
     #region 공격
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (((1 << collision.gameObject.layer) & targetLayer) != 0)
+        {
+            Attack((IDamageable)collision);
+            if (passCount < 0) return;
+            passCount--;
+            if (passCount == 0)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+
     public void Attack(IDamageable damageable)
     {
         damageable.TakeDamage(CalculateDamage());
