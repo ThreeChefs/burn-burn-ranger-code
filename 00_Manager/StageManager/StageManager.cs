@@ -66,10 +66,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
 
         // todo : Pool 적용 시 스테이지데이터 읽고 사용할 몬스터들 등록 필요
-
         _nowStage = _stageDatas[stageNum];
-
-
+        
         if (_waveController != null)
         {
             _waveController.SpawnBossMonsterAction -= SpawnBossMonster;
@@ -91,8 +89,12 @@ public class StageManager : SceneSingletonManager<StageManager>
         _player.OnDieAction += GameOver;
         _skillSystem = new SkillSystem(_skillDataBase, _player);
         
-        if (IsTest) return;
+        // 이벤트 연결
+        _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
         
+        
+        // 게임 시작
+        if (IsTest) return;
         SetStageData(GameManager.Instance.SelectedStageNumber - 1);
         GameStart();
     }
@@ -113,6 +115,26 @@ public class StageManager : SceneSingletonManager<StageManager>
         _waveController?.Update();
     }
 
+
+    #region 이벤트
+
+    void SpawnSkillSelectUI(int level)
+    {
+        PauseGame();
+        SkillSelectUI skillSelectUI = (SkillSelectUI)UIManager.Instance.SpawnUI(UIName.UI_SkillSelect);
+
+    }
+    
+    public void PauseGame()
+    {
+        Time.timeScale = 0;
+    }
+
+    public void ResumeGame()
+    {
+        Time.timeScale = 1;
+    }
+    
     void GameStart()
     {
         _isPlaying = true;
@@ -129,6 +151,14 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameOverAction?.Invoke();
     }
 
+
+    #endregion
+    
+  
+
+    // todo : 몬스터풀 생기면 옮겨야 함
+    // 몬스터말고 상자같은 애를 타겟으로 해야할 수도 있음. 수정할 때 참고하기~~ 
+    #region  몬스터
 
     public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
     {
@@ -179,7 +209,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         Destroy(monster.gameObject);
     }
 
-    // todo : 몬스터말고 상자같은 애가 나올 수 있음. 내부 로직은 변경 예정 / 함수이름도 바꿀 예정
+    
     public Transform GetNearestMonster()
     {
         if(_spawnedMonsters.Count == 0)
@@ -201,10 +231,12 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
         return nearestMonster.transform;
     }
+
+
+    #endregion
     
 
     #region Test
-
     [Title("Test")]
     public bool IsTest = false;
     public int TestStageNum = 0;
