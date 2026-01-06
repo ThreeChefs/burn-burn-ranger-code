@@ -10,7 +10,9 @@ public class StatData : ScriptableObject
 
     private Dictionary<StatType, float> _statDict;
 
-    private void OnEnable()
+
+
+    private void Reset()
     {
         BuildCache();
     }

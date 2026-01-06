@@ -100,20 +100,26 @@ public class Monster : MonoBehaviour, IDamageable
         if (Hp == null)
             return;
 
-
-        if (!Hp.TryUse(value))
-            return;
-
-        Logger.Log($"Enemy HP : {Hp.CurValue}");
-
-        if (Hp.CurValue <= 0f)
+        if (Hp.TryUse(value))
         {
+            if (Hp.CurValue == 0)
+            {
+                onDieAction?.Invoke(this);
+                Die();
+            }
+        }
+        else
+        {
+            onDieAction?.Invoke(this);
             Die();
         }
+
     }
+
 
     private void Die()
     {
+
 
         Logger.Log("사망");
         DropItem();
