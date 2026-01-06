@@ -18,8 +18,11 @@ public class PlayerProjectile : BaseProjectile
 
     public override void Spawn(Transform target)
     {
-        Vector2 pos = target.position;
         targetPos = StageManager.Instance.GetNearestMonster().position;
-        transform.position = pos + (Vector2)(targetPos - transform.position).normalized;
+        transform.position = target.position;
+
+        targetDir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 }
