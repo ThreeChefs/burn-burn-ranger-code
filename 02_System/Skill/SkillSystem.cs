@@ -14,7 +14,7 @@ public class SkillSystem
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
-    private readonly List<int> _selectableOwnedSkillIds = new();
+    private readonly List<int> _maxedSkillIds = new();
     private int _activeSkillCount;
     private int _passiveSkillCount;
 
@@ -35,7 +35,7 @@ public class SkillSystem
     {
         // 딕셔너리 초기화
         _skillDataCache.Clear();
-        _selectableOwnedSkillIds.Clear();
+        _maxedSkillIds.Clear();
         _skillDatabase.GetDatabase<SkillData>()
             .ForEach(skillData =>
             {
@@ -88,7 +88,6 @@ public class SkillSystem
 
         // 스킬 획득 후 초기화
         _ownedSkills.Add(id, baseSkill);
-        _selectableOwnedSkillIds.Add(id);
         baseSkill.Init(data);
         UpdateSkillSelectCondition(id);
 
@@ -158,7 +157,8 @@ public class SkillSystem
                 // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
+                    _maxedSkillIds.Add(id);                         // 만렙 처리
+                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].Name}");
                     ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
@@ -170,7 +170,8 @@ public class SkillSystem
                 }
                 else if (skill.CurLevel == Define.SkillMaxLevel)
                 {
-                    _selectableOwnedSkillIds.Remove(id);            // 획득 불가능
+                    _maxedSkillIds.Add(id);                         // 만렙 처리
+                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].Name}");
                 }
                 break;
             case SkillType.Combination:
@@ -197,6 +198,7 @@ public class SkillSystem
             if (_combinationRequirementMap.ContainsKey(combinationId))
             {
                 _combinationRequirementMap[combinationId]++;
+                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].Name}");
             }
             else
             {
@@ -255,19 +257,18 @@ public class SkillSystem
             return skillSelectDtos.Random(count);
         }
 
-        // 스킬 슬롯 전부 찼을 경우
+        // 1. 스킬 슬롯 전부 찼을 경우
         // 소유한 스킬 중에 선택할 수 있는 스킬 획득
         if (_activeSkillCount + _passiveSkillCount == TotalMaxSkillCount)
         {
-            // pickCount만큼 랜덤으로 뽑기
-            AddRandomSkillDto(skillSelectDtos, selectedSkillId.ToList(), count);
-
-            return skillSelectDtos;
+            foreach (int id in _ownedSkills.Keys)
+            {
+                selectedSkillId.Add(id);
+            }
         }
-
-        // 스킬 전부 획득하지 않았을 경우
+        // 2. 스킬 전부 획득하지 않았을 경우
         // 1) 액티브 스킬만 전부 뽑았을 때
-        if (_activeSkillCount == Define.ActiveSkillMaxCount && _passiveSkillCount != Define.PassiveSkillMaxCount)
+        else if (_activeSkillCount == Define.ActiveSkillMaxCount && _passiveSkillCount != Define.PassiveSkillMaxCount)
         {
             foreach (SkillData data in _skillDataCache.Values)
             {
@@ -299,7 +300,9 @@ public class SkillSystem
                 }
             }
         }
-        _selectableOwnedSkillIds.ForEach(id => selectedSkillId.Add(id));
+
+        // 만렙 스킬인 경우 제거
+        _maxedSkillIds.ForEach(id => selectedSkillId.Remove(id));
 
         AddRandomSkillDto(skillSelectDtos, selectedSkillId.ToList(), count);
 
