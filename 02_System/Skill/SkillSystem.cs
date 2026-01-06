@@ -117,12 +117,12 @@ public class SkillSystem
     /// <returns></returns>
     private ActiveSkill GetCombinationSkill(int id)
     {
-        // 액티브 스킬 삭제 후 조합 스킬 획득
         foreach (int combinationId in _skillDataCache[id].CombinationIds)
         {
             if (_skillDataCache[combinationId].Type == SkillType.Active)
             {
                 _activeSkillCount--;
+                // 액티브 스킬일 경우 삭제
                 GameObject.Destroy(_ownedSkills[combinationId].gameObject);
                 _ownedSkills.Remove(combinationId);
             }
@@ -195,6 +195,8 @@ public class SkillSystem
             }
         }
     }
+
+    // todo: 조합 스킬 획득 가능한지 한 번 더 확인
     #endregion
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
