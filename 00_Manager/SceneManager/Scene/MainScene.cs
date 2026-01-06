@@ -7,7 +7,7 @@ public class MainScene : BaseScene
 {
     private void Start()
     {
-        UIManager.Instance?.SpawnUI(UIPanelType.UI_StageSelect);
+        UIManager.Instance?.SpawnUI(UIName.UI_StageSelect);
         
     }
 }

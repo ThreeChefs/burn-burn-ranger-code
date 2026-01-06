@@ -6,8 +6,8 @@ using UnityEngine;
 public class SkillSelectUI : BaseUI
 {
     [SerializeField] private SkillSelectButton[] _skillButtons;
-
-    public override void OnEnableInternal()
+    
+    void OnEnable()
     {
         List<SkillSelectDto> skills = StageManager.Instance.SkillSystem.ShowSelectableSkills(Define.SelectableSkillMaxCount);
         SetSkillData(skills);
@@ -28,8 +28,13 @@ public class SkillSelectUI : BaseUI
             }
         }
     }
-    
-    public override void OnDisableInternal()
+
+    public override void OpenUIInternal()
+    {
+        
+    }
+
+    public override void CloseUIInternal()
     {
         
     }
