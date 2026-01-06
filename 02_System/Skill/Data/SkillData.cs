@@ -10,7 +10,7 @@ public class SkillData : ScriptableObject
     [field: Tooltip("스킬 설명")]
     [field: SerializeField] public string Description { get; protected set; }
     [field: Tooltip("스킬 이미지")]
-    [field: SerializeField] public Sprite Sprite { get; protected set; }
+    [field: SerializeField] public Sprite Icon { get; protected set; }
     [field: Tooltip("해금 스테이지")]
     [field: SerializeField] public int UnlockStageId { get; protected set; }
 
@@ -19,5 +19,12 @@ public class SkillData : ScriptableObject
     [field: Tooltip("돌파 조합 스킬 정보")]
     [field: SerializeField] public int[] CombinationIds { get; protected set; }
     [field: Tooltip("레벨에 따른 수치 (플레이어의 기본 공격력에 곱해짐)")]
-    [field: SerializeField] public float[] LevelValue { get; protected set; } = new float[Define.SkillMaxLevel];
+    [field: SerializeField] public float[] LevelValue { get; protected set; }
+
+#if UNITY_EDITOR
+    protected virtual void Reset()
+    {
+        CombinationIds = new int[1];
+    }
+#endif
 }

@@ -10,6 +10,7 @@ public sealed class SkillSelectDto
     public string Name { get; }
     public string Description { get; }
     public Sprite Icon { get; }
+    public SkillType Type { get; }
     public Sprite[] CombinationIcons { get; }
 
     public SkillSelectDto(
@@ -18,6 +19,7 @@ public sealed class SkillSelectDto
         string name,
         string description,
         Sprite icon,
+        SkillType type,
         Sprite[] combinationIcons)
     {
         Id = id;
@@ -25,6 +27,7 @@ public sealed class SkillSelectDto
         Name = name;
         Description = description;
         Icon = icon;
+        Type = type;
         CombinationIcons = combinationIcons;
     }
 }
