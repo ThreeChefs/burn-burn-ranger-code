@@ -190,6 +190,8 @@ public class SkillSystem
     /// <param name="combinationIds"></param>
     private void ApplyCombinationSkillDict(int[] combinationIds)
     {
+        if (combinationIds == null || combinationIds.Length == 0) return;
+
         foreach (int combinationId in combinationIds)
         {
             if (_combinationRequirementMap.ContainsKey(combinationId))
