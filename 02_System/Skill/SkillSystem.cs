@@ -17,11 +17,15 @@ public class SkillSystem
     private int _activeSkillCount;
     private int _passiveSkillCount;
 
+    private bool _canSelectSkill;
+    private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+
     #region 초기화
     public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
     {
         _skillDatabase = skillDatabase;
         _player = player;
+        _canSelectSkill = true;
 
         Init();
     }
@@ -175,6 +179,8 @@ public class SkillSystem
                 }
                 break;
         }
+
+        CheckCanSelectSkill();
     }
 
     /// <summary>
@@ -194,6 +200,19 @@ public class SkillSystem
                 _combinationRequirementMap.Add(combinationId, 1);
             }
         }
+    }
+
+    private void CheckCanSelectSkill()
+    {
+        if (_activeSkillCount + _passiveSkillCount < TotalMaxSkillCount) return;
+        foreach (BaseSkill ownedSkill in _ownedSkills.Values)
+        {
+            if (!ownedSkill.IsMaxLevel)
+            {
+                return;
+            }
+        }
+        _canSelectSkill = false;
     }
 
     // todo: 조합 스킬 획득 가능한지 한 번 더 확인
@@ -228,11 +247,8 @@ public class SkillSystem
             return skillSelectDtos.Random(count);
         }
 
-        // todo: 스킬 전부 획득
-        if (_activeSkillCount + _passiveSkillCount >= Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount)
-        {
+        // 액티브 스킬 전부 획득
 
-        }
 
         // todo: 스킬 전부 획득하지 않았을 경우
 
