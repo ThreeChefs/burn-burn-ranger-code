@@ -43,18 +43,7 @@ public class SkillSelectButton : MonoBehaviour
 
     void SelectSkill()
     {
-        Logger.LogWarning($"스킬 선택 : {_nowSkillData.Name}");
-        if (StageManager.Instance == null) return;
-        if (StageManager.Instance.SkillSystem == null) return;
-
-        try
-        {
-            StageManager.Instance.SkillSystem.TrySelectSkill(_nowSkillData.Id);
-        }
-        catch
-        {
-            Logger.LogWarning("뭐가 없대용");
-        }
+        StageManager.Instance.SkillSystem.TrySelectSkill(_nowSkillData.Id);
 
         Destroy(_skillSelectUI.gameObject);
     }
