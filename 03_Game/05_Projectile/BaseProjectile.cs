@@ -16,7 +16,7 @@ public abstract class BaseProjectile : BasePool, IAttackable
     protected BaseStat attack;
 
     [SerializeField] protected Transform target;
-    [SerializeField] protected LayerMask targetLayer;
+    protected LayerMask targetLayer;
     protected Vector3 targetPos;
     protected Vector3 targetDir;
 
@@ -85,4 +85,10 @@ public abstract class BaseProjectile : BasePool, IAttackable
     protected virtual void Rotate(Vector2 dir)
     {
     }
+
+#if UNITY_EDITOR
+    protected virtual void Reset()
+    {
+    }
+#endif
 }

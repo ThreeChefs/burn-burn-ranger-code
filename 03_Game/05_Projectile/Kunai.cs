@@ -20,4 +20,12 @@ public class Kunai : PlayerProjectile
         Vector3 targetPos = speed * Time.fixedDeltaTime * dir;
         transform.position += targetPos;
     }
+
+#if UNITY_EDITOR
+    protected override void Reset()
+    {
+        base.Reset();
+        data = AssetLoader.FindAndLoadByName<ProjectileData>("KunaiProjectileData");
+    }
+#endif
 }
