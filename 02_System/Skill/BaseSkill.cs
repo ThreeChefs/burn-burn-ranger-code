@@ -20,7 +20,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
         skillData = data;
         IsMaxLevel = false;
 
-        Logger.Log($"스킬 획득: {skillData.Name}");
+        Logger.Log($"스킬 획득: {skillData.DisplayName}");
 
         LevelUp();
     }
@@ -53,6 +53,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
                 break;
         }
 
-        Logger.Log($"스킬 레벨업: {skillData.Name} / 레벨: {CurLevel} {(IsMaxLevel ? " - 최대 레벨" : "")}");
+        Logger.Log($"스킬 레벨업: {skillData.DisplayName} / 레벨: {CurLevel} {(IsMaxLevel ? " - 최대 레벨" : "")}");
     }
 }

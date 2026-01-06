@@ -158,7 +158,7 @@ public class SkillSystem
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
                     _maxedSkillIds.Add(id);                         // 만렙 처리
-                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].Name}");
+                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].DisplayName}");
                     ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
@@ -171,7 +171,7 @@ public class SkillSystem
                 else if (skill.CurLevel == Define.SkillMaxLevel)
                 {
                     _maxedSkillIds.Add(id);                         // 만렙 처리
-                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].Name}");
+                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].DisplayName}");
                 }
                 break;
             case SkillType.Combination:
@@ -198,7 +198,7 @@ public class SkillSystem
             if (_combinationRequirementMap.ContainsKey(combinationId))
             {
                 _combinationRequirementMap[combinationId]++;
-                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].Name}");
+                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].DisplayName}");
             }
             else
             {

@@ -6,7 +6,7 @@ public class SkillData : ScriptableObject
     [field: Tooltip("스킬 번호")]
     [field: SerializeField] public int Id { get; protected set; }
     [field: Tooltip("스킬 이름")]
-    [field: SerializeField] public string Name { get; protected set; }
+    [field: SerializeField] public string DisplayName { get; protected set; }
     [field: Tooltip("스킬 설명")]
     [field: SerializeField] public string Description { get; protected set; }
     [field: Tooltip("스킬 이미지")]
