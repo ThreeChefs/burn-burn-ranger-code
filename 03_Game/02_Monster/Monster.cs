@@ -104,13 +104,11 @@ public class Monster : MonoBehaviour, IDamageable
         {
             if (Hp.CurValue == 0)
             {
-                onDieAction?.Invoke(this);
                 Die();
             }
         }
         else
         {
-            onDieAction?.Invoke(this);
             Die();
         }
 
