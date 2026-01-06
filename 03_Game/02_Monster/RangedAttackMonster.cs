@@ -70,6 +70,6 @@ public class RangedAttackMonster : Monster
         proj.Init(Attack, projectileData);
 
 
-        proj.Spawn(target.transform);
+        proj.Spawn(firePoint.position, target.transform);
     }
 }
