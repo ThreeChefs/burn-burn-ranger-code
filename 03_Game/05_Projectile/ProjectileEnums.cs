@@ -9,7 +9,8 @@ public enum ProjectileType
 public enum ProjectileIndex
 {
     // 플레이어
-    Kunai = 0,
+    Kunai = 30,
+    GhostShuriken = 52,
 
     // 몬스터
     Noraml = 100,
