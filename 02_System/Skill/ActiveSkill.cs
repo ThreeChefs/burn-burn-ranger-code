@@ -51,7 +51,7 @@ public class ActiveSkill : BaseSkill
             GameObject newGo = Instantiate(_projectileData.ProjectilePrefab.gameObject);
             var projectile = newGo.GetComponent<PlayerProjectile>();
             projectile.Init(this, _activeSkillData);
-            projectile.Spawn(transform);
+            projectile.Spawn(transform.position, StageManager.Instance.GetNearestMonster());
         }
     }
 }

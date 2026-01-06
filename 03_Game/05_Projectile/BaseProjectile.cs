@@ -35,9 +35,15 @@ public class BaseProjectile : BasePool, IAttackable
         passCount = data.PassCount;
     }
 
-    public virtual void Spawn(Transform target)
+    public virtual void Spawn(Vector2 spawnPos, Transform target)
     {
+        transform.position = spawnPos;
         this.target = target;
+
+        targetPos = target.position;
+        targetDir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     #region 공격
