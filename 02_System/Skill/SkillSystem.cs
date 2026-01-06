@@ -213,7 +213,8 @@ public class SkillSystem
                     1,
                     skillData.name,
                     skillData.Description,
-                    skillData.Sprite,
+                    skillData.Icon,
+                    skillData.Type,
                     null));
             }
         }
@@ -246,7 +247,8 @@ public class SkillSystem
                 baseSkill.CurLevel,
                 testSkillData.name,
                 testSkillData.Description,
-                testSkillData.Sprite,
+                testSkillData.Icon,
+                testSkillData.Type,
                 null));
         }
         return skillSelectDtos;
