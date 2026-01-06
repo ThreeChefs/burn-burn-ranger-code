@@ -5,6 +5,8 @@ using UnityEngine;
 public class ProjectileData : ScriptableObject
 {
     [field: Header("공통")]
+    [field: Tooltip("탄환 인덱스")]
+    [field: SerializeField] public ProjectileIndex Index { get; private set; }
     [field: Tooltip("공격력 계수")]
     [field: SerializeField] public float DamageMultiplier { get; private set; }
     [field: Tooltip("탄환 스피드")]
