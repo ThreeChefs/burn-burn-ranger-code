@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
+// todo : enum 제너릭으로 
 public class PoolManager : GlobalSingletonManager<PoolManager>
 {
     [SerializeField] GoDatabase poolsOrigin;    // Pool Prefabs 를 담은 DatabaseSO, poolOriginDic에 초기화 할 때에만 사용!

@@ -3,13 +3,11 @@
 /// <summary>
 /// 공용으로 사용하는 투사체
 /// </summary>
-public abstract class BaseProjectile : BasePool, IAttackable
+public class BaseProjectile : BasePool, IAttackable
 {
-    [SerializeField] protected ProjectileData data;
+    protected ProjectileData data;
 
     protected ProjectileType type;
-    protected float damageMultiplier;
-    protected float speed;
     protected int passCount;
 
     // 공격 스텟
@@ -21,32 +19,26 @@ public abstract class BaseProjectile : BasePool, IAttackable
     protected Vector3 targetDir;
 
     #region Unity API
-    private void Awake()
-    {
-        type = data.ProjectileType;
-        damageMultiplier = data.DamageMultiplier;
-        speed = data.Speed;
-        passCount = data.PassCount;
-    }
-
     protected virtual void FixedUpdate()
     {
         MoveAndRotate();
     }
     #endregion
 
-    #region 초기화
-    public virtual void Init(BaseStat attack)
+    // 초기화
+    public virtual void Init(BaseStat attack, ProjectileData data)
     {
         this.attack = attack;
+
+        this.data = data;
+        type = data.ProjectileType;
+        passCount = data.PassCount;
     }
 
-    public virtual void Spawn(Vector2 pos)
+    public virtual void Spawn(Transform target)
     {
-        targetPos = StageManager.Instance.GetNearestMonster().position;
-        transform.position = pos + (Vector2)(targetPos - transform.position).normalized;
+        this.target = target;
     }
-    #endregion
 
     #region 공격
     protected virtual void OnTriggerEnter2D(Collider2D collision)
@@ -70,21 +62,70 @@ public abstract class BaseProjectile : BasePool, IAttackable
 
     protected virtual float CalculateDamage()
     {
-        return attack.CurValue * damageMultiplier;
+        return attack.CurValue * data.DamageMultiplier;
     }
     #endregion
 
-    protected virtual void MoveAndRotate()
+    // 움직임
+    private void MoveAndRotate()
+    {
+        switch (type)
+        {
+            case ProjectileType.Chase:
+                ChaseMove();
+                break;
+            case ProjectileType.Hover:
+                HoverMove();
+                HoverRotate();
+                break;
+            case ProjectileType.Guidance:
+                GuidanceMove();
+                GuidanceRotate();
+                break;
+            case ProjectileType.Reflection:
+                ReflectionMove();
+                ReflectionRotate();
+                break;
+        }
+    }
+
+    #region 탄환 타입 - Chase (단일 추격)
+    protected virtual void ChaseMove()
+    {
+        Vector3 targetPos = data.Speed * Time.fixedDeltaTime * targetDir;
+        transform.position += targetPos;
+    }
+    #endregion
+
+    #region 탄환 타입 - Hover (주위)
+    protected virtual void HoverMove()
     {
     }
 
-    protected virtual void Move(Vector2 dir)
+    protected virtual void HoverRotate()
+    {
+    }
+    #endregion
+
+    #region 탄환 타입 - Guidance (유도 추격)
+    protected virtual void GuidanceMove()
     {
     }
 
-    protected virtual void Rotate(Vector2 dir)
+    protected virtual void GuidanceRotate()
     {
     }
+    #endregion
+
+    #region 탄환 타입 - Reflection (반사)
+    protected virtual void ReflectionMove()
+    {
+    }
+
+    protected virtual void ReflectionRotate()
+    {
+    }
+    #endregion
 
 #if UNITY_EDITOR
     protected virtual void Reset()

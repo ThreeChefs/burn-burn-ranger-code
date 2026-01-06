@@ -42,4 +42,14 @@ public class StageSelectUI : BaseUI
         GameManager.Instance.SetSelectedStage(_nowSelectedStage);
         GameManager.Instance.Scene.LoadSceneWithCoroutine(SceneType.StageScene);
     }
+
+    public override void OpenUIInternal()
+    {
+        
+    }
+
+    public override void CloseUIInternal()
+    {
+        
+    }
 }

@@ -10,6 +10,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     // 스킬 데이터
     [SerializeField, ReadOnly] protected SkillData skillData;
     [field: SerializeField] public int CurLevel { get; protected set; }
+    public bool IsMaxLevel { get; private set; }
 
     #endregion
 
@@ -17,6 +18,10 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     public virtual void Init(SkillData data)
     {
         skillData = data;
+        IsMaxLevel = false;
+
+        Logger.Log($"스킬 획득: {skillData.Name}");
+
         LevelUp();
     }
     #endregion
@@ -33,9 +38,21 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 
     public virtual void LevelUp()
     {
-        if (CurLevel < Define.SkillMaxLevel)
+        if (CurLevel >= Define.SkillMaxLevel) return;
+
+        CurLevel++;
+
+        switch (skillData.Type)
         {
-            CurLevel++;
+            case SkillType.Active:
+            case SkillType.Passive:
+                IsMaxLevel = CurLevel == Define.SkillMaxLevel;
+                break;
+            case SkillType.Combination:
+                IsMaxLevel = CurLevel == 1;
+                break;
         }
+
+        Logger.Log($"스킬 레벨업: {skillData.Name} / 레벨: {CurLevel} {(IsMaxLevel ? " - 최대 레벨" : "")}");
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 플레이어가 사용하는 투사체
@@ -13,11 +13,16 @@ public class PlayerProjectile : BaseProjectile
         this.skill = skill;
         levelValue = data.LevelValue;
 
-        base.Init(PlayerManager.Instance.Condition[StatType.Attack]);
+        base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
 
-    internal override void Spawn(Vector2 spawnPos, Transform transform)
+    public override void Spawn(Transform target)
     {
-        throw new System.NotImplementedException();
+        targetPos = StageManager.Instance.GetNearestMonster().position;
+        transform.position = target.position;
+
+        targetDir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 }

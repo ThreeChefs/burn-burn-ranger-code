@@ -7,8 +7,8 @@ using UnityEngine.SceneManagement;
 public class UIManager : GlobalSingletonManager<UIManager>
 {
     [SerializeField] GoDatabase _uiDatabase;
-    Dictionary<UIPanelType,BaseUI> _originUiDict = new Dictionary<UIPanelType, BaseUI>();
-    Dictionary<UIPanelType, BaseUI> _nowSpawnUiDict = new Dictionary<UIPanelType, BaseUI>();
+    Dictionary<UIName,BaseUI> _originUiDict = new Dictionary<UIName, BaseUI>();
+    Dictionary<UIName, BaseUI> _nowLoadedUiDict = new Dictionary<UIName, BaseUI>();
 
     
     [SerializeField] private Canvas _originCanvasPrefab;
@@ -16,7 +16,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     
     protected override void Init()
     {
-        _originUiDict = ((UIPanelType[])Enum.GetValues(typeof(UIPanelType))).
+        _originUiDict = ((UIName[])Enum.GetValues(typeof(UIName))).
             ToDictionary(part => part, part => (BaseUI)null);
         
         
@@ -24,13 +24,20 @@ public class UIManager : GlobalSingletonManager<UIManager>
         
         for (int i = 0; i < _uiList.Count; i++)
         {
-            if (Enum.TryParse(_uiList[i].name, out UIPanelType uiName))
+            if (Enum.TryParse(_uiList[i].name, out UIName uiName))
             {
                 _originUiDict[uiName] = _uiList[i];
             }
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            SpawnUI(UIName.UI_SkillSelect);
+        }
+    }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -40,31 +47,60 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     
     /// <summary>
-    /// Scene 구성할 때 필요한 UI 부르기
-    /// 팝업이나 일회용 UI 들은 그냥 스폰하기
+    /// 1회성
     /// </summary>
-    /// <param name="uiPanelType"></param>
-    /// <returns></returns>
-    public BaseUI SpawnUI(UIPanelType uiPanelType)
+    public BaseUI SpawnUI(UIName uiName, bool active = true)
     {
-        BaseUI ui = GetOriginUI(uiPanelType);
+        BaseUI ui = GetOriginUI(uiName);
         
         if (ui != null)
         {   
             BaseUI spawnedUI = Instantiate(ui);
             spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            
+            if(active == false)
+                spawnedUI.gameObject.SetActive(false);  // 프리팹이 켜져있으면 OnEnable 은 호출됨
+            
+            return spawnedUI;
+        }
+
+        return null;
+    }
+    
+    /// <summary>
+    /// 현재 씬에서 Dictionary에 저장해두고 쓸 애들
+    /// </summary>
+    public BaseUI LoadUI(UIName uiName, bool active = true)
+    {
+        BaseUI ui = GetOriginUI(uiName);
+        
+        if (ui != null)
+        {   
+            BaseUI spawnedUI = Instantiate(ui);
+            spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            
+            if(active == false)
+                spawnedUI.gameObject.SetActive(false);
+
+            if (_nowLoadedUiDict.ContainsKey(uiName) == false)
+            {
+                _nowLoadedUiDict.Add(uiName, spawnedUI);
+            }
+            
             return spawnedUI;
         }
 
         return null;
     }
 
-    public BaseUI ShowUI(UIPanelType uiPanelType)
+
+
+    public BaseUI ShowUI(UIName uiName)
     {
-        BaseUI ui = GetNowSpawnedUI(uiPanelType);
+        BaseUI ui = GetNowSpawnedUI(uiName);
         if (ui != null)
         {
-            // 가장 아래로 내리기
+            // todo 가장 아래로 내리기
             return ui;
         }
 
@@ -74,18 +110,18 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     #region GetUI
     
-    public BaseUI GetOriginUI(UIPanelType uiPanelType)
+    BaseUI GetOriginUI(UIName uiName)
     {
-        if(_originUiDict.ContainsKey(uiPanelType))
-            return _originUiDict[uiPanelType];
+        if(_originUiDict.ContainsKey(uiName))
+            return _originUiDict[uiName];
         
         return null;
     }
     
-    public BaseUI GetNowSpawnedUI(UIPanelType uiPanelType)
+    public BaseUI GetNowSpawnedUI(UIName uiName)
     {
-        if (_nowSpawnUiDict.ContainsKey(uiPanelType))
-            return _nowSpawnUiDict[uiPanelType];
+        if (_nowLoadedUiDict.ContainsKey(uiName))
+            return _nowLoadedUiDict[uiName];
         return null;
     }
 
@@ -100,15 +136,16 @@ public class UIManager : GlobalSingletonManager<UIManager>
     
     protected override void OnSceneUnloaded(Scene scene)
     {
-        _nowSpawnUiDict.Clear();  
+        _nowLoadedUiDict.Clear();  
     }
 }
 
 
 
 
-public enum UIPanelType
+public enum UIName
 {
     UI_StageSelect,
-    
+    UI_SkillSelect,
+    UI_Stage,
 }
