@@ -220,8 +220,13 @@ public class SkillSystem
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
     {
+        List<int> selectedSkills = new();
         List<SkillSelectDto> skillSelectDtos = new();
 
+        // todo: 체력 회복 or 돈 -> UI에 어떻게 표현할지 논의 필요
+        if (!_canSelectSkill) return null;
+
+        // 조합 스킬 있는지 확인
         foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
         {
             if (combinationSkillTerm.Value == 2)
@@ -229,7 +234,7 @@ public class SkillSystem
                 SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
-                    1,
+                    0,
                     skillData.name,
                     skillData.Description,
                     skillData.Icon,
@@ -247,10 +252,44 @@ public class SkillSystem
             return skillSelectDtos.Random(count);
         }
 
-        // 액티브 스킬 전부 획득
+        // 스킬 슬롯 전부 찼을 경우
+        // 소유한 스킬 중에 선택할 수 있는 스킬 획득
+        if (_activeSkillCount + _passiveSkillCount == TotalMaxSkillCount)
+        {
+            // 뽑아야 하는 개수 확인
+            int pickCount = count - skillSelectDtos.Count;
 
+            // pickCount만큼 랜덤으로 뽑기
+            _selectableOwnedSkillIds.Random(pickCount).ForEach(id =>
+            {
+                // 뽑아야하는 스킬 정보 가져오기
+                _skillDataCache.TryGetValue(id, out SkillData skillData);
+                _ownedSkills.TryGetValue(id, out BaseSkill skill);
 
-        // todo: 스킬 전부 획득하지 않았을 경우
+                // 조합 스킬 아이콘 가져오기
+                Sprite[] icons = new Sprite[skillData.CombinationIds.Length];
+                for (int i = 0; i < skillData.CombinationIds.Length; i++)
+                {
+                    _skillDataCache.TryGetValue(i, out SkillData combinationSkill);
+                    icons[i] = combinationSkill.Icon;
+                }
+
+                // dto 만들기
+                skillSelectDtos.Add(new SkillSelectDto(
+                    skillData.Id,
+                    skill.CurLevel,
+                    skillData.name,
+                    skillData.Description,
+                    skillData.Icon,
+                    skillData.Type,
+                    icons));
+            });
+
+            return skillSelectDtos;
+        }
+
+        // 스킬 전부 획득하지 않았을 경우
+
 
         // 테스트용
         skillSelectDtos.Clear();
