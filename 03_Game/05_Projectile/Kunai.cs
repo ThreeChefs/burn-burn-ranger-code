@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Kunai : PlayerProjectile
 {
-    public override void Spawn(Vector2 pos)
+    public override void Spawn(Transform target)
     {
-        base.Spawn(pos);
+        base.Spawn(target);
         targetDir = (targetPos - transform.position).normalized;
         float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);

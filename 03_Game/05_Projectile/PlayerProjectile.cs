@@ -16,8 +16,9 @@ public class PlayerProjectile : BaseProjectile
         base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
 
-    public override void Spawn(Vector2 pos)
+    public override void Spawn(Transform target)
     {
+        Vector2 pos = target.position;
         targetPos = StageManager.Instance.GetNearestMonster().position;
         transform.position = pos + (Vector2)(targetPos - transform.position).normalized;
     }

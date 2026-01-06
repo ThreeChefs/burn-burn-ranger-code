@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 공용으로 사용하는 투사체
 /// </summary>
-public abstract class BaseProjectile : BasePool, IAttackable
+public class BaseProjectile : BasePool, IAttackable
 {
     protected ProjectileData data;
 
@@ -35,7 +35,10 @@ public abstract class BaseProjectile : BasePool, IAttackable
         passCount = data.PassCount;
     }
 
-    public abstract void Spawn(Vector2 pos);
+    public virtual void Spawn(Transform target)
+    {
+        this.target = target;
+    }
 
     #region 공격
     protected virtual void OnTriggerEnter2D(Collider2D collision)
