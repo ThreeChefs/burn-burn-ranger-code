@@ -35,18 +35,13 @@ public abstract class BaseProjectile : BasePool, IAttackable
     }
     #endregion
 
-    #region 초기화
+    // 초기화
     public virtual void Init(BaseStat attack)
     {
         this.attack = attack;
     }
 
-    public virtual void Spawn(Vector2 pos)
-    {
-        targetPos = StageManager.Instance.GetNearestMonster().position;
-        transform.position = pos + (Vector2)(targetPos - transform.position).normalized;
-    }
-    #endregion
+    public abstract void Spawn(Vector2 pos);
 
     #region 공격
     protected virtual void OnTriggerEnter2D(Collider2D collision)
@@ -74,17 +69,66 @@ public abstract class BaseProjectile : BasePool, IAttackable
     }
     #endregion
 
-    protected virtual void MoveAndRotate()
+    // 움직임
+    private void MoveAndRotate()
+    {
+        switch (type)
+        {
+            case ProjectileType.Chase:
+                ChaseMove();
+                break;
+            case ProjectileType.Hover:
+                HoverMove();
+                HoverRotate();
+                break;
+            case ProjectileType.Guidance:
+                GuidanceMove();
+                GuidanceRotate();
+                break;
+            case ProjectileType.Reflection:
+                ReflectionMove();
+                ReflectionRotate();
+                break;
+        }
+    }
+
+    #region 탄환 타입 - Chase (단일 추격)
+    protected virtual void ChaseMove()
+    {
+        Vector3 targetPos = speed * Time.fixedDeltaTime * targetDir;
+        transform.position += targetPos;
+    }
+    #endregion
+
+    #region 탄환 타입 - Hover (주위)
+    protected virtual void HoverMove()
     {
     }
 
-    protected virtual void Move(Vector2 dir)
+    protected virtual void HoverRotate()
+    {
+    }
+    #endregion
+
+    #region 탄환 타입 - Guidance (유도 추격)
+    protected virtual void GuidanceMove()
     {
     }
 
-    protected virtual void Rotate(Vector2 dir)
+    protected virtual void GuidanceRotate()
     {
     }
+    #endregion
+
+    #region 탄환 타입 - Reflection (반사)
+    protected virtual void ReflectionMove()
+    {
+    }
+
+    protected virtual void ReflectionRotate()
+    {
+    }
+    #endregion
 
 #if UNITY_EDITOR
     protected virtual void Reset()

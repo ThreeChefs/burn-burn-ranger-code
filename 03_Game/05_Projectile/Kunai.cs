@@ -10,17 +10,6 @@ public class Kunai : PlayerProjectile
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
-    protected override void MoveAndRotate()
-    {
-        Move(targetDir);
-    }
-
-    protected override void Move(Vector2 dir)
-    {
-        Vector3 targetPos = speed * Time.fixedDeltaTime * dir;
-        transform.position += targetPos;
-    }
-
 #if UNITY_EDITOR
     protected override void Reset()
     {
