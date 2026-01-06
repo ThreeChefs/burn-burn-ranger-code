@@ -132,6 +132,6 @@ public class BaseProjectile : BasePool, IAttackable
     {
     }
 
-    internal abstract void Spawn(Vector2 spawnPos, Transform transform);
+
 #endif
 }

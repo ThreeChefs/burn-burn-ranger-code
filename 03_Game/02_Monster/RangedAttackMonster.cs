@@ -6,7 +6,7 @@ public class RangedAttackMonster : Monster
     [Header("Projectile")]
     [SerializeField] private BaseProjectile projectilePrefab;  //BaseProjectile을 가져온이유: 스크립트를 읽어보니 공통 프로젝타일들의 로직인것같아서 
     [SerializeField] private Transform firePoint; //몬스터가 쏘는위치
-
+    [SerializeField] private ProjectileData projectileData;
     [Header("Detect / Fire")]
     [SerializeField] private float detectRange = 7f;
     [SerializeField] private float fireInterval = 0.3f;
@@ -67,9 +67,9 @@ public class RangedAttackMonster : Monster
         BaseProjectile proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
 
         // 투사체의 공격력은 BaseStat 그대로 전달함
-        proj.Init(Attack);
+        proj.Init(Attack, projectileData);
 
 
-        proj.Spawn(spawnPos, target.transform);
+        proj.Spawn(target.transform);
     }
 }
