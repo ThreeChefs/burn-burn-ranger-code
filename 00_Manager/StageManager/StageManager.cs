@@ -132,12 +132,10 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
     {
-        Vector3 dir = Random.onUnitSphere;
-        dir.y = 0;
+        Vector2 dir = Random.insideUnitCircle;
         dir.Normalize();
 
-        Vector3 randomPos = _player.transform.position + (dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
-        randomPos.z = 0;
+        Vector3 randomPos = _player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
         GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
 
         if (monster.TryGetComponent(out Monster monsterComponent))
