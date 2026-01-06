@@ -11,7 +11,7 @@ public class ActiveSkill : BaseSkill
     private float _cooldown;
 
     // 총알
-    private GameObject _projectilePrefab;
+    private ProjectileData _projectileData;
 
     public override void Init(SkillData data)
     {
@@ -19,7 +19,7 @@ public class ActiveSkill : BaseSkill
 
         _activeSkillData = data as ActiveSkillData;
         _cooldown = _activeSkillData.Cooldown;
-        _projectilePrefab = _activeSkillData.ProjectilePrefab;
+        _projectileData = _activeSkillData.ProjectileData;
     }
 
     protected override void Update()
@@ -48,7 +48,7 @@ public class ActiveSkill : BaseSkill
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
             // todo: pool에 넣어서 초기화
-            GameObject newGo = Instantiate(_projectilePrefab);
+            GameObject newGo = Instantiate(_projectileData.ProjectilePrefab.gameObject);
             var projectile = newGo.GetComponent<PlayerProjectile>();
             projectile.Init(this, _activeSkillData);
             projectile.Spawn(transform.position);

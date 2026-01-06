@@ -9,7 +9,7 @@ public class ActiveSkillData : SkillData
     [field: Tooltip("탄환 개수(-1: 연발)")]
     [field: SerializeField] public int[] ProjectilesCounts { get; private set; } = new int[Define.SkillMaxLevel];
     [field: Tooltip("탄환 오브젝트")]
-    [field: SerializeField] public GameObject ProjectilePrefab { get; private set; }
+    [field: SerializeField] public ProjectileData ProjectileData { get; private set; }
 
 #if UNITY_EDITOR
     protected override void Reset()
@@ -17,7 +17,7 @@ public class ActiveSkillData : SkillData
         base.Reset();
         Type = SkillType.Active;
         LevelValue = new float[Define.SkillMaxLevel];
-        ProjectilePrefab = AssetLoader.FindAndLoadByName("Projectile_Kunai");
+        ProjectileData = AssetLoader.FindAndLoadByName<ProjectileData>("KunaiProjectileData");
     }
 #endif
 }
