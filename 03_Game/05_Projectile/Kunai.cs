@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Kunai : BaseProjectile
+public class Kunai : PlayerProjectile
 {
     public override void Spawn(Vector2 pos)
     {

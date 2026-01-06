@@ -19,7 +19,7 @@ public class ActiveSkill : BaseSkill
 
         _activeSkillData = data as ActiveSkillData;
         _cooldown = _activeSkillData.Cooldown;
-        _projectilePrefab = _activeSkillData.Projectile;
+        _projectilePrefab = _activeSkillData.ProjectilePrefab;
     }
 
     protected override void Update()
@@ -49,7 +49,7 @@ public class ActiveSkill : BaseSkill
         {
             // todo: pool에 넣어서 초기화
             GameObject newGo = Instantiate(_projectilePrefab);
-            var projectile = newGo.GetComponent<BaseProjectile>();
+            var projectile = newGo.GetComponent<PlayerProjectile>();
             projectile.Init(this, _activeSkillData);
             projectile.Spawn(transform.position);
         }
