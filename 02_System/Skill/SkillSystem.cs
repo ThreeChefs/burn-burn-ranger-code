@@ -239,7 +239,7 @@ public class SkillSystem
         skillSelectDtos.Clear();
         SkillData testSkillData = _skillDataCache[30];
         BaseSkill baseSkill = _ownedSkills[30];
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < count; i++)
         {
             skillSelectDtos.Add(new SkillSelectDto(
                 testSkillData.Id,
