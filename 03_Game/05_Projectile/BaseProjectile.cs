@@ -5,11 +5,9 @@ using UnityEngine;
 /// </summary>
 public abstract class BaseProjectile : BasePool, IAttackable
 {
-    [SerializeField] protected ProjectileData data;
+    protected ProjectileData data;
 
     protected ProjectileType type;
-    protected float damageMultiplier;
-    protected float speed;
     protected int passCount;
 
     // 공격 스텟
@@ -21,14 +19,6 @@ public abstract class BaseProjectile : BasePool, IAttackable
     protected Vector3 targetDir;
 
     #region Unity API
-    private void Awake()
-    {
-        type = data.ProjectileType;
-        damageMultiplier = data.DamageMultiplier;
-        speed = data.Speed;
-        passCount = data.PassCount;
-    }
-
     protected virtual void FixedUpdate()
     {
         MoveAndRotate();
@@ -36,9 +26,13 @@ public abstract class BaseProjectile : BasePool, IAttackable
     #endregion
 
     // 초기화
-    public virtual void Init(BaseStat attack)
+    public virtual void Init(BaseStat attack, ProjectileData data)
     {
         this.attack = attack;
+
+        this.data = data;
+        type = data.ProjectileType;
+        passCount = data.PassCount;
     }
 
     public abstract void Spawn(Vector2 pos);
@@ -65,7 +59,7 @@ public abstract class BaseProjectile : BasePool, IAttackable
 
     protected virtual float CalculateDamage()
     {
-        return attack.CurValue * damageMultiplier;
+        return attack.CurValue * data.DamageMultiplier;
     }
     #endregion
 
@@ -95,7 +89,7 @@ public abstract class BaseProjectile : BasePool, IAttackable
     #region 탄환 타입 - Chase (단일 추격)
     protected virtual void ChaseMove()
     {
-        Vector3 targetPos = speed * Time.fixedDeltaTime * targetDir;
+        Vector3 targetPos = data.Speed * Time.fixedDeltaTime * targetDir;
         transform.position += targetPos;
     }
     #endregion

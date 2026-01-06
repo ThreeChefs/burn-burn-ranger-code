@@ -13,7 +13,7 @@ public class PlayerProjectile : BaseProjectile
         this.skill = skill;
         levelValue = data.LevelValue;
 
-        base.Init(PlayerManager.Instance.Condition[StatType.Attack]);
+        base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
 
     public override void Spawn(Vector2 pos)
