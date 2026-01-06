@@ -7,5 +7,6 @@ public class StageScene : BaseScene
 {
     private void Start()
     {
+        UIManager.Instance.LoadUI(UIName.UI_Stage);
     }
 }
