@@ -12,7 +12,8 @@ public class BaseProjectile : BasePool, IAttackable
     protected PlayerStat attack;
 
     [SerializeField] protected LayerMask targetLayer;
-    [SerializeField] protected Transform target;
+    [SerializeField] protected Vector3 targetPos;
+    protected Vector3 targetDir;
 
     #region Unity API
     private void Start()
@@ -39,8 +40,8 @@ public class BaseProjectile : BasePool, IAttackable
 
     public virtual void Spawn(Vector2 pos)
     {
-        target = StageManager.Instance.GetNearestMonster();
-        transform.position = pos + offset * (target.position - transform.position).normalized;
+        targetPos = StageManager.Instance.GetNearestMonster().position;
+        transform.position = pos + offset * (targetPos - transform.position).normalized;
     }
     #endregion
 
@@ -72,10 +73,6 @@ public class BaseProjectile : BasePool, IAttackable
 
     protected virtual void MoveAndRotate()
     {
-        if (target == null) return;
-        Vector2 dir = (target.position - transform.position).normalized;
-        Move(dir);
-        Rotate(dir);
     }
 
     protected virtual void Move(Vector2 dir)

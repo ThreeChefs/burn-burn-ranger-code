@@ -5,9 +5,14 @@ public class Kunai : BaseProjectile
     public override void Spawn(Vector2 pos)
     {
         base.Spawn(pos);
-        Vector2 dir = (target.position - transform.position).normalized;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+        targetDir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    protected override void MoveAndRotate()
+    {
+        Move(targetDir);
     }
 
     protected override void Move(Vector2 dir)
