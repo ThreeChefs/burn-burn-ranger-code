@@ -343,7 +343,7 @@ public class SkillSystem
             // dto 만들기
             skillSelectDtos.Add(new SkillSelectDto(
                 skillData.Id,
-                skill.CurLevel,
+                skill == null ? 0 : skill.CurLevel,
                 skillData.name,
                 skillData.Description,
                 skillData.Icon,
