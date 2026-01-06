@@ -4,9 +4,8 @@ public class PassiveSkill : BaseSkill
 
     public override void Init(SkillData data)
     {
-        base.Init(data);
-
         _passiveSkillData = data as PassiveSkillData;
+        base.Init(data);
     }
 
     protected override void OnDestroy()
@@ -25,6 +24,6 @@ public class PassiveSkill : BaseSkill
         base.LevelUp();
 
         PlayerManager.Instance.Condition[_passiveSkillData.StatType]
-            .UpdateBuffValue(_passiveSkillData.LevelValue[CurLevel - 1]);
+            .UpdateBuffValue(_passiveSkillData.LevelValue[0] * CurLevel);
     }
 }
