@@ -17,7 +17,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     StageData _nowStage;
     private StageWaveController _waveController;
 
-    private SkillSystem SkillSystem => _skillSystem;
+    public SkillSystem SkillSystem => _skillSystem;
     SkillSystem _skillSystem;
 
     public float PlayTime
