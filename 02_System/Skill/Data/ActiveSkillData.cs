@@ -8,7 +8,7 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public float Cooldown { get; private set; }
     [field: Tooltip("탄환 종류")]
     [field: SerializeField] public ProjectileType ProjectileType { get; private set; }
-    [field: Tooltip("관통 횟수(-1: 무제한 / 0: 아님 / n: 횟수")]
+    [field: Tooltip("관통 횟수(-1: 무제한 / 1 ~ n: 횟수")]
     [field: SerializeField] public int PassCount { get; private set; }
     [field: Tooltip("탄환 개수(-1: 연발)")]
     [field: SerializeField] public int[] ProjectilesCounts { get; private set; } = new int[Define.SkillMaxLevel];
@@ -18,4 +18,15 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public Vector2 Offset { get; private set; }
     [field: Tooltip("탄환 스피드")]
     [field: SerializeField] public float Speed { get; private set; }
+
+#if UNITY_EDITOR
+    protected override void Reset()
+    {
+        base.Reset();
+        Type = SkillType.Active;
+        LevelValue = new float[Define.SkillMaxLevel];
+        PassCount = 1;
+        Projectile = AssetLoader.FindAndLoadByName("Projectile_Kunai");
+    }
+#endif
 }
