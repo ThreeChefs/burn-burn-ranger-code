@@ -59,9 +59,25 @@ public static class ListExtension
 
     public static List<T> Random<T>(this List<T> list, int count)
     {
+        return ShuffleRangeAndTake<T>(list, 0, list.Count, count);
+    }
+
+    /// <summary>
+    /// [start, end)까지 섞고, [0, count)까지 뽑아줍니다.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="list"></param>
+    /// <param name="start"></param>
+    /// <param name="end"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public static List<T> ShuffleRangeAndTake<T>(this List<T> list, int start, int end, int count)
+    {
         if (list == null)
         {
-            throw new System.ArgumentNullException(nameof(list));
+            throw new ArgumentNullException(nameof(list));
         }
 
         if (list.Count == 0 || count <= 0)
@@ -69,13 +85,18 @@ public static class ListExtension
             return new List<T>();
         }
 
+        if (start < 0 || start >= end || end > list.Count)
+        {
+            throw new ArgumentOutOfRangeException();
+        }
+
         count = Math.Min(count, list.Count);
 
         List<T> temp = new(list);
 
-        for (int i = temp.Count - 1; i > 0; i--)
+        for (int i = end - 1; i > start; i--)
         {
-            int j = Define.Random.Next(0, i + 1);
+            int j = Define.Random.Next(start, i + 1);
             (temp[i], temp[j]) = (temp[j], temp[i]);
         }
 
