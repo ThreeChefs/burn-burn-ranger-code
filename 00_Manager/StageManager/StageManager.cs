@@ -36,7 +36,9 @@ public class StageManager : SceneSingletonManager<StageManager>
     public int KillCount => _killCount;
 
     public event Action OnGameStartAction;
-    public event Action OnGameEndAction;
+    public event Action OnGameOverAction;
+    public event Action OnGameClearAction;
+    
 
     List<Monster> _spawnedMonsters = new List<Monster>();
 
@@ -84,12 +86,13 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     private void Start()
     {
+        // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
+        _player.OnDieAction += GameOver;
         _skillSystem = new SkillSystem(_skillDataBase, _player);
         
         if (IsTest) return;
-
-        // todo : 이전 Scene에서 선택한 스테이지번호 넘겨주기
+        
         SetStageData(GameManager.Instance.SelectedStageNumber - 1);
         GameStart();
     }
@@ -116,9 +119,14 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameStartAction?.Invoke();
     }
 
-    public void GameEnd(bool isClear)
+    public void GameClear()
     {
-        OnGameEndAction?.Invoke();
+        OnGameClearAction?.Invoke();
+    }
+    
+    public void GameOver()
+    {
+        OnGameOverAction?.Invoke();
     }
 
 
