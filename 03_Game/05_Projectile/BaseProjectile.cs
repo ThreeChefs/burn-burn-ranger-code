@@ -14,7 +14,6 @@ public class BaseProjectile : PoolObject, IAttackable
     protected BaseStat attack;
 
     [SerializeField] protected Transform target;
-    protected LayerMask targetLayer;
     protected Vector3 targetPos;
     protected Vector3 targetDir;
 
@@ -61,7 +60,7 @@ public class BaseProjectile : PoolObject, IAttackable
     #region 공격
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (((1 << collision.gameObject.layer) & targetLayer) != 0)
+        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) != 0)
         {
             Attack((IDamageable)collision);
             if (passCount < 0) return;
