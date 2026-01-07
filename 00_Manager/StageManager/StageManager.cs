@@ -63,12 +63,17 @@ public class StageManager : SceneSingletonManager<StageManager>
         
         if (_stageDatas.Count <= stageNum)
         {
-            Logger.Log("스테이지 없읍!");
+            Logger.Log("스테이지 없음!");
             return false;
         }
 
         // todo : Pool 적용 시 스테이지데이터 읽고 사용할 몬스터들 등록 필요
         _nowStage = _stageDatas[stageNum];
+
+        if (_stageDatas[stageNum].Map != null)
+        {
+            Instantiate(_stageDatas[stageNum].Map);
+        }
         
         if (_waveController != null)
         {
@@ -101,7 +106,6 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             camera.ConnectPlayer();
         }
-        
         
         // 게임 시작
         if (IsTest) return;
