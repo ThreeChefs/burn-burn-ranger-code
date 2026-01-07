@@ -1,0 +1,61 @@
+// 아이템 타입
+public enum ItemType
+{
+    General,
+    Equipment,
+}
+
+// 아이템 등급
+public enum ItemClass
+{
+    Normal,
+    Rare,
+    Elite,
+    Unique
+}
+
+// 장비 아이템 타입
+public enum EquipmentType
+{
+    Weapon,
+    Armor,
+}
+
+// 장비 효과
+public enum EquipmentEffectType
+{
+    Stat,           // 스탯 변경
+    Buff,           // 버프 부여
+    Skill,          // 스킬 부여
+}
+
+// 적용 방식
+public enum EffectApplyType
+{
+    Flat,       // 고정값
+    Percent,    // 퍼센트
+}
+
+// 조건
+public enum EffectTriggerType
+{
+    Always,
+    OnCondition,
+    OnKill,
+    OnHit,
+}
+
+// 대상
+public enum EffectTargetType
+{
+    Self,
+    AllEnemy,
+    NormalEnemy,
+    BossEnemy,
+}
+
+// 버프 타입
+public enum BuffType
+{
+    Invincible
+}
