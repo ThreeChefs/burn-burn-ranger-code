@@ -12,4 +12,5 @@
     AddEXP,         // 경험치 획득량 6%씩 증가
     AddGold,        // 골드 획득량 8% 씩 증가
     DropItemRange,  // 드랍된 아이템 습득 범위 증가 (자석)
+    DamageReduction,// 대미지 감소
 }
