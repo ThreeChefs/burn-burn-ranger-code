@@ -57,9 +57,12 @@ public class ActiveSkill : BaseSkill
     {
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
-            PlayerProjectile projectile = ProjectileManager.Instance.Spawn<PlayerProjectile>(_projectileIndex) as PlayerProjectile;
-            projectile.Init(PlayerManager.Instance.Condition[StatType.Attack], _activeSkillData.ProjectileData);
-            projectile.Spawn(transform.position, StageManager.Instance.GetNearestMonster());
+            PlayerProjectile projectile = ProjectileManager.Instance.Spawn(
+                _projectileIndex,
+                PlayerManager.Instance.Condition[StatType.Attack],
+                StageManager.Instance.GetNearestMonster(),
+                _activeSkillData,
+                transform.position) as PlayerProjectile;
         }
     }
 }
