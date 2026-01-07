@@ -7,14 +7,6 @@ public enum CommonPoolIndex
 
 }
 
-public enum ProjectileDataIndex
-{
-    KunaiProjectileData,    // SO 이름과 동일하게 맞추기
-    GhostShurikenProjectileData,
-    RangedAttack,
-    RangedProjectile,
-}
-
 public enum MonsterPoolIndex
 {
 }
