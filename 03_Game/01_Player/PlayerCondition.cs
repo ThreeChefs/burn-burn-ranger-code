@@ -51,13 +51,15 @@ public class PlayerCondition
         }
 
         // 누락 스텟 확인
-        CheckRequiredStat(StatType.Health);
-        CheckRequiredStat(StatType.Attack);
-        CheckRequiredStat(StatType.Defense);
-        CheckRequiredStat(StatType.Speed);
-        CheckRequiredStat(StatType.AddEXP);
-        CheckRequiredStat(StatType.AddGold);
-        CheckRequiredStat(StatType.DropItemRange);
+        CheckRequiredStats();
+    }
+
+    private void CheckRequiredStats()
+    {
+        foreach (StatType type in Enum.GetValues(typeof(StatType)))
+        {
+            CheckRequiredStat(type);
+        }
     }
 
     /// <summary>
