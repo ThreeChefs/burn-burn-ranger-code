@@ -222,7 +222,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         
         for (int i = 1; i < _spawnedMonsters.Count; i++)
         {
-            float nowDistance = Vector2.Distance(nearestMonster.transform.position, _spawnedMonsters[i].transform.position);
+            float nowDistance = Vector2.Distance(_player.transform.position, _spawnedMonsters[i].transform.position);
             if (distance >= nowDistance)
             {
                 nearestMonster = _spawnedMonsters[i];
