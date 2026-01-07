@@ -47,7 +47,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     /// <summary>
     /// 1회성
     /// </summary>
-    public BaseUI SpawnUI(UIName uiName, bool active = true)
+    public BaseUI SpawnUI(UIName uiName)
     {
         BaseUI ui = GetOriginUI(uiName);
 
@@ -66,9 +66,20 @@ public class UIManager : GlobalSingletonManager<UIManager>
                 rect.sizeDelta = new Vector2(1080f, 1920f);
             }
 
-            if (active == false)
-                spawnedUI.gameObject.SetActive(false); // 프리팹이 켜져있으면 OnEnable 은 호출됨
 
+            return spawnedUI;
+        }
+
+        return null;
+    }
+
+    public BaseUI SpawnWorldUI(UIName uiName, Transform parent = null)
+    {
+        BaseUI ui = GetOriginUI(uiName);
+
+        if (ui != null)
+        {
+            BaseUI spawnedUI = Instantiate(ui, parent == null ? null : parent.transform, false);
             return spawnedUI;
         }
 
@@ -151,4 +162,3 @@ public class UIManager : GlobalSingletonManager<UIManager>
         _nowLoadedUiDict.Clear();
     }
 }
-

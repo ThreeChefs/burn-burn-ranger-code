@@ -94,10 +94,16 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
         _player.OnDieAction += GameOver;
-        _skillSystem = new SkillSystem(_skillDataBase, _player);
+        StatSliderUI hpUI = (StatSliderUI)UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _player.transform);    // 플레이어에서 해주면 좋을듯!
+        
         
         // 플레이어 이벤트 연결
         _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
+        
+        // 스킬 시스템 생성
+        _skillSystem = new SkillSystem(_skillDataBase, _player);
+        
+        
         
         // todo : 
         // 카메라 세팅
