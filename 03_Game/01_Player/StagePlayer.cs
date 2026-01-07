@@ -40,10 +40,14 @@ public class StagePlayer : MonoBehaviour, IDamageable
     public event Action OnDieAction;
 
     #region Unity API
+    private void Awake()
+    {
+        StageLevel = new(1, 0f);
+    }
+
     private void Start()
     {
         Condition = PlayerManager.Instance.Condition;
-        StageLevel = new(1, 0f);
         _speed = Condition[StatType.Speed];
         _health = Condition[StatType.Health];
         _heal = Condition[StatType.Heal];
