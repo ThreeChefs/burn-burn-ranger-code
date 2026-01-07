@@ -23,7 +23,7 @@ public class PassiveSkill : BaseSkill
     {
         base.LevelUp();
 
-        PlayerManager.Instance.Condition[_passiveSkillData.StatType]
-            .UpdateBuffValue(_passiveSkillData.LevelValue[0] * CurLevel);
+        PlayerStat stat = PlayerManager.Instance.Condition[_passiveSkillData.StatType];
+        stat.UpdateBuffValue((stat.BaseValue == 0 ? 1 : stat.BaseValue) * _passiveSkillData.LevelValue[0] * CurLevel);
     }
 }

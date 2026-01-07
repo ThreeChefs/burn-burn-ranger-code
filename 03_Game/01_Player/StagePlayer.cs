@@ -11,6 +11,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
 {
     // 캐싱
     public PlayerCondition Condition { get; private set; }
+    private PlayerStat _health;
+    private PlayerStat _heal;
 
     // 레벨
     public LevelSystem StageLevel { get; private set; }
@@ -40,9 +42,23 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region Unity API
     private void Awake()
     {
-        Condition = PlayerManager.Instance.Condition;
         StageLevel = new(1, 0f);
+    }
+
+    private void Start()
+    {
+        Condition = PlayerManager.Instance.Condition;
         _speed = Condition[StatType.Speed];
+        _health = Condition[StatType.Health];
+        _heal = Condition[StatType.Heal];
+    }
+
+    private void Update()
+    {
+        if (_heal.MaxValue != 0)
+        {
+            _health.Add(_health.MaxValue * _heal.MaxValue);
+        }
     }
 
     private void FixedUpdate()
@@ -59,7 +75,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region Move
     private void Move()
     {
-        Vector2 nextVec = _speed.CurValue * Time.fixedDeltaTime * _inputVector.normalized;
+        Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
         IsLeft = nextVec.x > 0;
         Vector2 pos = transform.position;
         Vector2 newPos = pos + nextVec;
@@ -89,7 +105,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     public void TakeDamage(float value)
     {
         PlayerStat health = Condition[StatType.Health];
-        if (health.TryUse(value))
+        if (health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
             Logger.Log($"플레이어 hp: {health.CurValue} / {health.MaxValue}");
 

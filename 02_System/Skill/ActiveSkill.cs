@@ -5,7 +5,9 @@ public class ActiveSkill : BaseSkill
 {
     private bool _isReady = true;
 
+    // 캐싱
     private ActiveSkillData _activeSkillData;
+    private BaseStat _attackCooldown;
 
     // 쿨타임
     private float _cooldownTimer = 0f;
@@ -26,6 +28,8 @@ public class ActiveSkill : BaseSkill
         {
             Logger.LogWarning("풀에 사용할 투사체 enum 변환 실패");
         }
+
+        _attackCooldown = PlayerManager.Instance.Condition[StatType.AttackCooldown];
     }
 
     protected override void Update()
@@ -39,7 +43,7 @@ public class ActiveSkill : BaseSkill
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
-        if (_cooldownTimer > _cooldown)
+        if (_cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
         {
             _cooldownTimer = 0f;
             UseSkill();

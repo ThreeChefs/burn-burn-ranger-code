@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// ScriptableObject 데이터베이스
 /// </summary>
-[CreateAssetMenu(fileName = "SoDatabase", menuName = "SO/SO Database")]
+[CreateAssetMenu(fileName = "SoDatabase", menuName = "SO/Database/SO Database")]
 public class SoDatabase : ScriptableObject
 {
     [SerializeField] private List<ScriptableObject> _list = new();

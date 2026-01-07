@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PoolObject Database", menuName = "SO/PoolObjectDatabase")]
+[CreateAssetMenu(fileName = "PoolObject Database", menuName = "SO/Database/PoolObjectDatabase")]
 public class PoolObjectDatabase : ScriptableObject
 {
     [SerializeField] private List<PoolObjectData> _list = new();

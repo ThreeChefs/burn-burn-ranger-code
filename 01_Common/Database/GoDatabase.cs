@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// GameObject 데이터베이스
 /// </summary>
-[CreateAssetMenu(fileName = "GoDatabase", menuName = "SO/GO Database")]
+[CreateAssetMenu(fileName = "GoDatabase", menuName = "SO/Database/GO Database")]
 public class GoDatabase : ScriptableObject
 {
     [SerializeField] private List<GameObject> _list = new();
