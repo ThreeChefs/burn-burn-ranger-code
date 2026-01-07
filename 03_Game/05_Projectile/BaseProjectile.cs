@@ -18,7 +18,19 @@ public class BaseProjectile : PoolObject, IAttackable
     protected Vector3 targetPos;
     protected Vector3 targetDir;
 
+    protected float timer;
+
     #region Unity API
+    protected virtual void Update()
+    {
+        timer += Time.deltaTime;
+        if (timer > data.AliveTime)
+        {
+            // todo: 디스폰으로 변경
+            Destroy(gameObject);
+        }
+    }
+
     protected virtual void FixedUpdate()
     {
         MoveAndRotate();
