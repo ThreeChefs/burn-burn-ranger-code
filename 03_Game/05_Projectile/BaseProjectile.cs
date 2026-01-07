@@ -20,6 +20,10 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float timer;
 
     #region Unity API
+    protected virtual void Start()
+    {
+    }
+
     protected virtual void Update()
     {
         if (data.AliveTime < 0) return;
@@ -37,11 +41,11 @@ public class BaseProjectile : PoolObject, IAttackable
     #endregion
 
     // 초기화
-    public virtual void Init(BaseStat attack, ProjectileData data)
+    public virtual void Init(BaseStat attack, ScriptableObject originData)
     {
         this.attack = attack;
 
-        this.data = data;
+        data = originData as ProjectileData;
         type = data.ProjectileType;
         passCount = data.PassCount;
     }
@@ -62,7 +66,8 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         if (((1 << collision.gameObject.layer) & data.TargetLayerMask) != 0)
         {
-            Attack((IDamageable)collision);
+            collision.TryGetComponent<IDamageable>(out var damageable);
+            Attack(damageable);
             if (passCount < 0) return;
             passCount--;
             if (passCount == 0)

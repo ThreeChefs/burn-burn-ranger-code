@@ -5,34 +5,44 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
-    protected ActiveSkill skill;
     protected float[] levelValue;
 
     // 스텟
+    protected PlayerStat attackCooldown;
     protected PlayerStat projectileSpeedMultiplier;
-    protected PlayerStat projectileAliveDuration;
 
     protected override void Update()
     {
-        if (data.AliveTime < 0) return;
+        if (data == null || data.AliveTime < 0) return;
         timer += Time.deltaTime;
-        if (timer > data.AliveTime * (1 - projectileAliveDuration.MaxValue))
+        if (timer > data.AliveTime * (1 - attackCooldown.MaxValue))
         {
             gameObject.SetActive(false);
         }
     }
 
-    public void Init(ActiveSkill skill, ActiveSkillData data)
+    protected override void FixedUpdate()
     {
-        this.skill = skill;
-        levelValue = data.LevelValue;
-        PlayerCondition condition = PlayerManager.Instance.Condition;
+        if (data == null) return;
+        base.FixedUpdate();
+    }
 
-        base.Init(condition[StatType.Attack], data.ProjectileData);
+    protected override void Start()
+    {
+        base.Start();
 
         // 스텟 캐싱
+        PlayerCondition condition = PlayerManager.Instance.Condition;
+        attackCooldown = condition[StatType.AttackCooldown];
         projectileSpeedMultiplier = condition[StatType.ProjectileSpeed];
-        projectileAliveDuration = condition[StatType.ProjectileAliveDuration];
+    }
+
+    public override void Init(BaseStat attack, ScriptableObject originData)
+    {
+        ActiveSkillData data = originData as ActiveSkillData;
+        levelValue = data.LevelValue;
+
+        base.Init(attack, data.ProjectileData);
     }
 
     protected override void ChaseMove()
