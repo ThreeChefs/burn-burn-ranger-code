@@ -12,8 +12,13 @@ public class RangedAttackMonster : Monster
     [SerializeField] private float fireInterval = 0.3f;
     [SerializeField] private int fireCount = 3;
 
+    [Header("Burst CoolDown")]
+    [SerializeField] private float burstCooldown = 1f;
     private bool _isFiring;
 
+
+    private Coroutine _firecoroutine;
+    private float _nextBurstTime;
     protected override void FixedUpdate()
     {
 
@@ -30,9 +35,9 @@ public class RangedAttackMonster : Monster
         base.FixedUpdate();
 
         float dist = Vector2.Distance(transform.position, target.transform.position);
-        if (dist <= detectRange)
+        if (dist <= detectRange && Time.time >= _nextBurstTime && _firecoroutine == null)
         {
-            StartCoroutine(FireBurstRoutine());
+            _firecoroutine = StartCoroutine(FireBurstRoutine());
         }
     }
 
@@ -54,6 +59,10 @@ public class RangedAttackMonster : Monster
         }
 
         _isFiring = false;
+
+        _nextBurstTime = Time.time + burstCooldown;
+
+        _firecoroutine = null;
     }
 
     private void Fire()
