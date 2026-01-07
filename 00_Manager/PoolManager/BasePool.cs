@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class BasePool : MonoBehaviour
 {
-    private List<PoolObject> activatedObjectsPool;
-    List<PoolObject> deactivatedObjectsPool;
+    protected List<PoolObject> activatedObjectsPool;
+    protected List<PoolObject> deactivatedObjectsPool;
     
     private PoolObject _originPrefab;
 

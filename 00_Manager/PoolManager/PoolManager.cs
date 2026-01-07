@@ -23,7 +23,7 @@ public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T>
     public abstract void UsePool(TEnumIndex poolIndex);
 
     
-    public GameObject Spawn(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    protected GameObject SpawnObject(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         if (nowPoolDic.ContainsKey(poolType))
         {
@@ -57,10 +57,10 @@ public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T>
         return null;
     }
 
-    public TPoolObject Spawn<TPoolObject>(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    protected TPoolObject SpawnObject<TPoolObject>(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     where TPoolObject : PoolObject
     {
-        GameObject go = Spawn(poolType, position, rotation, parent);
+        GameObject go = SpawnObject(poolType, position, rotation, parent);
         
         if (go != null)
         {
