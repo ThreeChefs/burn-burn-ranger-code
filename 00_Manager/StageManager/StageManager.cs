@@ -48,6 +48,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     protected override void Awake()
     {
+        Time.timeScale = 1;
         base.Awake();
         Init();
     }
