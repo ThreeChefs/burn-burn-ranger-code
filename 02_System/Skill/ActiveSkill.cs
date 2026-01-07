@@ -48,7 +48,7 @@ public class ActiveSkill : BaseSkill
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
             // todo: pool에 넣어서 초기화
-            GameObject newGo = Instantiate(_projectileData.ProjectilePrefab.gameObject);
+            GameObject newGo = Instantiate(_projectileData.OriginPrefab.gameObject);
             var projectile = newGo.GetComponent<PlayerProjectile>();
             projectile.Init(this, _activeSkillData);
             projectile.Spawn(transform.position, StageManager.Instance.GetNearestMonster());
