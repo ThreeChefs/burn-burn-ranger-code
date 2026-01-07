@@ -17,6 +17,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 레벨
     public LevelSystem StageLevel { get; private set; }
 
+    // 골드
+    private int _gold;
+
     // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
@@ -47,6 +50,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Awake()
     {
         StageLevel = new(1, 0f);
+        _gold = 0;
         _defaultRadius = _itemDetectionRange.radius;
     }
 
@@ -149,6 +153,21 @@ public class StagePlayer : MonoBehaviour, IDamageable
     public void AddExp(float exp)
     {
         StageLevel.AddExp(exp * Condition[StatType.AddEXP].MaxValue);
+    }
+    #endregion
+
+    #region 골드
+    public void AddGold(int amount)
+    {
+        _gold += amount;
+    }
+
+    /// <summary>
+    /// [public] 스테이지 종료 시 획득한 골드 저장하기
+    /// </summary>
+    public void UpdateGold()
+    {
+        PlayerManager.Instance.Wallet[WalletType.Gold].Add(_gold);
     }
     #endregion
 
