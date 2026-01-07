@@ -20,4 +20,6 @@ public static class Define
     // todo : define이 아니라 맵나오면 맵 범위에 맞게 맵에서 뽑아 써야할 듯 함.
     public const float MinMonsterSpawnDistance = 20.0f;
     public const float MaxMonsterSpawnDistance = 30.0f;
+
+    public const int MapSize = 40;
 }
