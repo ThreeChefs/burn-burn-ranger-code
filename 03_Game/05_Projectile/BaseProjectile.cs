@@ -23,11 +23,11 @@ public class BaseProjectile : PoolObject, IAttackable
     #region Unity API
     protected virtual void Update()
     {
+        if (data.AliveTime < 0) return;
         timer += Time.deltaTime;
         if (timer > data.AliveTime)
         {
-            // todo: 디스폰으로 변경
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
@@ -68,7 +68,7 @@ public class BaseProjectile : PoolObject, IAttackable
             passCount--;
             if (passCount == 0)
             {
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
     }

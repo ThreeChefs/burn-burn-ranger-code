@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class ActiveSkill : BaseSkill
@@ -12,6 +13,7 @@ public class ActiveSkill : BaseSkill
 
     // 총알
     private ProjectileData _projectileData;
+    private ProjectileDataIndex _projectileIndex;
 
     public override void Init(SkillData data)
     {
@@ -20,6 +22,10 @@ public class ActiveSkill : BaseSkill
         _activeSkillData = data as ActiveSkillData;
         _cooldown = _activeSkillData.Cooldown;
         _projectileData = _activeSkillData.ProjectileData;
+        if (!Enum.TryParse(_projectileData.name, true, out _projectileIndex))
+        {
+            Logger.LogWarning("풀에 사용할 투사체 enum 변환 실패");
+        }
     }
 
     protected override void Update()
@@ -47,9 +53,7 @@ public class ActiveSkill : BaseSkill
     {
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
-            // todo: pool에 넣어서 초기화
-            GameObject newGo = Instantiate(_projectileData.OriginPrefab.gameObject);
-            var projectile = newGo.GetComponent<PlayerProjectile>();
+            PlayerProjectile projectile = ProjectileManager.Instance.Spawn<PlayerProjectile>(_projectileIndex);
             projectile.Init(this, _activeSkillData);
             projectile.Spawn(transform.position, StageManager.Instance.GetNearestMonster());
         }
