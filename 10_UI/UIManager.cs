@@ -55,8 +55,8 @@ public class UIManager : GlobalSingletonManager<UIManager>
         
         if (ui != null)
         {   
-            BaseUI spawnedUI = Instantiate(ui);
-            spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            BaseUI spawnedUI = Instantiate(ui,_mainCanvas.transform);
+            //spawnedUI.transform.SetParent(_mainCanvas.transform, true);
             
             if(active == false)
                 spawnedUI.gameObject.SetActive(false);  // 프리팹이 켜져있으면 OnEnable 은 호출됨
