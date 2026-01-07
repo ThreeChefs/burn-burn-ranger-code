@@ -35,8 +35,8 @@ public abstract class BaseUI : MonoBehaviour
     }
 
 
-    public abstract void OpenUIInternal();
-    public abstract void CloseUIInternal();
+    public virtual void OpenUIInternal() { }
+    public virtual void CloseUIInternal() { }
 
 
 
