@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-public class ProjectileManager : PoolManager<ProjectileManager,ProjectilePoolIndex>
+public class ProjectileManager : PoolManager<ProjectileManager,ProjectileDataIndex>
 {
-    Dictionary<ProjectilePoolIndex,ProjectileData> _projectileDataDic = new Dictionary<ProjectilePoolIndex, ProjectileData>();
+    Dictionary<ProjectileDataIndex,ProjectileData> _projectileDataDic = new Dictionary<ProjectileDataIndex, ProjectileData>();
     
     protected override void Init()
     {
@@ -13,22 +13,22 @@ public class ProjectileManager : PoolManager<ProjectileManager,ProjectilePoolInd
 
         foreach (ProjectileData data in _projectileDatas)
         {
-            if (Enum.TryParse( data.name, true, out ProjectilePoolIndex poolIndex))
+            if (Enum.TryParse( data.name, true, out ProjectileDataIndex poolIndex))
             {
                 _projectileDataDic[poolIndex] = data;
             }
         }
     }
 
-    public override void UsePool(ProjectilePoolIndex poolIndex)
+    public override void UsePool(ProjectileDataIndex dataIndex)
     {
-        if (_projectileDataDic.ContainsKey(poolIndex) == false) return;
-        if (nowPoolDic.ContainsKey(poolIndex)) return;
+        if (_projectileDataDic.ContainsKey(dataIndex) == false) return;
+        if (nowPoolDic.ContainsKey(dataIndex)) return;
         
-        ProjectileData data = _projectileDataDic[poolIndex];
+        ProjectileData data = _projectileDataDic[dataIndex];
 
         BasePool newPool = Instantiate(poolPrefab);
         newPool.Init(data.OriginPrefab, data.DefaultPoolSize);
-        nowPoolDic.Add(poolIndex, newPool);
+        nowPoolDic.Add(dataIndex, newPool);
     }
 }

@@ -7,7 +7,7 @@ public enum CommonPoolIndex
     
 }
 
-public enum ProjectilePoolIndex
+public enum ProjectileDataIndex
 {
     KunaiProjectileData,    // SO 이름과 동일하게 맞추기
     GhostShurikenProjectileData,
