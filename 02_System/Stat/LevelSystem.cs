@@ -30,14 +30,18 @@ public class LevelSystem
     /// [public] 경험치 회득
     /// </summary>
     /// <param name="exp"></param>
-    public void AddExp(float exp)
+    /// <returns></returns>
+    public int AddExp(float exp)
     {
+        int count = 0;
         CurrentExp += exp;
         while (CurrentExp > RequiredExp)
         {
             LevelUp();
+            count++;
         }
         OnExpChanged?.Invoke(CurrentExp / RequiredExp);
+        return count;
     }
 
     /// <summary>
