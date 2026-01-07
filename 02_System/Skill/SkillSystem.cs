@@ -39,6 +39,10 @@ public class SkillSystem
         _skillDatabase.GetDatabase<SkillData>()
             .ForEach(skillData =>
             {
+                if (_skillDataCache.ContainsKey(skillData.Id))
+                {
+                    Logger.LogWarning("키 중복");
+                }
                 _skillDataCache[skillData.Id] = skillData;
             });
         _ownedSkills.Clear();
