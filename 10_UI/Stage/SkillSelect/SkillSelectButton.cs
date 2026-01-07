@@ -8,6 +8,7 @@ public class SkillSelectButton : BaseButton
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private Image _headerImg;
     [SerializeField] private Image _iconImg;
+    [SerializeField] SkillLevelPanel _skillLevelPanel;
 
     private SkillSelectUI _skillSelectUI;
     private SkillSelectDto _nowSkillData;
@@ -36,6 +37,9 @@ public class SkillSelectButton : BaseButton
             case SkillType.Combination:
                 break;
         }
+        
+        _skillLevelPanel.Init(skillData.Type,skillData.CurLevel);
+        
     }
     
     protected override void OnClick()
