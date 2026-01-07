@@ -23,6 +23,10 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     public StagePlayer SpawnPlayer()
     {
         StagePlayer = Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
+        if (Camera.main.TryGetComponent<FollowCamera>(out var camera))
+        {
+            camera.ConnectPlayer();
+        }
         return StagePlayer;
     }
 

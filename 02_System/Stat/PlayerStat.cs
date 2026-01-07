@@ -49,5 +49,8 @@ public class PlayerStat : BaseStat
         BuffValue = value;
         CurValue = Mathf.Min(CurValue + BuffValue, MaxValue);
         Logger.Log($"현재 {type} 값: {CurValue}");
+
+        OnCurValueChanged?.Invoke(CurValue);
+        OnMaxValueChanged?.Invoke(MaxValue);
     }
 }
