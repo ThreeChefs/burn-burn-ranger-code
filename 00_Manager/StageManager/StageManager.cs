@@ -38,6 +38,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     public event Action OnGameStartAction;
     public event Action OnGameOverAction;
     public event Action OnGameClearAction;
+    public event Action<int> AddKillCountAction;
     
 
     List<Monster> _spawnedMonsters = new List<Monster>();
@@ -200,6 +201,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     public void DestroyMonster(Monster monster)
     {
         _killCount += 1;
+        AddKillCountAction?.Invoke(_killCount);
         
         if (_spawnedMonsters.Contains(monster))
         {
