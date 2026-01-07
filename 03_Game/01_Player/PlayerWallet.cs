@@ -17,7 +17,7 @@ public class PlayerWallet
         // todo: 플레이어 초기화 시 저장된 값 불러오기
         _wallets = new()
         {
-            { WalletType.DungeonKey, new(5, WalletType.DungeonKey) },
+            { WalletType.Energy, new(5, WalletType.Energy) },
             { WalletType.Gold, new(10, WalletType.Gold) },
             { WalletType.Gem, new(0, WalletType.Gem) }
         };

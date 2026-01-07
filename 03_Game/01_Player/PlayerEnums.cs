@@ -1,6 +1,6 @@
 public enum WalletType
 {
-    DungeonKey,
+    Energy,
     Gold,
     Gem
 }
