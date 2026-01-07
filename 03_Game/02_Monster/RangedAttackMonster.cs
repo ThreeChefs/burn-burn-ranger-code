@@ -72,8 +72,8 @@ public class RangedAttackMonster : Monster
         if (target == null) return;
 
         Vector2 spawnPos = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
-        BaseProjectile proj = ProjectileManager.Instance.Spawn<BaseProjectile>(ProjectileDataIndex.RangedAttack, spawnPos);
-        proj.Spawn(firePoint.position, target.transform);
+        ProjectileManager.Instance.Spawn(ProjectileDataIndex.RangedAttack, Attack, target.transform, spawnPos);
+
 
     }
 }
