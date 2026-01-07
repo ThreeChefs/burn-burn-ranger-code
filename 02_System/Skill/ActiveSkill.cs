@@ -1,10 +1,9 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class ActiveSkill : BaseSkill
 {
-    private bool _isReady = true;
-
     // 캐싱
     private ActiveSkillData _activeSkillData;
     private BaseStat _attackCooldown;
@@ -16,6 +15,10 @@ public class ActiveSkill : BaseSkill
     // 총알
     private ProjectileData _projectileData;
     private ProjectileDataIndex _projectileIndex;
+
+    // 코루틴
+    private Coroutine _coroutine;
+    private WaitForSeconds _projectileDelay;
 
     public override void Init(SkillData data)
     {
@@ -30,39 +33,57 @@ public class ActiveSkill : BaseSkill
         }
 
         _attackCooldown = PlayerManager.Instance.Condition[StatType.AttackCooldown];
+        _projectileDelay = new WaitForSeconds(0.1f);
     }
 
+    #region Unity API
     protected override void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _isReady = !_isReady;
-        }
-        if (_isReady) return;
-
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
         if (_cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
         {
+            Transform target = StageManager.Instance.GetNearestMonster();
+            if (target == null) return;
+
+            StopPlayingCoroutine();
+            _coroutine = StartCoroutine(UseSkill(target));
+
             _cooldownTimer = 0f;
-            UseSkill();
         }
     }
+
+    protected override void OnDestroy()
+    {
+        StopPlayingCoroutine();
+        base.OnDestroy();
+    }
+    #endregion
 
     /// <summary>
     /// 스킬 내부 로직
     /// </summary>
-    private void UseSkill()
+    private IEnumerator UseSkill(Transform target)
     {
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
-            PlayerProjectile projectile = ProjectileManager.Instance.Spawn(
+            ProjectileManager.Instance.Spawn(
                 _projectileIndex,
                 PlayerManager.Instance.Condition[StatType.Attack],
-                StageManager.Instance.GetNearestMonster(),
+                target,
                 _activeSkillData,
-                transform.position) as PlayerProjectile;
+                transform.position);
+            yield return _projectileDelay;
+        }
+    }
+
+    private void StopPlayingCoroutine()
+    {
+        if (_coroutine != null)
+        {
+            StopCoroutine(_coroutine);
+            _coroutine = null;
         }
     }
 }

@@ -40,6 +40,12 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
+    protected override void OnDisableInternal()
+    {
+        base.OnDisableInternal();
+        timer = 0f;
+    }
+
     // 초기화
     public virtual void Init(BaseStat attack, ScriptableObject originData)
     {
