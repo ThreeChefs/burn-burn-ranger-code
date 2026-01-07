@@ -18,18 +18,18 @@ public class LevelPanel : MonoBehaviour
 
     private void Start()
     {
-        PlayerManager.Instance.StagePlayer.StageLevel.OnExpChanged += UpdateProgress;
+        PlayerManager.Instance.StagePlayer.StageLevel.OnExpChanged += UpdateValue;
         PlayerManager.Instance.StagePlayer.StageLevel.OnLevelChanged += UpdateLevel;
         _levelText.text = PlayerManager.Instance.StagePlayer.StageLevel.Level.ToString();
     }
 
-    void UpdateProgress(float targetValue)
+    void UpdateValue(float targetValue)
     {
         if (_routine != null)
             StopCoroutine(_routine);
 
         float startValue = _slider.value;
-        _routine = StartCoroutine(LerpProgress(startValue, targetValue, _duration));
+        _routine = StartCoroutine(LerpSliderValue(startValue, targetValue, _duration));
     }
 
     void UpdateLevel(int level)
@@ -37,7 +37,7 @@ public class LevelPanel : MonoBehaviour
         _levelText.text = level.ToString();
     }
 
-    IEnumerator LerpProgress(float start, float end, float duration)
+    IEnumerator LerpSliderValue(float start, float end, float duration)
     {
         float alpha = 0f;
 
