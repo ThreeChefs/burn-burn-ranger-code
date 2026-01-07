@@ -43,32 +43,21 @@ public class ProjectileManager : PoolManager<ProjectileManager,ProjectileDataInd
     
     // todo :  Spawn 할 때 projectile Init 필요
 
-
-    public GameObject Spawn(ProjectileDataIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
-    {
-        Logger.Log("다른 함수 사용!!!!!!!!!! 매개변수가 추가됐서용");
-        return null;
-    }
-    
-    public BaseProjectile Spawn<T>(ProjectileDataIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
-    {
-        Logger.Log("다른 함수 사용!!!!!!!!!! / 매개변수가 추개됐어용");
-        return null;
-    }
-
-    public BaseProjectile Spawn(ProjectileDataIndex poolType, BaseStat baseStat, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    public BaseProjectile Spawn(ProjectileDataIndex poolType, BaseStat baseStat, Transform target, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         BaseProjectile projectile = SpawnObject<BaseProjectile>(poolType, position, rotation, parent);
 
         if (projectile == null) return projectile;
         
-        projectile.Init(baseStat, _projectileDataDic[poolType]);
+        projectile.Init(baseStat, _projectileDataDic[poolType]);    // todo UsePool 에서 한번만 하게 해놓기
+        projectile.Spawn(position, target);
         
         return projectile;
         
     }
     
-    public BaseProjectile Spawn(ProjectileDataIndex poolType, BaseStat baseStat, ActiveSkillData skillData, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    // 플레이어만 임시사용
+    public BaseProjectile Spawn(ProjectileDataIndex poolType, BaseStat baseStat, Transform target, ActiveSkillData skillData, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         BaseProjectile projectile = SpawnObject<BaseProjectile>(poolType, position, rotation, parent);
 
@@ -80,12 +69,9 @@ public class ProjectileManager : PoolManager<ProjectileManager,ProjectileDataInd
         if (playerProjectile != null)
         {
             projectile.Init(baseStat, skillData);
+        }
 
-        }
-        else
-        {
-            projectile.Init(baseStat, _projectileDataDic[poolType]);
-        }
+        projectile.Spawn(position, target);
         
         return projectile;
         
