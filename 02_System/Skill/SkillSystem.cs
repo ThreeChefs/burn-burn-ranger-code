@@ -244,7 +244,7 @@ public class SkillSystem
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
                     0,
-                    skillData.name,
+                    skillData.DisplayName,
                     skillData.Description,
                     skillData.Icon,
                     skillData.Type,
@@ -351,7 +351,7 @@ public class SkillSystem
             skillSelectDtos.Add(new SkillSelectDto(
                 skillData.Id,
                 skill == null ? 0 : skill.CurLevel,
-                skillData.name,
+                skillData.DisplayName,
                 skillData.Description,
                 skillData.Icon,
                 skillData.Type,
