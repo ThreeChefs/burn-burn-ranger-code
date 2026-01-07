@@ -5,12 +5,9 @@ using UnityEngine;
 public class StatData : ScriptableObject
 {
     [field: SerializeField]
-    public List<StatEntry> Stats { get; private set; }
-
+    public List<StatEntry> Stats { get; protected set; }
 
     private Dictionary<StatType, float> _statDict;
-
-
 
     private void Reset()
     {
@@ -51,4 +48,10 @@ public class StatEntry
 {
     [field: SerializeField] public StatType StatType { get; private set; }
     [field: SerializeField] public float BaseValue { get; private set; }
+
+    public StatEntry(StatType type, float value)
+    {
+        StatType = type;
+        BaseValue = value;
+    }
 }

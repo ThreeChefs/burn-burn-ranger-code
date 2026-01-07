@@ -20,14 +20,21 @@ public class MonsterTypeData : StatData
 {
     public MonsterType monsterType;
 
-
-
-
     [Header("Visual / Prefab")]
     public GameObject prefab;
 
     [Header("Drop")]
     public DropItemType dropItemType;
     public int dropCount = 1;
+
+    private void Reset()
+    {
+        Stats = new()
+        {
+            new StatEntry(StatType.Speed, 5f),
+            new StatEntry(StatType.Attack, 5f),
+            new StatEntry(StatType.Health, 5f)
+        };
+    }
 }
 
