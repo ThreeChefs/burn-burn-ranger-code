@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public static class Define
 {
     // 랜덤
-    public static Random Random = new();
+    public static System.Random Random = new();
 
     public static float RandomRange(float min, float max)
     {
@@ -25,4 +27,19 @@ public static class Define
 
     // 태그
     public const string PlayerTag = "Player";
+
+    // 아이템 클래스 색상
+    public static Color ColorNone = Color.gray;
+    public static Color ColorNormal = Color.green;
+    public static Color ColorRare = Color.blue;
+    public static Color ColorElite = Color.magenta;
+    public static Color ColorUnique = Color.yellow;
+
+    public static readonly Dictionary<ItemClass, Color> ItemClassColors = new()
+    {
+        { ItemClass.Normal, ColorNormal },
+        { ItemClass.Rare, ColorRare },
+        { ItemClass.Elite, ColorElite },
+        { ItemClass.Unique, ColorUnique },
+    };
 }
