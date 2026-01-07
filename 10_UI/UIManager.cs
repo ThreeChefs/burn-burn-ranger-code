@@ -152,10 +152,3 @@ public class UIManager : GlobalSingletonManager<UIManager>
     }
 }
 
-
-public enum UIName
-{
-    UI_StageSelect,
-    UI_SkillSelect,
-    UI_Stage,
-}
