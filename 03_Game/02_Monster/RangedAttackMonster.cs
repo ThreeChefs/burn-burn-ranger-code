@@ -58,18 +58,13 @@ public class RangedAttackMonster : Monster
 
     private void Fire()
     {
+        Debug.Log($"Fire() prefab={(projectilePrefab != null)} firePoint={(firePoint != null)} target={(target != null)} projData={(projectileData != null)}");
         if (projectilePrefab == null) return;
         if (target == null) return;
 
         Vector2 spawnPos = firePoint ? (Vector2)firePoint.position : (Vector2)transform.position;
-
-        //프리팹생성
-        BaseProjectile proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
-
-        // 투사체의 공격력은 BaseStat 그대로 전달함
-        proj.Init(Attack, projectileData);
-
-
+        BaseProjectile proj = ProjectileManager.Instance.Spawn<BaseProjectile>(ProjectileDataIndex.RangedAttack, spawnPos);
         proj.Spawn(firePoint.position, target.transform);
+
     }
 }

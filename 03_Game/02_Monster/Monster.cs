@@ -41,8 +41,7 @@ public class Monster : MonoBehaviour, IDamageable
     {
         if (monsterTypeData == null)
         {
-            Debug.LogError($"{name} : MonsterTypeData가 연결되지 않았습니다!");
-            enabled = false;
+            Debug.LogError($"[{name}] MonsterTypeData is NULL");
             return;
         }
         monsterdata = monsterTypeData;
