@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "new SceneDatabase", menuName = "SO/Scene Database")]
+[CreateAssetMenu(fileName = "new SceneDatabase", menuName = "SO/Database/Scene Database")]
 public class SceneDatabase : ScriptableObject
 {
     public List<SceneEntry> scenes;

@@ -7,15 +7,15 @@ public enum MonsterType
     Miniboss,
     Boss,
 }
+
 public enum DropItemType
 {
     GreenGEM,
     BlueGEM,
     YellowGEM
-
-
 }
-[CreateAssetMenu(fileName = "MonsterTypeData", menuName = "Monster/Monster Type", order = 1)]
+
+[CreateAssetMenu(fileName = "MonsterTypeData", menuName = "SO/Monster/Monster Type", order = 1)]
 public class MonsterTypeData : StatData
 {
     public MonsterType monsterType;
