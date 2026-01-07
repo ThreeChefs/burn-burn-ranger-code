@@ -79,7 +79,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual float CalculateDamage()
     {
-        return attack.CurValue * data.DamageMultiplier;
+        return attack.MaxValue * data.DamageMultiplier;
     }
     #endregion
 
