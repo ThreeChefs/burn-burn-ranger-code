@@ -2,7 +2,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New ProjectileData", menuName = "SO/Projectile")]
-public class ProjectileData : ScriptableObject
+public class ProjectileData : PoolObjectData
 {
     [field: Header("공통")]
     [field: Tooltip("탄환 인덱스")]
