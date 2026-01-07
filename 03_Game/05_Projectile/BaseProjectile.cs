@@ -3,7 +3,7 @@
 /// <summary>
 /// 공용으로 사용하는 투사체
 /// </summary>
-public class BaseProjectile : BasePool, IAttackable
+public class BaseProjectile : PoolObject, IAttackable
 {
     protected ProjectileData data;
 

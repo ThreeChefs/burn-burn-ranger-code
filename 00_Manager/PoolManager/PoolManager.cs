@@ -1,52 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// todo : enum 제너릭으로 
-public class PoolManager : GlobalSingletonManager<PoolManager>
+public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T> 
+    where T : PoolManager<T,TEnumIndex> where TEnumIndex : struct, Enum       // Enum.TryParse 쓰려면 Generic 제약 struct 필요하대
 {
-    [SerializeField] GoDatabase poolsOrigin;    // Pool Prefabs 를 담은 DatabaseSO, poolOriginDic에 초기화 할 때에만 사용!
-    
-    Dictionary<PoolType, BasePool> poolOriginDic;   // Key 로 담아둔 Origin Pool 들. Instantiate 해서 사용해야함
-    Dictionary<PoolType, BasePool> nowPoolDic;      // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
+    [SerializeField] protected BasePool poolPrefab;     // 풀 프리팹
+    [SerializeField] protected PoolObjectDatabase poolDatabase;
+    protected Dictionary<TEnumIndex, BasePool> nowPoolDic;      // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
 
     protected override void Init()
     {
-        poolOriginDic = ((PoolType[])Enum.GetValues(typeof(PoolType))).ToDictionary(part => part,
-            part => (BasePool)null);
-
-        List<BasePool> pools = new List<BasePool>();
-        for (int i = 0; i < pools.Count; i++)
-        {
-            if (Enum.TryParse(pools[i].name, true, out PoolType poolType))
-            {
-                poolOriginDic[poolType] = pools[i];
-            }
-        }
-        
-        nowPoolDic =  new Dictionary<PoolType, BasePool>();
-        
+        nowPoolDic =  new Dictionary<TEnumIndex, BasePool>();
         SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
-
 
     /// <summary>
     /// Scene에서 사용할 Pool 들 사용하겠다고 알려줘야해요
     /// </summary>
     /// <param name="poolType"></param>
-    public void UsePool(PoolType poolType)
-    {
-        if (poolOriginDic.ContainsKey(poolType))
-        {
-            BasePool newPool = Instantiate(poolOriginDic[poolType]);
-            newPool.Init();
-            nowPoolDic[poolType] = newPool;
-        }
-    }
+    public abstract void UsePool(TEnumIndex poolIndex);
 
-    public GameObject Spawn(PoolType poolType, Vector3 position, Quaternion rotation, Transform parent = null)
+    
+    public GameObject Spawn(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         if (nowPoolDic.ContainsKey(poolType))
         {
@@ -54,13 +31,24 @@ public class PoolManager : GlobalSingletonManager<PoolManager>
 
             GameObject newGameObject = nowPoolDic[poolType].GetGameObject();
 
-            newGameObject.transform.position = position;
-            newGameObject.transform.rotation = rotation;
+            if( position != default)
+                newGameObject.transform.position = position;
+            else
+                newGameObject.transform.position = Vector3.zero;
+            
+            if(rotation != default)
+                newGameObject.transform.rotation = rotation;
+            else
+                newGameObject.transform.rotation = Quaternion.identity;
 
 
             if (parent != null)
             {
                 newGameObject.transform.SetParent(parent);
+            }
+            else
+            {
+                newGameObject.transform.SetParent(nowPoolDic[poolType].transform);
             }
 
             return newGameObject;
@@ -69,18 +57,21 @@ public class PoolManager : GlobalSingletonManager<PoolManager>
         return null;
     }
 
-    public GameObject Spawn(PoolType poolType)
+    public TPoolObject Spawn<TPoolObject>(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    where TPoolObject : PoolObject
     {
-        if (nowPoolDic.ContainsKey(poolType))
+        GameObject go = Spawn(poolType, position, rotation, parent);
+        
+        if (go != null)
         {
-            GameObject newGameObject = nowPoolDic[poolType].GetGameObject();
-            return newGameObject;
+            TPoolObject poolObject = go.GetComponent<TPoolObject>();
+            return poolObject;
         }
 
         return null;
     }
 
-    public void DeactivateAllPoolObjects(PoolType poolType)
+    public void DeactivateAllPoolObjects(TEnumIndex poolType)
     {
         if (nowPoolDic.ContainsKey(poolType))
         {
