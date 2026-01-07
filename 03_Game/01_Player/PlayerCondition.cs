@@ -106,9 +106,4 @@ public class PlayerCondition
         _statDict[type].UpdateEquipmentValue(value);
     }
     #endregion
-
-    public void AddExp(float exp)
-    {
-        Logger.Log("함수 다른 거 써주세요!!!!!!!!!!!!!!!!!");
-    }
 }
