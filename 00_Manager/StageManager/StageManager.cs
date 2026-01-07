@@ -13,10 +13,12 @@ public class StageManager : SceneSingletonManager<StageManager>
     // 스테이지 맵을 생성해주는 거
     // 화면 내 맵을 들고 있어야하는데
     
-    private StagePlayer _player;
     StageData _nowStage;
-    private StageWaveController _waveController;
+    public int NowStageNumber { get; private set; }
 
+    private StageWaveController _waveController;
+    private StagePlayer _player;
+    
     public SkillSystem SkillSystem => _skillSystem;
     SkillSystem _skillSystem;
 
@@ -52,14 +54,13 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public override void Init()
     {
-        // 어떻게 꽂아 넣을지 고민 필요
-        // 플레이어를 생성하면 좋을 것 같음.
-        _stageDatas = _stageDataBase.GetDatabase<StageData>(); // Database 만 넣어둔 애 들고다니면 곤란할까요
-        
+        _stageDatas = _stageDataBase.GetDatabase<StageData>();
     }
 
     bool SetStageData(int stageNum)
     {
+        NowStageNumber = stageNum;
+        
         if (_stageDatas.Count <= stageNum)
         {
             Logger.Log("스테이지 없읍!");
@@ -78,7 +79,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         _waveController = new StageWaveController(_nowStage);
         _waveController.SpawnBossMonsterAction += SpawnBossMonster;
         _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
-        _waveController.OnStageEndAction += () => { Logger.Log("스테이지클리어"); };
+        _waveController.OnStageEndAction += GameClear;
 
         return true;
     }
@@ -90,8 +91,16 @@ public class StageManager : SceneSingletonManager<StageManager>
         _player.OnDieAction += GameOver;
         _skillSystem = new SkillSystem(_skillDataBase, _player);
         
-        // 이벤트 연결
+        // 플레이어 이벤트 연결
         _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
+        
+        // todo : 
+        // 카메라 세팅
+        // 나중에 맵이랑 연결해줘야함 
+        if (Camera.main.TryGetComponent<FollowCamera>(out var camera))
+        {
+            camera.ConnectPlayer();
+        }
         
         
         // 게임 시작
@@ -122,10 +131,9 @@ public class StageManager : SceneSingletonManager<StageManager>
     void SpawnSkillSelectUI(int level)
     {
         PauseGame();
-        SkillSelectUI skillSelectUI = (SkillSelectUI)UIManager.Instance.SpawnUI(UIName.UI_SkillSelect);
-
+        UIManager.Instance.SpawnUI(UIName.UI_SkillSelect);
     }
-    
+   
     public void PauseGame()
     {
         Time.timeScale = 0;
@@ -145,18 +153,20 @@ public class StageManager : SceneSingletonManager<StageManager>
     public void GameClear()
     {
         OnGameClearAction?.Invoke();
+        PauseGame();
+        UIManager.Instance.SpawnUI(UIName.UI_Victory);
     }
     
     public void GameOver()
     {
         OnGameOverAction?.Invoke();
+        UIManager.Instance.SpawnUI(UIName.UI_Defeat);
     }
 
 
     #endregion
     
   
-
     // todo : 몬스터풀 생기면 옮겨야 함
     // 몬스터말고 상자같은 애를 타겟으로 해야할 수도 있음. 수정할 때 참고하기~~ 
     #region  몬스터

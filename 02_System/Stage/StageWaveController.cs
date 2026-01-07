@@ -168,6 +168,7 @@ public class StageWaveController
             }
             else
             {
+                Logger.Log("스테이지 클리어");
                 OnStageEndAction?.Invoke();
             }
         }
