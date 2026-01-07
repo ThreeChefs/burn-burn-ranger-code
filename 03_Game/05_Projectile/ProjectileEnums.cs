@@ -5,13 +5,3 @@ public enum ProjectileType
     Guidance,       // 유도 추격
     Reflection,     // 반사
 }
-
-public enum ProjectileIndex
-{
-    // 플레이어
-    Kunai = 30,
-    GhostShuriken = 52,
-
-    // 몬스터
-    Noraml = 100,
-}
