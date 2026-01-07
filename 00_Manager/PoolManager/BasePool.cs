@@ -6,12 +6,13 @@ public class BasePool : MonoBehaviour
     private List<PoolObject> activatedObjectsPool;
     List<PoolObject> deactivatedObjectsPool;
     
-    [SerializeField] private PoolObject prefab;
-    [SerializeField] private int defaultPoolSize = 50;
+    private PoolObject _originPrefab;
 
     private int nowPoolSize = 0;
-    public void Init()
+    public void Init(PoolObject originPrefab, int defaultPoolSize)
     {  
+        _originPrefab = originPrefab;
+        
         activatedObjectsPool = new List<PoolObject>();
         deactivatedObjectsPool = new List<PoolObject>();
         
@@ -24,7 +25,7 @@ public class BasePool : MonoBehaviour
 
     private PoolObject CreateGameObject()
     {
-        PoolObject newGameObject = Instantiate(prefab);
+        PoolObject newGameObject = Instantiate(_originPrefab);
         newGameObject.gameObject.SetActive(false);
         
         newGameObject.gameObject.name = nowPoolSize.ToString();
