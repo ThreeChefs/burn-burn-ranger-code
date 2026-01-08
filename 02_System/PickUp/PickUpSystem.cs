@@ -32,7 +32,7 @@ public class PickUpSystem : MonoBehaviour
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public ItemData PickUp(int id)
+    public ItemInstance PickUp(int id)
     {
         ItemBoxData itemBoxData = _itemBoxCache[id];
 
@@ -45,7 +45,7 @@ public class PickUpSystem : MonoBehaviour
             if (rand <= cumulative)
             {
                 int index = Random.Range(0, entry.Items.Count);
-                return entry.Items[index];
+                return new ItemInstance(entry.ItemClass, entry.Items[index]);
             }
         }
 

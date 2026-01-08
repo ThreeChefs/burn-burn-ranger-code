@@ -61,7 +61,6 @@ public class ItemSlot : MonoBehaviour
 
     private void SetItemClass()
     {
-        itemClass.color = ItemClassColor.GetGradeColor(data.ItemClass);
     }
 
     private void SetIcon()

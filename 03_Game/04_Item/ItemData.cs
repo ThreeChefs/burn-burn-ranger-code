@@ -1,6 +1,9 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
+/// <summary>
+/// 아이템 원본 데이터 (코드에서 수정 x)
+/// </summary>
 [CreateAssetMenu(fileName = "ItemData", menuName = "SO/Item/Item")]
 public class ItemData : ScriptableObject
 {
@@ -9,7 +12,6 @@ public class ItemData : ScriptableObject
     [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
     [field: SerializeField] public ItemType Type { get; private set; }
-    [field: SerializeField] public ItemClass ItemClass { get; private set; }
     [field: SerializeField] public Sprite Icon { get; private set; }
 
     [field: Header("Equipment")]
