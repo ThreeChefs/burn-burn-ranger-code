@@ -7,10 +7,8 @@ public class Reposition : MonoBehaviour
 {
     private void OnTriggerExit2D(Collider2D collision)
     {
-        Logger.Log($"{collision.name}");
         if (collision.CompareTag(Define.PlayerTag))
         {
-            Logger.Log($"{collision.name}");
             Vector3 diff = PlayerManager.Instance.StagePlayer.transform.position - transform.position;
             Vector3 movePos = transform.position;
 
