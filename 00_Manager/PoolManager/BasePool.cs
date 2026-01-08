@@ -15,6 +15,7 @@ public class BasePool : MonoBehaviour
 
     public void Init(PoolObjectData poolObjectData)
     {  
+        _poolObjectData = poolObjectData;
         _originPrefab = poolObjectData.OriginPrefab;
         
         activatedObjectsPool = new List<PoolObject>();
