@@ -21,8 +21,8 @@ public class StageWaveController
     // todo : WaveQueue 도 WaveController 에 집어넣어놓기
     Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
 
-    public event Func<MonsterTypeData, Monster> SpawnWaveMonsterAction;
-    public event Func<MonsterTypeData, Monster> SpawnBossMonsterAction;
+    //public event Func<MonsterTypeData, Monster> SpawnWaveMonsterAction;
+    //public event Func<MonsterTypeData, Monster> SpawnBossMonsterAction;
     public event Action OnStageEndAction;
     
     
@@ -127,21 +127,23 @@ public class StageWaveController
     void SpawnMonster()
     {
         if (_nowContinuousWave == null) return;
-        if (_nowContinuousWave.MonsterTypeData == null) return;
-        if (_nowContinuousWave.MonsterTypeData.Count == 0) return;
+        if (_nowContinuousWave.Monsters == null) return;
+        if (_nowContinuousWave.Monsters.Count == 0) return;
 
         for (int i = 0; i < _nowContinuousWave.SpawnCount; ++i)
         {
-            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.MonsterTypeData.Count);
-            SpawnWaveMonsterAction?.Invoke(_nowContinuousWave.MonsterTypeData[monsterIdx]);
+            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.Monsters.Count);
+
+            MonsterPoolManager.Instance.SpawnWaveMonster(_nowContinuousWave.Monsters[monsterIdx]);
         }
     }
 
     void SpawnBossMonster(StageWaveData bossWave)
     {
-        for (int i = 0; i < bossWave.MonsterTypeData.Count; ++i)
+        for (int i = 0; i < bossWave.Monsters.Count; ++i)
         {
-            Monster spawnedMonster = SpawnBossMonsterAction?.Invoke(bossWave.MonsterTypeData[i]);
+            Monster spawnedMonster = MonsterPoolManager.Instance.SpawnBossMonster(_nowContinuousWave.Monsters[i]);
+
             if (spawnedMonster != null)
             {
                 _nowBossMonsters.Add(spawnedMonster);
@@ -172,6 +174,8 @@ public class StageWaveController
                 OnStageEndAction?.Invoke();
             }
         }
+
+        monster.onDieAction -= OnDieBossMonster;
     }
-    // boss 죽었는지 확인하고 다음 wave 가야해
+
 }

@@ -9,4 +9,6 @@ public enum CommonPoolIndex
 
 public enum MonsterPoolIndex
 {
+    Normal_0 = 0,
+    Ranged_0,
 }
