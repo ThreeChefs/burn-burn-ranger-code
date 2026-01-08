@@ -95,8 +95,6 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
         _player.OnDieAction += GameOver;
-        StatSliderUI hpUI = (StatSliderUI)UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _player.transform);    // 플레이어에서 해주면 좋을듯!
-        
         
         // 플레이어 이벤트 연결
         _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
