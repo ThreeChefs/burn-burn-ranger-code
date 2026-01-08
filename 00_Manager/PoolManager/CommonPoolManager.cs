@@ -18,21 +18,21 @@ public class CommonPoolManager : PoolManager<CommonPoolManager, CommonPoolIndex>
         PoolObject originPrefab = _originPoolDic[poolIndex].OriginPrefab;
 
         BasePool newPool = Instantiate(poolPrefab);
-        newPool.Init(originPrefab, 10);    // todo : default size 지정 필요
+        newPool.Init(_originPoolDic[poolIndex]);    // todo : default size 지정 필요
         newPool.name = $"{poolIndex}_Pool";
 
         nowPoolDic.Add(poolIndex, newPool);
     }
 
 
-    public GameObject Spawn(CommonPoolIndex poolIndex, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    public PoolObject Spawn(CommonPoolIndex poolIndex, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         return SpawnObject(poolIndex, position, rotation, parent);
     }
 
     public T Spawn<T>(CommonPoolIndex poolIndex, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
-        GameObject go = SpawnObject(poolIndex, position, rotation, parent);
+        GameObject go = SpawnObject(poolIndex, position, rotation, parent).gameObject;
         if (go == null) return default;
 
         T t = go.GetComponent<T>();

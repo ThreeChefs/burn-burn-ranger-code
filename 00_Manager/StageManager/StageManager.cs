@@ -76,15 +76,15 @@ public class StageManager : SceneSingletonManager<StageManager>
             Instantiate(_stageDatas[stageNum].Map);
         }
         
-        if (_waveController != null)
-        {
-            _waveController.SpawnBossMonsterAction -= SpawnBossMonster;
-            _waveController.SpawnWaveMonsterAction -= SpawnWaveMonster;
-        }
+        //if (_waveController != null)
+        //{
+        //    _waveController.SpawnBossMonsterAction -= MonsterPoolManager.Instance.SpawnWaveMonster;
+        //    _waveController.SpawnWaveMonsterAction -= SpawnWaveMonster;
+        //}
 
         _waveController = new StageWaveController(_nowStage);
-        _waveController.SpawnBossMonsterAction += SpawnBossMonster;
-        _waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
+        //_waveController.SpawnBossMonsterAction += SpawnBossMonster;
+        //_waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
         _waveController.OnStageEndAction += GameClear;
 
         return true;
@@ -181,77 +181,54 @@ public class StageManager : SceneSingletonManager<StageManager>
     // 몬스터말고 상자같은 애를 타겟으로 해야할 수도 있음. 수정할 때 참고하기~~ 
     #region  몬스터
 
-    public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
-    {
-        Vector2 dir = Random.insideUnitCircle;
-        dir.Normalize();
+    //public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
+    //{
+    //    Vector2 dir = Random.insideUnitCircle;
+    //    dir.Normalize();
 
-        Vector3 randomPos = _player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
-        GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
+    //    Vector3 randomPos = _player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
+    //    GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
 
-        if (monster.TryGetComponent(out Monster monsterComponent))
-        {
-            monsterComponent.ApplyData(monsterTypeData);
-            _spawnedMonsters.Add(monsterComponent);
-            monsterComponent.onDieAction += DestroyMonster; // todo: Pool 적용하면 매번 넣지 않게 처리하기 
-            return monsterComponent;
-        }
-        // 화면에 보이는 범위를 가져와야할 듯
-        // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
+    //    if (monster.TryGetComponent(out Monster monsterComponent))
+    //    {
+    //        monsterComponent.ApplyData(monsterTypeData);
+    //        _spawnedMonsters.Add(monsterComponent);
+    //        //monsterComponent.onDie.AAction += DestroyMonster; // todo: Pool 적용하면 매번 넣지 않게 처리하기 
+    //        return monsterComponent;
+    //    }
+    //    // 화면에 보이는 범위를 가져와야할 듯
+    //    // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
 
-        return null;
-    }
+    //    return null;
+    //}
 
-    public Monster SpawnBossMonster(MonsterTypeData monsterTypeData)
-    {
-        // 위치 지정 필요
-        // 일단은 그냥 스폰
+    //public Monster SpawnBossMonster(MonsterTypeData monsterTypeData)
+    //{
+    //    // 위치 지정 필요
+    //    // 일단은 그냥 스폰
 
-        //todo PoolManager에 DeactiveAll... 있음
-        for (int i = 0; i < _spawnedMonsters.Count; i++)
-        {
-            Destroy(_spawnedMonsters[i].gameObject);
-        }
+    //    //todo PoolManager에 DeactiveAll... 있음
+    //    for (int i = 0; i < _spawnedMonsters.Count; i++)
+    //    {
+    //        Destroy(_spawnedMonsters[i].gameObject);
+    //    }
 
-        _spawnedMonsters.Clear();
+    //    _spawnedMonsters.Clear();
 
-        return SpawnWaveMonster(monsterTypeData);
-    }
+    //    return SpawnWaveMonster(monsterTypeData);
+    //}
 
-    public void DestroyMonster(Monster monster)
+    public void OnDieMonster(Monster monster)
     {
         _killCount += 1;
         AddKillCountAction?.Invoke(_killCount);
         
-        if (_spawnedMonsters.Contains(monster))
-        {
-            _spawnedMonsters.Remove(monster);
-        }
-
-        Destroy(monster.gameObject);
     }
 
     
     public Transform GetNearestMonster()
     {
-        if(_spawnedMonsters.Count == 0)
-            return null;
-
-        if (_player == null) return null;
-        
-        Monster nearestMonster = _spawnedMonsters[0];
-        float distance = Vector2.Distance(nearestMonster.transform.position, _player.transform.position);
-        
-        for (int i = 1; i < _spawnedMonsters.Count; i++)
-        {
-            float nowDistance = Vector2.Distance(_player.transform.position, _spawnedMonsters[i].transform.position);
-            if (distance >= nowDistance)
-            {
-                nearestMonster = _spawnedMonsters[i];
-                distance = nowDistance;
-            }
-        }
-        return nearestMonster.transform;
+        return MonsterManager.Instance.GetNearestMonster();
     }
 
 
