@@ -24,11 +24,6 @@ public class EquipmentUI : BaseUI
         _inventory.OnInventoryChanged += UpdateInventoryUI;
     }
 
-    private void OnDestroy()
-    {
-        _inventory.OnInventoryChanged -= UpdateInventoryUI;
-    }
-
     private void Init()
     {
         // todo: 초기 데이터 나중에 어떻게 할지 얘기해보긴 해야함
