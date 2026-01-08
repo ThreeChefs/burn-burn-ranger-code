@@ -5,6 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 아이템 슬롯 추상 클래스
 /// </summary>
+[RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Button))]
 [System.Serializable]
 public class ItemSlot : MonoBehaviour
@@ -66,10 +67,10 @@ public class ItemSlot : MonoBehaviour
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
-        itemClass = transform.FindChild<Image>("Image - Class");
-        icon = transform.FindChild<Image>("Image - Icon");
-        level = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
-        count = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Count");
+        transform.FindOrInstantiate(ref itemClass, "Image - Class");
+        transform.FindOrInstantiate(ref icon, "Image - Icon");
+        transform.FindOrInstantiate(ref level, "Text (TMP) - Level");
+        transform.FindOrInstantiate(ref count, "Text (TMP) - Count");
 
         itemClass.color = ItemClassColor.GetClassColor();
         icon.sprite = null;
