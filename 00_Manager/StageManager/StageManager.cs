@@ -98,7 +98,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         
         // 플레이어 이벤트 연결
         _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
-        
+        UIManager.Instance.LoadUI(UIName.UI_Stage);
+
         // 스킬 시스템 생성
         _skillSystem = new SkillSystem(_skillDataBase, _player);
         

@@ -33,7 +33,8 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     /// </summary>
     public StagePlayer SpawnPlayer()
     {
-        return Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
+        StagePlayer = Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
+        return StagePlayer;
     }
 
     #region 에디터 전용
