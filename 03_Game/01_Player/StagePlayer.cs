@@ -66,12 +66,13 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _speed = Condition[StatType.Speed];
         _health = Condition[StatType.Health];
         _heal = Condition[StatType.Heal];
+        _health.ResetCurValue();
 
         Condition[StatType.DropItemRange].OnMaxValueChanged += OnUpdateColliderSize;
 
         // hp 바 연결
         StatSliderUI statSliderUI = UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot) as StatSliderUI;
-        statSliderUI.Init(Condition[StatType.Health]);
+        statSliderUI.Init(_health);
     }
 
     private void Update()

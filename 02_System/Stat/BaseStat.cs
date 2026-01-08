@@ -56,4 +56,10 @@ public class BaseStat
         CurValue = Mathf.Min(CurValue + amount, MaxValue);
         OnCurValueChanged?.Invoke(CurValue);
     }
+
+    public void ResetCurValue()
+    {
+        CurValue = MaxValue;
+        Logger.Log($"값 초기화: {CurValue} / {MaxValue}");
+    }
 }
