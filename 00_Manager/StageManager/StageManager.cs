@@ -228,7 +228,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     
     public Transform GetNearestMonster()
     {
-        return MonsterPoolManager.Instance.GetNearestMonster();
+        return MonsterManager.Instance.GetNearestMonster();
     }
 
 

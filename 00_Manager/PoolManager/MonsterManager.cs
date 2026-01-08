@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class MonsterPoolManager : PoolManager<MonsterPoolManager, MonsterPoolIndex>
+public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 {
 
     public override void UsePool(MonsterPoolIndex poolIndex)
@@ -70,6 +70,7 @@ public class MonsterPoolManager : PoolManager<MonsterPoolManager, MonsterPoolInd
             pool.SendMessageToActivated("Die");
         }
     }
+
 
     public Transform GetNearestMonster()
     {

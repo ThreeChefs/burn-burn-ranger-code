@@ -134,7 +134,7 @@ public class StageWaveController
         {
             int monsterIdx = Define.Random.Next(0, _nowContinuousWave.Monsters.Count);
 
-            MonsterPoolManager.Instance.SpawnWaveMonster(_nowContinuousWave.Monsters[monsterIdx]);
+            MonsterManager.Instance.SpawnWaveMonster(_nowContinuousWave.Monsters[monsterIdx]);
         }
     }
 
@@ -142,7 +142,7 @@ public class StageWaveController
     {
         for (int i = 0; i < bossWave.Monsters.Count; ++i)
         {
-            Monster spawnedMonster = MonsterPoolManager.Instance.SpawnBossMonster(_nowContinuousWave.Monsters[i]);
+            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(_nowContinuousWave.Monsters[i]);
 
             if (spawnedMonster != null)
             {
