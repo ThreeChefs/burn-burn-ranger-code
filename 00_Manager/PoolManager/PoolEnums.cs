@@ -11,4 +11,6 @@ public enum MonsterPoolIndex
 {
     Normal_0 = 0,
     Ranged_0,
+    MiniBoss_0,
+    Boss_0,
 }
