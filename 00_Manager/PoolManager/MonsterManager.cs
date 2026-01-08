@@ -35,6 +35,8 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         PoolObject monsterPoolObject = SpawnObject(poolIndex,randomPos);
 
         // todo : Monster가 PoolObject로부터 상속받도록 변경 필요 또는 캐싱하고 있기
+        if(monsterPoolObject == null) return  null;
+
         Monster monster = monsterPoolObject.GetComponent<Monster>();
         monster.ApplyData(((MonsterPoolObjectData)_originPoolDic[poolIndex]).MonsterData);
         return monster;
@@ -46,7 +48,8 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     public Monster SpawnBossMonster(MonsterPoolIndex poolIndex)
     {
         DeactiveAllMonsters();
-        return null;
+
+        return SpawnWaveMonster(poolIndex);
     }
 
 
