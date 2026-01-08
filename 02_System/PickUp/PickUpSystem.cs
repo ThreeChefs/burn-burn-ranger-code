@@ -42,10 +42,11 @@ public class PickUpSystem : MonoBehaviour
         foreach (ItemBoxEntry entry in itemBoxData.ItemBoxEntries)
         {
             cumulative += entry.Weight;
-            if (rand <= cumulative) continue;
-
-            int index = Random.Range(0, entry.Items.Count);
-            return entry.Items[index];
+            if (rand <= cumulative)
+            {
+                int index = Random.Range(0, entry.Items.Count);
+                return entry.Items[index];
+            }
         }
 
         return null;
