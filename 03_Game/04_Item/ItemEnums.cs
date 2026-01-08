@@ -8,10 +8,12 @@ public enum ItemType
 // 아이템 등급
 public enum ItemClass
 {
+    None,
     Normal,
     Rare,
     Elite,
-    Unique
+    Epic,
+    Legendary,
 }
 
 // 장비 아이템 타입

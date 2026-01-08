@@ -61,7 +61,7 @@ public class ItemSlot : MonoBehaviour
 
     private void SetItemClass()
     {
-        itemClass.color = Define.ItemClassColors[data.ItemClass];
+        itemClass.color = ItemClassColor.GetGradeColor(data.ItemClass);
     }
 
     private void SetIcon()
@@ -77,7 +77,7 @@ public class ItemSlot : MonoBehaviour
         icon = transform.FindChild<Image>("Image - Icon");
         level = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
 
-        itemClass.color = Define.ColorNone;
+        itemClass.color = ItemClassColor.GetGradeColor();
         icon.sprite = null;
 
         button = GetComponent<Button>();

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class Define
@@ -22,7 +21,7 @@ public static class Define
     // todo : define이 아니라 맵나오면 맵 범위에 맞게 맵에서 뽑아 써야할 듯 함.
     public const float MinMonsterSpawnDistance = 20.0f;
     public const float MaxMonsterSpawnDistance = 30.0f;
-    
+
     // 몬스터 최대 소환
     public const int MaxMonsterSpawnCount = 300;
 
@@ -30,19 +29,4 @@ public static class Define
 
     // 태그
     public const string PlayerTag = "Player";
-
-    // 아이템 클래스 색상
-    public static Color ColorNone = Color.gray;
-    public static Color ColorNormal = Color.green;
-    public static Color ColorRare = Color.blue;
-    public static Color ColorElite = Color.magenta;
-    public static Color ColorUnique = Color.yellow;
-
-    public static readonly Dictionary<ItemClass, Color> ItemClassColors = new()
-    {
-        { ItemClass.Normal, ColorNormal },
-        { ItemClass.Rare, ColorRare },
-        { ItemClass.Elite, ColorElite },
-        { ItemClass.Unique, ColorUnique },
-    };
 }
