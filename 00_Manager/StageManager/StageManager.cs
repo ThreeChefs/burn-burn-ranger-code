@@ -171,6 +171,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     public void GameOver()
     {
         OnGameOverAction?.Invoke();
+        PauseGame();
         UIManager.Instance.SpawnUI(UIName.UI_Defeat);
     }
 
