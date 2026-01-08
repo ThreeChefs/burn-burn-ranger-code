@@ -3,17 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+// todo : 코드컨
 public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T> 
     where T : PoolManager<T,TEnumIndex> where TEnumIndex : struct, Enum       // Enum.TryParse 쓰려면 Generic 제약 struct 필요하대
 {
-    [SerializeField] protected BasePool poolPrefab;     // 풀 프리팹
+    [SerializeField] protected BasePool poolPrefab;             // 풀 프리팹
     [SerializeField] protected PoolObjectDatabase poolDatabase;
+    
+    protected Dictionary<TEnumIndex, PoolObjectData> _originPoolDic;  // Database 에서 어떤 PoolIndex 가 있는지 확인용 Dictionary
     protected Dictionary<TEnumIndex, BasePool> nowPoolDic;      // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
 
     protected override void Init()
     {
         nowPoolDic =  new Dictionary<TEnumIndex, BasePool>();
         SceneManager.sceneUnloaded += OnSceneUnloaded;
+
+        _originPoolDic = new();
+        foreach (PoolObjectData poolObjectData in poolDatabase.List)
+        {
+            if(poolObjectData.OriginPrefab == null) 
+                continue;
+            
+            if (Enum.TryParse(poolObjectData.name, true, out TEnumIndex poolIndex))
+            {
+                _originPoolDic.Add(poolIndex, poolObjectData);
+            }
+        }
     }
 
     /// <summary>
@@ -87,4 +102,6 @@ public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T>
     {
         nowPoolDic.Clear();
     }
+
+
 }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[CreateAssetMenu(fileName = "NewPoolObjectData", menuName = "SO/Pool Object")]
 public class PoolObjectData : ScriptableObject 
 {
     [Title("Origin Prefab")]

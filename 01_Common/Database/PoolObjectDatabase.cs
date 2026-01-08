@@ -5,6 +5,7 @@ using UnityEngine;
 public class PoolObjectDatabase : ScriptableObject
 {
     [SerializeField] private List<PoolObjectData> _list = new();
+    public List<PoolObjectData> List => _list;
 
     public List<T> GetDatabase<T>() where T : PoolObjectData
     {
