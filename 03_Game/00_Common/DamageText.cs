@@ -6,16 +6,23 @@ public class DamageText : PoolObject
 {
     [SerializeField] TextMeshProUGUI _damageText;
 
-    public void Init(int damage)
+    public void Init(float damage)
     {
-        _damageText.text = damage.ToString();
+        _damageText.SetText("{0:0}", damage);
 
         DOTween.ToAlpha(
             () => _damageText.color,
             color => _damageText.color = color,
             0f,
             1f
-        ).SetEase(Ease.Linear).OnComplete(() => gameObject.SetActive(false));
+        ).SetEase(Ease.InExpo).OnComplete(() => gameObject.SetActive(false));
+
+        DOTween.To(
+            () => transform.localPosition,
+            pos => transform.localPosition = pos,
+            new Vector3(transform.localPosition.x, transform.localPosition.y + 1f, transform.localPosition.z),
+            1f
+        ).SetEase(Ease.OutCubic);
     }
 
 
