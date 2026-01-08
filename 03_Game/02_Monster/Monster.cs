@@ -141,4 +141,9 @@ public class Monster : MonoBehaviour, IDamageable
             MonsterDropItem.Instance.Spawn(monsterdata.dropItemType, transform.position);
         }
     }
+
+    public void BombDie()
+    {
+        Die();
+    }
 }
