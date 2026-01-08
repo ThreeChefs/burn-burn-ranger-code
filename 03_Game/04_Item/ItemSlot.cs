@@ -41,6 +41,13 @@ public class ItemSlot : MonoBehaviour
     #region 초기화
     protected virtual void Init()
     {
+        if (ItemInstance == null)
+        {
+            itemClass.gameObject.SetActive(false);
+            icon.gameObject.SetActive(false);
+            level.gameObject.SetActive(false);
+            count.gameObject.SetActive(false);
+        }
     }
 
     protected virtual void OnClickButton()
@@ -60,7 +67,7 @@ public class ItemSlot : MonoBehaviour
         itemClass.color = ItemClassColor.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
         level.text = itemInstance.Level.ToString();
-        count.text = itemInstance.Count.ToString();
+        count.text = itemInstance.Count == 0 ? "" : itemInstance.Count.ToString();
     }
     #endregion
 
