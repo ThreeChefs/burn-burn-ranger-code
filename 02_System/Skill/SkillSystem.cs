@@ -13,6 +13,7 @@ public class SkillSystem
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
+    public Dictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
     private readonly List<int> _maxedSkillIds = new();
     private int _activeSkillCount;
@@ -336,8 +337,8 @@ public class SkillSystem
         list.Random(pickCount).ForEach(id =>
         {
             // 뽑아야하는 스킬 정보 가져오기
-            _skillDataCache.TryGetValue(id, out SkillData skillData);
             _ownedSkills.TryGetValue(id, out BaseSkill skill);
+            SkillData skillData = skill.SkillData;
 
             // 조합 스킬 아이콘 가져오기
             Sprite[] icons = new Sprite[skillData.CombinationIds.Length];
