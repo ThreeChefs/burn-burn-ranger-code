@@ -20,6 +20,13 @@ public class EquipmentUI : BaseUI
     {
         _inventory = PlayerManager.Instance.Inventory;
         Init();
+
+        _inventory.OnInventoryChanged += UpdateInventoryUI;
+    }
+
+    private void OnDestroy()
+    {
+        _inventory.OnInventoryChanged -= UpdateInventoryUI;
     }
 
     private void Init()
@@ -33,11 +40,18 @@ public class EquipmentUI : BaseUI
             ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
             _inventorySlots.Add(itemSlot);
             itemSlot.SetSlot(item);
-
             itemSlot.transform.SetParent(_inventoryUI, false);
         }
 
         //_inventorySlots.Sort();
+    }
+
+    private void UpdateInventoryUI()
+    {
+        ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
+        _inventorySlots.Add(itemSlot);
+        itemSlot.SetSlot(_inventory.Items[_inventory.Items.Count - 1]);
+        itemSlot.transform.SetParent(_inventoryUI, false);
     }
 
 #if UNITY_EDITOR
