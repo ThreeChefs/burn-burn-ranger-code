@@ -17,6 +17,8 @@ public class ProjectileData : PoolObjectData
     [field: SerializeField] public float AliveTime { get; private set; }
     [field: Tooltip("타겟 레이어")]
     [field: SerializeField] public LayerMask TargetLayerMask { get; private set; }
+    [field: Tooltip("넉백")]
+    [field: SerializeField] public float KnockBack { get; private set; }
 
     // 유도
     [field: Header("유도")]
