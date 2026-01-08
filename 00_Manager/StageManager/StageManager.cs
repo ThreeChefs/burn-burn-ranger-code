@@ -12,13 +12,13 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     // 스테이지 맵을 생성해주는 거
     // 화면 내 맵을 들고 있어야하는데
-    
+
     StageData _nowStage;
     public int NowStageNumber { get; private set; }
 
     private StageWaveController _waveController;
     private StagePlayer _player;
-    
+
     public SkillSystem SkillSystem => _skillSystem;
     SkillSystem _skillSystem;
 
@@ -30,7 +30,7 @@ public class StageManager : SceneSingletonManager<StageManager>
             else return _waveController.PlayeTime;
         }
     }
-    
+
     private bool _isPlaying = false;
     public bool IsPlaying => _isPlaying;
 
@@ -41,9 +41,6 @@ public class StageManager : SceneSingletonManager<StageManager>
     public event Action OnGameOverAction;
     public event Action OnGameClearAction;
     public event Action<int> AddKillCountAction;
-    
-
-    List<Monster> _spawnedMonsters = new List<Monster>();
 
 
     protected override void Awake()
@@ -61,7 +58,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     bool SetStageData(int stageNum)
     {
         NowStageNumber = stageNum;
-        
+
         if (_stageDatas.Count <= stageNum)
         {
             Logger.Log("스테이지 없음!");
@@ -75,16 +72,9 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             Instantiate(_stageDatas[stageNum].Map);
         }
-        
-        //if (_waveController != null)
-        //{
-        //    _waveController.SpawnBossMonsterAction -= MonsterPoolManager.Instance.SpawnWaveMonster;
-        //    _waveController.SpawnWaveMonsterAction -= SpawnWaveMonster;
-        //}
+
 
         _waveController = new StageWaveController(_nowStage);
-        //_waveController.SpawnBossMonsterAction += SpawnBossMonster;
-        //_waveController.SpawnWaveMonsterAction += SpawnWaveMonster;
         _waveController.OnStageEndAction += GameClear;
 
         return true;
@@ -95,16 +85,16 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
         _player.OnDieAction += GameOver;
-        
+
         // 플레이어 이벤트 연결
         _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
         UIManager.Instance.LoadUI(UIName.UI_Stage);
 
         // 스킬 시스템 생성
         _skillSystem = new SkillSystem(_skillDataBase, _player);
-        
-        
-        
+
+
+
         // todo : 
         // 카메라 세팅
         // 나중에 맵이랑 연결해줘야함 
@@ -112,7 +102,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             camera.ConnectPlayer();
         }
-        
+
         // 게임 시작
         if (IsTest) return;
         SetStageData(GameManager.Instance.SelectedStageNumber - 1);
@@ -121,16 +111,11 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     private void Update()
     {
-        #if UNITY_EDITOR
 
         if (Input.GetKeyDown(KeyCode.R))
         {
             GameManager.Instance.Scene.ReLoadSceneAsync();
         }
-        
-        #endif
-        
-        
         if (_isPlaying == false) return;
         _waveController?.Update();
     }
@@ -143,7 +128,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         PauseGame();
         UIManager.Instance.SpawnUI(UIName.UI_SkillSelect);
     }
-   
+
     public void PauseGame()
     {
         Time.timeScale = 0;
@@ -153,7 +138,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         Time.timeScale = 1;
     }
-    
+
     void GameStart()
     {
         _isPlaying = true;
@@ -164,69 +149,45 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         OnGameClearAction?.Invoke();
         PauseGame();
-        UIManager.Instance.SpawnUI(UIName.UI_Victory);
+
+        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
+        if (resultUI != null)
+        {
+            resultUI.Init(0, _waveController.SaveExp);
+        }
+
+        // 보상 지급
+        PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // ㅅ테이지 클리어 보상 추가
+        PlayerManager.Instance.StagePlayer.UpdateGold();
+        PlayerManager.Instance.Condition.GlobalLevel.AddExp(_nowStage.RewardExp + _waveController.SaveExp);
     }
-    
+
     public void GameOver()
     {
         OnGameOverAction?.Invoke();
         PauseGame();
-        UIManager.Instance.SpawnUI(UIName.UI_Defeat);
+
+        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
+        if (resultUI != null)
+        {
+            resultUI.Init(0, _waveController.SaveExp);
+        }
+
+        // 보상 지급
+        PlayerManager.Instance.StagePlayer.UpdateGold();
+        PlayerManager.Instance.Condition.GlobalLevel.AddExp(_waveController.SaveExp);   // 쌓인 경험치만 지급
     }
 
-
     #endregion
-    
-  
-    // todo : 몬스터풀 생기면 옮겨야 함
-    // 몬스터말고 상자같은 애를 타겟으로 해야할 수도 있음. 수정할 때 참고하기~~ 
+
     #region  몬스터
-
-    //public Monster SpawnWaveMonster(MonsterTypeData monsterTypeData)
-    //{
-    //    Vector2 dir = Random.insideUnitCircle;
-    //    dir.Normalize();
-
-    //    Vector3 randomPos = _player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
-    //    GameObject monster = Instantiate(monsterTypeData.prefab, randomPos, Quaternion.identity);
-
-    //    if (monster.TryGetComponent(out Monster monsterComponent))
-    //    {
-    //        monsterComponent.ApplyData(monsterTypeData);
-    //        _spawnedMonsters.Add(monsterComponent);
-    //        //monsterComponent.onDie.AAction += DestroyMonster; // todo: Pool 적용하면 매번 넣지 않게 처리하기 
-    //        return monsterComponent;
-    //    }
-    //    // 화면에 보이는 범위를 가져와야할 듯
-    //    // 벽이 있을 수 있으니 스폰 가능한 곳도 있어야 함.
-
-    //    return null;
-    //}
-
-    //public Monster SpawnBossMonster(MonsterTypeData monsterTypeData)
-    //{
-    //    // 위치 지정 필요
-    //    // 일단은 그냥 스폰
-
-    //    //todo PoolManager에 DeactiveAll... 있음
-    //    for (int i = 0; i < _spawnedMonsters.Count; i++)
-    //    {
-    //        Destroy(_spawnedMonsters[i].gameObject);
-    //    }
-
-    //    _spawnedMonsters.Clear();
-
-    //    return SpawnWaveMonster(monsterTypeData);
-    //}
 
     public void OnDieMonster(Monster monster)
     {
         _killCount += 1;
         AddKillCountAction?.Invoke(_killCount);
-        
     }
 
-    
     public Transform GetNearestMonster()
     {
         return MonsterManager.Instance.GetNearestMonster();
@@ -234,7 +195,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
     #endregion
-    
+
 
     #region Test
     [Title("Test")]
