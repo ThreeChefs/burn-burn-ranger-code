@@ -27,7 +27,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     public LevelSystem StageLevel { get; private set; }
 
     // 골드
-    private int _gold;
+    public int GoldValue { get; private set; }
 
     // 움직임
     private PlayerStat _speed;
@@ -57,7 +57,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Awake()
     {
         StageLevel = new(1, 0f);
-        _gold = 0;
+        GoldValue = 0;
         _defaultRadius = _itemDetectionRange.radius;
     }
 
@@ -177,7 +177,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 골드
     public void AddGold(int amount)
     {
-        _gold += Mathf.FloorToInt(amount * Condition[StatType.AddGold].MaxValue);
+        GoldValue += Mathf.FloorToInt(amount * Condition[StatType.AddGold].MaxValue);
     }
 
     /// <summary>
@@ -185,7 +185,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     /// </summary>
     public void UpdateGold()
     {
-        PlayerManager.Instance.Wallet[WalletType.Gold].Add(_gold);
+        PlayerManager.Instance.Wallet[WalletType.Gold].Add(GoldValue);
     }
     #endregion
 

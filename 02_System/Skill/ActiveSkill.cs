@@ -44,7 +44,7 @@ public class ActiveSkill : BaseSkill
 
         if (_cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
         {
-            Transform target = StageManager.Instance.GetNearestMonster();
+            Transform target = MonsterManager.Instance.GetNearestMonster();
             if (target == null) return;
 
             StopPlayingCoroutine();
