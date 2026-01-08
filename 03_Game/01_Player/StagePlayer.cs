@@ -34,6 +34,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private Vector2 _inputVector;
 
     // 이미지
+    [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
     protected bool IsLeft
     {
@@ -114,7 +115,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Move()
     {
         Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
-        IsLeft = nextVec.x > 0;
+        if (nextVec.x != 0)
+        {
+            IsLeft = nextVec.x > 0;
+        }
         Vector2 pos = transform.position;
         Vector2 newPos = pos + nextVec;
         transform.position = newPos;
@@ -136,7 +140,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region sprite 관리
     private void Flip()
     {
-
+        foreach (SpriteRenderer renderer in _renderers)
+        {
+            renderer.flipX = IsLeft;
+        }
     }
     #endregion
 
