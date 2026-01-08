@@ -20,7 +20,7 @@ public class Monster : MonoBehaviour, IDamageable
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        spriter = GetComponent<SpriteRenderer>();
+        spriter = GetComponentInChildren<SpriteRenderer>(true);
 
     }
 
@@ -66,6 +66,7 @@ public class Monster : MonoBehaviour, IDamageable
 
     private void LateUpdate()
     {
+
         if (target == null) return;
         spriter.flipX = target.transform.position.x < rb.position.x;
     }
