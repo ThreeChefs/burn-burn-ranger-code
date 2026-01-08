@@ -170,7 +170,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 골드
     public void AddGold(int amount)
     {
-        _gold += amount;
+        _gold += Mathf.FloorToInt(amount * Condition[StatType.AddGold].MaxValue);
     }
 
     /// <summary>
