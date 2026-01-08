@@ -23,6 +23,7 @@ public class ItemData : ScriptableObject
 public class EquipmentEffectData
 {
     [field: Header("공통")]
+    [field: SerializeField] public ItemClass UnlockClass { get; private set; }
     [field: SerializeField] public EquipmentEffectType EffectType { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
 
