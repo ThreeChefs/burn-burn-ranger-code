@@ -20,9 +20,6 @@ public class StageWaveController
 
     // todo : WaveQueue 도 WaveController 에 집어넣어놓기
     Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
-
-    //public event Func<MonsterTypeData, Monster> SpawnWaveMonsterAction;
-    //public event Func<MonsterTypeData, Monster> SpawnBossMonsterAction;
     public event Action OnStageEndAction;
     
     
@@ -39,6 +36,24 @@ public class StageWaveController
         for (int i = 0; i < nowStageData.StageWaves.Count; i++)
         {
             _waveQueue.Enqueue(nowStageData.StageWaves[i]);
+        }
+
+
+        // 사용할 풀 로드
+
+        for (int i = 0; i < nowStageData.StageWaves.Count; ++i)
+        {
+            StageWaveData waveData = nowStageData.StageWaves[i].StageWaveData;
+            
+            if (waveData == null) continue;
+            if (waveData.Monsters == null) continue;
+            
+            for (int j = 0; j < waveData.Monsters.Count; ++j)
+            {
+                MonsterPoolIndex poolIndex = waveData.Monsters[j];
+
+                MonsterManager.Instance.UsePool(poolIndex);
+            }
         }
 
         EnterWave(_waveQueue.Dequeue().StageWaveData);
@@ -119,7 +134,6 @@ public class StageWaveController
         {
             if (_nowBossMonsters != null)
             {
-                //_nowBossMonster.
             }
         }
     }
@@ -142,7 +156,7 @@ public class StageWaveController
     {
         for (int i = 0; i < bossWave.Monsters.Count; ++i)
         {
-            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(_nowContinuousWave.Monsters[i]);
+            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(bossWave.Monsters[i]);
 
             if (spawnedMonster != null)
             {
