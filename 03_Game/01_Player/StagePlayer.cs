@@ -9,6 +9,15 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class StagePlayer : MonoBehaviour, IDamageable
 {
+    #region 필드
+    [Header("컴포넌트")]
+    // 아이템 범위 
+    [SerializeField] private CircleCollider2D _itemDetectionRange;
+    private float _defaultRadius;
+
+    // hp바
+    [SerializeField] private Transform _hpBarPivot;
+
     // 캐싱
     public PlayerCondition Condition { get; private set; }
     private PlayerStat _health;
@@ -39,12 +48,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
     }
 
-    // 컴포넌트
-    [SerializeField] private CircleCollider2D _itemDetectionRange;
-    private float _defaultRadius;
-
     // 이벤트
     public event Action OnDieAction;
+    #endregion
 
     #region Unity API
     private void Awake()
@@ -62,6 +68,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _heal = Condition[StatType.Heal];
 
         Condition[StatType.DropItemRange].OnMaxValueChanged += OnUpdateColliderSize;
+
+        UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot);
     }
 
     private void Update()
@@ -188,6 +196,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
         _itemDetectionRange = transform.FindChild<CircleCollider2D>("ItemDetectionRange");
         _itemDetectionRange.radius = 0.5f;
+
+        _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
     }
 #endif
     #endregion
