@@ -14,7 +14,7 @@ public class EquipmentUI : BaseUI
 
     // 장비 인벤토리 
     [SerializeField] private RectTransform _inventoryUI;
-    private List<ItemSlot> _inventorySlots;
+    private List<ItemSlot> _inventorySlots = new();
 
     private void Start()
     {
@@ -37,7 +37,7 @@ public class EquipmentUI : BaseUI
             itemSlot.transform.SetParent(_inventoryUI, false);
         }
 
-        _inventorySlots.Sort();
+        //_inventorySlots.Sort();
     }
 
 #if UNITY_EDITOR
