@@ -21,10 +21,10 @@ public class ItemData : ScriptableObject
     public override string ToString()
     {
         return "{" +
-            $"Id: {Id}" +
-            $"Name: {DisplayName}" +
-            $"Description: {Description}" +
-            $"EquipmentType: {EquipmentType}" +
+            $"Id: {Id} " +
+            $"Name: {DisplayName} " +
+            $"Description: {Description} " +
+            $"EquipmentType: {EquipmentType} " +
             "}";
     }
 
