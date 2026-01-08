@@ -69,7 +69,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
         Condition[StatType.DropItemRange].OnMaxValueChanged += OnUpdateColliderSize;
 
-        UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot);
+        // hp 바 연결
+        StatSliderUI statSliderUI = UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot) as StatSliderUI;
+        statSliderUI.Init(Condition[StatType.Health]);
     }
 
     private void Update()
