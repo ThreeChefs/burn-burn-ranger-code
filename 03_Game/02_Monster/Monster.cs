@@ -51,6 +51,9 @@ public class Monster : MonoBehaviour, IDamageable
     }
     protected virtual void FixedUpdate()
     {
+        var rush = GetComponent<BossRushSkill>();
+        if (rush != null && rush.IsUsingSkill)
+            return;
 
         if (target == null)
             return;
