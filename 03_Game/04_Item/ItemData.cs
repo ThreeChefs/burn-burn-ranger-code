@@ -17,6 +17,20 @@ public class ItemData : ScriptableObject
     [field: SerializeField] public EquipmentType EquipmentType { get; private set; }
     [field: ShowIf("Type", ItemType.Equipment)]
     [field: SerializeField] public EquipmentEffectData[] Equipments { get; private set; }
+
+#if UNITY_EDITOR
+    private void Reset()
+    {
+        Id = ItemUtils.GetItemNumber();
+    }
+
+    [Button("아이템 id 지정")]
+    private void SetNumber(int num)
+    {
+        ItemUtils.SetItemNumber(num);
+        Id = ItemUtils.GetItemNumber();
+    }
+#endif
 }
 
 [System.Serializable]
@@ -50,4 +64,9 @@ public class EquipmentEffectData
     [field: SerializeField] public float Duration { get; private set; }
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public int RequiredTriggerCount { get; private set; }
+
+    public EquipmentEffectData()
+    {
+        ApplyType = EffectApplyType.Percent;
+    }
 }
