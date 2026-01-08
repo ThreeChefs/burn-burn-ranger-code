@@ -6,7 +6,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New ItemBoxData", menuName = "SO/Item/Item Box")]
 public class ItemBoxData : ScriptableObject
 {
-    [field: SerializeField] public List<ItemBoxEntry> Items { get; private set; }
+    [field: SerializeField] public int Id { get; private set; }
+    [field: SerializeField] public List<ItemBoxEntry> ItemBoxEntries { get; private set; }
 }
 
 [System.Serializable]

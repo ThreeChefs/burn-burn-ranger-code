@@ -6,7 +6,7 @@ public class ItemData : ScriptableObject
 {
     [field: Header("Info")]
     [field: SerializeField] public int Id { get; private set; }
-    [field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public string DisplayName { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
     [field: SerializeField] public ItemType Type { get; private set; }
     [field: SerializeField] public ItemClass ItemClass { get; private set; }
@@ -17,6 +17,16 @@ public class ItemData : ScriptableObject
     [field: SerializeField] public EquipmentType EquipmentType { get; private set; }
     [field: ShowIf("Type", ItemType.Equipment)]
     [field: SerializeField] public EquipmentEffectData[] Equipments { get; private set; }
+
+    public override string ToString()
+    {
+        return "{" +
+            $"Id: {Id}" +
+            $"Name: {DisplayName}" +
+            $"Description: {Description}" +
+            $"EquipmentType: {EquipmentType}" +
+            "}";
+    }
 
 #if UNITY_EDITOR
     private void Reset()
