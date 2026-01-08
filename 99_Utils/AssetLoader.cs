@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -28,7 +30,7 @@ public static class AssetLoader
     }
 
     /// <summary>
-    /// SO 찾기
+    /// T 타입의 특정 SO 찾기
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
@@ -45,6 +47,28 @@ public static class AssetLoader
 
         string path = AssetDatabase.GUIDToAssetPath(guids[0]);
         return AssetDatabase.LoadAssetAtPath<T>(path);
+    }
+
+    public static List<T> FindAndLoadAllByType<T>() where T : ScriptableObject
+    {
+        List<T> list = new();
+
+        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T)}");
+
+        if (guids.Length == 0)
+        {
+            Logger.Log($"{nameof(T)} SO 못 찾음");
+            return null;
+        }
+
+        string path;
+        foreach (string guid in guids)
+        {
+            path = AssetDatabase.GUIDToAssetPath(guid);
+            list.Add(AssetDatabase.LoadAssetAtPath<T>(path));
+        }
+
+        return list;
     }
 }
 #endif

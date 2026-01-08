@@ -28,7 +28,19 @@ public class ItemData : ScriptableObject
     private void SetNumber(int num)
     {
         ItemUtils.SetItemNumber(num);
+        SetNumber();
+    }
+
+    public void SetNumber()
+    {
         Id = ItemUtils.GetItemNumber();
+    }
+
+    [Button("아이템 id 전체 지정")]
+    private void SetNumberAllItem()
+    {
+        ItemUtils.SetItemNumber(0);
+        AssetLoader.FindAndLoadAllByType<ItemData>().ForEach(item => item.SetNumber());
     }
 #endif
 }
