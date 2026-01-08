@@ -16,12 +16,9 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] protected Image itemClass;
     [SerializeField] protected Image icon;
     [SerializeField] protected TextMeshProUGUI level;
-    // todo: 개수 넣기
+    [SerializeField] protected TextMeshProUGUI count;
 
-    [Header("데이터")]
-    [SerializeField] protected ItemData data;
-    public ItemData Data => data;
-    // todo: 레벨 등 동적으로 변하는 데이터 저장
+    public ItemInstance ItemInstance { get; protected set; }
 
     #region Unity API
     protected void Awake()
@@ -51,21 +48,18 @@ public class ItemSlot : MonoBehaviour
     #endregion
 
     #region 슬롯 데이터 관리
-    protected virtual void SetSlot(ItemData data)
+    /// <summary>
+    /// [public] 슬롯에 아이템 정보 넣기
+    /// </summary>
+    /// <param name="itemInstance"></param>
+    public virtual void SetSlot(ItemInstance itemInstance)
     {
-        this.data = data;
+        ItemInstance = itemInstance;
 
-        SetItemClass();
-        SetIcon();
-    }
-
-    private void SetItemClass()
-    {
-    }
-
-    private void SetIcon()
-    {
-        icon.sprite = data.Icon;
+        itemClass.color = ItemClassColor.GetClassColor(itemInstance.ItemClass);
+        icon.sprite = itemInstance.ItemData.Icon;
+        level.text = itemInstance.Level.ToString();
+        count.text = itemInstance.Count.ToString();
     }
     #endregion
 
@@ -75,8 +69,9 @@ public class ItemSlot : MonoBehaviour
         itemClass = transform.FindChild<Image>("Image - Class");
         icon = transform.FindChild<Image>("Image - Icon");
         level = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
+        count = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Count");
 
-        itemClass.color = ItemClassColor.GetGradeColor();
+        itemClass.color = ItemClassColor.GetClassColor();
         icon.sprite = null;
 
         button = GetComponent<Button>();
