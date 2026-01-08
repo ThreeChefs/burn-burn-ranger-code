@@ -55,7 +55,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         {
             BaseUI spawnedUI = Instantiate(ui, _mainCanvas.transform, false);
 
-            RectTransform rect = GetComponent<RectTransform>();
+            RectTransform rect = spawnedUI.GetComponent<RectTransform>();
             if (rect != null)
             {
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
