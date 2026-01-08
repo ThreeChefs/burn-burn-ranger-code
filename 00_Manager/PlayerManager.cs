@@ -19,6 +19,12 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Wallet = new();
     }
 
+    private void OnDestroy()
+    {
+        Condition.OnDestroy();
+        Wallet.OnDestroy();
+    }
+
     /// <summary>
     /// [public] 스테이지에서 플레이어를 소환하기 위한 용도
     /// </summary>
