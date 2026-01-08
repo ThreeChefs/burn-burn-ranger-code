@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ItemData", menuName = "SO/Item/ItemData")]
+[CreateAssetMenu(fileName = "ItemData", menuName = "SO/Item/Item")]
 public class ItemData : ScriptableObject
 {
     [field: Header("Info")]
