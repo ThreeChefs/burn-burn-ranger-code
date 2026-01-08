@@ -33,12 +33,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     /// </summary>
     public StagePlayer SpawnPlayer()
     {
-        StagePlayer = Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
-        if (Camera.main.TryGetComponent<FollowCamera>(out var camera))
-        {
-            camera.ConnectPlayer();
-        }
-        return StagePlayer;
+        return Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
     }
 
     #region 에디터 전용
