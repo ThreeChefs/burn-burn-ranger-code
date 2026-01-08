@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,7 +15,32 @@ public class BottomBarUI : BaseUI
     [SerializeField] private RectTransform[] _imageTransforms;
     [SerializeField] private TextMeshProUGUI[] _texts;
 
+    private Action[] _buttonActions;
+
     private int _index;
+    private BaseUI _prevUI;
+
+    private void Awake()
+    {
+        _buttonActions = new Action[_buttons.Length];
+
+        for (int i = 0; i < _buttons.Length; i++)
+        {
+            string uiEnumValue = "UI_" + _buttons[i].name.Split("Button_Bottom_")[1];
+            if (!Enum.TryParse(uiEnumValue, out UIName uiName))
+            {
+                Logger.LogWarning($"UIName 없음: {uiName}");
+            }
+            _buttonActions[i] = () =>
+            {
+                if (_prevUI != null)
+                {
+                    _prevUI.gameObject.SetActive(false);
+                }
+                _prevUI = UIManager.Instance.ShowUI(uiName);
+            };
+        }
+    }
 
     private void OnEnable()
     {
@@ -53,6 +79,8 @@ public class BottomBarUI : BaseUI
         _texts[index].gameObject.SetActive(true);
 
         _index = index;
+
+        _buttonActions[index]?.Invoke();
     }
 
 #if UNITY_EDITOR
