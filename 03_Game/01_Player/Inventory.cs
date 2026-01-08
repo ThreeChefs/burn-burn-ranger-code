@@ -4,10 +4,19 @@ using System.Linq;
 /// <summary>
 /// 인벤토리
 /// </summary>
+[System.Serializable]
 public class Inventory
 {
     private List<ItemInstance> _items = new();
     public IReadOnlyList<ItemInstance> Items => _items;
+
+    /// <summary>
+    /// [public] 플레이어가 파괴될 때 실행
+    /// </summary>
+    public void OnDestroy()
+    {
+        // todo: 아이템 데이터 저장
+    }
 
     /// <summary>
     /// [public] 아이템 추가
