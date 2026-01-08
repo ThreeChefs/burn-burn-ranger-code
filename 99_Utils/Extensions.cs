@@ -21,6 +21,21 @@ public static class TransformExtension
         }
         return null;
     }
+
+    public static void FindOrInstantiate<T>(
+        this Transform t,
+        ref T component,
+        string name,
+        bool worldPositionStays = false) where T : Component
+    {
+        component = t.FindChild<T>(name);
+        if (component == null)
+        {
+            GameObject go = new(name);
+            component = go.AddComponent<T>();
+            go.transform.SetParent(t, worldPositionStays);
+        }
+    }
 }
 #endregion
 

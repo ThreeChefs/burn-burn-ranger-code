@@ -12,7 +12,7 @@ public static class ItemClassColor
     public static readonly Color ColorEpic = new(0.74f, 0.35f, 0.90f); // 연보라
     public static readonly Color ColorLegendary = new(1.00f, 0.60f, 0.00f); // 오렌지
 
-    public static Color GetGradeColor(ItemClass itemClass = ItemClass.None)
+    public static Color GetClassColor(ItemClass itemClass = ItemClass.None)
     {
         return itemClass switch
         {
@@ -30,7 +30,7 @@ public static class ItemClassColor
     /// </summary>
     public static Color GetHighlightColor(ItemClass itemClass)
     {
-        Color baseColor = GetGradeColor(itemClass);
+        Color baseColor = GetClassColor(itemClass);
         return baseColor * 1.15f;
     }
 }
