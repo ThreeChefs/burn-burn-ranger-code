@@ -13,7 +13,7 @@ public class SkillSystem
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
-    public Dictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
+    public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
     private readonly List<int> _maxedSkillIds = new();
     private int _activeSkillCount;
