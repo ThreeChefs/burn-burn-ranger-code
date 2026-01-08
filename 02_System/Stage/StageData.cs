@@ -11,16 +11,15 @@ public class StageData : ScriptableObject
     [SerializeField] private int _rewardBoxCount = 5;   // 랜덤으로 장비 업그레이드 스크롤 나오는 갯수
     
     [Title("Map Data")]
-    // todo 맵 어떻게 넣을지 고민하기
+    [SerializeField] InfiniteMap _map;
     
     [Title("Wave Data")]
     [SerializeField] List<StageWaveEntry> _stageWaves = new List<StageWaveEntry>();
-
-    
     
     
     public List<StageWaveEntry> StageWaves => _stageWaves;
     
+    public InfiniteMap Map => _map;
     public int RewardExp => _rewardExp;
     public int RewardGold => _rewardGold;
     public int RewardBoxCount => _rewardBoxCount;
