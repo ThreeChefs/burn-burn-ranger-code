@@ -17,6 +17,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 레벨
     public LevelSystem StageLevel { get; private set; }
 
+    // 골드
+    private int _gold;
+
     // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
@@ -36,6 +39,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
     }
 
+    // 컴포넌트
+    [SerializeField] private CircleCollider2D _itemDetectionRange;
+    private float _defaultRadius;
+
     // 이벤트
     public event Action OnDieAction;
 
@@ -43,6 +50,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Awake()
     {
         StageLevel = new(1, 0f);
+        _gold = 0;
+        _defaultRadius = _itemDetectionRange.radius;
     }
 
     private void Start()
@@ -51,6 +60,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _speed = Condition[StatType.Speed];
         _health = Condition[StatType.Health];
         _heal = Condition[StatType.Heal];
+
+        Condition[StatType.DropItemRange].OnMaxValueChanged += OnUpdateColliderSize;
     }
 
     private void Update()
@@ -69,6 +80,22 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void OnDestroy()
     {
         StageLevel.OnDestroy();
+        Condition[StatType.DropItemRange].OnMaxValueChanged -= OnUpdateColliderSize;
+    }
+    #endregion
+
+    #region Collider 관리
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent(out GemItem gem))
+        {
+            // todo: gem 끌어모으는 스크립트 붙이기
+        }
+    }
+
+    private void OnUpdateColliderSize(float radius)
+    {
+        _itemDetectionRange.radius = _defaultRadius * radius;
     }
     #endregion
 
@@ -129,6 +156,21 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
+    #region 골드
+    public void AddGold(int amount)
+    {
+        _gold += amount;
+    }
+
+    /// <summary>
+    /// [public] 스테이지 종료 시 획득한 골드 저장하기
+    /// </summary>
+    public void UpdateGold()
+    {
+        PlayerManager.Instance.Wallet[WalletType.Gold].Add(_gold);
+    }
+    #endregion
+
     #region 에디터 전용
 #if UNITY_EDITOR
     private void Reset()
@@ -143,6 +185,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
         PlayerInput input = GetComponent<PlayerInput>();
         input.actions = AssetLoader.FindAndLoadByName<InputActionAsset>("Player");
         input.notificationBehavior = PlayerNotifications.InvokeUnityEvents;
+
+        _itemDetectionRange = transform.FindChild<CircleCollider2D>("ItemDetectionRange");
+        _itemDetectionRange.radius = 0.5f;
     }
 #endif
     #endregion

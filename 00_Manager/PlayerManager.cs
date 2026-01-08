@@ -8,13 +8,15 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     [Header("SO Data")]
     [SerializeField] private StatData _statData;
 
-    public PlayerCondition Condition { get; protected set; }
+    public PlayerCondition Condition { get; private set; }
+    public PlayerWallet Wallet { get; private set; }
 
     protected override void Init()
     {
         base.Init();
 
         Condition = new(_statData);
+        Wallet = new();
     }
 
     /// <summary>
@@ -23,6 +25,10 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     public StagePlayer SpawnPlayer()
     {
         StagePlayer = Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
+        if (Camera.main.TryGetComponent<FollowCamera>(out var camera))
+        {
+            camera.ConnectPlayer();
+        }
         return StagePlayer;
     }
 
