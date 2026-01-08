@@ -43,7 +43,7 @@ public class LevelPanel : MonoBehaviour
 
         while (alpha < duration)
         {
-            alpha += Time.deltaTime;
+            alpha += Time.unscaledDeltaTime;
             float t = alpha / duration;
             _slider.value = Mathf.Lerp(start, end, t);
             yield return null;
