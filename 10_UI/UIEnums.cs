@@ -10,6 +10,7 @@ public enum UIName
     UI_Home,
     UI_Shop,
     UI_Equipment,
+    UI_PickUp,
 
     // World UI
     WorldUI_Hp

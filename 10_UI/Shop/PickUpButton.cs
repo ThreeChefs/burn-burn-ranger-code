@@ -15,6 +15,7 @@ public class PickUpButton : BaseButton
     [SerializeField] private TextMeshProUGUI _requiredValue;
 
     private PickUpSystem _pickUpSystem;
+    private List<ItemInstance> _items = new();
 
     private void Start()
     {
@@ -43,10 +44,19 @@ public class PickUpButton : BaseButton
         }
 
         BoxWallet wallet = _boxWallets[_boxWalletIndex];
-        if (PlayerManager.Instance.Wallet[wallet.WalletType].TryUse(wallet.Count))
+        if (PlayerManager.Instance.Wallet[wallet.WalletType].TryUse(wallet.RequiredValue))
         {
-            ItemInstance item = _pickUpSystem.PickUp(_boxId);
-            PlayerManager.Instance.Inventory.Add(item);
+            for (int i = 0; i < wallet.PickUpCount; i++)
+            {
+                ItemInstance item = _pickUpSystem.PickUp(_boxId);
+                PlayerManager.Instance.Inventory.Add(item);
+                _items.Add(item);
+            }
+
+            PickUpUI ui = UIManager.Instance.ShowUI(UIName.UI_PickUp) as PickUpUI;
+            ui.PickUpItems(_items);
+            _items.Clear();
+
             return;
         }
     }
@@ -57,7 +67,7 @@ public class PickUpButton : BaseButton
         {
             BoxWallet wallet = _boxWallets[i];
 
-            if (wallet.Count > value)
+            if (wallet.RequiredValue > value)
             {
                 _boxWalletIndex = i;
                 SetPickButton(_boxWalletIndex);
@@ -69,7 +79,7 @@ public class PickUpButton : BaseButton
     private void SetPickButton(int index)
     {
         _moneyIcon.sprite = _boxWallets[index].MoneyIcon;
-        _requiredValue.text = _boxWallets[index].Count.ToString();
+        _requiredValue.text = _boxWallets[index].RequiredValue.ToString();
     }
 
 #if UNITY_EDITOR
@@ -86,5 +96,6 @@ public struct BoxWallet
 {
     [field: SerializeField] public WalletType WalletType { get; private set; }
     [field: SerializeField] public Sprite MoneyIcon { get; private set; }
-    [field: SerializeField] public int Count { get; private set; }
+    [field: SerializeField] public int RequiredValue { get; private set; }
+    [field: SerializeField] public int PickUpCount { get; private set; }
 }
