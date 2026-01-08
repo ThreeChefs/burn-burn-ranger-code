@@ -26,10 +26,16 @@ public class MonsterPool : BasePool
             MonsterPoolObjectData monsterData = _poolObjectData as MonsterPoolObjectData;
             monster.ApplyData(monsterData.MonsterData);
             monster.onDieAction += StageManager.Instance.OnDieMonster;
+            monster.onDieAction += DeativateMonster;
         }
 
 
         return newGameObject;
+    }
+
+    void DeativateMonster(Monster monster)
+    {
+        monster.gameObject.SetActive(false);
     }
 
 }
