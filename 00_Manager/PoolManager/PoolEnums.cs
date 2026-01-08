@@ -4,7 +4,7 @@
 
 public enum CommonPoolIndex
 {
-
+    DamageText,
 }
 
 public enum MonsterPoolIndex
