@@ -3,12 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-
-// todo 탕탕특공대처럼 하려면 Play 버튼이랑 분리 되어야 함. 일단 기능 먼저 구현용
 public class StageSelectUI : PopupUI
 {
     [Title("Stage Info")]
-    [SerializeField] private int _maxStage = 100;           // 어디선가 가져와야함
+    private int _maxStage = 100;           // 어디선가 가져와야함
     [SerializeField] private TextMeshProUGUI _stageNumText;
 
     [Title("Buttons")]
@@ -25,6 +23,7 @@ public class StageSelectUI : PopupUI
 
 
 
+
     // todo : 나중에는 제일 마지막에 플레이한 stage 체크하기
     private int _nowSelectedStage = 1;
 
@@ -33,37 +32,53 @@ public class StageSelectUI : PopupUI
         
         _nextButton.onClick.AddListener(OnClickNextButton);
         _prevButton.onClick.AddListener(OnClickPrevButton);
-        _selectButton.onClick.AddListener(OnClickPlayButton);
+        _selectButton.onClick.AddListener(OnClickSelectButton);
         _backButton.onClick.AddListener(OnClickBackButton);
 
         _stageNumText.text = _nowSelectedStage.ToString();
 
-        SetStageIcon();
 
+    }
+
+    private void Start()
+    {
+        _maxStage = GameManager.Instance.StageDatabase.Count;
+        SetStageIcon();
     }
 
 
     void SetStageIcon()
     {
-        if(_nowSelectedStage == 1)
+        // 이전 스테이지, 다음 스테이지 아이콘 버튼 처리
+        if(_nowSelectedStage-1 <= 0)
         {
             _prevButton.gameObject.SetActive(false);
             _prevStageIconImg.gameObject.SetActive(false);
         }
+        else
+        {
+            _prevButton.gameObject.SetActive(true);
 
-        if (_nowSelectedStage == _maxStage)
+            _prevStageIconImg.sprite = GameManager.Instance.StageDatabase[_nowSelectedStage - 2].StageIcon;
+            _prevStageIconImg.gameObject.SetActive(true);
+        }
+
+        if(_nowSelectedStage +1 > _maxStage)
         {
             _nextButton.gameObject.SetActive(false);
             _nextStageIconImg.gameObject.SetActive(false);
         }
-
-        if(_nowSelectedStage > 1 && _nowSelectedStage < _maxStage)
+        else
         {
-            _prevButton.gameObject.SetActive(true);
             _nextButton.gameObject.SetActive(true);
-            _prevStageIconImg.gameObject.SetActive(true);
+
+            _nextStageIconImg.sprite = GameManager.Instance.StageDatabase[_nowSelectedStage].StageIcon;
             _nextStageIconImg.gameObject.SetActive(true);
         }
+
+
+        _stageIconImg.sprite = GameManager.Instance.StageDatabase[_nowSelectedStage - 1].StageIcon;
+
     }
 
 
@@ -81,9 +96,10 @@ public class StageSelectUI : PopupUI
         SetStageIcon();
     }
 
-    void OnClickPlayButton()
+    void OnClickSelectButton()
     {
         GameManager.Instance.SetSelectedStage(_nowSelectedStage);
+        gameObject.SetActive(false);
     }
 
     void OnClickBackButton()
