@@ -5,6 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StageData", menuName = "SO/Stage/Stage Data")]
 public class StageData : ScriptableObject
 {
+    [Title("Stage Info")]
+    [SerializeField] private string _stageName = "스테이지";
+    [SerializeField] private Sprite _stageIcon;
+
+
     [Title("Reward Data")]
     [SerializeField] private int _rewardExp = 100;      // 보상 경험치
     [SerializeField] private int _rewardGold = 100;     // 보상 골드
@@ -23,6 +28,8 @@ public class StageData : ScriptableObject
     public int RewardExp => _rewardExp;
     public int RewardGold => _rewardGold;
     public int RewardBoxCount => _rewardBoxCount;
+    public string StageName => _stageName;
+    public Sprite StageIcon => _stageIcon;
 
 
     private void OnValidate()
