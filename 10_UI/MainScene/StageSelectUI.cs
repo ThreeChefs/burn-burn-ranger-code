@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,6 +22,7 @@ public class StageSelectUI : PopupUI
     [SerializeField] private Image _prevStageIconImg;
     [SerializeField] private Image _nextStageIconImg;
 
+    public event Action<int> OnSelectStageEvent;
 
 
 
@@ -35,14 +37,14 @@ public class StageSelectUI : PopupUI
         _selectButton.onClick.AddListener(OnClickSelectButton);
         _backButton.onClick.AddListener(OnClickBackButton);
 
-        _stageNumText.text = _nowSelectedStage.ToString();
-
 
     }
 
     private void Start()
     {
         _maxStage = GameManager.Instance.StageDatabase.Count;
+
+        
         SetStageIcon();
     }
 
@@ -76,7 +78,7 @@ public class StageSelectUI : PopupUI
             _nextStageIconImg.gameObject.SetActive(true);
         }
 
-
+        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStage - 1].StageName;
         _stageIconImg.sprite = GameManager.Instance.StageDatabase[_nowSelectedStage - 1].StageIcon;
 
     }
@@ -99,6 +101,7 @@ public class StageSelectUI : PopupUI
     void OnClickSelectButton()
     {
         GameManager.Instance.SetSelectedStage(_nowSelectedStage);
+        OnSelectStageEvent?.Invoke(_nowSelectedStage);
         gameObject.SetActive(false);
     }
 
