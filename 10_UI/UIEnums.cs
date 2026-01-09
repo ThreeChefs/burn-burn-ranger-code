@@ -11,6 +11,7 @@ public enum UIName
     UI_Shop,
     UI_Equipment,
     UI_PickUp,
+    UI_HomeBottomMenu,
 
     // World UI
     WorldUI_Hp
