@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class PopupUI : BaseUI
@@ -16,14 +17,24 @@ public class PopupUI : BaseUI
         if(transform != null)
         {
             transform.localScale = Vector3.zero;
-            transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).OnComplete(AnimationEnd);
+            transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).SetUpdate(true);
         }
 
     }
 
-    private void AnimationEnd()
+    public override Tween CloseUIInternal()
     {
-        // 애니메이션 끝났을 때 처리
-        // 인터랙션 가능하게 한다던가
+        // 자식 찾아서 애니메이션 주기
+        Transform transform = this.transform.GetChild(0);
+        
+        if(transform != null)
+        {
+            transform.localScale = Vector3.one;
+            return transform.DOScale(0f, 0.2f).SetEase(Ease.InQuad).SetUpdate(true);
+        }
+
+        return null;
     }
+
+
 }

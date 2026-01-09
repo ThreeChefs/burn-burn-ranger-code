@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,18 @@ public abstract class BaseUI : MonoBehaviour
     {
         // todo 뿅하고 꺼진다던가
         OnCloseAction?.Invoke(this);
-        CloseUIInternal();
+
+        Tween closeTween = CloseUIInternal();
+
+        if (closeTween != null)
+        {
+            CloseUIInternal().OnComplete(() =>
+            {
+                this.gameObject.SetActive(false);
+            });
+            return;
+        }
+        
         this.gameObject.SetActive(false);
     }
 
@@ -51,7 +63,12 @@ public abstract class BaseUI : MonoBehaviour
 
 
     public virtual void OpenUIInternal() { }
-    public virtual void CloseUIInternal() { }
+    public virtual Tween CloseUIInternal()
+    {
+        return null;
+    }
+
+
 
 
 
