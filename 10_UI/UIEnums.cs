@@ -25,5 +25,6 @@ public enum UISubCanvasOrder
     Background = 0,
     Default = 100,
     Popup = 200,
-    TopMost = 300
+    TopMost = 300,
+    PopupTopMost = 400
 }
