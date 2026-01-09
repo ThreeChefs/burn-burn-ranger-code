@@ -144,6 +144,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         {
             // todo 가장 아래로 내리기
             ui.gameObject.SetActive(true);
+            ui.OpenUI();
             ui.transform.SetAsLastSibling();
             return ui;
         }
