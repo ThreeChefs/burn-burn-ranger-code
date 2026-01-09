@@ -1,10 +1,13 @@
+using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BaseButton : MonoBehaviour
+public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     protected Button _button;
-    
+
 
     protected virtual void Awake()
     {
@@ -15,5 +18,25 @@ public class BaseButton : MonoBehaviour
     protected virtual void OnClick()
     {
         
+    }
+
+    public virtual void OnPointerEnter(PointerEventData eventData)
+    {
+        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
+    }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+        this.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
+    }
+
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+        this.transform.DOScale(0.9f, 0.1f).SetEase(Ease.OutBack);
+    }
+
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
     }
 }

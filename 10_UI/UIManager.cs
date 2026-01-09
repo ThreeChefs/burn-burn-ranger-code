@@ -53,7 +53,14 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
         if (ui != null)
         {
-            BaseUI spawnedUI = Instantiate(ui, _mainCanvas.transform, false);
+            BaseUI spawnedUI = Instantiate(ui);
+
+            if (spawnedUI.IsSubCanvas == false)
+            {
+                spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            }
+            
+            spawnedUI.OpenUI();
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
             if (rect != null)
@@ -115,6 +122,8 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
             if (active == false)
                 spawnedUI.gameObject.SetActive(false);
+            else
+                spawnedUI.OpenUI();
 
             if (_nowLoadedUiDict.ContainsKey(uiName) == false)
             {

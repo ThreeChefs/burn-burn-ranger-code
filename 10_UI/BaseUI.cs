@@ -29,11 +29,9 @@ public abstract class BaseUI : MonoBehaviour
     public void CloseUI()
     {
         // todo 뿅하고 꺼진다던가
-        this.gameObject.SetActive(false);
-        
         OnCloseAction?.Invoke(this);
-        
         CloseUIInternal();
+        this.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
