@@ -106,6 +106,8 @@ public class BasePool : MonoBehaviour
     {
         for (int i = activatedObjectsPool.Count - 1; i >= 0; i--)
         {
+            // todo : 몬스터 캐싱해서 사용 필요
+            // monster가 결국 poolObject를 상속받아야 비용 절감 가능
             activatedObjectsPool[i].SendMessage(methodName, SendMessageOptions.DontRequireReceiver);
         }
     }
