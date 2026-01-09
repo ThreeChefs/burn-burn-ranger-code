@@ -30,14 +30,6 @@ public class UIManager : GlobalSingletonManager<UIManager>
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            SpawnUI(UIName.UI_SkillSelect);
-        }
-    }
-
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         _mainCanvas = Instantiate(_originCanvasPrefab);
@@ -149,6 +141,20 @@ public class UIManager : GlobalSingletonManager<UIManager>
             return ui;
         }
 
+        return null;
+    }
+
+    /// <summary>
+    /// Load 되어있는 UI 중 골라서 닫기
+    /// </summary>
+    public BaseUI CloseUI(UIName uiName)
+    {
+        BaseUI ui = GetNowSpawnedUI(uiName);
+        if (ui != null)
+        {
+            ui.CloseUI();
+            return ui;
+        }
         return null;
     }
 
