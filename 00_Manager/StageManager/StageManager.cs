@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
-    [SerializeField] private SoDatabase _stageDataBase;
+    //[SerializeField] private SoDatabase _stageDataBase;
     [SerializeField] private SoDatabase _skillDataBase;     // todo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
     private List<StageData> _stageDatas = new List<StageData>();
 
@@ -52,7 +52,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public override void Init()
     {
-        _stageDatas = _stageDataBase.GetDatabase<StageData>();
+        _stageDatas = GameManager.Instance.StageDatabase.GetDatabase<StageData>();
     }
 
     bool SetStageData(int stageNum)
