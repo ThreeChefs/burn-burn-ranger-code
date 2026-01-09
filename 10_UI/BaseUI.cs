@@ -14,6 +14,7 @@ public abstract class BaseUI : MonoBehaviour
     [BoxGroup("BaseUI")]
     [HideLabel][EnumToggleButtons]
     [SerializeField] private UISubCanvasOrder _subUIOrder;
+    public UISubCanvasOrder SubUIOrder => _subUIOrder;
 
 
     public bool IsSubCanvas => _isSubCanvas;
@@ -24,12 +25,6 @@ public abstract class BaseUI : MonoBehaviour
 
     private void Awake()
     {
-        Canvas canvas = this.gameObject.GetComponent<Canvas>();
-        if(_isSubCanvas && canvas != null)
-        {
-            canvas.sortingOrder = (int)_subUIOrder;
-        }
-
         AwakeInternal();
     }
     

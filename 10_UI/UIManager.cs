@@ -13,11 +13,12 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     [SerializeField] private Canvas _originCanvasPrefab;
     Canvas _mainCanvas;
+    Dictionary<UISubCanvasOrder, Canvas> _subCanvasDict;
+
 
     protected override void Init()
     {
         _originUiDict = ((UIName[])Enum.GetValues(typeof(UIName))).ToDictionary(part => part, part => (BaseUI)null);
-
 
         List<BaseUI> _uiList = _uiDatabase.GetDatabaseComponent<BaseUI>();
 
@@ -28,11 +29,27 @@ public class UIManager : GlobalSingletonManager<UIManager>
                 _originUiDict[uiName] = _uiList[i];
             }
         }
+
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         _mainCanvas = Instantiate(_originCanvasPrefab);
+        _mainCanvas.name = "MainCanvas";
+
+        _subCanvasDict = new Dictionary<UISubCanvasOrder, Canvas>();
+
+        foreach (UISubCanvasOrder e in Enum.GetValues(typeof(UISubCanvasOrder)))
+        {
+            Canvas newSubCanvas = Instantiate(_originCanvasPrefab);
+            newSubCanvas.sortingOrder = (int)e;
+            newSubCanvas.name = e + "Canvas";
+
+            _subCanvasDict.Add(e, newSubCanvas);
+        }
+
+
+
     }
 
 
@@ -51,7 +68,14 @@ public class UIManager : GlobalSingletonManager<UIManager>
             {
                 spawnedUI.transform.SetParent(_mainCanvas.transform, false);
             }
-            
+            else
+            {
+                if(_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
+                {
+                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
+                }
+            }
+
             spawnedUI.OpenUI();
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
@@ -99,6 +123,13 @@ public class UIManager : GlobalSingletonManager<UIManager>
             if(spawnedUI.IsSubCanvas == false)
             {
                 spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            }
+            else
+            {
+                if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
+                {
+                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
+                }
             }
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
