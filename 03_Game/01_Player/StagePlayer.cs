@@ -39,6 +39,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private PlayerStat _health;
     private PlayerStat _heal;
 
+    // 타이머
+    private float _healTimer;
+
     // 레벨
     public LevelSystem StageLevel { get; private set; }
 
@@ -78,9 +81,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        if (_heal.MaxValue != 0)
+        _healTimer += Time.deltaTime;
+        if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
         {
             _health.Add(_health.MaxValue * _heal.MaxValue);
+            _healTimer = 0f;
         }
     }
 
