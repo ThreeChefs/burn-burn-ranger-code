@@ -7,12 +7,10 @@ using UnityEngine;
 public class SkillSelectUI : PopupUI
 {
     [SerializeField] private SkillSelectButton[] _skillButtons;
-    [SerializeField] private TextMeshProUGUI _levelText;
     
     void OnEnable()
     {
         List<SkillSelectDto> skills = StageManager.Instance.SkillSystem.ShowSelectableSkills(Define.SelectableSkillMaxCount);
-        _levelText.text = PlayerManager.Instance.StagePlayer.StageLevel.ToString();
         SetSkillData(skills);
     }
     

@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SkillSelectButton : BaseButton
@@ -48,6 +49,17 @@ public class SkillSelectButton : BaseButton
         StageManager.Instance.SkillSystem.TrySelectSkill(_nowSkillData.Id);
         StageManager.Instance.ResumeGame();
         UIManager.Instance.CloseUI(UIName.UI_SkillSelect);
+    }
+
+    public override void OnPointerEnter(PointerEventData eventData)
+    {
+        base.OnPointerEnter(eventData);
+        if(transform.parent != null)
+        {
+            if (transform.parent.childCount <= 1)
+                return;
+            transform.SetSiblingIndex(transform.parent.childCount - 1);
+        }
     }
 
 }

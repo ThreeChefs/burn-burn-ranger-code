@@ -37,6 +37,6 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public virtual void OnPointerUp(PointerEventData eventData)
     {
-        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
+        this.transform.DOScale(1.0f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 }
