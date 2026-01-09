@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
-public class SkillSelectUI : BaseUI
+public class SkillSelectUI : PopupUI
 {
     [SerializeField] private SkillSelectButton[] _skillButtons;
+    [SerializeField] private TextMeshProUGUI _levelText;
     
     void OnEnable()
     {
         List<SkillSelectDto> skills = StageManager.Instance.SkillSystem.ShowSelectableSkills(Define.SelectableSkillMaxCount);
+        _levelText.text = PlayerManager.Instance.StagePlayer.StageLevel.ToString();
         SetSkillData(skills);
     }
     
@@ -29,13 +32,4 @@ public class SkillSelectUI : BaseUI
         }
     }
 
-    public override void OpenUIInternal()
-    {
-        
-    }
-
-    public override void CloseUIInternal()
-    {
-        
-    }
 }

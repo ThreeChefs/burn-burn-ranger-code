@@ -13,15 +13,6 @@ public class StageUI : BaseUI
         StageManager.Instance.AddKillCountAction += SetKillCount;
     }
 
-    public override void OpenUIInternal()
-    {
-        
-    }
-
-    public override void CloseUIInternal()
-    {
-    }
-
     void SetKillCount(int count)
     {
         killCountText.text = count.ToString();
