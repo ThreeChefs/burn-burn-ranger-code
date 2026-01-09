@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : GlobalSingletonManager<GameManager>
@@ -8,7 +9,13 @@ public class GameManager : GlobalSingletonManager<GameManager>
     public DataManager Data = new();
 
     [SerializeField] SoDatabase _stageDatabase;
-    public SoDatabase StageDatabase => _stageDatabase;
+    public List<StageData> StageDatabase { get; private set; }
+
+    protected override void Init()
+    {
+        StageDatabase = _stageDatabase.GetDatabase<StageData>();
+
+    }
 
     private void OnApplicationQuit()
     {

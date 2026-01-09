@@ -52,7 +52,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public override void Init()
     {
-        _stageDatas = GameManager.Instance.StageDatabase.GetDatabase<StageData>();
+        _stageDatas = GameManager.Instance.StageDatabase;
     }
 
     bool SetStageData(int stageNum)
