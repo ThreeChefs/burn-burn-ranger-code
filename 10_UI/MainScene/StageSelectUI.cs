@@ -4,12 +4,13 @@ using UnityEngine.UI;
 
 
 // todo 탕탕특공대처럼 하려면 Play 버튼이랑 분리 되어야 함. 일단 기능 먼저 구현용
-public class StageSelectUI : BaseUI
+public class StageSelectUI : PopupUI
 {
     [SerializeField] private int _maxStage = 100;     // 어디선가 가져와야함
     [SerializeField] private Button _nextButton;
     [SerializeField] private Button _prevButton;
-    [SerializeField] private Button _playButton;
+    [SerializeField] private Button _selectButton;
+    [SerializeField] private Button _backButton;
     [SerializeField] private TextMeshProUGUI _stageNumText;
 
     // todo : 나중에는 제일 마지막에 플레이한 stage 체크하기
@@ -19,8 +20,9 @@ public class StageSelectUI : BaseUI
     {
         _nextButton.onClick.AddListener(OnClickNextButton);
         _prevButton.onClick.AddListener(OnClickPrevButton);
-        _playButton.onClick.AddListener(OnClickPlayButton);
-        
+        _selectButton.onClick.AddListener(OnClickPlayButton);
+        _backButton.onClick.AddListener(OnClickBackButton);
+
         _stageNumText.text = _nowSelectedStage.ToString();
     }
 
@@ -40,16 +42,10 @@ public class StageSelectUI : BaseUI
     void OnClickPlayButton()
     {
         GameManager.Instance.SetSelectedStage(_nowSelectedStage);
-        GameManager.Instance.Scene.LoadSceneWithCoroutine(SceneType.StageScene);
     }
 
-    public override void OpenUIInternal()
+    void OnClickBackButton()
     {
-        
-    }
-
-    public override void CloseUIInternal()
-    {
-        
+        gameObject.SetActive(false);
     }
 }
