@@ -101,7 +101,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         if (collision.TryGetComponent(out GemItem gem))
         {
-            // todo: gem 끌어모으는 스크립트 붙이기
+            gem.StartMagnet(transform);
         }
     }
 
