@@ -27,13 +27,14 @@ public class StagePlayer : MonoBehaviour, IDamageable
     public LevelSystem StageLevel { get; private set; }
 
     // 골드
-    private int _gold;
+    public int GoldValue { get; private set; }
 
     // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
 
     // 이미지
+    [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
     protected bool IsLeft
     {
@@ -56,7 +57,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Awake()
     {
         StageLevel = new(1, 0f);
-        _gold = 0;
+        GoldValue = 0;
         _defaultRadius = _itemDetectionRange.radius;
     }
 
@@ -114,7 +115,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void Move()
     {
         Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
-        IsLeft = nextVec.x > 0;
+        if (nextVec.x != 0)
+        {
+            IsLeft = nextVec.x > 0;
+        }
         Vector2 pos = transform.position;
         Vector2 newPos = pos + nextVec;
         transform.position = newPos;
@@ -136,7 +140,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region sprite 관리
     private void Flip()
     {
-
+        foreach (SpriteRenderer renderer in _renderers)
+        {
+            renderer.flipX = IsLeft;
+        }
     }
     #endregion
 
@@ -170,7 +177,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 골드
     public void AddGold(int amount)
     {
-        _gold += amount;
+        GoldValue += Mathf.FloorToInt(amount * Condition[StatType.AddGold].MaxValue);
     }
 
     /// <summary>
@@ -178,7 +185,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     /// </summary>
     public void UpdateGold()
     {
-        PlayerManager.Instance.Wallet[WalletType.Gold].Add(_gold);
+        PlayerManager.Instance.Wallet[WalletType.Gold].Add(GoldValue);
     }
     #endregion
 

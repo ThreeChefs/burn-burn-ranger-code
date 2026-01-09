@@ -11,7 +11,7 @@ public class Monster : MonoBehaviour, IDamageable
     public BaseStat Hp { get; private set; }
     public BaseStat Attack { get; private set; }
     bool isLive;
-
+    private float _maxHp;
     protected Rigidbody2D rb;
     SpriteRenderer spriter;
     [SerializeField] private float hitCooldown = 0.5f;
@@ -21,7 +21,11 @@ public class Monster : MonoBehaviour, IDamageable
     {
         rb = GetComponent<Rigidbody2D>();
         spriter = GetComponentInChildren<SpriteRenderer>(true);
-
+        PoolObject poolObject = GetComponent<PoolObject>();
+        if (poolObject != null)
+        {
+            poolObject.OnEnableAction += ResetForPoolSpawn;
+        }
     }
 
     private void Start()
@@ -48,6 +52,7 @@ public class Monster : MonoBehaviour, IDamageable
         Speed = new BaseStat(monsterTypeData.Get(StatType.Speed), StatType.Speed);
         Hp = new BaseStat(monsterTypeData.Get(StatType.Health), StatType.Health);
         Attack = new BaseStat(monsterTypeData.Get(StatType.Attack), StatType.Attack);
+        _maxHp = Hp.MaxValue;
     }
     protected virtual void FixedUpdate()
     {
@@ -140,5 +145,29 @@ public class Monster : MonoBehaviour, IDamageable
         {
             MonsterDropItem.Instance.Spawn(monsterdata.dropItemType, transform.position);
         }
+    }
+
+    public void BombDie()
+    {
+        Die();
+    }
+
+    public void ResetForPoolSpawn(PoolObject pool)
+    {
+
+        if (Hp != null)
+            Hp.ResetCurValue();
+
+
+        _canHit = true;
+        isLive = true;
+
+
+        rb.velocity = Vector2.zero;
+
+
+        gameObject.layer = LayerMask.NameToLayer("Monster");
+
+
     }
 }

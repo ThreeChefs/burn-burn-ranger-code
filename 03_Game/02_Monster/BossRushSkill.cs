@@ -8,7 +8,7 @@ public class BossRushSkill : MonoBehaviour
     [SerializeField] private Transform target;
 
     [Header("Dash")]
-    [SerializeField] private float dashSpeed = 100f;
+    [SerializeField] private float dashSpeed = 50f;
     [SerializeField] private float dashDuration = 0.3f;
 
     [Header("Warning")]
@@ -32,7 +32,7 @@ public class BossRushSkill : MonoBehaviour
         float dist = Vector2.Distance(transform.position, target.position);
 
         // 7f 밖에서 감지
-        if (dist > detectRange)
+        if (dist <= detectRange)
         {
             Debug.Log(
                $"[BossRush] Detect Player | dist={dist:F2}, detectRange={detectRange}"
@@ -65,7 +65,7 @@ public class BossRushSkill : MonoBehaviour
         // 경고 표시
         rushWarning.SetActive(true);
         yield return new WaitForSeconds(warningTime);
-        rushWarning.SetActive(false);
+
         Debug.Log(
          $"[BossRush] Dash Start | speed={dashSpeed}, dir={dashDir}"
      );
@@ -81,6 +81,7 @@ public class BossRushSkill : MonoBehaviour
 
         rb.velocity = Vector2.zero;
         isDashing = false;
+        rushWarning.SetActive(false);
         Debug.Log(
            $"[BossRush] Dash End | movedDistance={Vector2.Distance(startPos, rb.position):F2}"
        );

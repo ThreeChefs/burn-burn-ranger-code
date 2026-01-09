@@ -5,6 +5,7 @@ using UnityEngine.UI;
 /// <summary>
 /// 아이템 슬롯 추상 클래스
 /// </summary>
+[RequireComponent(typeof(RectTransform))]
 [RequireComponent(typeof(Button))]
 [System.Serializable]
 public class ItemSlot : MonoBehaviour
@@ -16,12 +17,9 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] protected Image itemClass;
     [SerializeField] protected Image icon;
     [SerializeField] protected TextMeshProUGUI level;
-    // todo: 개수 넣기
+    [SerializeField] protected TextMeshProUGUI count;
 
-    [Header("데이터")]
-    [SerializeField] protected ItemData data;
-    public ItemData Data => data;
-    // todo: 레벨 등 동적으로 변하는 데이터 저장
+    public ItemInstance ItemInstance { get; protected set; }
 
     #region Unity API
     protected void Awake()
@@ -43,6 +41,13 @@ public class ItemSlot : MonoBehaviour
     #region 초기화
     protected virtual void Init()
     {
+        if (ItemInstance == null)
+        {
+            itemClass.gameObject.SetActive(false);
+            icon.gameObject.SetActive(false);
+            level.gameObject.SetActive(false);
+            count.gameObject.SetActive(false);
+        }
     }
 
     protected virtual void OnClickButton()
@@ -51,33 +56,35 @@ public class ItemSlot : MonoBehaviour
     #endregion
 
     #region 슬롯 데이터 관리
-    protected virtual void SetSlot(ItemData data)
+    /// <summary>
+    /// [public] 슬롯에 아이템 정보 넣기
+    /// </summary>
+    /// <param name="itemInstance"></param>
+    public virtual void SetSlot(ItemInstance itemInstance)
     {
-        this.data = data;
+        ItemInstance = itemInstance;
 
-        SetItemClass();
-        SetIcon();
-    }
+        itemClass.gameObject.SetActive(true);
+        icon.gameObject.SetActive(true);
+        level.gameObject.SetActive(true);
+        count.gameObject.SetActive(true);
 
-    private void SetItemClass()
-    {
-        itemClass.color = Define.ItemClassColors[data.ItemClass];
-    }
-
-    private void SetIcon()
-    {
-        icon.sprite = data.Icon;
+        itemClass.color = ItemClassColor.GetClassColor(itemInstance.ItemClass);
+        icon.sprite = itemInstance.ItemData.Icon;
+        level.text = itemInstance.Level.ToString();
+        count.text = itemInstance.Count == 0 ? "" : itemInstance.Count.ToString();
     }
     #endregion
 
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
-        itemClass = transform.FindChild<Image>("Image - Class");
-        icon = transform.FindChild<Image>("Image - Icon");
-        level = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
+        transform.FindOrInstantiate(ref itemClass, "Image - Class");
+        transform.FindOrInstantiate(ref icon, "Image - Icon");
+        transform.FindOrInstantiate(ref level, "Text (TMP) - Level");
+        transform.FindOrInstantiate(ref count, "Text (TMP) - Count");
 
-        itemClass.color = Define.ColorNone;
+        itemClass.color = ItemClassColor.GetClassColor();
         icon.sprite = null;
 
         button = GetComponent<Button>();

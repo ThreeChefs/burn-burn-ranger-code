@@ -43,4 +43,11 @@ public class StatSliderUI : BaseUI
         _slider.value = end;
         _routine = null;
     }
+
+    private void OnDestroy()
+    {
+        _targetStat.OnCurValueChanged -= UpdateValue;
+    }
+
+
 }

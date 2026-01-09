@@ -20,7 +20,7 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         if (data.OriginPrefab == null) return;
 
         BasePool newPool = Instantiate(poolPrefab);
-        newPool.Init(data.OriginPrefab, data.DefaultPoolSize);
+        newPool.Init(_originPoolDic[dataIndex]);
         newPool.name = $"{dataIndex}_Pool";
 
         nowPoolDic.Add(dataIndex, newPool);

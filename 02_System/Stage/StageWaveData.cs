@@ -9,8 +9,8 @@ public class StageWaveData : ScriptableObject
     [SerializeField] WaveType _waveType;
     public WaveType WaveType => _waveType;
     
-    [SerializeField] private List<MonsterTypeData> _monsterTypeData;
-    public List<MonsterTypeData> MonsterTypeData => _monsterTypeData;
+    [SerializeField] private List<MonsterPoolIndex> _monsters;
+    public List<MonsterPoolIndex> Monsters => _monsters;
     
     [HideIf(nameof(_waveType),WaveType.Boss)]  
     [SerializeField] private float _spawnDelay = 1.0f;
