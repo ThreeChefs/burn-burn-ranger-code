@@ -132,7 +132,7 @@ public class SkillSystem
             {
                 _activeSkillCount--;
                 // 액티브 스킬일 경우 삭제
-                GameObject.Destroy(_ownedSkills[combinationId].gameObject);
+                GameObject.Destroy(_ownedSkills[combinationId]);
                 _ownedSkills.Remove(combinationId);
             }
             else if (_skillDataCache[combinationId].Type == SkillType.Passive)
