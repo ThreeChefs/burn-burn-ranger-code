@@ -64,6 +64,11 @@ public class ItemSlot : MonoBehaviour
     {
         ItemInstance = itemInstance;
 
+        itemClass.gameObject.SetActive(true);
+        icon.gameObject.SetActive(true);
+        level.gameObject.SetActive(true);
+        count.gameObject.SetActive(true);
+
         itemClass.color = ItemClassColor.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
         level.text = itemInstance.Level.ToString();

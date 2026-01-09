@@ -88,15 +88,6 @@ public class PlayerCondition
     }
     #endregion
 
-    #region [public] 스텟 관리
-    /// <summary>
-    /// StatType의 값을 amount 만큼 사용하기
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="amount"></param>
-    /// <returns></returns>
-    public bool TryUse(StatType type, float amount) => _statDict[type].TryUse(amount);
-
     /// <summary>
     /// [public] 장비 장착 시 호출
     /// 장비 아이템에서 변경하는 StatType의 value만큼을 적용
@@ -107,5 +98,4 @@ public class PlayerCondition
     {
         _statDict[type].UpdateEquipmentValue(value);
     }
-    #endregion
 }

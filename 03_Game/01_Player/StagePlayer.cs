@@ -18,21 +18,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // hp바
     [SerializeField] private Transform _hpBarPivot;
 
-    // 캐싱
-    public PlayerCondition Condition { get; private set; }
-    private PlayerStat _health;
-    private PlayerStat _heal;
-
-    // 레벨
-    public LevelSystem StageLevel { get; private set; }
-
-    // 골드
-    public int GoldValue { get; private set; }
-
-    // 움직임
-    private PlayerStat _speed;
-    private Vector2 _inputVector;
-
     // 이미지
     [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
@@ -48,6 +33,21 @@ public class StagePlayer : MonoBehaviour, IDamageable
             }
         }
     }
+
+    // 캐싱
+    public PlayerCondition Condition { get; private set; }
+    private PlayerStat _health;
+    private PlayerStat _heal;
+
+    // 레벨
+    public LevelSystem StageLevel { get; private set; }
+
+    // 골드
+    public int GoldValue { get; private set; }
+
+    // 움직임
+    private PlayerStat _speed;
+    private Vector2 _inputVector;
 
     // 이벤트
     public event Action OnDieAction;
@@ -67,7 +67,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _speed = Condition[StatType.Speed];
         _health = Condition[StatType.Health];
         _heal = Condition[StatType.Heal];
-        _health.ResetCurValue();
+        _health.ResetCurValue(true);
 
         Condition[StatType.DropItemRange].OnMaxValueChanged += OnUpdateColliderSize;
 
@@ -200,14 +200,26 @@ public class StagePlayer : MonoBehaviour, IDamageable
         collider.offset = new Vector2(-0.03598577f, 0.2159152f);
         collider.size = new Vector2(0.805023f, 1.287887f);
 
+        string player = "Player";
         PlayerInput input = GetComponent<PlayerInput>();
-        input.actions = AssetLoader.FindAndLoadByName<InputActionAsset>("Player");
+        input.actions = AssetLoader.FindAndLoadByName<InputActionAsset>(player);
+        input.defaultActionMap = player;
         input.notificationBehavior = PlayerNotifications.InvokeUnityEvents;
+        foreach (PlayerInput.ActionEvent actionEvent in input.actionEvents)
+        {
+            if (actionEvent.actionId == "Move")
+            {
+                actionEvent.AddListener(OnMove);
+            }
+        }
 
+        // serialize field 연결
         _itemDetectionRange = transform.FindChild<CircleCollider2D>("ItemDetectionRange");
         _itemDetectionRange.radius = 0.5f;
 
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
+
+        _renderers = GetComponentsInChildren<SpriteRenderer>();
     }
 #endif
     #endregion
