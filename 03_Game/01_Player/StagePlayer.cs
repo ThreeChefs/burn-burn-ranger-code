@@ -1,4 +1,5 @@
 ﻿using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,7 +13,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 필드
     [Header("컴포넌트")]
     // 아이템 범위 
-    [SerializeField] private CircleCollider2D _itemDetectionRange;
+    [SerializeField] private CircleCollider2D _gemCollector;
     private float _defaultRadius;
 
     // hp바
@@ -61,7 +62,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         StageLevel = new(1, 0f);
         GoldValue = 0;
-        _defaultRadius = _itemDetectionRange.radius;
+        _defaultRadius = _gemCollector.radius;
     }
 
     private void Start()
@@ -102,17 +103,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #endregion
 
     #region Collider 관리
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.TryGetComponent(out GemItem gem))
-        {
-            gem.StartMagnet(transform);
-        }
-    }
-
     private void OnUpdateColliderSize(float radius)
     {
-        _itemDetectionRange.radius = _defaultRadius * radius;
+        _gemCollector.radius = _defaultRadius * radius;
     }
     #endregion
 
@@ -219,8 +212,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
 
         // serialize field 연결
-        _itemDetectionRange = transform.FindChild<CircleCollider2D>("ItemDetectionRange");
-        _itemDetectionRange.radius = 0.5f;
+        _gemCollector = transform.FindChild<CircleCollider2D>("GemCollector");
+        if (!_gemCollector.TryGetComponent<GemCollector>(out var gemCollector))
+        {
+            _gemCollector.AddComponent<GemCollector>();
+        }
+        _gemCollector.radius = 0.5f;
 
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
 
