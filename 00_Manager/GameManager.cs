@@ -12,7 +12,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     #region StageSelect
     
-    private int _selectedStageNumber = 0;
+    private int _selectedStageNumber = 1;
     public  int SelectedStageNumber => _selectedStageNumber;
 
     public void SetSelectedStage(int stageNumber)
