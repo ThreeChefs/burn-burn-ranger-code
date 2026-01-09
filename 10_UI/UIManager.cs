@@ -96,7 +96,11 @@ public class UIManager : GlobalSingletonManager<UIManager>
         if (ui != null)
         {
             BaseUI spawnedUI = Instantiate(ui);
-            spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+
+            if(spawnedUI.IsSubCanvas == false)
+            {
+                spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+            }
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
             if (rect != null)
@@ -130,6 +134,8 @@ public class UIManager : GlobalSingletonManager<UIManager>
         if (ui != null)
         {
             // todo 가장 아래로 내리기
+            ui.gameObject.SetActive(true);
+            ui.transform.SetAsLastSibling();
             return ui;
         }
 
