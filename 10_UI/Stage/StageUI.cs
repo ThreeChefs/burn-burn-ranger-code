@@ -11,6 +11,7 @@ public class StageUI : BaseUI
     private void Start()
     {
         StageManager.Instance.AddKillCountAction += SetKillCount;
+        UIManager.Instance.LoadUI(UIName.UI_SkillSelect, false);
     }
 
     void SetKillCount(int count)

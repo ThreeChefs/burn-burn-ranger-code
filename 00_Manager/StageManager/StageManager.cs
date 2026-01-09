@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
-    //[SerializeField] private SoDatabase _stageDataBase;
     [SerializeField] private SoDatabase _skillDataBase;     // todo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
     private List<StageData> _stageDatas = new List<StageData>();
 
@@ -126,7 +125,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     void SpawnSkillSelectUI(int level)
     {
         PauseGame();
-        UIManager.Instance.SpawnUI(UIName.UI_SkillSelect);
+        UIManager.Instance.ShowUI(UIName.UI_SkillSelect);
     }
 
     public void PauseGame()

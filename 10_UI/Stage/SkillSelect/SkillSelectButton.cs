@@ -47,7 +47,7 @@ public class SkillSelectButton : BaseButton
         // Select Skill
         StageManager.Instance.SkillSystem.TrySelectSkill(_nowSkillData.Id);
         StageManager.Instance.ResumeGame();
-        Destroy(_skillSelectUI.gameObject);
+        UIManager.Instance.CloseUI(UIName.UI_SkillSelect);
     }
 
 }
