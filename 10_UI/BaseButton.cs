@@ -22,21 +22,21 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
+        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
     {
-        this.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
+        this.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
-        this.transform.DOScale(0.9f, 0.1f).SetEase(Ease.OutBack);
+        this.transform.DOScale(0.9f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
     public virtual void OnPointerUp(PointerEventData eventData)
     {
-        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
+        this.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 }
