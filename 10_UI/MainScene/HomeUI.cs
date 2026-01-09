@@ -9,7 +9,6 @@ public class HomeUI : BaseUI
     [SerializeField] private TextMeshProUGUI _stageName;
 
     Image _stageSelectButtonImg;
-
     StageSelectUI _stageSelectUI;
 
     private void Awake()
@@ -18,14 +17,16 @@ public class HomeUI : BaseUI
         _stageSelectButton.onClick.AddListener(OnClickStageSelectButton);
         
         _stageSelectButtonImg = _stageSelectButton.GetComponent<Image>();
-
-      
     }
 
     private void Start()
     {
         _stageSelectUI = (StageSelectUI)UIManager.Instance.LoadUI(UIName.UI_StageSelect, false);
         _stageSelectUI.OnSelectStageEvent += SetStageSelectButtonImg;
+
+        // todo : 마지막으로 플레이한 스테이지로 변경
+        _stageName.text = GameManager.Instance.StageDatabase[0].StageName;
+        _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[0].StageIcon;
     }
 
 
