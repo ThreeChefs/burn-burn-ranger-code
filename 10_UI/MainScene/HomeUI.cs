@@ -11,7 +11,7 @@ public class HomeUI : BaseUI
 
         _playButton.onClick.AddListener(OnClickPlayButton);
         _stageSelectButton.onClick.AddListener(OnClickStageSelectButton);
-
+        UIManager.Instance.LoadUI(UIName.UI_StageSelect, false);
     }
 
 
@@ -22,6 +22,6 @@ public class HomeUI : BaseUI
 
     void OnClickStageSelectButton()
     {
-        UIManager.Instance.SpawnUI(UIName.UI_StageSelect);
+        UIManager.Instance.ShowUI(UIName.UI_StageSelect);
     }
 }
