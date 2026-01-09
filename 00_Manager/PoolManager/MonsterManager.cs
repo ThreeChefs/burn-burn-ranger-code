@@ -41,8 +41,6 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         monster.ApplyData(((MonsterPoolObjectData)_originPoolDic[poolIndex]).MonsterData);
         return monster;
 
-        //Monster monster = SpawnObject<Monster>(poolIndex, position, rotation, parent);
-        //return monster;
     }
 
     public Monster SpawnBossMonster(MonsterPoolIndex poolIndex)
@@ -53,23 +51,29 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     }
 
 
+    /// <summary>
+    /// 그냥 없애기만 하는거
+    /// </summary>
     public void DeactiveAllMonsters()
     {
         if (nowPoolDic.Count == 0) return;
 
         foreach (var pool in nowPoolDic.Values)
         {
-            // todo : 펑 터뜨리기
             pool.DeactivateAllPoolObjects();
         }
     }
 
+
+    /// <summary>
+    /// 죽이는 메세지 보내기
+    /// </summary>
     public void AllKill()
     {
         if (nowPoolDic.Count == 0) return;
         foreach (var pool in nowPoolDic.Values)
         {
-            // todo : 펑 터뜨리기
+            // todo : Message 없애고 몬스터 캐싱한걸로 사용할 수 있게 변경해야함
             pool.SendMessageToActivated("Die");
         }
     }
