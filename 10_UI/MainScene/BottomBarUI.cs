@@ -31,6 +31,7 @@ public class BottomBarUI : BaseUI
             {
                 Logger.LogWarning($"UIName 없음: {uiName}");
             }
+
             _buttonActions[i] = () =>
             {
                 if (_prevUI != null)

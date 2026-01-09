@@ -2,12 +2,13 @@ using UnityEngine;
 
 public class PlayerManager : GlobalSingletonManager<PlayerManager>
 {
-    [SerializeField] private GameObject _stagePlayerPrefab;
+    [SerializeField] private StagePlayer _stagePlayerPrefab;
     public StagePlayer StagePlayer { get; private set; }
 
     [Header("SO Data")]
     [SerializeField] private StatData _statData;
 
+    // POCO Class
     public PlayerCondition Condition { get; private set; }
     public PlayerWallet Wallet { get; private set; }
     public Inventory Inventory { get; private set; }
@@ -33,7 +34,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     /// </summary>
     public StagePlayer SpawnPlayer()
     {
-        StagePlayer = Instantiate(_stagePlayerPrefab).GetComponent<StagePlayer>();
+        StagePlayer = Instantiate(_stagePlayerPrefab);
         return StagePlayer;
     }
 
@@ -41,7 +42,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
-        _stagePlayerPrefab = AssetLoader.FindAndLoadByName("StagePlayer");
+        _stagePlayerPrefab = AssetLoader.FindAndLoadByName("StagePlayer").GetComponent<StagePlayer>();
         _statData = AssetLoader.FindAndLoadByName<StatData>("PlayerStatData");
     }
 #endif

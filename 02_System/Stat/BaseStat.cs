@@ -34,11 +34,14 @@ public class BaseStat
     /// </summary>
     /// <param name="amount"></param>
     /// <returns></returns>
-    public virtual bool TryUse(float amount)
+    public virtual bool TryUse(float amount, bool debug = false)
     {
         if (CurValue < amount)
         {
-            Logger.Log($"{type} 부족");
+            if (debug)
+            {
+                Logger.Log($"{type} 부족");
+            }
             return false;
         }
 
@@ -57,9 +60,12 @@ public class BaseStat
         OnCurValueChanged?.Invoke(CurValue);
     }
 
-    public void ResetCurValue()
+    public void ResetCurValue(bool debug = false)
     {
         CurValue = MaxValue;
-        Logger.Log($"값 초기화: {CurValue} / {MaxValue}");
+        if (debug)
+        {
+            Logger.Log($"값 초기화: {CurValue} / {MaxValue}");
+        }
     }
 }
