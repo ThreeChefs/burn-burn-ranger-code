@@ -19,3 +19,11 @@ public enum UIName
     // World UI
     WorldUI_Hp
 }
+
+public enum UISubCanvasOrder
+{
+    Background = 0,
+    Default = 100,
+    Popup = 200,
+    TopMost = 300
+}

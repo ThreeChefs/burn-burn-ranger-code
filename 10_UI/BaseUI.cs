@@ -7,9 +7,15 @@ using UnityEngine.UI;
 
 public abstract class BaseUI : MonoBehaviour
 {
-    [PropertySpace(SpaceBefore = 10, SpaceAfter = 10)]
     [BoxGroup("BaseUI")]
     [SerializeField] bool _isSubCanvas = false;
+
+    [ShowIf("_isSubCanvas")]
+    [BoxGroup("BaseUI")]
+    [HideLabel][EnumToggleButtons]
+    [SerializeField] private UISubCanvasOrder _subUIOrder;
+
+
     public bool IsSubCanvas => _isSubCanvas;
 
     public event Action<BaseUI> OnOpenAction;
@@ -18,6 +24,12 @@ public abstract class BaseUI : MonoBehaviour
 
     private void Awake()
     {
+        Canvas canvas = this.gameObject.GetComponent<Canvas>();
+        if(_isSubCanvas && canvas != null)
+        {
+            canvas.sortingOrder = (int)_subUIOrder;
+        }
+
         AwakeInternal();
     }
     
