@@ -3,19 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StageUI : BaseUI
 {
     [SerializeField] BigIntText _killCountText;
     [SerializeField] BigIntText _goldText;
+    [SerializeField] Button _pauseButton;
 
     private void Start()
     {
         StageManager.Instance.AddKillCountAction += SetKillCount;
         
-        //PlayerManager.Instance.StagePlayer.GoldValue
-        
+        _pauseButton.onClick.AddListener(OnClickPauseButton);
+
         UIManager.Instance.LoadUI(UIName.UI_StageProgressBar);
+        UIManager.Instance.LoadUI(UIName.UI_StagePause, false);
         UIManager.Instance.LoadUI(UIName.UI_SkillSelect, false);
     }
 
@@ -33,6 +36,12 @@ public class StageUI : BaseUI
     void SetGoldCount(int count)
     {
         _goldText.SetValue(count);
+    }
+
+    void OnClickPauseButton()
+    {
+        UIManager.Instance.ShowUI(UIName.UI_StagePause);
+        StageManager.Instance.PauseGame();
     }
     
 }
