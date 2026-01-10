@@ -2,7 +2,7 @@
 public enum SfxName
 {
     // UI
-    Click,
+    Sfx_Click,
     
     Test,
 }

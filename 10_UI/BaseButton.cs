@@ -17,7 +17,7 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     protected virtual void OnClick()
     {
-        
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Click);
     }
 
     public virtual void OnPointerEnter(PointerEventData eventData)
