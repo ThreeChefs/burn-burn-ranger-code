@@ -1,0 +1,21 @@
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "New KnockbackSkillEffect", menuName = "SO/Skill/Effect/Knockback")]
+public class KnockbackSkillEffectSO : BaseSkillEffectSO
+{
+    public override void Apply(in HitContext context)
+    {
+        if (context.directTarget == null) return;
+
+        if (context.directTarget.TryGetComponent(out IKnockbackable knockback))
+        {
+            float force = context.projectileData.KnockBack;
+            if (force > 0)
+            {
+                Vector2 dir = ((Vector2)context.directTarget.transform.position - context.position).normalized;
+                knockback.ApplyKnockback(dir * force);
+                Logger.Log($"{dir * force} 만큼 넉백");
+            }
+        }
+    }
+}
