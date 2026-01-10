@@ -42,7 +42,7 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         // todo : Monster가 PoolObject로부터 상속받도록 변경 필요 또는 캐싱하고 있기
         if(monsterPoolObject == null) return  null;
 
-        Monster monster = monsterPoolObject.GetComponent<Monster>();
+        Monster monster = monsterPoolObject as Monster;
         monster.ApplyData(((MonsterPoolObjectData)_originPoolDic[poolIndex]).MonsterData);
         return monster;
 
@@ -70,16 +70,16 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     }
 
 
-    /// <summary>
-    /// 죽이는 메세지 보내기
-    /// </summary>
-    public void AllKill()
+    public void KillAll()
     {
         if (nowPoolDic.Count == 0) return;
         foreach (var pool in nowPoolDic.Values)
         {
-            // todo : Message 없애고 몬스터 캐싱한걸로 사용할 수 있게 변경해야함
-            pool.SendMessageToActivated("Die");
+            MonsterPool monsterPool =  pool as MonsterPool;
+            if(monsterPool != null)
+            {
+                monsterPool.KillAll();
+            }
         }
     }
 
@@ -93,7 +93,7 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         {
             foreach (var obj in pool.ActivatedObjectsPool)
             {
-                Monster monster = obj.GetComponent<Monster>();
+                Monster monster = obj as Monster;
 
                 if (monster == null) continue;
                 if (nearestMonster == null)
