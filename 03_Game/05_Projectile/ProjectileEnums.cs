@@ -1,3 +1,9 @@
+public enum ProjectilePhase
+{
+    Fly,
+    Area
+}
+
 public enum ProjectileMoveType
 {
     Straight,       // 직선
@@ -28,9 +34,9 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
 {
     // 스킬
     KunaiProjectileData,            // 쿠나이
-    GhostShurikenProjectileData,    
+    GhostShurikenProjectileData,
     RangedAttack,
-    
+
     // 공통
-    RangedProjectile        
+    RangedProjectile
 }
