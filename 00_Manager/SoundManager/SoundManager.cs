@@ -9,10 +9,10 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     [Header("사용할 클립 목록")]
     [SerializeField] private SoDatabase _sfxGroupAssetTable;
     [SerializeField] private SoDatabase _bgmGroupAssetTable;
-    
+
     [Header("Other Settings")]
     [SerializeField] int _sfxAudioSourcePoolCount = 10;
-    
+
     public float MasterVolume => _masterVolume;
     public float SfxVolume => _sfxVolume;
     public float BgmVolume => _bgmVolume;
@@ -30,8 +30,8 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     AudioSource _bgmAudioSource;
     private List<AudioSource> _sfxAudioSources;
-    
-    
+
+
     protected override void Init()
     {
         _bgmAudioSource = gameObject.AddComponent<AudioSource>();
@@ -57,11 +57,11 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
         BgmTable = ((BgmName[])Enum.GetValues(typeof(BgmName))).ToDictionary(part => part,
             part => (AudioClipGroup)null);
-        
-        
+
+
         List<AudioClipGroup> bgmGroupAssetList = _bgmGroupAssetTable.GetDatabase<AudioClipGroup>();
         List<AudioClipGroup> sfxGroupAssetList = _sfxGroupAssetTable.GetDatabase<AudioClipGroup>();
-        
+
         for (int i = 0; i < bgmGroupAssetList.Count; i++)
         {
             if (Enum.TryParse(bgmGroupAssetList[i].name, out BgmName bgmName))
@@ -78,88 +78,66 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             }
         }
     }
-    
-    public void PlaySfxOnce(SfxName sfxName, float volume = 1.0f, int idx = 0)
+
+    public void PlaySfx(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
     {
-        AudioClip aClip = null;
         if (SFXTable.TryGetValue(sfxName, out AudioClipGroup clip))
         {
-            aClip = clip.GetClip(idx);
+            PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
         }
-
-        PlaySound(GetSFXAudioSource(), aClip, GetVolume(_sfxVolume, volume));
     }
 
-    public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f)
+    public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, AudioSource aSource = null)
     {
-        AudioClip aClip = null;
         if (SFXTable.TryGetValue(sfxName, out AudioClipGroup clip))
         {
-            aClip = clip.GetRandomClip();
+            PlayInternal(SoundType.Sfx, clip, -1, aSource, volume, false, pitch);
         }
 
-        PlaySound(GetSFXAudioSource(), aClip, GetVolume(_sfxVolume, volume));
     }
 
-    /// <summary>
-    /// 3D 환경의 특정 AudioSource 에서 재생할 때 사용
-    /// </summary>
-    public void PlaySfxOnceAtAudioSource(AudioSource aSource, SfxName sfxName, int idx = 0, float volume = 1.0f)
+    public void PlayBgm(BgmName bgmName, int idx = 0, float volume = 1.0f, bool loop = true, float pitch = 1.0f, AudioSource aSource = null)
     {
-        AudioClip aClip = null;
-        if (SFXTable.TryGetValue(sfxName, out AudioClipGroup clip))
-        {
-            aClip = clip.GetClip(idx);
-        }
-
-        PlaySound(aSource, aClip, GetVolume(_sfxVolume, volume));
-    }
-
-    public void PlayBgmAtAudioSource(AudioSource aSource, BgmName bgmName, int idx = 0, float volume = 1.0f,
-        bool loop = true, float pitch = 1.0f)
-    {
-        AudioClip aClip = null;
         if (BgmTable.TryGetValue(bgmName, out AudioClipGroup clip))
         {
-            aClip = clip.GetClip(idx);
+            PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
         }
-
-        PlaySound(aSource, aClip, GetVolume(_bgmVolume, volume), loop, pitch);
-    }
-
-    public void PlayBgm(BgmName bgmName, float volume = 1.0f, bool loop = true, float pitch = 1.0f)
-    {
-        AudioClip aClip = null;
-        if (BgmTable.TryGetValue(bgmName, out AudioClipGroup clip))
-        {
-            aClip = clip.GetClip();
-        }
-
-        PlaySound(_bgmAudioSource, aClip, GetVolume(_bgmVolume, volume), loop, pitch);
     }
 
 
-    void PlaySound(AudioSource audioSource, AudioClip aClip, float volume = 1.0f, bool loop = false, float pitch = 1.0f)
+    // Play 통합
+    private void PlayInternal(SoundType type, AudioClipGroup group, int clipIndex, AudioSource audioSource, float volume, bool loop, float pitch)
     {
+        if (group == null)
+            return;
+
+        AudioClip clip = clipIndex < 0 ? group.GetRandomClip() : group.GetClip(clipIndex);
+        AudioSource target = audioSource != null ? audioSource : (type == SoundType.Sfx ? GetSFXAudioSource() : _bgmAudioSource);
+
+        float baseVolume = type == SoundType.Sfx ? _sfxVolume : _bgmVolume;
+
+
         if (audioSource == null) return;
-
-        if (aClip != null)
+        if (clip != null)
         {
             audioSource.Stop();
             audioSource.volume = volume;
-            audioSource.clip = aClip;
+            audioSource.clip = clip;
             audioSource.loop = loop;
             audioSource.pitch = pitch;
             audioSource.Play();
         }
     }
-    
-    
-    
+
+
+
     public void SetNowBgmPitch(float pitch)
     {
         _bgmAudioSource.pitch = pitch;
     }
+
+
+    #region 정지
 
     public void AllStop()
     {
@@ -179,8 +157,9 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             aSource.Stop();
         }
     }
-    
-    
+
+    #endregion
+
 
     AudioSource GetSFXAudioSource()
     {
@@ -213,7 +192,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
 
     #region VolumeSettings
-    
+
     void SetBgmVolume()
     {
         _bgmAudioSource.volume = GetVolume(BgmVolume, 1.0f);
