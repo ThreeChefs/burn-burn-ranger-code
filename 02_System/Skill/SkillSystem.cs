@@ -51,7 +51,7 @@ public class SkillSystem
 
         // todo: 기본 스킬 주기
         // ex. 쿠나이
-        TrySelectSkill(30);
+        TrySelectSkill(PlayerManager.Instance.Inventory.WeaponId);
     }
     #endregion
 
