@@ -25,8 +25,8 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     static string _masterVolumeName = "MasterVolume";
 
 
-    Dictionary<SfxName, AudioClipGroup> SFXTable = new Dictionary<SfxName, AudioClipGroup>();
-    Dictionary<BgmName, AudioClipGroup> BgmTable = new Dictionary<BgmName, AudioClipGroup>();
+    Dictionary<SfxName, AudioClipGroupData> SFXTable = new Dictionary<SfxName, AudioClipGroupData>();
+    Dictionary<BgmName, AudioClipGroupData> BgmTable = new Dictionary<BgmName, AudioClipGroupData>();
 
     AudioSource _bgmAudioSource;
     private List<AudioSource> _sfxAudioSources;
@@ -53,14 +53,14 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     void ReadAudioClips()
     {
         SFXTable = ((SfxName[])Enum.GetValues(typeof(SfxName))).ToDictionary(part => part,
-            part => (AudioClipGroup)null);
+            part => (AudioClipGroupData)null);
 
         BgmTable = ((BgmName[])Enum.GetValues(typeof(BgmName))).ToDictionary(part => part,
-            part => (AudioClipGroup)null);
+            part => (AudioClipGroupData)null);
 
 
-        List<AudioClipGroup> bgmGroupAssetList = _bgmGroupAssetTable.GetDatabase<AudioClipGroup>();
-        List<AudioClipGroup> sfxGroupAssetList = _sfxGroupAssetTable.GetDatabase<AudioClipGroup>();
+        List<AudioClipGroupData> bgmGroupAssetList = _bgmGroupAssetTable.GetDatabase<AudioClipGroupData>();
+        List<AudioClipGroupData> sfxGroupAssetList = _sfxGroupAssetTable.GetDatabase<AudioClipGroupData>();
 
         for (int i = 0; i < bgmGroupAssetList.Count; i++)
         {
@@ -81,7 +81,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlaySfx(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
     {
-        if (SFXTable.TryGetValue(sfxName, out AudioClipGroup clip))
+        if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
             PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
         }
@@ -89,7 +89,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, AudioSource aSource = null)
     {
-        if (SFXTable.TryGetValue(sfxName, out AudioClipGroup clip))
+        if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
             PlayInternal(SoundType.Sfx, clip, -1, aSource, volume, false, pitch);
         }
@@ -98,7 +98,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlayBgm(BgmName bgmName, int idx = 0, float volume = 1.0f, bool loop = true, float pitch = 1.0f, AudioSource aSource = null)
     {
-        if (BgmTable.TryGetValue(bgmName, out AudioClipGroup clip))
+        if (BgmTable.TryGetValue(bgmName, out AudioClipGroupData clip))
         {
             PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
         }
@@ -106,7 +106,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
 
     // Play 통합
-    private void PlayInternal(SoundType type, AudioClipGroup group, int clipIndex, AudioSource audioSource, float volume, bool loop, float pitch)
+    private void PlayInternal(SoundType type, AudioClipGroupData group, int clipIndex, AudioSource audioSource, float volume, bool loop, float pitch)
     {
         if (group == null)
             return;
@@ -116,16 +116,14 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
         float baseVolume = type == SoundType.Sfx ? _sfxVolume : _bgmVolume;
 
-
-        if (audioSource == null) return;
         if (clip != null)
         {
-            audioSource.Stop();
-            audioSource.volume = volume;
-            audioSource.clip = clip;
-            audioSource.loop = loop;
-            audioSource.pitch = pitch;
-            audioSource.Play();
+            target.Stop();
+            target.volume = volume;
+            target.clip = clip;
+            target.loop = loop;
+            target.pitch = pitch;
+            target.Play();
         }
     }
 

@@ -1,0 +1,69 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+using System.Reflection;
+using Sirenix.OdinInspector;
+
+
+
+#if UNITY_EDITOR
+using UnityEditorInternal;
+#endif
+
+[CreateAssetMenu(fileName = "AudioClipGroup", menuName = "SO/AudioClip Group")]
+public class AudioClipGroupData : ScriptableObject
+{
+
+
+    public List<AudioClipEntry> tables;
+
+    public AudioClip GetRandomClip()
+    {
+        if (tables.Count == 0)
+            return null;
+
+        int num = Random.Range(0, tables.Count);
+        return tables[num].Clip;
+    }
+
+    public AudioClip GetClip(int idx = 0)
+    {
+        if (tables.Count <= idx)
+            return null;
+
+        return tables[idx].Clip;
+    }
+
+    [PropertyOrder(-100)]
+    [Button("■", ButtonSizes.Small)]
+    private void Stop()
+    {
+#if UNITY_EDITOR
+        AudioEditorUtils.StopAllClips();
+#endif
+    }
+}
+
+ [System.Serializable]
+public class AudioClipEntry
+{
+
+    [HorizontalGroup("AudioClip", width: 0.6f)][HideLabel]
+    [SerializeField] AudioClip _clip;
+    public AudioClip Clip => _clip;
+
+    [HorizontalGroup("AudioClip", width: 0.2f)][HideLabel]
+    [SerializeField] float _volume = 1.0f;
+    public float Volume => _volume;
+
+
+    [HorizontalGroup("AudioClip", width: 0.1f)]
+    [Button("▶", ButtonSizes.Small)]
+    private void Play()
+    {
+#if UNITY_EDITOR
+        AudioEditorUtils.PlayClip(_clip);
+#endif
+    }
+}
