@@ -56,10 +56,10 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-
-                passCount--;
-                if (passCount != 0)
+                if (passCount < 0) return;
+                else if (passCount > 0)
                 {
+                    passCount--;
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         EnterAreaPhase();
@@ -69,9 +69,12 @@ public class PlayerProjectile : BaseProjectile
                         HitContext context = GetHitContext(collision);
                         OnValidHit(in context);
                     }
-                    return;
                 }
-                gameObject.SetActive(false);
+
+                if (passCount == 0)
+                {
+                    gameObject.SetActive(false);
+                }
                 break;
             case ProjectileHitType.Persistent:
             case ProjectileHitType.Timed:
@@ -83,6 +86,17 @@ public class PlayerProjectile : BaseProjectile
     protected override float CalculateDamage()
     {
         return attack.MaxValue * data.DamageMultiplier;
+    }
+
+    protected override void UpdateFlyPhase()
+    {
+        if (!data.HasAreaPhase || passCount > 0) return;
+        phaseTimer += Time.deltaTime;
+        if (phaseTimer > data.FlyPhaseDuration)
+        {
+            phaseTimer = 0f;
+            EnterAreaPhase();
+        }
     }
 
     protected override void UpdateAreaPhase()
