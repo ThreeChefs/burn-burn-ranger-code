@@ -56,14 +56,22 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                HitContext context = GetHitContext(collision);
-                OnValidHit(in context);
-                if (passCount < 0) return;
+
                 passCount--;
-                if (passCount == 0)
+                if (passCount != 0)
                 {
-                    gameObject.SetActive(false);
+                    if (data.HasAreaPhase)  // 장판 존재
+                    {
+                        EnterAreaPhase();
+                    }
+                    else
+                    {
+                        HitContext context = GetHitContext(collision);
+                        OnValidHit(in context);
+                    }
+                    return;
                 }
+                gameObject.SetActive(false);
                 break;
             case ProjectileHitType.Persistent:
             case ProjectileHitType.Timed:
@@ -84,9 +92,33 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer = 0f;
 
-        foreach (Collider2D target in targets)
+        // todo: 장판은 캐싱이 아니라 overlap으로 할지 고민
+        //foreach (Collider2D target in targets)
+        //{
+        //    HitContext context = GetHitContext(target);
+        //    OnValidHit(in context);
+        //}
+
+        Logger.Log("장판 켜짐");
+
+        Collider2D[] hits;
+        hits = data.ExplosionShape switch
         {
-            HitContext context = GetHitContext(target);
+            ExplosionShape.Circle => Physics2D.OverlapCircleAll(
+                transform.position,
+                data.ExplosionRadius,
+                data.ExplosionTargetLayer),
+            ExplosionShape.Box => Physics2D.OverlapBoxAll(
+                transform.position,
+                data.ExplosionBoxSize,
+                360,
+                data.ExplosionTargetLayer),
+            _ => throw new System.NotImplementedException(),
+        };
+
+        foreach (Collider2D hit in hits)
+        {
+            HitContext context = GetHitContext(hit);
             OnValidHit(in context);
         }
     }
