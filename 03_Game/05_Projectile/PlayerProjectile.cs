@@ -9,7 +9,9 @@ public class PlayerProjectile : BaseProjectile
 
     // 스텟
     protected PlayerStat attackCooldown;
-    protected PlayerStat projectileSpeedMultiplier;
+    protected PlayerStat projectileSpeed;
+
+    protected override float Speed => base.Speed * projectileSpeed.MaxValue;
 
     public override void Init(BaseStat attack, ScriptableObject originData)
     {
@@ -27,7 +29,7 @@ public class PlayerProjectile : BaseProjectile
         // 스텟 캐싱
         PlayerCondition condition = PlayerManager.Instance.Condition;
         attackCooldown = condition[StatType.AttackCooldown];
-        projectileSpeedMultiplier = condition[StatType.ProjectileSpeed];
+        projectileSpeed = condition[StatType.ProjectileSpeed];
     }
 
     protected override void Update()
@@ -46,10 +48,4 @@ public class PlayerProjectile : BaseProjectile
         base.FixedUpdate();
     }
     #endregion
-
-    protected override void ChaseMove()
-    {
-        Vector3 targetPos = data.Speed * projectileSpeedMultiplier.MaxValue * Time.fixedDeltaTime * targetDir;
-        transform.position += targetPos;
-    }
 }

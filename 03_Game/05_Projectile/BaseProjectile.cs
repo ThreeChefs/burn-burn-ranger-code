@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// 공용으로 사용하는 투사체
@@ -10,14 +11,24 @@ public class BaseProjectile : PoolObject, IAttackable
     protected ProjectileMoveType type;
     protected int passCount;
 
-    // 공격 스텟
-    protected BaseStat attack;
+    // 스텟
+    protected BaseStat attack;          // 공격
 
+    // 타겟
     [SerializeField] protected Transform target;
     protected Vector3 targetPos;
     protected Vector3 targetDir;
+    protected HashSet<IDamageable> targets = new();
 
+    // 이동
+    protected virtual float Speed => data.Speed * speedMultiplier;
+    protected float speedMultiplier;
     protected float timer;
+
+    // 폭발 / 장판
+    protected ProjectilePhase phase = ProjectilePhase.Area;
+    protected float phaseTimer;
+    protected float tickTimer;
 
     #region Unity API
     protected virtual void Start()
@@ -27,11 +38,14 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void Update()
     {
         if (data.AliveTime < 0) return;
+
         timer += Time.deltaTime;
         if (timer > data.AliveTime)
         {
             gameObject.SetActive(false);
         }
+
+        UpdatePhase();
     }
 
     protected virtual void FixedUpdate()
@@ -44,16 +58,26 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         base.OnDisableInternal();
         timer = 0f;
+        targets.Clear();
     }
 
-    // 초기화
+    #region 초기화
     public virtual void Init(BaseStat attack, ScriptableObject originData)
     {
         this.attack = attack;
 
         data = originData as ProjectileData;
+
         type = data.MoveType;
         passCount = data.PassCount;
+
+        speedMultiplier = 1f;
+
+        if (data.HasAreaPhase)
+        {
+            phase = ProjectilePhase.Fly;
+            phaseTimer = 0f;
+        }
     }
 
     public virtual void Spawn(Vector2 spawnPos, Transform target)
@@ -66,20 +90,39 @@ public class BaseProjectile : PoolObject, IAttackable
         float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
+    #endregion
 
     #region 공격
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
+        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) == 0) return;
+
+        collision.TryGetComponent<IDamageable>(out var damageable);
+
+        switch (data.HitType)
+        {
+            case ProjectileHitType.Immediate:
+                Attack(damageable);
+                if (passCount < 0) return;
+                passCount--;
+                if (passCount == 0)
+                {
+                    gameObject.SetActive(false);
+                }
+                break;
+            case ProjectileHitType.Persistent:
+            case ProjectileHitType.Timed:
+                targets.Add(damageable);
+                break;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
         if (((1 << collision.gameObject.layer) & data.TargetLayerMask) != 0)
         {
             collision.TryGetComponent<IDamageable>(out var damageable);
-            Attack(damageable);
-            if (passCount < 0) return;
-            passCount--;
-            if (passCount == 0)
-            {
-                gameObject.SetActive(false);
-            }
+            targets.Remove(damageable);
         }
     }
 
@@ -116,7 +159,7 @@ public class BaseProjectile : PoolObject, IAttackable
     #region 탄환 타입 - Chase (단일 추격)
     protected virtual void ChaseMove()
     {
-        Vector3 targetPos = data.Speed * Time.fixedDeltaTime * targetDir;
+        Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
         transform.position += targetPos;
     }
     #endregion
@@ -151,11 +194,50 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
+    #region 폭발 / 장판 처리
+    private void UpdatePhase()
+    {
+        switch (phase)
+        {
+            case ProjectilePhase.Fly:
+                UpdateFlyPhase();
+                break;
+            case ProjectilePhase.Area:
+                UpdateAreaPhase();
+                break;
+        }
+    }
+
+    private void UpdateFlyPhase()
+    {
+        phaseTimer += Time.deltaTime;
+        if (phaseTimer > data.FlyPhaseDuration)
+        {
+            phaseTimer = 0f;
+            EnterAreaPhase();
+        }
+    }
+
+    private void EnterAreaPhase()
+    {
+        phase = ProjectilePhase.Area;
+        speedMultiplier = 0f;
+        tickTimer = 0f;
+    }
+
+    private void UpdateAreaPhase()
+    {
+        tickTimer += Time.deltaTime;
+        if (tickTimer > data.TickInterval)
+        {
+            tickTimer = 0f;
+        }
+    }
+    #endregion
+
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
     }
-
-
 #endif
 }
