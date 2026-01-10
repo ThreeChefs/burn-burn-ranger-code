@@ -38,4 +38,17 @@ public class MonsterPool : BasePool
         monster.gameObject.SetActive(false);
     }
 
+    public void KillAll()
+    {
+        // 반대로
+        for(int i = ActivatedObjectsPool.Count -1; i >=0; i--)
+        {
+            Monster monster = ActivatedObjectsPool[i] as Monster;
+            if (monster != null)
+            {
+                monster.BombDie();
+            }
+        }
+    }
+
 }

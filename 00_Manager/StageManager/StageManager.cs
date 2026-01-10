@@ -2,15 +2,11 @@ using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
     [SerializeField] private SoDatabase _skillDataBase;     // todo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
     private List<StageData> _stageDatas = new List<StageData>();
-
-    // 스테이지 맵을 생성해주는 거
-    // 화면 내 맵을 들고 있어야하는데
 
     StageData _nowStage;
     public int NowStageNumber { get; private set; }
@@ -36,6 +32,10 @@ public class StageManager : SceneSingletonManager<StageManager>
     private int _killCount = 0;
     public int KillCount => _killCount;
 
+    
+
+
+    // 액션
     public event Action OnGameStartAction;
     public event Action OnGameOverAction;
     public event Action OnGameClearAction;
@@ -49,10 +49,12 @@ public class StageManager : SceneSingletonManager<StageManager>
         Init();
     }
 
+
     public override void Init()
     {
         _stageDatas = GameManager.Instance.StageDatabase;
     }
+
 
     bool SetStageData(int stageNum)
     {
@@ -64,7 +66,6 @@ public class StageManager : SceneSingletonManager<StageManager>
             return false;
         }
 
-        // todo : Pool 적용 시 스테이지데이터 읽고 사용할 몬스터들 등록 필요
         _nowStage = _stageDatas[stageNum];
 
         if (_stageDatas[stageNum].Map != null)
@@ -72,6 +73,7 @@ public class StageManager : SceneSingletonManager<StageManager>
             Instantiate(_stageDatas[stageNum].Map);
         }
 
+        MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
 
         _waveController = new StageWaveController(_nowStage);
         _waveController.OnStageEndAction += GameClear;
@@ -152,7 +154,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
         if (resultUI != null)
         {
-            resultUI.Init(0, _waveController.SaveExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급
@@ -169,7 +171,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
         if (resultUI != null)
         {
-            resultUI.Init(0, _waveController.SaveExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급

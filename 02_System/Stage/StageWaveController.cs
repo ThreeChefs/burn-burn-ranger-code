@@ -27,6 +27,10 @@ public class StageWaveController
     private int _saveExp = 0;
     public int SaveExp => _saveExp;
 
+    static float _itemBoxSpawnStartTime = 20; // 스테이지 시작 후 20초 뒤부터 박스 스폰
+    static float _itemBoxSpawnInterval = 10; // 10초마다 박스 스폰
+    int _itemBoxSpawnCount = 0;
+
 
     public StageWaveController(StageData nowStageData)
     {
@@ -57,6 +61,10 @@ public class StageWaveController
                 MonsterManager.Instance.UsePool(poolIndex);
             }
         }
+
+
+        // box 도 미리 로드
+        MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
 
         EnterWave(_waveQueue.Dequeue());
     }
@@ -145,7 +153,20 @@ public class StageWaveController
             {
             }
         }
+
+        UpdateBoxSpawn();
     }
+
+
+    void UpdateBoxSpawn()
+    {
+        if (_playTime >= _itemBoxSpawnStartTime + (_itemBoxSpawnInterval * _itemBoxSpawnCount))
+        {
+            MonsterManager.Instance.SpawnWaveMonster(MonsterPoolIndex.ItemBox);
+            _itemBoxSpawnCount++;
+        }
+    }
+
 
     void SpawnMonster()
     {
