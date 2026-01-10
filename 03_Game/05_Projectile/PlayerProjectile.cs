@@ -62,7 +62,7 @@ public class PlayerProjectile : BaseProjectile
                     passCount--;
                     if (data.HasAreaPhase)  // 장판 존재
                     {
-                        EnterAreaPhase();
+                        UpdateAreaPhase();
                     }
                     else
                     {
