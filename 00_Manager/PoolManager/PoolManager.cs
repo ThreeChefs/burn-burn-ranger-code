@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// todo : 코드컨
+// todo : 코드컨벤션 맞추기
 public abstract class PoolManager<T,TEnumIndex> : GlobalSingletonManager<T> 
     where T : PoolManager<T,TEnumIndex> where TEnumIndex : struct, Enum       // Enum.TryParse 쓰려면 Generic 제약 struct 필요하대
 {

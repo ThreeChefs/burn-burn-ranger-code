@@ -1,21 +1,26 @@
-using Sirenix.OdinInspector.Editor.Drawers;
-using Unity.VisualScripting;
+using Sirenix.OdinInspector;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SkillIconPanel : MonoBehaviour
 {
     [SerializeField] private bool _isActiveSkillView;
-    [SerializeField] private Image[] _icons;
-   
-    private void Start()
+
+    [TableList(ShowIndexLabels = true)]
+    [SerializeField] List<SkillIconPanelElement> _panelElements;
+
+
+    private void OnEnable()
     {
-        int maxSkillCount = _icons.Length;
+        int maxSkillCount = _panelElements.Count;
         int skillCount = 0;
 
-        for(int i = 0; i < _icons.Length; i++)
+        for(int i = 0; i < _panelElements.Count; i++)
         {
-            _icons[i].gameObject.SetActive(false);
+            _panelElements[i].Icon.gameObject.SetActive(false);
+            if(_panelElements[i].SkillLevelPanel != null)
+                _panelElements[i].SkillLevelPanel.gameObject.SetActive(false);
         }
 
         foreach (BaseSkill skill in StageManager.Instance.SkillSystem.OwnedSkills.Values)
@@ -26,18 +31,16 @@ public class SkillIconPanel : MonoBehaviour
                 if(skill.SkillData.Type==SkillType.Active ||
                     skill.SkillData.Type == SkillType.Combination)
                 {
-                    _icons[skillCount].sprite = skill.SkillData.Icon;
+                    SetSkillElement(skillCount, skill);
                     skillCount++;
-                    _icons[skillCount - 1].gameObject.SetActive(true);
                 }
             }
             else
             {
                 if (skill.SkillData.Type == SkillType.Passive)
                 {
-                    _icons[skillCount].sprite = skill.SkillData.Icon;
+                    SetSkillElement(skillCount, skill);
                     skillCount++;
-                    _icons[skillCount - 1].gameObject.SetActive(true);
                 }
 
             }
@@ -48,6 +51,35 @@ public class SkillIconPanel : MonoBehaviour
             }
 
         }
-
     }
+
+
+    void SetSkillElement(int count, BaseSkill skill)
+    {
+        if(_panelElements.Count <= count)
+        {
+            return;
+        }
+
+        if(_panelElements[count].Icon != null)
+        {
+            _panelElements[count].Icon.sprite = skill.SkillData.Icon;
+            _panelElements[count].Icon.gameObject.SetActive(true);
+        }
+
+        if (_panelElements[count].SkillLevelPanel != null)
+        {
+            _panelElements[count].SkillLevelPanel.Init(skill.SkillData.Type, skill.CurLevel, false);
+            _panelElements[count].SkillLevelPanel.gameObject.SetActive(true);
+        }
+    }
+
+
+}
+
+[System.Serializable]
+public struct SkillIconPanelElement
+{
+    public Image Icon;
+    public SkillLevelPanel SkillLevelPanel;
 }
