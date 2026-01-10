@@ -154,7 +154,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
         if (resultUI != null)
         {
-            resultUI.Init(0, _waveController.SaveExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급
@@ -171,7 +171,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
         if (resultUI != null)
         {
-            resultUI.Init(0, _waveController.SaveExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급
