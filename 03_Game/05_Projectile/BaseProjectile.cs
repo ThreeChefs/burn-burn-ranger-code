@@ -7,7 +7,7 @@ public class BaseProjectile : PoolObject, IAttackable
 {
     protected ProjectileData data;
 
-    protected ProjectileType type;
+    protected ProjectileMoveType type;
     protected int passCount;
 
     // 공격 스텟
@@ -52,7 +52,7 @@ public class BaseProjectile : PoolObject, IAttackable
         this.attack = attack;
 
         data = originData as ProjectileData;
-        type = data.ProjectileType;
+        type = data.MoveType;
         passCount = data.PassCount;
     }
 
@@ -99,18 +99,14 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         switch (type)
         {
-            case ProjectileType.Chase:
+            case ProjectileMoveType.Straight:
                 ChaseMove();
                 break;
-            case ProjectileType.Hover:
-                HoverMove();
-                HoverRotate();
-                break;
-            case ProjectileType.Guidance:
+            case ProjectileMoveType.Guidance:
                 GuidanceMove();
                 GuidanceRotate();
                 break;
-            case ProjectileType.Reflection:
+            case ProjectileMoveType.Reflection:
                 ReflectionMove();
                 ReflectionRotate();
                 break;
