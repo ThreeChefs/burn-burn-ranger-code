@@ -18,12 +18,12 @@ public class BaseProjectile : PoolObject, IAttackable
     [SerializeField] protected Transform target;
     protected Vector3 targetPos;
     protected Vector3 targetDir;
-    protected HashSet<IDamageable> targets = new();
+    protected HashSet<Collider2D> targets = new();
 
     // 이동
     protected virtual float Speed => data.Speed * speedMultiplier;
     protected float speedMultiplier;
-    protected float timer;
+    protected float lifeTimer;
 
     // 폭발 / 장판
     protected ProjectilePhase phase = ProjectilePhase.Area;
@@ -39,8 +39,8 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         if (data.AliveTime < 0) return;
 
-        timer += Time.deltaTime;
-        if (timer > data.AliveTime)
+        lifeTimer += Time.deltaTime;
+        if (lifeTimer > data.AliveTime)
         {
             gameObject.SetActive(false);
         }
@@ -57,7 +57,7 @@ public class BaseProjectile : PoolObject, IAttackable
     protected override void OnDisableInternal()
     {
         base.OnDisableInternal();
-        timer = 0f;
+        lifeTimer = 0f;
         targets.Clear();
     }
 
@@ -112,17 +112,17 @@ public class BaseProjectile : PoolObject, IAttackable
                 break;
             case ProjectileHitType.Persistent:
             case ProjectileHitType.Timed:
-                targets.Add(damageable);
+                targets.Add(collision);
                 break;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    protected virtual void OnTriggerExit2D(Collider2D collision)
     {
         if (((1 << collision.gameObject.layer) & data.TargetLayerMask) != 0)
         {
             collision.TryGetComponent<IDamageable>(out var damageable);
-            targets.Remove(damageable);
+            targets.Remove(collision);
         }
     }
 
@@ -225,7 +225,7 @@ public class BaseProjectile : PoolObject, IAttackable
         tickTimer = 0f;
     }
 
-    private void UpdateAreaPhase()
+    protected virtual void UpdateAreaPhase()
     {
         tickTimer += Time.deltaTime;
         if (tickTimer > data.TickInterval)

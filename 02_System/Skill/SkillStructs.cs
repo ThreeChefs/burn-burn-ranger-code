@@ -15,6 +15,7 @@ public struct DamageEffect
 /// </summary>
 public struct HitContext
 {
+    public float damage;
     public Transform attacker;
     public Vector2 position;
     public Collider2D directTarget;

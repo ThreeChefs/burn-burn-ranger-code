@@ -5,6 +5,10 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
+    // 캐싱
+    protected Transform player;
+    protected SkillConfig skillConfig;
+
     protected float[] levelValue;
 
     // 스텟
@@ -16,6 +20,7 @@ public class PlayerProjectile : BaseProjectile
     public override void Init(BaseStat attack, ScriptableObject originData)
     {
         ActiveSkillData data = originData as ActiveSkillData;
+        skillConfig = data.SkillConfig;
         levelValue = data.LevelValue;
 
         base.Init(attack, data.ProjectileData);
@@ -27,25 +32,74 @@ public class PlayerProjectile : BaseProjectile
         base.Start();
 
         // 스텟 캐싱
+        player = PlayerManager.Instance.StagePlayer.transform;
         PlayerCondition condition = PlayerManager.Instance.Condition;
         attackCooldown = condition[StatType.AttackCooldown];
         projectileSpeed = condition[StatType.ProjectileSpeed];
     }
+    #endregion
 
-    protected override void Update()
+    private void OnValidHit(in HitContext context)
     {
-        if (data == null || data.AliveTime < 0) return;
-        timer += Time.deltaTime;
-        if (timer > data.AliveTime)
+        foreach (BaseSkillEffectSO effect in skillConfig.Effects)
         {
-            gameObject.SetActive(false);
+            effect.Apply(in context);
         }
     }
 
-    protected override void FixedUpdate()
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        if (data == null) return;
-        base.FixedUpdate();
+        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) == 0) return;
+
+        collision.TryGetComponent<IDamageable>(out var damageable);
+
+        switch (data.HitType)
+        {
+            case ProjectileHitType.Immediate:
+                HitContext context = GetHitContext(collision);
+                OnValidHit(in context);
+                if (passCount < 0) return;
+                passCount--;
+                if (passCount == 0)
+                {
+                    gameObject.SetActive(false);
+                }
+                break;
+            case ProjectileHitType.Persistent:
+            case ProjectileHitType.Timed:
+                targets.Add(collision);
+                break;
+        }
     }
-    #endregion
+
+    protected override float CalculateDamage()
+    {
+        return attack.MaxValue * data.DamageMultiplier;
+    }
+
+    protected override void UpdateAreaPhase()
+    {
+        tickTimer += Time.deltaTime;
+        if (tickTimer < data.TickInterval) return;
+
+        tickTimer = 0f;
+
+        foreach (Collider2D target in targets)
+        {
+            HitContext context = GetHitContext(target);
+            OnValidHit(in context);
+        }
+    }
+
+    private HitContext GetHitContext(Collider2D target)
+    {
+        return new()
+        {
+            attacker = player,
+            damage = CalculateDamage(),
+            position = targetPos,
+            directTarget = target,
+            projectileData = data
+        };
+    }
 }
