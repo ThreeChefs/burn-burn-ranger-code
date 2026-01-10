@@ -13,8 +13,6 @@ public class BigIntText : MonoBehaviour
 
     string FormatBigInt (long value)
     {
-        int asd = 1_000;
-        
         if (value >= 1_000_000_000)
         {
             return (value / 1_000_000_000D).ToString("0.##") + "B";
