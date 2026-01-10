@@ -167,15 +167,4 @@ public class Monster : PoolObject, IDamageable
 
 
     }
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (!collision.CompareTag("Bullet"))
-            return;
-
-        Bullet bullet = collision.GetComponent<Bullet>();
-        if (bullet == null) return;
-
-        TakeDamage(bullet.damage);
-
-    }
 }
