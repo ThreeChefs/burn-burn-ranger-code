@@ -11,7 +11,7 @@ public class BombItem : MonoBehaviour
         if (!other.TryGetComponent<StagePlayer>(out var player))
             return;
 
-        MonsterManager.Instance.AllKill();
+        MonsterManager.Instance.KillAll();
 
 
         // 2) 폭탄 아이템 제거
