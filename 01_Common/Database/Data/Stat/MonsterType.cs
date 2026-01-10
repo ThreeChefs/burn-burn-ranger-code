@@ -20,8 +20,7 @@ public class MonsterTypeData : StatData
 {
     public MonsterType monsterType;
 
-    [Header("Visual / Prefab")]
-    public GameObject prefab;
+
 
     [Header("Drop")]
     public DropItemType dropItemType;

@@ -5,6 +5,7 @@
 public enum CommonPoolIndex
 {
     DamageText,
+
 }
 
 public enum MonsterPoolIndex
@@ -13,4 +14,5 @@ public enum MonsterPoolIndex
     Ranged_0,
     MiniBoss_0,
     Boss_0,
+    ItemBox,
 }

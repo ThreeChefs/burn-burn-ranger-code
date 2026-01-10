@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+﻿using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -9,8 +9,8 @@ public class ItemBoxData : ScriptableObject
     [field: SerializeField] public int Id { get; private set; }
     [field: SerializeField] public List<ItemBoxEntry> ItemBoxEntries { get; private set; }
 }
-
 [System.Serializable]
+
 public class ItemBoxEntry
 {
     [field: SerializeField] public ItemClass ItemClass { get; private set; }

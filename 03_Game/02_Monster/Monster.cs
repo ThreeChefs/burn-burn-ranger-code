@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Monster : MonoBehaviour, IDamageable
+public class Monster : PoolObject, IDamageable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
@@ -21,13 +21,12 @@ public class Monster : MonoBehaviour, IDamageable
     {
         rb = GetComponent<Rigidbody2D>();
         spriter = GetComponentInChildren<SpriteRenderer>(true);
-        PoolObject poolObject = GetComponent<PoolObject>();
-        if (poolObject != null)
-        {
-            poolObject.OnEnableAction += ResetForPoolSpawn;
-        }
-    }
 
+    }
+    protected override void OnEnableInternal()
+    {
+        ResetForPoolSpawn(this);
+    }
     private void Start()
     {
         ApplyData(monsterdata);
@@ -135,11 +134,11 @@ public class Monster : MonoBehaviour, IDamageable
         Logger.Log("사망");
         DropItem();
         onDieAction?.Invoke(this);
-        //Destroy(gameObject);
+        Destroy(gameObject);
     }
 
 
-    private void DropItem()
+    protected virtual void DropItem()
     {
         for (int i = 0; i < monsterdata.dropCount; i++)
         {
@@ -168,6 +167,17 @@ public class Monster : MonoBehaviour, IDamageable
 
         gameObject.layer = LayerMask.NameToLayer("Monster");
 
+
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!collision.CompareTag("Bullet"))
+            return;
+
+        Bullet bullet = collision.GetComponent<Bullet>();
+        if (bullet == null) return;
+
+        TakeDamage(bullet.damage);
 
     }
 }
