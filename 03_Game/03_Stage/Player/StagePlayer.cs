@@ -35,6 +35,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
     }
 
+    // 액티브 스킬 컨테이너
+    [field: SerializeField] public Transform SkillContainers { get; private set; }
+
     // 캐싱
     public PlayerCondition Condition { get; private set; }
     private PlayerStat _health;
@@ -218,10 +221,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
             _gemCollector.AddComponent<GemCollector>();
         }
         _gemCollector.radius = 0.5f;
-
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
-
         _renderers = GetComponentsInChildren<SpriteRenderer>();
+        SkillContainers = transform.FindChild<Transform>("SkillContainer");
     }
 #endif
     #endregion
