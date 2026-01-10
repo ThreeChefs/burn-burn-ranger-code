@@ -6,6 +6,7 @@ public class ActiveSkill : BaseSkill
 {
     // 캐싱
     private ActiveSkillData _activeSkillData;
+    private SkillConfig _skillConfig;
     private BaseStat _attackCooldown;
 
     // 쿨타임
@@ -25,15 +26,19 @@ public class ActiveSkill : BaseSkill
         base.Init(data);
 
         _activeSkillData = data as ActiveSkillData;
+        _skillConfig = _activeSkillData.SkillConfig;
+
         _cooldown = _activeSkillData.Cooldown;
+
         _projectileData = _activeSkillData.ProjectileData;
+
         if (!Enum.TryParse(_projectileData.name, true, out _projectileIndex))
         {
             Logger.LogWarning("풀에 사용할 투사체 enum 변환 실패");
         }
 
         _attackCooldown = PlayerManager.Instance.Condition[StatType.AttackCooldown];
-        _projectileDelay = new WaitForSeconds(0.1f);
+        _projectileDelay = new WaitForSeconds(0.1f);        // todo: 투사체 정보에 빼야할 수도
     }
 
     #region Unity API

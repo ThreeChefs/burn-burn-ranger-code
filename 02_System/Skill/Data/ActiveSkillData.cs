@@ -10,6 +10,8 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public int[] ProjectilesCounts { get; private set; } = new int[Define.SkillMaxLevel];
     [field: Tooltip("탄환 오브젝트")]
     [field: SerializeField] public ProjectileData ProjectileData { get; private set; }
+    [field: Tooltip("스킬 효과")]
+    [field: SerializeField] public SkillConfig SkillConfig { get; private set; }
 
 #if UNITY_EDITOR
     protected override void Reset()
