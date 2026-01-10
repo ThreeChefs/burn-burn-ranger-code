@@ -6,6 +6,7 @@ public enum UIName
     UI_StageProgressBar,
     UI_Victory,
     UI_Defeat,
+    UI_StagePause,
 
     // Outside of Stage
     UI_Home,
