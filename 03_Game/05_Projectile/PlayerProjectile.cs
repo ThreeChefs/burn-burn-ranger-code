@@ -36,7 +36,7 @@ public class PlayerProjectile : BaseProjectile
     {
         if (data == null || data.AliveTime < 0) return;
         timer += Time.deltaTime;
-        if (timer > data.AliveTime * (1 - attackCooldown.MaxValue))
+        if (timer > data.AliveTime)
         {
             gameObject.SetActive(false);
         }
