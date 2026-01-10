@@ -25,14 +25,19 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 
     public Monster SpawnWaveMonster(MonsterPoolIndex poolIndex)
     {
-
         StagePlayer player = PlayerManager.Instance.StagePlayer;
-        Vector2 dir = Random.insideUnitCircle;
-        dir.Normalize();
+        Camera cam = Camera.main;
 
-        Vector3 randomPos = player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
+        float camHeight = cam.orthographicSize;
+        float camWidth = cam.aspect * camHeight;
+
+        Vector2 dir = Random.insideUnitCircle.normalized;
+       
         
-        PoolObject monsterPoolObject = SpawnObject(poolIndex,randomPos);
+        //Vector3 randomPos = player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
+        
+        PoolObject monsterPoolObject = SpawnObject(poolIndex,
+            player.transform.position + new Vector3(dir.x*camWidth, dir.y * camHeight,0));
 
         // todo : Monster가 PoolObject로부터 상속받도록 변경 필요 또는 캐싱하고 있기
         if(monsterPoolObject == null) return  null;
