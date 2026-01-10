@@ -11,7 +11,7 @@ public class SkillLevelPanel : MonoBehaviour
 
     //private Coroutine nextGradeRoutine;
 
-    public void Init(SkillType skillType, int currentLevel)
+    public void Init(SkillType skillType, int currentLevel,bool showNextGrade = true)
     {
         if (skillType == SkillType.Combination)
         {
@@ -31,11 +31,18 @@ public class SkillLevelPanel : MonoBehaviour
                 }
                 else if (currentLevel == i)
                 {
-                    _normalGradeImgs[i].gameObject.SetActive(true);
-                    
-                    Color color = _normalGradeImgs[i].color;
-                    color.a = 0.5f;
-                    _normalGradeImgs[i].color = color;
+                    if(showNextGrade)
+                    {
+                        _normalGradeImgs[i].gameObject.SetActive(true);
+
+                        Color color = _normalGradeImgs[i].color;
+                        color.a = 0.5f;
+                        _normalGradeImgs[i].color = color;
+                    }
+                    else
+                    {
+                        _normalGradeImgs[i].gameObject.SetActive(false);
+                    }
                 }
                 else
                 {
