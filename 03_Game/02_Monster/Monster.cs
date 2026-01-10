@@ -134,7 +134,7 @@ public class Monster : PoolObject, IDamageable
         Logger.Log("사망");
         DropItem();
         onDieAction?.Invoke(this);
-        Destroy(gameObject);
+        // Destroy(gameObject);
     }
 
 
