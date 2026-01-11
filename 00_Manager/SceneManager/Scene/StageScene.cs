@@ -11,6 +11,9 @@ public class StageScene : BaseScene
         // todo : 임시! 플레이어, 스테이지 정보 읽고 사용될 수 있는 것들을 쭉 등록해줘야함.
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.KunaiProjectileData);
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.RangedAttack);
+        ProjectileManager.Instance.UsePool(ProjectileDataIndex.FireBombProjectileData);
+        
+        
         CommonPoolManager.Instance.UsePool(CommonPoolIndex.DamageText);
     }
 }
