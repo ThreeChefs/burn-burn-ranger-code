@@ -59,7 +59,7 @@ public class ShieldActiveSkill : ActiveSkill
 
     private void OnDestroy()
     {
-        _shieldProjectile?.gameObject.SetActive(false);
+        _shieldProjectile.gameObject?.SetActive(false);
     }
 
 }
