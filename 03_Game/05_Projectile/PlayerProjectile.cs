@@ -69,6 +69,7 @@ public class PlayerProjectile : BaseProjectile
                 else if (passCount > 0)
                 {
                     passCount--;
+                    ShowHitVfx();
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();
@@ -123,6 +124,8 @@ public class PlayerProjectile : BaseProjectile
         //}
 
         Logger.Log("장판 켜짐");
+
+        explosionVfx.SetActive(true);
 
         Collider2D[] hits;
         hits = data.ExplosionShape switch

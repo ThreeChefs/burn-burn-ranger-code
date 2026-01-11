@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DG.Tweening;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -72,6 +73,10 @@ public class BaseProjectile : PoolObject, IAttackable
         base.OnDisableInternal();
         lifeTimer = 0f;
         targets.Clear();
+
+        trailVfx?.SetActive(false);
+        hitVfx?.SetActive(false);
+        explosionVfx?.SetActive(false);
     }
 
     #region 초기화
@@ -285,6 +290,23 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void UpdatePersistent()
     {
     }
+    #endregion
+
+    #region Vfxs
+    protected void ShowHitVfx()
+    {
+        if (hitVfx == null) return;
+        DOTween.Clear();
+        hitVfx.SetActive(true);
+        // todo: hit animation 매직 넘버 빼기
+        DOVirtual.DelayedCall(1f, SetActiveFalseHitVfx);
+    }
+
+    private void SetActiveFalseHitVfx()
+    {
+        hitVfx.SetActive(false);
+    }
+
     #endregion
 
 #if UNITY_EDITOR
