@@ -24,6 +24,15 @@ public class ShieldActiveSkill : ActiveSkill
         yield return null;
     }
 
+    private void Update()
+    {
+        if (_shieldProjectile != null)
+        {
+            _shieldProjectile.transform.position = this.transform.position;
+        }
+
+    }
+
     public override void LevelUp()
     {
         base.LevelUp();
@@ -45,7 +54,12 @@ public class ShieldActiveSkill : ActiveSkill
         _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, _attack, this.transform, activeSkillData
             , this.transform.position);
         _shieldProjectile.transform.localScale = Vector3.one * 2f * activeSkillData.LevelValue[CurLevel - 1];
-        _shieldProjectile.transform.SetParent(this.transform, true);
+        //_shieldProjectile.transform.SetParent(this.transform, true);
+    }
+
+    private void OnDestroy()
+    {
+        _shieldProjectile?.gameObject.SetActive(false);
     }
 
 }
