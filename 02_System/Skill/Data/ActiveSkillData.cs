@@ -12,6 +12,8 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public ProjectileData ProjectileData { get; private set; }
     [field: Tooltip("스킬 효과")]
     [field: SerializeField] public SkillConfig SkillConfig { get; private set; }
+    [field: Tooltip("액티브 스킬 프리팹")]
+    [field: SerializeField] public ActiveSkill ActiveSkillPrefab { get; private set; }
 
 #if UNITY_EDITOR
     protected override void Reset()

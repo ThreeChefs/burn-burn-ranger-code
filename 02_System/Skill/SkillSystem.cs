@@ -51,7 +51,7 @@ public class SkillSystem
 
         // todo: 기본 스킬 주기
         // ex. 쿠나이
-        TrySelectSkill(30);
+        TrySelectSkill(PlayerManager.Instance.Inventory.WeaponId);
     }
     #endregion
 
@@ -79,7 +79,7 @@ public class SkillSystem
         // 없는 경우 스킬 획득
         BaseSkill baseSkill = (data.Type) switch
         {
-            SkillType.Active => GetActiveSkill(),
+            SkillType.Active => GetActiveSkill(id),
             SkillType.Combination => GetCombinationSkill(id),
             SkillType.Passive => GetPassiveSkill(),
             _ => null
@@ -103,10 +103,13 @@ public class SkillSystem
     /// 액티브 스킬 획득
     /// </summary>
     /// <returns></returns>
-    private ActiveSkill GetActiveSkill()
+    private ActiveSkill GetActiveSkill(int id)
     {
         _activeSkillCount++;
-        return _player.gameObject.AddComponent<ActiveSkill>();
+        ActiveSkillData data = _skillDataCache[id] as ActiveSkillData;
+        ActiveSkill activeSkill = GameObject.Instantiate(data.ActiveSkillPrefab);
+        activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainers);
+        return activeSkill;
     }
 
     /// <summary>

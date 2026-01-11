@@ -26,7 +26,7 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float lifeTimer;
 
     // 폭발 / 장판
-    protected ProjectilePhase phase = ProjectilePhase.Area;
+    protected ProjectilePhase phase;
     protected float phaseTimer;
     protected float tickTimer;
 
@@ -104,7 +104,12 @@ public class BaseProjectile : PoolObject, IAttackable
             case ProjectileHitType.Immediate:
                 Attack(damageable);
                 if (passCount < 0) return;
-                passCount--;
+                else if (passCount > 0)
+                {
+                    passCount--;
+                    gameObject.SetActive(false);
+                    passCount = data.PassCount;
+                }
                 if (passCount == 0)
                 {
                     gameObject.SetActive(false);
@@ -208,8 +213,9 @@ public class BaseProjectile : PoolObject, IAttackable
         }
     }
 
-    private void UpdateFlyPhase()
+    protected virtual void UpdateFlyPhase()
     {
+        if (!data.HasAreaPhase) return;
         phaseTimer += Time.deltaTime;
         if (phaseTimer > data.FlyPhaseDuration)
         {
@@ -218,8 +224,9 @@ public class BaseProjectile : PoolObject, IAttackable
         }
     }
 
-    private void EnterAreaPhase()
+    protected void EnterAreaPhase()
     {
+        Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
         speedMultiplier = 0f;
         tickTimer = 0f;
