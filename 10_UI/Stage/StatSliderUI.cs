@@ -25,7 +25,11 @@ public class StatSliderUI : BaseUI
             StopCoroutine(_routine);
 
         float startValue = _slider.value;
-        _routine = StartCoroutine(LerpProgress(startValue, _targetStat.CurValue / _targetStat.MaxValue, _duration));
+
+        if (this.enabled)
+        {
+            _routine = StartCoroutine(LerpProgress(startValue, _targetStat.CurValue / _targetStat.MaxValue, _duration));
+        }
     }
 
     IEnumerator LerpProgress(float start, float end, float duration)
