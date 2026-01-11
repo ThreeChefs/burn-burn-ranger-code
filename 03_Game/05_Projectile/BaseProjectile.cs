@@ -1,5 +1,4 @@
-﻿using DG.Tweening;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -12,8 +11,6 @@ public class BaseProjectile : PoolObject, IAttackable
     [Header("비주얼")]
     [SerializeField] protected Transform vfxs;
     protected GameObject trailVfx;
-    protected GameObject hitVfx;
-    protected GameObject explosionVfx;
 
     protected ProjectileData data;
 
@@ -75,8 +72,6 @@ public class BaseProjectile : PoolObject, IAttackable
         targets.Clear();
 
         trailVfx?.SetActive(false);
-        hitVfx?.SetActive(false);
-        explosionVfx?.SetActive(false);
     }
 
     #region 초기화
@@ -110,16 +105,6 @@ public class BaseProjectile : PoolObject, IAttackable
             {
                 trailVfx = Instantiate(visualData.TrailVfxPrefab);
                 trailVfx.transform.SetParent(vfxs);
-            }
-            if (visualData.HitVfxPrefab != null)
-            {
-                hitVfx = Instantiate(visualData.HitVfxPrefab);
-                hitVfx.transform.SetParent(vfxs);
-            }
-            if (visualData.ExplosionVfxPrefab != null)
-            {
-                explosionVfx = Instantiate(visualData.ExplosionVfxPrefab);
-                explosionVfx.transform.SetParent(vfxs);
             }
         }
     }
@@ -290,23 +275,6 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void UpdatePersistent()
     {
     }
-    #endregion
-
-    #region Vfxs
-    protected void ShowHitVfx()
-    {
-        if (hitVfx == null) return;
-        DOTween.Clear();
-        hitVfx.SetActive(true);
-        // todo: hit animation 매직 넘버 빼기
-        DOVirtual.DelayedCall(1f, SetActiveFalseHitVfx);
-    }
-
-    private void SetActiveFalseHitVfx()
-    {
-        hitVfx.SetActive(false);
-    }
-
     #endregion
 
 #if UNITY_EDITOR
