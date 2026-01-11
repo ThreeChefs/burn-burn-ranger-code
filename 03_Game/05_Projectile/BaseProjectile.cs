@@ -8,7 +8,7 @@ using UnityEngine;
 public class BaseProjectile : PoolObject, IAttackable
 {
     [Header("비주얼")]
-    [SerializeField] protected GameObject vfxs;
+    [SerializeField] protected Transform vfxs;
     protected GameObject trailVfx;
     protected GameObject hitVfx;
     protected GameObject explosionVfx;
@@ -84,6 +84,32 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             phase = ProjectilePhase.Fly;
             phaseTimer = 0f;
+        }
+
+        InitVisualData();
+    }
+
+    private void InitVisualData()
+    {
+        // 비주얼
+        ProjectileVisualData visualData = data.VisualData;
+        if (visualData != null)
+        {
+            if (visualData.TrailVfxPrefab != null)
+            {
+                trailVfx = Instantiate(visualData.TrailVfxPrefab);
+                trailVfx.transform.SetParent(vfxs);
+            }
+            if (visualData.HitVfxPrefab != null)
+            {
+                hitVfx = Instantiate(visualData.HitVfxPrefab);
+                hitVfx.transform.SetParent(vfxs);
+            }
+            if (visualData.ExplosionVfxPrefab != null)
+            {
+                explosionVfx = Instantiate(visualData.ExplosionVfxPrefab);
+                explosionVfx.transform.SetParent(vfxs);
+            }
         }
     }
 
@@ -262,11 +288,11 @@ public class BaseProjectile : PoolObject, IAttackable
         }
 
         // 비주얼
-        vfxs = transform.FindChild<Transform>("Vfxs")?.gameObject;
+        vfxs = transform.FindChild<Transform>("Vfxs");
         if (vfxs == null)
         {
-            vfxs = new GameObject("Vfxs");
-            vfxs.transform.SetParent(transform);
+            vfxs = new GameObject("Vfxs").transform;
+            vfxs.SetParent(transform);
         }
     }
 #endif
