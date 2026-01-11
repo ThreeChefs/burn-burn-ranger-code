@@ -144,8 +144,7 @@ public class SkillSystem
             }
         }
 
-        _activeSkillCount++;
-        return _player.gameObject.AddComponent<ActiveSkill>();
+        return GetActiveSkill(id);
     }
     #endregion
 
