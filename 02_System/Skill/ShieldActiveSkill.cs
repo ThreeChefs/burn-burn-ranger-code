@@ -4,12 +4,8 @@ using UnityEngine;
 
 public class ShieldActiveSkill : ActiveSkill
 {
-    //[SerializeField] BaseProjectile _projectile;
     [SerializeField] LayerMask _targetLayer;
-    [SerializeField] Transform _shieldTransform;
-
-    float _tickDelay = 0.1f;
-    float _nowTick = 0f;
+    PlayerProjectile _shieldProjectile;
 
     BaseStat _attack;
    
@@ -17,9 +13,9 @@ public class ShieldActiveSkill : ActiveSkill
     {
         base.Init(data);
         this.transform.position = PlayerManager.Instance.StagePlayer.transform.position;
-        _shieldTransform.transform.localScale = Vector3.one * SkillData.LevelValue[CurLevel - 1];
         _attack = PlayerManager.Instance.Condition[StatType.Attack];
-        // 가지고 있을 프로젝타일? 한테 넣어주기
+        
+        SetShield();
     }
 
     protected override IEnumerator UseSkill(Transform target)
@@ -28,35 +24,28 @@ public class ShieldActiveSkill : ActiveSkill
         yield return null;
     }
 
-    private void Update()
-    {
-        _nowTick += Time.deltaTime;
-
-        if(_nowTick >= _tickDelay)
-        {
-            RaycastHit2D[] hits = Physics2D.CircleCastAll(this.transform.position, SkillData.LevelValue[CurLevel - 1], Vector2.up, 0, _targetLayer);
-
-            if (hits.Length > 0)
-            {
-                for(int i  = 0; i < hits.Length; ++i)
-                {
-                    if (hits[i].collider.TryGetComponent<IDamageable>(out var damageable))
-                    {
-                        damageable.TakeDamage(SkillData.LevelValue[CurLevel-1] * _attack.CurValue);
-                    }
-                }
-            }
-
-            _nowTick = 0;
-        }
-    }
-
     public override void LevelUp()
     {
         base.LevelUp();
-        // 레벨업 된 수치 적용하기? 안해도되나
+        
+        if (activeSkillData != null)
+        {
+            // Init 할 때 모든 Init 이 끝나고가 아니라 LevelUp 먼저 들어와서 처음에 여기서 data를 접근하면 없음...!
+            SetShield();
+        }
 
-        _shieldTransform.transform.localScale = Vector3.one * SkillData.LevelValue[CurLevel-1];
+    }
+
+
+    void SetShield()
+    {
+        if (_shieldProjectile != null)
+            _shieldProjectile.gameObject.SetActive(false);
+
+        _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, _attack, this.transform, activeSkillData
+            , this.transform.position);
+        _shieldProjectile.transform.localScale = Vector3.one * 2f * activeSkillData.LevelValue[CurLevel - 1];
+        _shieldProjectile.transform.SetParent(this.transform, true);
     }
 
 }

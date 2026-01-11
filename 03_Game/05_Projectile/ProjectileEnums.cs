@@ -38,6 +38,7 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     RangedAttack,
     FireBombProjectileData,
     RocketProjectileData,
+    ShieldProjectileData,
 
     // 공통
     RangedProjectile
