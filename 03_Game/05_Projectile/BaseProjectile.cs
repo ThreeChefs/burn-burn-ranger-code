@@ -54,6 +54,11 @@ public class BaseProjectile : PoolObject, IAttackable
         }
 
         UpdatePhase();
+
+        if (data.HitType == ProjectileHitType.Persistent)
+        {
+            UpdatePersistent();
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -273,6 +278,12 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             tickTimer = 0f;
         }
+    }
+    #endregion
+
+    #region 
+    protected virtual void UpdatePersistent()
+    {
     }
     #endregion
 

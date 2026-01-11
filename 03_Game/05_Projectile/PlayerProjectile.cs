@@ -15,6 +15,9 @@ public class PlayerProjectile : BaseProjectile
     protected PlayerStat attackCooldown;
     protected PlayerStat projectileSpeed;
 
+    // 타이머
+    protected float tickIntervalTimer;
+
     protected override float Speed => base.Speed * projectileSpeed.MaxValue;
 
     public override void Init(BaseStat attack, ScriptableObject originData)
@@ -38,6 +41,12 @@ public class PlayerProjectile : BaseProjectile
         projectileSpeed = condition[StatType.ProjectileSpeed];
     }
     #endregion
+
+    protected override void OnDisableInternal()
+    {
+        base.OnDisableInternal();
+        tickIntervalTimer = 0f;
+    }
 
     private void OnValidHit(in HitContext context)
     {
@@ -134,6 +143,23 @@ public class PlayerProjectile : BaseProjectile
         {
             HitContext context = GetHitContext(hit);
             OnValidHit(in context);
+        }
+    }
+
+    /// <summary>
+    /// 수호자 등 가만히 틱 대미지를 주는 애들
+    /// </summary>
+    protected override void UpdatePersistent()
+    {
+        tickIntervalTimer += Time.deltaTime;
+        if (tickIntervalTimer > data.TickInterval)
+        {
+            foreach (Collider2D target in targets)
+            {
+                HitContext context = GetHitContext(target);
+                OnValidHit(in context);
+            }
+            tickIntervalTimer = 0f;
         }
     }
 
