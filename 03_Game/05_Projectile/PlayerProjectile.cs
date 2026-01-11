@@ -50,7 +50,7 @@ public class PlayerProjectile : BaseProjectile
 
     private void OnValidHit(in HitContext context)
     {
-        foreach (BaseSkillEffectSO effect in skillConfig.Effects)
+        foreach (BaseEffectSO effect in data.HitEffects)
         {
             effect.Apply(in context);
         }
@@ -101,7 +101,7 @@ public class PlayerProjectile : BaseProjectile
     {
         if (!data.HasAreaPhase || passCount > 0) return;
         phaseTimer += Time.deltaTime;
-        if (phaseTimer > data.FlyPhaseDuration)
+        if (phaseTimer > data.AoEData.FlyPhaseDuration)
         {
             phaseTimer = 0f;
             EnterAreaPhase();

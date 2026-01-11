@@ -237,7 +237,7 @@ public class BaseProjectile : PoolObject, IAttackable
                 UpdateFlyPhase();
                 break;
             case ProjectilePhase.Area:
-                UpdateAreaPhase();
+                TrySpawnAoE();
                 break;
         }
     }
@@ -246,7 +246,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         if (!data.HasAreaPhase) return;
         phaseTimer += Time.deltaTime;
-        if (phaseTimer > data.FlyPhaseDuration)
+        if (phaseTimer > data.AoEData.FlyPhaseDuration)
         {
             phaseTimer = 0f;
             EnterAreaPhase();
@@ -261,7 +261,7 @@ public class BaseProjectile : PoolObject, IAttackable
         tickTimer = 0f;
     }
 
-    protected virtual void UpdateAreaPhase()
+    protected virtual void TrySpawnAoE()
     {
         tickTimer += Time.deltaTime;
         if (tickTimer > data.TickInterval)
