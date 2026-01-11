@@ -69,7 +69,7 @@ public class ActiveSkill : BaseSkill
     /// <summary>
     /// 스킬 내부 로직
     /// </summary>
-    private IEnumerator UseSkill(Transform target)
+    protected virtual IEnumerator UseSkill(Transform target)
     {
         for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
@@ -83,7 +83,7 @@ public class ActiveSkill : BaseSkill
         }
     }
 
-    private void StopPlayingCoroutine()
+    protected void StopPlayingCoroutine()
     {
         if (_coroutine != null)
         {
