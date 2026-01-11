@@ -16,7 +16,7 @@ public class FireBombActiveSkill : ActiveSkill
             float angle = (360f / activeSkillData.ProjectilesCounts[CurLevel - 1]) * i;
 
             Vector3 anglePos = Quaternion.AngleAxis(angle, Vector3.forward) * (Vector3.right * radius);
-            Vector3 firePos = this.transform.position + anglePos;
+            Vector3 firePos = PlayerManager.Instance.StagePlayer.transform.position + anglePos;
 
             ProjectileManager.Instance.Spawn(
                 projectileIndex,
