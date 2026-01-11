@@ -7,8 +7,6 @@ public class PlayerProjectile : BaseProjectile
 {
     // 캐싱
     protected Transform player;
-    protected SkillConfig skillConfig;
-
     protected float[] levelValue;
 
     // 스텟
@@ -23,7 +21,6 @@ public class PlayerProjectile : BaseProjectile
     public override void Init(BaseStat attack, ScriptableObject originData)
     {
         ActiveSkillData data = originData as ActiveSkillData;
-        skillConfig = data.SkillConfig;
         levelValue = data.LevelValue;
 
         base.Init(attack, data.ProjectileData);
