@@ -5,8 +5,7 @@ using UnityEngine;
 public class ActiveSkill : BaseSkill
 {
     // 캐싱
-    private ActiveSkillData _activeSkillData;
-    private SkillConfig _skillConfig;
+    protected ActiveSkillData activeSkillData;
     private BaseStat _attackCooldown;
 
     // 쿨타임
@@ -15,7 +14,7 @@ public class ActiveSkill : BaseSkill
 
     // 총알
     private ProjectileData _projectileData;
-    private ProjectileDataIndex _projectileIndex;
+    protected ProjectileDataIndex projectileIndex;
 
     // 코루틴
     private Coroutine _coroutine;
@@ -25,14 +24,13 @@ public class ActiveSkill : BaseSkill
     {
         base.Init(data);
 
-        _activeSkillData = data as ActiveSkillData;
-        _skillConfig = _activeSkillData.SkillConfig;
+        activeSkillData = data as ActiveSkillData;
 
-        _cooldown = _activeSkillData.Cooldown;
+        _cooldown = activeSkillData.Cooldown;
 
-        _projectileData = _activeSkillData.ProjectileData;
+        _projectileData = activeSkillData.ProjectileData;
 
-        if (!Enum.TryParse(_projectileData.name, true, out _projectileIndex))
+        if (!Enum.TryParse(_projectileData.name, true, out projectileIndex))
         {
             Logger.LogWarning("풀에 사용할 투사체 enum 변환 실패");
         }
@@ -71,13 +69,13 @@ public class ActiveSkill : BaseSkill
     /// </summary>
     protected virtual IEnumerator UseSkill(Transform target)
     {
-        for (int i = 0; i < _activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
+        for (int i = 0; i < activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
         {
             ProjectileManager.Instance.Spawn(
-                _projectileIndex,
+                projectileIndex,
                 PlayerManager.Instance.Condition[StatType.Attack],
                 target,
-                _activeSkillData,
+                activeSkillData,
                 transform.position);
             yield return _projectileDelay;
         }
