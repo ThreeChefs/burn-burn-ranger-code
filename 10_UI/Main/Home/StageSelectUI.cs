@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class StageSelectUI : PopupUI
 {
     [Title("Stage Info")]
-    private int _maxStage = 100;           // 어디선가 가져와야함
     [SerializeField] private TextMeshProUGUI _stageNumText;
 
     [Title("Buttons")]
