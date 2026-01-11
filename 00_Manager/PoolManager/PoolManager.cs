@@ -74,7 +74,6 @@ public abstract class PoolManager<T, TEnumIndex> : GlobalSingletonManager<T>
 
         return newGameObject;
 
-        return null;
     }
 
     protected TPoolObject SpawnObject<TPoolObject>(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
