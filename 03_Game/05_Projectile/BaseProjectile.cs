@@ -11,8 +11,6 @@ public class BaseProjectile : PoolObject, IAttackable
     [Header("비주얼")]
     [SerializeField] protected Transform vfxs;
     protected GameObject trailVfx;
-    protected GameObject hitVfx;
-    protected GameObject explosionVfx;
 
     protected ProjectileData data;
 
@@ -54,6 +52,11 @@ public class BaseProjectile : PoolObject, IAttackable
         }
 
         UpdatePhase();
+
+        if (data.HitType == ProjectileHitType.Persistent)
+        {
+            UpdatePersistent();
+        }
     }
 
     protected virtual void FixedUpdate()
@@ -67,6 +70,8 @@ public class BaseProjectile : PoolObject, IAttackable
         base.OnDisableInternal();
         lifeTimer = 0f;
         targets.Clear();
+
+        trailVfx?.SetActive(false);
     }
 
     #region 초기화
@@ -100,16 +105,6 @@ public class BaseProjectile : PoolObject, IAttackable
             {
                 trailVfx = Instantiate(visualData.TrailVfxPrefab);
                 trailVfx.transform.SetParent(vfxs);
-            }
-            if (visualData.HitVfxPrefab != null)
-            {
-                hitVfx = Instantiate(visualData.HitVfxPrefab);
-                hitVfx.transform.SetParent(vfxs);
-            }
-            if (visualData.ExplosionVfxPrefab != null)
-            {
-                explosionVfx = Instantiate(visualData.ExplosionVfxPrefab);
-                explosionVfx.transform.SetParent(vfxs);
             }
         }
     }
@@ -276,9 +271,18 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
+    #region 
+    protected virtual void UpdatePersistent()
+    {
+    }
+    #endregion
+
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
+        var rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+
         var model = transform.FindChild<Transform>("Model");
         if (model == null)
         {
