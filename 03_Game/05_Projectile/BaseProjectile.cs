@@ -43,19 +43,19 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual void Update()
     {
+        UpdatePhase();
+
+        if (data.HitType == ProjectileHitType.Persistent)
+        {
+            UpdatePersistent();
+        }
+
         if (data.AliveTime < 0) return;
 
         lifeTimer += Time.deltaTime;
         if (lifeTimer > data.AliveTime)
         {
             gameObject.SetActive(false);
-        }
-
-        UpdatePhase();
-
-        if (data.HitType == ProjectileHitType.Persistent)
-        {
-            UpdatePersistent();
         }
     }
 
