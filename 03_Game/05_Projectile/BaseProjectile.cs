@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -284,7 +285,20 @@ public class BaseProjectile : PoolObject, IAttackable
             var newGo = new GameObject("Model");
             newGo.transform.SetParent(transform);
             newGo.AddComponent<SpriteRenderer>();
-            newGo.AddComponent<BoxCollider2D>();
+            BoxCollider2D collider2D = newGo.AddComponent<BoxCollider2D>();
+            collider2D.isTrigger = true;
+        }
+        else
+        {
+            if (model.TryGetComponent<Collider2D>(out var collider2D))
+            {
+                collider2D.isTrigger = true;
+            }
+            else
+            {
+                collider2D = model.AddComponent<BoxCollider2D>();
+                collider2D.isTrigger = true;
+            }
         }
 
         // 비주얼
