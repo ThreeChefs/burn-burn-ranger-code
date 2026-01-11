@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// 공용으로 사용하는 투사체
 /// </summary>
+[RequireComponent(typeof(Rigidbody2D))]
 public class BaseProjectile : PoolObject, IAttackable
 {
     protected ProjectileData data;
@@ -245,6 +246,14 @@ public class BaseProjectile : PoolObject, IAttackable
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
+        var model = transform.FindChild<Transform>("Model");
+        if (model == null)
+        {
+            var newGo = new GameObject("Model");
+            newGo.transform.SetParent(transform);
+            newGo.AddComponent<SpriteRenderer>();
+            newGo.AddComponent<BoxCollider2D>();
+        }
     }
 #endif
 }
