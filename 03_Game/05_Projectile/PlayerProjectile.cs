@@ -105,42 +105,56 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
+    /// <summary>
+    /// 즉발 장판이면 hit, 아니면 장판 소환 시도
+    /// </summary>
+    /// <exception cref="System.NotImplementedException"></exception>
     protected override void UpdateAreaPhase()
     {
-        tickTimer += Time.deltaTime;
-        if (tickTimer < data.TickInterval) return;
-
-        tickTimer = 0f;
-
-        // todo: 장판은 캐싱이 아니라 overlap으로 할지 고민
-        //foreach (Collider2D target in targets)
-        //{
-        //    HitContext context = GetHitContext(target);
-        //    OnValidHit(in context);
-        //}
+        if (!data.HasAreaPhase || data.AoEData == null) return;
 
         Logger.Log("장판 켜짐");
 
-        Collider2D[] hits;
-        hits = data.ExplosionShape switch
+        if (data.AoEData.IsInstant)
         {
-            ExplosionShape.Circle => Physics2D.OverlapCircleAll(
-                transform.position,
-                data.ExplosionRadius,
-                data.ExplosionTargetLayer),
-            ExplosionShape.Box => Physics2D.OverlapBoxAll(
-                transform.position,
-                data.ExplosionBoxSize,
-                360,
-                data.ExplosionTargetLayer),
-            _ => throw new System.NotImplementedException(),
-        };
+            Collider2D[] targets;
 
-        foreach (Collider2D hit in hits)
-        {
-            HitContext context = GetHitContext(hit);
-            OnValidHit(in context);
+            targets = data.AoEData.AoEShape switch
+            {
+                AoEShape.Circle => Physics2D.OverlapCircleAll(
+                    transform.position,
+                    data.AoEData.Radius,
+                    data.AoEData.AoETargetLayer),
+                AoEShape.Box => Physics2D.OverlapBoxAll(
+                    transform.position,
+                    data.AoEData.BoxSize,
+                    360,
+                    data.AoEData.AoETargetLayer),
+                _ => throw new System.NotImplementedException(),
+            };
+
+            foreach (Collider2D target in targets)
+            {
+                HitContext context = GetHitContext(target);
+                data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
+            }
         }
+        else
+        {
+            TrySpawnAoE();
+        }
+    }
+
+    /// <summary>
+    /// 장판 소환
+    /// </summary>
+    private void TrySpawnAoE()
+    {
+        if (data.AoEData.Prefab == null) return;
+        // todo: pool에 넣기
+        BaseAoE aoe = Instantiate(data.AoEData.Prefab);
+        aoe.Init(data.AoEData, GetHitContext(null));
+        aoe.transform.position = transform.position;
     }
 
     /// <summary>
@@ -166,7 +180,7 @@ public class PlayerProjectile : BaseProjectile
         {
             attacker = player,
             damage = CalculateDamage(),
-            position = targetPos,
+            position = transform.position,
             directTarget = target,
             projectileData = data
         };
