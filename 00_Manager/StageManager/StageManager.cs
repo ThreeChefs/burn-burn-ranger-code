@@ -117,6 +117,14 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             GameManager.Instance.Scene.ReLoadSceneAsync();
         }
+        
+        // 테스트용
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            SpawnSkillSelectUI(_player.StageLevel.Level);
+        }
+        
+        
         if (_isPlaying == false) return;
         _waveController?.Update();
     }
