@@ -9,7 +9,7 @@ public class ActiveSkill : BaseSkill
     private BaseStat _attackCooldown;
 
     // 쿨타임
-    private float _cooldownTimer = 0f;
+    private float _cooldownTimer;
     private float _cooldown;
 
     // 총알
@@ -26,6 +26,7 @@ public class ActiveSkill : BaseSkill
 
         activeSkillData = data as ActiveSkillData;
 
+        _cooldownTimer = activeSkillData.Cooldown;
         _cooldown = activeSkillData.Cooldown;
 
         _projectileData = activeSkillData.ProjectileData;
