@@ -312,6 +312,9 @@ public class BaseProjectile : PoolObject, IAttackable
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
+        var rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 0f;
+
         var model = transform.FindChild<Transform>("Model");
         if (model == null)
         {
