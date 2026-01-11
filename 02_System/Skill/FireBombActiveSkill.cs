@@ -4,8 +4,8 @@ using UnityEngine;
 public class FireBombActiveSkill : ActiveSkill
 {
     // 초토화때 사용
-    //static float fireDelay = 0.1f;
-    //WaitForSeconds fireDelayWait = new WaitForSeconds(fireDelay);
+    static float fireDelay = 0.1f;
+    WaitForSeconds fireDelayWait = new WaitForSeconds(fireDelay);
 
     float radius = 3f;
 
@@ -25,7 +25,12 @@ public class FireBombActiveSkill : ActiveSkill
                 activeSkillData,
                 firePos);
 
-            yield return null ;
+            if(SkillData.Type == SkillType.Combination)
+            {
+                yield return fireDelayWait;
+            }
+            else
+                yield return null;
         }
     }
 

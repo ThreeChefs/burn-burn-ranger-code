@@ -16,7 +16,7 @@ public class ShieldActiveSkill : ActiveSkill
     public override void Init(SkillData data)
     {
         base.Init(data);
-        this.transform.position = PlayerManager.Instance.transform.position;
+        this.transform.position = PlayerManager.Instance.StagePlayer.transform.position;
         _shieldTransform.transform.localScale = Vector3.one * SkillData.LevelValue[CurLevel - 1];
         _attack = PlayerManager.Instance.Condition[StatType.Attack];
         // 가지고 있을 프로젝타일? 한테 넣어주기
