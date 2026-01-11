@@ -7,6 +7,12 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BaseProjectile : PoolObject, IAttackable
 {
+    [Header("비주얼")]
+    [SerializeField] protected GameObject vfxs;
+    protected GameObject trailVfx;
+    protected GameObject hitVfx;
+    protected GameObject explosionVfx;
+
     protected ProjectileData data;
 
     protected ProjectileMoveType type;
@@ -253,6 +259,14 @@ public class BaseProjectile : PoolObject, IAttackable
             newGo.transform.SetParent(transform);
             newGo.AddComponent<SpriteRenderer>();
             newGo.AddComponent<BoxCollider2D>();
+        }
+
+        // 비주얼
+        vfxs = transform.FindChild<Transform>("Vfxs")?.gameObject;
+        if (vfxs == null)
+        {
+            vfxs = new GameObject("Vfxs");
+            vfxs.transform.SetParent(transform);
         }
     }
 #endif

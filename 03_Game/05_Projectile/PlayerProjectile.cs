@@ -5,12 +5,6 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
-    [Header("비주얼")]
-    [SerializeField] private GameObject _vfxs;
-    private GameObject _trailVfx;
-    private GameObject _hitVfx;
-    private GameObject _explosionVfx;
-
     // 캐싱
     protected Transform player;
     protected SkillConfig skillConfig;
@@ -159,14 +153,6 @@ public class PlayerProjectile : BaseProjectile
     protected override void Reset()
     {
         base.Reset();
-
-        // 비주얼
-        _vfxs = transform.FindChild<Transform>("Vfxs")?.gameObject;
-        if (_vfxs == null)
-        {
-            _vfxs = new GameObject("Vfxs");
-            _vfxs.transform.SetParent(transform);
-        }
     }
 #endif
 }
