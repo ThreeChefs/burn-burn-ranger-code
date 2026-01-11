@@ -10,7 +10,6 @@ public class DamageSkillEffectSO : BaseSkillEffectSO
         if (context.directTarget.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage(context.damage);
-            Logger.Log($"대미지: {context.damage}");
         }
     }
 }
