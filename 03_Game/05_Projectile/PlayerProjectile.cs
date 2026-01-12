@@ -41,17 +41,17 @@ public class PlayerProjectile : BaseProjectile
     private float _scaleDuration = 1f;
     #endregion
 
-    public void Init(ActiveSkill activeSkill, ScriptableObject originData)
+    public void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
         skill = activeSkill;
-        ActiveSkillData data = originData as ActiveSkillData;
+        ActiveSkillData data = skill.Data;
 
         skill.SkillValues.TryGetValue(SkillValueType.ProjectileSpeed, out _speedMultiplier);
         skill.SkillValues.TryGetValue(SkillValueType.Scale, out _scaleMultipliers);
 
         skill.OnLevelUp += UpdateScaleTo;
 
-        base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
+        base.Init(PlayerManager.Instance.Condition[StatType.Attack], originData);
     }
 
     #region Unity API
@@ -112,7 +112,10 @@ public class PlayerProjectile : BaseProjectile
         base.OnDisableInternal();
         tickIntervalTimer = 0f;
 
-        skill.OnLevelUp -= UpdateScaleTo;
+        if (skill != null)
+        {
+            skill.OnLevelUp -= UpdateScaleTo;
+        }
     }
 
     #region Phase 관리

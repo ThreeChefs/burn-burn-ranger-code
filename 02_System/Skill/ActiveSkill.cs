@@ -6,6 +6,7 @@ public class ActiveSkill : BaseSkill
 {
     // 캐싱
     protected ActiveSkillData activeSkillData;
+    public ActiveSkillData Data => activeSkillData;
     private BaseStat _attackCooldown;
 
     // 쿨타임
@@ -72,12 +73,7 @@ public class ActiveSkill : BaseSkill
     {
         for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel - 1]; i++)
         {
-            ProjectileManager.Instance.Spawn(
-                projectileIndex,
-                PlayerManager.Instance.Condition[StatType.Attack],
-                target,
-                activeSkillData,
-                transform.position);
+            ProjectileManager.Instance.Spawn(projectileIndex, this, target, transform.position);
             yield return _projectileDelay;
         }
     }

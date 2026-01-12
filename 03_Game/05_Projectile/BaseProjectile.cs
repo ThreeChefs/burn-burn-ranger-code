@@ -67,7 +67,7 @@ public class BaseProjectile : PoolObject, IAttackable
     }
 
     #region 초기화
-    public virtual void Init(BaseStat attack, ScriptableObject originData)
+    public virtual void Init(BaseStat attack, PoolObjectData originData)
     {
         this.attack = attack;
 
