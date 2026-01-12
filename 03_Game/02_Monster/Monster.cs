@@ -123,7 +123,8 @@ public class Monster : PoolObject, IDamageable
         {
             Die();
         }
-
+        DamageText damageText = CommonPoolManager.Instance.Spawn<DamageText>(CommonPoolIndex.DamageText, transform.position);
+        damageText?.Init(value);
     }
 
 
