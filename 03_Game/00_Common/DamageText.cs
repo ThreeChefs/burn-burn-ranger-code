@@ -9,6 +9,10 @@ public class DamageText : PoolObject
     public void Init(float damage)
     {
         _damageText.SetText("{0:0}", damage);
+        // 컬러 알파 초기화
+        Color color = _damageText.color;
+        color.a = 1f;
+        _damageText.color = color;
 
         DOTween.ToAlpha(
             () => _damageText.color,
