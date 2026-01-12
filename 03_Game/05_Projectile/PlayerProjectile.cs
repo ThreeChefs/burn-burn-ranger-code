@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
@@ -32,6 +33,19 @@ public class PlayerProjectile : BaseProjectile
         }
     }
     private float[] _speedMultiplier;
+
+    private Tween _scaleTween;
+    protected virtual Vector3 Scale
+    {
+        get { return transform.localScale; }
+        set
+        {
+            if (value == transform.localScale) return;
+
+            UpdateScaleTo(value);
+        }
+    }
+    private float _scaleDuration = 1f;
 
     public void Init(ActiveSkill activeSkill, ScriptableObject originData)
     {
@@ -194,6 +208,15 @@ public class PlayerProjectile : BaseProjectile
             projectileData = data
         };
     }
+    #endregion
+
+    #region Level Value Utils
+    private void UpdateScaleTo(Vector3 scale)
+    {
+        _scaleTween?.Kill();
+        _scaleTween = transform.DOScale(scale, _scaleDuration);
+    }
+    #endregion
 
 #if UNITY_EDITOR
     protected override void Reset()
