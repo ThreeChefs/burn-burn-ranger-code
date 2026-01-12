@@ -1,36 +1,44 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BasePool : MonoBehaviour
 {
-    protected PoolObjectData _poolObjectData;
+    protected PoolObjectData poolObjectData;
 
-    protected List<PoolObject> activatedObjectsPool;
-    protected List<PoolObject> deactivatedObjectsPool;
+    protected HashSet<PoolObject> activatedObjectsPool;
+    protected HashSet<PoolObject> deactivatedObjectsPool;
 
-    public List<PoolObject> ActivatedObjectsPool => activatedObjectsPool;
+    public HashSet<PoolObject> ActivatedObjectsPool => activatedObjectsPool;
 
-    protected PoolObject _originPrefab;
+    protected PoolObject originPrefab;
     protected int nowPoolSize = 0;
+
+    public event Action<PoolObject> OnActivateAction;
+    public event Action<PoolObject> OnDeactivateAction;
 
     public void Init(PoolObjectData poolObjectData)
     {  
-        _poolObjectData = poolObjectData;
-        _originPrefab = poolObjectData.OriginPrefab;
+        this.poolObjectData = poolObjectData;
+        originPrefab = poolObjectData.OriginPrefab;
         
-        activatedObjectsPool = new List<PoolObject>();
-        deactivatedObjectsPool = new List<PoolObject>();
+        activatedObjectsPool = new HashSet<PoolObject>();
+        deactivatedObjectsPool = new HashSet<PoolObject>();
         
         for (int i = 0; i < poolObjectData.DefaultPoolSize; i++)
         {
-            GameObject newObject = CreateGameObject().gameObject;
+            PoolObject newPoolObject = CreateGameObject();
+            GameObject newObject = newPoolObject.gameObject;
             newObject.transform.SetParent(this.gameObject.transform,true);
+
+            OnDeactivateAction?.Invoke(newPoolObject);
         }
     }
 
     protected virtual PoolObject CreateGameObject()
     {
-        PoolObject newGameObject = Instantiate(_originPrefab);
+        PoolObject newGameObject = Instantiate(originPrefab);
         newGameObject.gameObject.SetActive(false);
         
         newGameObject.gameObject.name = nowPoolSize.ToString();
@@ -39,7 +47,7 @@ public class BasePool : MonoBehaviour
         deactivatedObjectsPool.Add(newGameObject);
         
         // PoolObject 가 Disable 될 때 
-        newGameObject.OnDisableAction += OnDisableAction;
+        newGameObject.OnDisableAction += OnDeactivatePoolObject;
 
         return newGameObject;
     }
@@ -54,19 +62,33 @@ public class BasePool : MonoBehaviour
         {
             if (poolObject.gameObject.activeInHierarchy == false)
             {
-                ActivateGameObject(poolObject);
+                OnActivateGameObject(poolObject);
                 return poolObject;
             }
         }
         
         PoolObject newObject = CreateGameObject();
         newObject.gameObject.SetActive(true);
-        ActivateGameObject(newObject);
+        OnActivateGameObject(newObject);
         
         return newObject;
     }
 
-    protected void OnDisableAction(PoolObject poolObject)
+    /// <summary>
+    /// PoolObject가 OnDestroy 되었다면
+    /// </summary>
+    protected void OnDestroyPoolObject(PoolObject poolObject)
+    {
+        if(activatedObjectsPool.Contains(poolObject))
+            activatedObjectsPool.Remove(poolObject);
+
+        if (deactivatedObjectsPool.Contains(poolObject))
+            deactivatedObjectsPool.Remove(poolObject);
+        
+        OnDeactivateAction?.Invoke(poolObject);
+    }
+
+    protected void OnDeactivatePoolObject(PoolObject poolObject)
     {
         if (activatedObjectsPool.Contains(poolObject) == true)
         {
@@ -77,9 +99,12 @@ public class BasePool : MonoBehaviour
         {
             deactivatedObjectsPool.Add(poolObject);
         }
+
+        OnDeactivateAction?.Invoke(poolObject);
+
     }
 
-    void ActivateGameObject(PoolObject poolObject)
+    void OnActivateGameObject(PoolObject poolObject)
     {
         poolObject.gameObject.SetActive(true);
         if (deactivatedObjectsPool.Contains(poolObject)==true)
@@ -90,15 +115,26 @@ public class BasePool : MonoBehaviour
         {
             activatedObjectsPool.Add(poolObject);
         }
+
+        OnActivateAction?.Invoke(poolObject);
     }
 
 
     public void DeactivateAllPoolObjects()
     {
-        for (int i = activatedObjectsPool.Count - 1; i >= 0; i--)
+        var activatedArray = activatedObjectsPool.ToArray();
+
+        for (int i = 0; i < activatedArray.Length; i++)
         {
-            activatedObjectsPool[i].gameObject.SetActive(false);
+            activatedArray[i].gameObject.SetActive(false);
         }
+
+        
+
+        //for (int i = activatedObjectsPool.Count - 1; i >= 0; i--)
+        //{
+        //    activatedObjectsPool[i].gameObject.SetActive(false);
+        //}
     }
 
     

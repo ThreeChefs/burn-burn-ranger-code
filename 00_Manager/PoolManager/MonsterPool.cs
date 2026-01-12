@@ -7,7 +7,7 @@ public class MonsterPool : BasePool
 
     protected override PoolObject CreateGameObject()
     {
-        PoolObject newGameObject = Instantiate(_originPrefab);
+        PoolObject newGameObject = Instantiate(originPrefab);
         newGameObject.gameObject.SetActive(false);
         
         newGameObject.gameObject.name = nowPoolSize.ToString();
@@ -16,14 +16,14 @@ public class MonsterPool : BasePool
         deactivatedObjectsPool.Add(newGameObject);
         
         // PoolObject 가 Disable 될 때 
-        newGameObject.OnDisableAction += OnDisableAction;
+        newGameObject.OnDisableAction += OnDeactivatePoolObject;
 
 
         // 몬스터 세팅
         Monster monster = newGameObject.GetComponent<Monster>();
         if(monster != null)
         {
-            MonsterPoolObjectData monsterData = _poolObjectData as MonsterPoolObjectData;
+            MonsterPoolObjectData monsterData = poolObjectData as MonsterPoolObjectData;
             monster.ApplyData(monsterData.MonsterData);
             monster.onDieAction += StageManager.Instance.OnDieMonster;
             monster.onDieAction += DeativateMonster;
@@ -41,14 +41,20 @@ public class MonsterPool : BasePool
     public void KillAll()
     {
         // 반대로
-        for(int i = ActivatedObjectsPool.Count -1; i >=0; i--)
+
+        foreach(Monster monster in activatedObjectsPool)
         {
-            Monster monster = ActivatedObjectsPool[i] as Monster;
-            if (monster != null)
-            {
-                monster.BombDie();
-            }
+            monster.BombDie();
         }
+
+        //for(int i = ActivatedObjectsPool.Count -1; i >=0; i--)
+        //{
+        //    Monster monster = ActivatedObjectsPool[i] as Monster;
+        //    if (monster != null)
+        //    {
+        //        monster.BombDie();
+        //    }
+        //}
     }
 
 }
