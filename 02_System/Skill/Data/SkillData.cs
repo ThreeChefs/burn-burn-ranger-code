@@ -34,8 +34,13 @@ public class SkillData : ScriptableObject
 [System.Serializable]
 public class SkillLevelValueEntry
 {
-    public SkillValueType SkillValueType { get; private set; }
-    public float[] Values { get; private set; }
+    [field: SerializeField] public SkillValueType SkillValueType { get; private set; }
+    [field: SerializeField] public float[] Values { get; private set; }
+
+    public SkillLevelValueEntry()
+    {
+        Values = new float[Define.SkillMaxLevel];
+    }
 
     public SkillLevelValueEntry(SkillValueType skillValueType, int count = Define.SkillMaxLevel)
     {

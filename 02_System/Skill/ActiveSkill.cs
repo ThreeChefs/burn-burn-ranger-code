@@ -70,7 +70,7 @@ public class ActiveSkill : BaseSkill
     /// </summary>
     protected virtual IEnumerator UseSkill(Transform target)
     {
-        for (int i = 0; i < activeSkillData.ProjectilesCounts[CurLevel - 1]; i++)
+        for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel - 1]; i++)
         {
             ProjectileManager.Instance.Spawn(
                 projectileIndex,

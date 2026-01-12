@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,7 @@ public class PlayerProjectile : BaseProjectile
 
     // 캐싱
     protected Transform player;
-    protected float[] levelValue;
+    protected Dictionary<SkillValueType, float[]> levelValues = new();
 
     // 스텟
     protected PlayerStat attackCooldown;
@@ -23,7 +24,13 @@ public class PlayerProjectile : BaseProjectile
     public override void Init(BaseStat attack, ScriptableObject originData)
     {
         ActiveSkillData data = originData as ActiveSkillData;
-        levelValue = data.LevelValue;
+        foreach (SkillLevelValueEntry entry in data.LevelValues)
+        {
+            if (!levelValues.ContainsKey(entry.SkillValueType))
+            {
+                levelValues.Add(entry.SkillValueType, entry.Values);
+            }
+        }
 
         base.Init(attack, data.ProjectileData);
     }
