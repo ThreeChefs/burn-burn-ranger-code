@@ -1,4 +1,5 @@
 ﻿using Sirenix.OdinInspector;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,9 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 
     protected Dictionary<SkillValueType, float[]> skillValues = new();
     public IReadOnlyDictionary<SkillValueType, float[]> SkillValues => skillValues;
+
+    // 액션
+    public event Action OnLevelUp;
     #endregion
 
     #region 초기화
@@ -41,6 +45,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
 
     protected virtual void OnDestroy()
     {
+        OnLevelUp = null;
     }
     #endregion
 
@@ -62,5 +67,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
         }
 
         Logger.Log($"스킬 레벨업: {SkillData.DisplayName} / 레벨: {CurLevel} {(IsMaxLevel ? " - 최대 레벨" : "")}");
+        OnLevelUp?.Invoke();
     }
 }
