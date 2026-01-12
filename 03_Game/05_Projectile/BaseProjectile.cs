@@ -179,16 +179,6 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
-    #region 탄환 타입 - Hover (주위)
-    protected virtual void HoverMove()
-    {
-    }
-
-    protected virtual void HoverRotate()
-    {
-    }
-    #endregion
-
     #region 탄환 타입 - Guidance (유도 추격)
     protected virtual void GuidanceMove()
     {

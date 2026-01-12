@@ -13,7 +13,6 @@ public class PlayerProjectile : BaseProjectile
     protected Dictionary<SkillValueType, float[]> levelValues = new();
 
     // 스텟
-    protected PlayerStat attackCooldown;
     protected PlayerStat projectileSpeed;
 
     // 타이머
@@ -43,7 +42,6 @@ public class PlayerProjectile : BaseProjectile
         // 스텟 캐싱
         player = PlayerManager.Instance.StagePlayer.transform;
         PlayerCondition condition = PlayerManager.Instance.Condition;
-        attackCooldown = condition[StatType.AttackCooldown];
         projectileSpeed = condition[StatType.ProjectileSpeed];
     }
     #endregion
