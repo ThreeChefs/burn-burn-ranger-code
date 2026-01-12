@@ -14,6 +14,7 @@ public class PlayerProjectile : BaseProjectile
 
     // 스텟
     protected PlayerStat projectileSpeed;
+    protected PlayerStat projectileRange;
 
     // 타이머
     protected float tickIntervalTimer;
@@ -43,6 +44,7 @@ public class PlayerProjectile : BaseProjectile
         player = PlayerManager.Instance.StagePlayer.transform;
         PlayerCondition condition = PlayerManager.Instance.Condition;
         projectileSpeed = condition[StatType.ProjectileSpeed];
+        projectileRange = condition[StatType.ProjecttileRange];
     }
     #endregion
 
@@ -148,11 +150,11 @@ public class PlayerProjectile : BaseProjectile
         {
             AoEShape.Circle => Physics2D.OverlapCircleAll(
                 _aoePivot.position,
-                data.AoEData.Radius,
+                data.AoEData.Radius * projectileRange.MaxValue,
                 data.AoEData.AoETargetLayer),
             AoEShape.Box => Physics2D.OverlapBoxAll(
                 _aoePivot.position,
-                data.AoEData.BoxSize,
+                data.AoEData.BoxSize * projectileRange.MaxValue,
                 360,
                 data.AoEData.AoETargetLayer),
             _ => throw new System.NotImplementedException(),
