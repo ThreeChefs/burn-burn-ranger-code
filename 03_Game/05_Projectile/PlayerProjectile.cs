@@ -49,8 +49,6 @@ public class PlayerProjectile : BaseProjectile
         skill.SkillValues.TryGetValue(SkillValueType.ProjectileSpeed, out _speedMultiplier);
         skill.SkillValues.TryGetValue(SkillValueType.Scale, out _scaleMultipliers);
 
-        skill.OnLevelUp += UpdateScaleTo;
-
         base.Init(PlayerManager.Instance.Condition[StatType.Attack], originData);
     }
 
@@ -106,6 +104,28 @@ public class PlayerProjectile : BaseProjectile
         }
     }
     #endregion
+
+    public override void Spawn(Vector2 spawnPos, Transform target)
+    {
+        base.Spawn(spawnPos, target);
+        SetScale();
+    }
+
+    public override void Spawn(Vector2 spawnPos, Vector2 dir)
+    {
+        base.Spawn(spawnPos, dir);
+        SetScale();
+    }
+
+    protected override void OnEnableInternal()
+    {
+        base.OnEnableInternal();
+
+        if (skill != null)
+        {
+            skill.OnLevelUp += UpdateScaleTo;
+        }
+    }
 
     protected override void OnDisableInternal()
     {
@@ -231,6 +251,16 @@ public class PlayerProjectile : BaseProjectile
 
         _scaleTween?.Kill();
         _scaleTween = transform.DOScale(scale, _scaleDuration);
+    }
+
+    private void SetScale()
+    {
+        Vector3 scale = Vector3.one * projectileRange.MaxValue;
+        if (_scaleMultipliers != null)
+        {
+            scale *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+        transform.localScale = scale;
     }
     #endregion
 
