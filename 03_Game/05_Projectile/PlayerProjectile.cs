@@ -154,7 +154,7 @@ public class PlayerProjectile : BaseProjectile
         {
             attacker = player,
             damage = CalculateDamage(),
-            position = transform.position,
+            hitPos = transform.position,
             directTarget = target,
             projectileData = data
         };
@@ -166,7 +166,7 @@ public class PlayerProjectile : BaseProjectile
         {
             attacker = player,
             damage = CalculateDamage(),
-            position = position,
+            hitPos = position,
             directTarget = target,
             projectileData = data
         };
