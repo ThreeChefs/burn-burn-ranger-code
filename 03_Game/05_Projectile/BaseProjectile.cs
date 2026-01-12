@@ -34,9 +34,13 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float flyTimer;
     protected float tickTimer;
 
+    // 카메라
+    protected Camera cam;
+
     #region Unity API
     protected virtual void Start()
     {
+        cam = Camera.main;
     }
 
     protected virtual void Update()
@@ -170,8 +174,12 @@ public class BaseProjectile : PoolObject, IAttackable
                 GuidanceMove();
                 GuidanceRotate();
                 break;
-            default:
+            case ProjectileMoveType.Straight:
                 MoveDefault();
+                break;
+            case ProjectileMoveType.Reflection:
+                MoveDefault();
+                HandleScreenReflection();
                 break;
         }
     }
@@ -188,6 +196,59 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual void GuidanceRotate()
     {
+    }
+
+    protected virtual void HandleScreenReflection()
+    {
+        if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
+
+        Vector2 pos = transform.position;
+        Vector2 dir = targetDir;
+        Vector2 camPos = cam.transform.position;
+
+        float halfH = cam.orthographicSize;
+        float halfW = halfH * cam.aspect;
+
+        float minX = camPos.x - halfW;
+        float maxX = camPos.x + halfW;
+        float minY = camPos.y - halfH;
+        float maxY = camPos.y + halfH;
+
+        bool reflected = false;
+
+        // X축 경계
+        if (pos.x < minX)
+        {
+            pos.x = minX;      // 위치 보정
+            dir.x *= -1;       // X축 반사
+            reflected = true;
+        }
+        else if (pos.x > maxX)
+        {
+            pos.x = maxX;
+            dir.x *= -1;
+            reflected = true;
+        }
+
+        // Y축 경계
+        if (pos.y < minY)
+        {
+            pos.y = minY;
+            dir.y *= -1;       // Y축 반사
+            reflected = true;
+        }
+        else if (pos.y > maxY)
+        {
+            pos.y = maxY;
+            dir.y *= -1;
+            reflected = true;
+        }
+
+        if (reflected)
+        {
+            targetDir = dir.normalized;
+            transform.position = pos;
+        }
     }
     #endregion
 
