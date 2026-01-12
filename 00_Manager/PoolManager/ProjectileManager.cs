@@ -134,7 +134,7 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         // todo: 임시. 나중에 UsePool 할 때 써야해
         if (playerProjectile != null)
         {
-            projectile.Init(baseStat, skillData);
+            //projectile.Init(baseStat, skillData);
         }
 
         projectile.Spawn(position, target);
