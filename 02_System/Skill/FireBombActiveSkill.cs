@@ -72,12 +72,7 @@ public class FireBombActiveSkill : ActiveSkill
 
     void SpawnFireBombProjectile(Vector3 firePos, Transform target)
     {
-        ProjectileManager.Instance.Spawn(
-              projectileIndex,
-              PlayerManager.Instance.Condition[StatType.Attack],
-              target,
-              activeSkillData,
-              firePos);
+        ProjectileManager.Instance.Spawn(projectileIndex, this, target, firePos);
     }
 
 

@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class ShieldActiveSkill : ActiveSkill
 {
-    [SerializeField] LayerMask _targetLayer;
     PlayerProjectile _shieldProjectile;
-
     BaseStat _attack;
    
     public override void Init(SkillData data)
@@ -51,11 +49,9 @@ public class ShieldActiveSkill : ActiveSkill
         if (_shieldProjectile != null)
             _shieldProjectile.gameObject.SetActive(false);
 
-        _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, _attack, this.transform, activeSkillData
-            , this.transform.position);
-
-        _shieldProjectile.transform.localScale = Vector3.one * 2f * skillValues[SkillValueType.AttackPower][CurLevel - 1];
-        //_shieldProjectile.transform.SetParent(this.transform, true);
+        _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, this, this.transform);
+        if(skillValues.ContainsKey(SkillValueType.Scale) == false) return;
+        _shieldProjectile.transform.localScale = Vector3.one * 2f * skillValues[SkillValueType.Scale][CurLevel - 1];
     }
 
     private void OnDestroy()
