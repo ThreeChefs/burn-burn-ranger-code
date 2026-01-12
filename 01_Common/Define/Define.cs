@@ -33,4 +33,8 @@ public static class Define
 
     // 태그
     public const string PlayerTag = "Player";
+
+    // 레이어 이름
+    public static int MonsterLayer = LayerMask.NameToLayer("Monster");
+    public static int WallLayer = LayerMask.NameToLayer("Wall");
 }
