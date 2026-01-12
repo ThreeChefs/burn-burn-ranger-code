@@ -16,12 +16,8 @@ public class ProjectileData : PoolObjectData
     [field: Header("공격")]
     [field: Tooltip("히트 모드(즉발 / 유지 / 특정 시점)")]
     [field: SerializeField] public ProjectileHitType HitType { get; private set; }
-    [field: Tooltip("기본 공격력에 곱해지는 탄환 계수")]
-    [field: SerializeField] public float DamageMultiplier { get; private set; }
     [field: Tooltip("생존 시간")]
     [field: SerializeField] public float AliveTime { get; private set; }
-    [field: Tooltip("틱 간격 (0 이하이면 틱 없음)")]
-    [field: SerializeField] public float TickInterval { get; private set; }
     [field: Tooltip("타겟 레이어")]
     [field: SerializeField] public LayerMask TargetLayerMask { get; private set; }
     [field: Tooltip("넉백")]
@@ -54,7 +50,6 @@ public class ProjectileData : PoolObjectData
 #if UNITY_EDITOR
     private void Reset()
     {
-        DamageMultiplier = 1f;
         AliveTime = 2f;
     }
 #endif
@@ -84,6 +79,6 @@ public class AoEData
 
     [field: SerializeField] public LayerMask AoETargetLayer { get; private set; }
     [field: HideIf(nameof(IsInstant))]
-    [field: SerializeField] public BaseAoE Prefab { get; private set; }
+    [field: SerializeField] public ProjectileDataIndex Index { get; private set; }
     [field: SerializeField] public List<BaseEffectSO> AreaEffects { get; private set; }
 }

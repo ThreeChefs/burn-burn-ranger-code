@@ -10,8 +10,6 @@ public class ActiveSkillData : SkillData
     [field: SerializeField] public int[] ProjectilesCounts { get; private set; } = new int[Define.SkillMaxLevel];
     [field: Tooltip("탄환 오브젝트")]
     [field: SerializeField] public ProjectileData ProjectileData { get; private set; }
-    [field: Tooltip("스킬 효과")]
-    [field: SerializeField] public SkillConfig SkillConfig { get; private set; }
     [field: Tooltip("액티브 스킬 프리팹")]
     [field: SerializeField] public ActiveSkill ActiveSkillPrefab { get; private set; }
 
@@ -22,7 +20,6 @@ public class ActiveSkillData : SkillData
         Type = SkillType.Active;
         LevelValue = new float[Define.SkillMaxLevel];
         ProjectileData = AssetLoader.FindAndLoadByName<ProjectileData>("KunaiProjectileData");
-        SkillConfig = AssetLoader.FindAndLoadByName<SkillConfig>("DefaultSkillConfig");
     }
 #endif
 }
