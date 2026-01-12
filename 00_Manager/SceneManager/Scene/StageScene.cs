@@ -9,6 +9,7 @@ public class StageScene : BaseScene
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.FireBombProjectileData);
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.RocketProjectileData);
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.GhostShurikenProjectileData);
+        ProjectileManager.Instance.UsePool(ProjectileDataIndex.SoccerBallProjectileData);
 
 
         CommonPoolManager.Instance.UsePool(CommonPoolIndex.DamageText);
