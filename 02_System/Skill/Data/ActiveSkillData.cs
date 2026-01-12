@@ -18,7 +18,7 @@ public class ActiveSkillData : SkillData
     {
         base.Reset();
         Type = SkillType.Active;
-        LevelValue = new float[Define.SkillMaxLevel];
+        LevelValues.Add(new SkillLevelValueEntry(SkillValueType.AttackPower));
         ProjectileData = AssetLoader.FindAndLoadByName<ProjectileData>("KunaiProjectileData");
     }
 #endif

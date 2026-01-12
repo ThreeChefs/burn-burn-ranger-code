@@ -1,4 +1,5 @@
 ﻿using Sirenix.OdinInspector;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -12,6 +13,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     [field: SerializeField] public int CurLevel { get; protected set; }
     public bool IsMaxLevel { get; private set; }
 
+    protected Dictionary<SkillValueType, float[]> skillValues = new();
     #endregion
 
     #region 초기화
@@ -19,6 +21,11 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     {
         SkillData = data;
         IsMaxLevel = false;
+
+        foreach (SkillLevelValueEntry entry in data.LevelValues)
+        {
+            skillValues.Add(entry.SkillValueType, entry.Values);
+        }
 
         Logger.Log($"스킬 획득: {SkillData.DisplayName}");
 

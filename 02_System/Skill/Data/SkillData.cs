@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SkillData : ScriptableObject
@@ -18,13 +19,27 @@ public class SkillData : ScriptableObject
     [field: SerializeField] public SkillType Type { get; protected set; }
     [field: Tooltip("돌파 조합 스킬 정보")]
     [field: SerializeField] public int[] CombinationIds { get; protected set; }
-    [field: Tooltip("레벨에 따른 수치 (플레이어의 기본 공격력에 곱해짐)")]
-    [field: SerializeField] public float[] LevelValue { get; protected set; }
+    [field: Tooltip("레벨에 따른 수치")]
+    [field: SerializeField] public List<SkillLevelValueEntry> LevelValues { get; protected set; }
 
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
         CombinationIds = new int[1];
+        LevelValues = new();
     }
 #endif
+}
+
+[System.Serializable]
+public class SkillLevelValueEntry
+{
+    public SkillValueType SkillValueType { get; private set; }
+    public float[] Values { get; private set; }
+
+    public SkillLevelValueEntry(SkillValueType skillValueType, int count = Define.SkillMaxLevel)
+    {
+        SkillValueType = skillValueType;
+        Values = new float[count];
+    }
 }
