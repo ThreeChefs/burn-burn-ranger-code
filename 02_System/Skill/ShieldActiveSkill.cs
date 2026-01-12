@@ -52,8 +52,8 @@ public class ShieldActiveSkill : ActiveSkill
             _shieldProjectile.gameObject.SetActive(false);
 
         _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, this, this.transform);
-        if(skillValues.ContainsKey(SkillValueType.Scale) == false) return;
-        _shieldProjectile.transform.localScale = Vector3.one * 2f * skillValues[SkillValueType.Scale][CurLevel - 1];
+        //if(skillValues.ContainsKey(SkillValueType.Scale) == false) return;
+        //_shieldProjectile.transform.localScale = Vector3.one * 2f * skillValues[SkillValueType.Scale][CurLevel - 1];
     }
 
     protected override void OnDestroy()
