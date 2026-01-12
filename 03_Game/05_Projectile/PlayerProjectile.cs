@@ -6,6 +6,7 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
+    #region 필드
     [SerializeField] private Transform _aoePivot;
 
     // 캐싱
@@ -34,18 +35,11 @@ public class PlayerProjectile : BaseProjectile
     }
     private float[] _speedMultiplier;
 
+    // 크기
+    private float[] _scaleMultipliers;
     private Tween _scaleTween;
-    protected virtual Vector3 Scale
-    {
-        get { return transform.localScale; }
-        set
-        {
-            if (value == transform.localScale) return;
-
-            UpdateScaleTo(value);
-        }
-    }
     private float _scaleDuration = 1f;
+    #endregion
 
     public void Init(ActiveSkill activeSkill, ScriptableObject originData)
     {
@@ -53,6 +47,9 @@ public class PlayerProjectile : BaseProjectile
         ActiveSkillData data = originData as ActiveSkillData;
 
         skill.SkillValues.TryGetValue(SkillValueType.ProjectileSpeed, out _speedMultiplier);
+        skill.SkillValues.TryGetValue(SkillValueType.Scale, out _scaleMultipliers);
+
+        skill.OnLevelUp += UpdateScaleTo;
 
         base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
@@ -114,6 +111,8 @@ public class PlayerProjectile : BaseProjectile
     {
         base.OnDisableInternal();
         tickIntervalTimer = 0f;
+
+        skill.OnLevelUp -= UpdateScaleTo;
     }
 
     #region Phase 관리
@@ -170,15 +169,21 @@ public class PlayerProjectile : BaseProjectile
 
     private Collider2D[] CheckTargetsAndHit()
     {
+        float scaleMultiplier = 1f;
+        if (_scaleMultipliers != null)
+        {
+            scaleMultiplier *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+
         return data.AoEData.AoEShape switch
         {
             AoEShape.Circle => Physics2D.OverlapCircleAll(
                 _aoePivot.position,
-                data.AoEData.Radius * projectileRange.MaxValue,
+                data.AoEData.Radius * projectileRange.MaxValue * scaleMultiplier,
                 data.AoEData.AoETargetLayer),
             AoEShape.Box => Physics2D.OverlapBoxAll(
                 _aoePivot.position,
-                data.AoEData.BoxSize * projectileRange.MaxValue,
+                data.AoEData.BoxSize * projectileRange.MaxValue * scaleMultiplier,
                 360,
                 data.AoEData.AoETargetLayer),
             _ => throw new System.NotImplementedException(),
@@ -211,8 +216,16 @@ public class PlayerProjectile : BaseProjectile
     #endregion
 
     #region Level Value Utils
-    private void UpdateScaleTo(Vector3 scale)
+    private void UpdateScaleTo()
     {
+        Vector3 scale = transform.localScale * projectileRange.MaxValue;
+
+        // 스킬 시스템
+        if (_scaleMultipliers != null)
+        {
+            scale *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+
         _scaleTween?.Kill();
         _scaleTween = transform.DOScale(scale, _scaleDuration);
     }
