@@ -54,21 +54,6 @@ public class PlayerProjectile : BaseProjectile
         projectileSpeed = condition[StatType.ProjectileSpeed];
         projectileRange = condition[StatType.ProjecttileRange];
     }
-    #endregion
-
-    protected override void OnDisableInternal()
-    {
-        base.OnDisableInternal();
-        tickIntervalTimer = 0f;
-    }
-
-    private void OnValidHit(in HitContext context)
-    {
-        foreach (BaseEffectSO effect in data.HitEffects)
-        {
-            effect.Apply(in context);
-        }
-    }
 
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
@@ -109,12 +94,15 @@ public class PlayerProjectile : BaseProjectile
                 break;
         }
     }
+    #endregion
 
-    protected override float CalculateDamage()
+    protected override void OnDisableInternal()
     {
-        return attack.MaxValue * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1];
+        base.OnDisableInternal();
+        tickIntervalTimer = 0f;
     }
 
+    #region Phase 관리
     protected override void UpdateFlyPhase()
     {
         if (!data.HasAreaPhase || passCount > 0) return;
@@ -148,6 +136,21 @@ public class PlayerProjectile : BaseProjectile
         if (data.AoEData.IsInstant)
         {
             gameObject.SetActive(false);
+        }
+    }
+    #endregion
+
+    #region Hit Utils
+    protected override float CalculateDamage()
+    {
+        return attack.MaxValue * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1];
+    }
+
+    private void OnValidHit(in HitContext context)
+    {
+        foreach (BaseEffectSO effect in data.HitEffects)
+        {
+            effect.Apply(in context);
         }
     }
 
