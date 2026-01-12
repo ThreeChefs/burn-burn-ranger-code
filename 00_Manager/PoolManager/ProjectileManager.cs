@@ -55,18 +55,23 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         return projectile;
     } 
 
-    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, SkillData skillStat, Transform target, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, ActiveSkill skillStat, Transform target, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         PlayerProjectile projectile = SpawnObject<PlayerProjectile>(poolIndex, position, rotation, parent);
         if (projectile == null) return projectile;
-
+        
+        projectile.Init(skillStat, _originPoolDic[poolIndex]);
+        projectile.Spawn(position, target);
+        
         return projectile;
     } 
     
-    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, SkillData skillStat, Vector3 targetPos, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, ActiveSkill skillStat, Vector3 targetPos, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
         PlayerProjectile projectile = SpawnObject<PlayerProjectile>(poolIndex, position, rotation, parent);
         if (projectile == null) return projectile;
+        
+        projectile.Init(skillStat, _originPoolDic[poolIndex]);
 
         return projectile;
     } 
