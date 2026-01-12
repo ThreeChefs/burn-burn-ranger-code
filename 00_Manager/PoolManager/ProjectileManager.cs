@@ -95,7 +95,7 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
     } 
     
     /// <summary>
-    /// 스킬과 목표지점을 받는 스폰
+    /// 스킬과 방향
     /// </summary>
     public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, ActiveSkill skillStat, Vector3 dir, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
@@ -103,13 +103,14 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         if (projectile == null) return projectile;
         
         projectile.Init(skillStat, _originPoolDic[poolIndex]);
+        projectile.Spawn(position, dir) ;
 
         return projectile;
     } 
     
         
     /// <summary>
-    /// 공격력과 방향을 받는 스폰
+    /// 스킬과 목표지점
     /// </summary>
     public PlayerProjectile SpawnToTarget(ProjectileDataIndex poolIndex, ActiveSkill skillStat, Vector3 targetPos, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
     {
@@ -118,31 +119,6 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
 
         return projectile;
     } 
-
-    
-    
-
-    // 플레이어만 임시사용
-    public BaseProjectile Spawn(ProjectileDataIndex poolIndex, BaseStat baseStat, Transform target, ActiveSkillData skillData, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
-    {
-        BaseProjectile projectile = SpawnObject<BaseProjectile>(poolIndex, position, rotation, parent);
-
-        if (projectile == null) return projectile;
-
-        PlayerProjectile playerProjectile = (PlayerProjectile)projectile;
-
-        // todo: 임시. 나중에 UsePool 할 때 써야해
-        if (playerProjectile != null)
-        {
-            //projectile.Init(baseStat, skillData);
-        }
-
-        projectile.Spawn(position, target);
-
-        return projectile;
-
-    }
-
 
 
 }
