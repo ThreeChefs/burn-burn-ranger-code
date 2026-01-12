@@ -108,7 +108,7 @@ public class SkillSystem
         _activeSkillCount++;
         ActiveSkillData data = _skillDataCache[id] as ActiveSkillData;
         ActiveSkill activeSkill = GameObject.Instantiate(data.ActiveSkillPrefab);
-        activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainers);
+        activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainer);
         activeSkill.transform.localPosition = Vector3.zero;
         return activeSkill;
     }
