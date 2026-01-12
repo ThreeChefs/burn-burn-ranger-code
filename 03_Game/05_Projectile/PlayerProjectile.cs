@@ -83,12 +83,12 @@ public class PlayerProjectile : BaseProjectile
     #region 충돌 처리
     private bool IsHitTarget(int layer)
     {
-        return ((1 << layer) & data.TargetLayerMask) == 0;
+        return ((1 << layer) & data.TargetLayerMask) != 0;
     }
 
     private bool IsReflectTarget(int layer)
     {
-        return ((1 << layer) & data.ReflectionLayerMask) == 0;
+        return ((1 << layer) & data.ReflectionLayerMask) != 0;
     }
 
     private void HandleHit(Collider2D collision)
