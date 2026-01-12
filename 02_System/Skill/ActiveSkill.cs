@@ -19,7 +19,7 @@ public class ActiveSkill : BaseSkill
 
     // 코루틴
     private Coroutine _coroutine;
-    private WaitForSeconds _projectileDelay;
+    private WaitForSeconds _projectileSpawnInterval;
 
     public override void Init(SkillData data)
     {
@@ -38,7 +38,7 @@ public class ActiveSkill : BaseSkill
         }
 
         _attackCooldown = PlayerManager.Instance.Condition[StatType.AttackCooldown];
-        _projectileDelay = new WaitForSeconds(0.1f);        // todo: 투사체 정보에 빼야할 수도
+        _projectileSpawnInterval = new WaitForSeconds(activeSkillData.SpawnInterval);
     }
 
     #region Unity API
@@ -74,7 +74,7 @@ public class ActiveSkill : BaseSkill
         for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel - 1]; i++)
         {
             ProjectileManager.Instance.Spawn(projectileIndex, this, target, transform.position);
-            yield return _projectileDelay;
+            yield return _projectileSpawnInterval;
         }
     }
 
