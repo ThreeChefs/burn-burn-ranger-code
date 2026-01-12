@@ -47,6 +47,29 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         return projectile;
 
     }
+    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, BaseStat baseStat, Vector3 targetPos, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    {
+        PlayerProjectile projectile = SpawnObject<PlayerProjectile>(poolIndex, position, rotation, parent);
+        if (projectile == null) return projectile;
+
+        return projectile;
+    } 
+
+    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, SkillData skillStat, Transform target, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    {
+        PlayerProjectile projectile = SpawnObject<PlayerProjectile>(poolIndex, position, rotation, parent);
+        if (projectile == null) return projectile;
+
+        return projectile;
+    } 
+    
+    public PlayerProjectile Spawn(ProjectileDataIndex poolIndex, SkillData skillStat, Vector3 targetPos, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+    {
+        PlayerProjectile projectile = SpawnObject<PlayerProjectile>(poolIndex, position, rotation, parent);
+        if (projectile == null) return projectile;
+
+        return projectile;
+    } 
 
     // 플레이어만 임시사용
     public BaseProjectile Spawn(ProjectileDataIndex poolIndex, BaseStat baseStat, Transform target, ActiveSkillData skillData, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
