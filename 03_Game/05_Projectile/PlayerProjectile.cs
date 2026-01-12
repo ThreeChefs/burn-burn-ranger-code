@@ -64,7 +64,13 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                if (passCount < 0) return;
+                // 관통 무한
+                if (passCount == -100)
+                {
+                    HitContext context = GetHitContext(collision);
+                    OnValidHit(in context);
+                    return;
+                }
                 else if (passCount > 0)
                 {
                     passCount--;
