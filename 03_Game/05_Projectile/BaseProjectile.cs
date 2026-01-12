@@ -161,49 +161,32 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
-    // 움직임
+    #region 움직임
     private void MoveAndRotate()
     {
         switch (type)
         {
-            case ProjectileMoveType.Straight:
-                ChaseMove();
-                break;
             case ProjectileMoveType.Guidance:
                 GuidanceMove();
                 GuidanceRotate();
                 break;
-            case ProjectileMoveType.Reflection:
-                ReflectionMove();
-                ReflectionRotate();
+            default:
+                MoveDefault();
                 break;
         }
     }
 
-    #region 탄환 타입 - Chase (단일 추격)
-    protected virtual void ChaseMove()
+    protected virtual void MoveDefault()
     {
         Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
         transform.position += targetPos;
     }
-    #endregion
 
-    #region 탄환 타입 - Guidance (유도 추격)
     protected virtual void GuidanceMove()
     {
     }
 
     protected virtual void GuidanceRotate()
-    {
-    }
-    #endregion
-
-    #region 탄환 타입 - Reflection (반사)
-    protected virtual void ReflectionMove()
-    {
-    }
-
-    protected virtual void ReflectionRotate()
     {
     }
     #endregion
