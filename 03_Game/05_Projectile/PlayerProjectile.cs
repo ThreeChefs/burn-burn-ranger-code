@@ -18,12 +18,27 @@ public class PlayerProjectile : BaseProjectile
     // 타이머
     protected float tickIntervalTimer;
 
-    protected override float Speed => base.Speed * projectileSpeed.MaxValue;
+    // 이동 속도
+    protected override float Speed
+    {
+        get
+        {
+            float speed = base.Speed * projectileSpeed.MaxValue;
+            if (_speedMultiplier != null)
+            {
+                speed *= _speedMultiplier[skill.CurLevel - 1];
+            }
+            return speed;
+        }
+    }
+    private float[] _speedMultiplier;
 
     public void Init(ActiveSkill activeSkill, ScriptableObject originData)
     {
         skill = activeSkill;
         ActiveSkillData data = originData as ActiveSkillData;
+
+        skill.SkillValues.TryGetValue(SkillValueType.ProjectileSpeed, out _speedMultiplier);
 
         base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
@@ -97,8 +112,7 @@ public class PlayerProjectile : BaseProjectile
 
     protected override float CalculateDamage()
     {
-        // todo: 스킬 레벨에 따른 대미지 증가
-        return attack.MaxValue;
+        return attack.MaxValue * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1];
     }
 
     protected override void UpdateFlyPhase()

@@ -11,4 +11,5 @@ public enum SkillValueType
     StatBuff,           // (패시브) 스텟 버프
     ProjectileCount,    // (액티브) 탄환 개수
     Scale,              // (액티브) 크기
+    ProjectileSpeed,    // (액티브) 탄환 속도
 }
