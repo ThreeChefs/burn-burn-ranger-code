@@ -127,9 +127,14 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
+    /// <summary>
+    /// 특정 콜라이더에 반사 처리
+    /// </summary>
+    /// <param name="collision"></param>
     private void HandleReflection(Collider2D collision)
     {
-
+        Vector2 norm = ((Vector2)transform.position - collision.ClosestPoint(transform.position)).normalized;
+        targetDir = Vector2.Reflect(transform.forward, norm).normalized;
     }
     #endregion
 
