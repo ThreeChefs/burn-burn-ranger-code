@@ -290,6 +290,8 @@ public class PlayerProjectile : BaseProjectile
 
     private void SetScale()
     {
+        if (projectileRange == null) return;
+
         Vector3 scale = Vector3.one * projectileRange.MaxValue;
         if (_scaleMultipliers != null)
         {
