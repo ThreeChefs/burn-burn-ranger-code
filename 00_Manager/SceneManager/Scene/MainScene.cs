@@ -3,6 +3,7 @@
     private void Start()
     {
         UIManager.Instance.LoadUI(UIName.UI_HomeBottomMenu);
+        UIManager.Instance.LoadUI(UIName.UI_HomeTopBar);
         
         UIManager.Instance.LoadUI(UIName.UI_Home);
         UIManager.Instance.LoadUI(UIName.UI_Equipment, false);
