@@ -6,7 +6,8 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     protected List<Monster> activatedMonsters = new();
     protected List<Monster> deactivatedMonsters = new();
 
-    
+    private List<Monster> _monstersInArea = new();
+
     public override bool UsePool(MonsterPoolIndex poolIndex)
     {
         if (nowPoolDic.ContainsKey(poolIndex)) return false;
@@ -39,7 +40,7 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         float camWidth = cam.aspect * camHeight;
 
         Vector2 dir = Random.insideUnitCircle.normalized;
-        
+
         PoolObject monsterPoolObject = SpawnObject(poolIndex,
             player.transform.position + new Vector3(dir.x * camWidth, dir.y * camHeight, 0));
 
@@ -93,7 +94,7 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         StagePlayer player = PlayerManager.Instance.StagePlayer;
 
 
-        foreach(var pool in activatedMonsters)
+        foreach (var pool in activatedMonsters)
         {
             var monster = pool as Monster;
             if (monster == null) continue;
@@ -116,14 +117,44 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         return nearestMonster != null ? nearestMonster.transform : null;
     }
 
-    
+
     /// <summary>
-    /// 살아있는 애중 아무나 데려오기
+    /// 살아있는 애중 영역 안에 있는 아무나 데려오기
     /// </summary>
     /// <returns></returns>
     public Transform GetRandomMonster()
     {
-        PoolObject randomMonster = activatedMonsters.Random();
+        _monstersInArea.Clear();
+
+        StagePlayer player = PlayerManager.Instance.StagePlayer;
+        Camera cam = Camera.main;
+
+        float camHeight = cam.orthographicSize;
+        float camWidth = cam.aspect * camHeight;
+
+        Vector3 center = player.transform.position;
+
+        float minX = center.x - camWidth;
+        float maxX = center.x + camWidth;
+        float minY = center.y - camHeight;
+        float maxY = center.y + camHeight;
+
+        for (int i = 0; i < activatedMonsters.Count; i++)
+        {
+            Monster monster = activatedMonsters[i];
+            if (monster == null) continue;
+
+            Vector3 pos = monster.transform.position;
+            if (pos.x < minX || pos.x > maxX || pos.y < minY || pos.y > maxY)
+                continue;
+
+            _monstersInArea.Add(monster);
+        }
+
+        if (_monstersInArea.Count == 0)
+            return null;
+
+        PoolObject randomMonster = _monstersInArea.Random();
         return randomMonster != null ? randomMonster.transform : null;
     }
 
@@ -136,22 +167,22 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
             deactivatedMonsters.Remove(monster);
         }
 
-        if(activatedMonsters.Contains(monster) == false)
+        if (activatedMonsters.Contains(monster) == false)
         {
             activatedMonsters.Add(monster);
         }
     }
 
-    public void OnDeactivateMonster(PoolObject poolObject) 
+    public void OnDeactivateMonster(PoolObject poolObject)
     {
         Monster monster = poolObject as Monster;
 
-        if(deactivatedMonsters.Contains(monster) == false)
+        if (deactivatedMonsters.Contains(monster) == false)
         {
             deactivatedMonsters.Add(monster);
         }
 
-        if(activatedMonsters.Contains(monster) == true)
+        if (activatedMonsters.Contains(monster) == true)
         {
             activatedMonsters.Remove(monster);
         }
@@ -160,10 +191,10 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 
     private void OnDestroy()
     {
-        foreach(var pool in nowPoolDic.Values)
+        foreach (var pool in nowPoolDic.Values)
         {
             pool.OnActivateAction -= OnActivateMonster;
-            pool.OnDeactivateAction -= OnDeactivateMonster; 
+            pool.OnDeactivateAction -= OnDeactivateMonster;
         }
     }
 
