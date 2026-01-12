@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -12,6 +12,14 @@ public class PoolObject : MonoBehaviour
     public event Action<PoolObject> OnEnableAction;
     public event Action<PoolObject> OnDisableAction;
 
+
+    /// <summary>
+    /// PoolObject 가 Create 될 때 초기화할 내용을 넣어 주세요
+    /// </summary>
+    public virtual void InitPoolObject()
+    {
+
+    }
 
     private void OnEnable()
     {
