@@ -17,26 +17,31 @@ public class FireBombActiveSkill : ActiveSkill
     protected override IEnumerator UseSkill(Transform target)
     {
         int fireCount = 0;
-        for (int i = 0; i < activeSkillData.ProjectilesCounts[CurLevel - 1]; ++i)
+
+        if (skillValues.ContainsKey(SkillValueType.ProjectileCount))
         {
-            float angle = (360f / activeSkillData.ProjectilesCounts[CurLevel - 1]) * i;
-
-            Vector3 anglePos = Quaternion.AngleAxis(angle, Vector3.forward) * (Vector3.right * radius);
-            Vector3 firePos = PlayerManager.Instance.StagePlayer.transform.position + anglePos;
-
-            if(SkillData.Type == SkillType.Combination)
+            for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel-1]; ++i)
             {
-                ThrowFireBomb(fireCount, target, firePos);
-                fireCount++;
-                yield return fireDelayWait;
+                float angle = (360f / skillValues[SkillValueType.ProjectileCount][CurLevel-1]) * i;
+
+                Vector3 anglePos = Quaternion.AngleAxis(angle, Vector3.forward) * (Vector3.right * radius);
+                Vector3 firePos  = PlayerManager.Instance.StagePlayer.transform.position + anglePos;
+
+                if(SkillData.Type == SkillType.Combination)
+                {
+                    ThrowFireBomb(fireCount, target, firePos);
+                    fireCount++;
+                    yield return fireDelayWait;
+                }
+                else
+                {
+                    ThrowFireBomb(fireCount, target, firePos);
+                    fireCount++;
+                }
             }
-            else
-            {
-                ThrowFireBomb(fireCount, target, firePos);
-                fireCount++;
-            }
-                //yield return null;
+            
         }
+
     }
 
 
