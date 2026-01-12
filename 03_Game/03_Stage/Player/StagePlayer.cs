@@ -38,9 +38,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 액티브 스킬 컨테이너
     [field: SerializeField] public Transform SkillContainer { get; private set; }
 
-    // 화면 벽
-    [SerializeField] private Transform _wallContainer;
-
     // 캐싱
     public PlayerCondition Condition { get; private set; }
     private PlayerStat _health;
@@ -69,7 +66,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
         StageLevel = new(1, 0f);
         GoldValue = 0;
         _defaultRadius = _gemCollector.radius;
-        CreateWalls();
     }
 
     private void Start()
@@ -194,54 +190,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
-    #region 카메라 기준 벽 생성
-    private void CreateWalls()
-    {
-        BoxCollider2D left = CreateWall("LeftWall");
-        BoxCollider2D right = CreateWall("RightWall");
-        BoxCollider2D top = CreateWall("TopWall");
-        BoxCollider2D bottom = CreateWall("BottomWall");
-
-        Camera camera = Camera.main;
-        float h = camera.orthographicSize;
-        float w = h * camera.aspect;
-        float thickness = 1f;
-
-        Vector2 center = transform.position;
-
-        // Left
-        left.size = new Vector2(thickness, h * 2.5f);
-        left.offset = new Vector2(-w - thickness * 0.5f, 0f);
-
-        // Right
-        right.size = new Vector2(thickness, h * 2.5f);
-        right.offset = new Vector2(w + thickness * 0.5f, 0f);
-
-        // Top
-        top.size = new Vector2(w * 2.5f, thickness);
-        top.offset = new Vector2(0f, h + thickness * 0.5f);
-
-        // Bottom
-        bottom.size = new Vector2(w * 2.5f, thickness);
-        bottom.offset = new Vector2(0f, -h - thickness * 0.5f);
-
-        transform.position = center;
-    }
-
-    private BoxCollider2D CreateWall(string name)
-    {
-        GameObject go = new GameObject(name);
-        go.transform.SetParent(transform, false);
-        go.layer = LayerMask.NameToLayer("Wall");
-        go.transform.SetParent(_wallContainer);
-
-        BoxCollider2D col = go.AddComponent<BoxCollider2D>();
-        col.isTrigger = true;
-
-        return col;
-    }
-    #endregion
-
     #region 에디터 전용
 #if UNITY_EDITOR
     private void Reset()
@@ -276,13 +224,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
         _renderers = GetComponentsInChildren<SpriteRenderer>();
         SkillContainer = transform.FindChild<Transform>("SkillContainer");
-
-        _wallContainer = transform.FindChild<Transform>("WallContainer");
-        if (_wallContainer == null)
-        {
-            _wallContainer = new GameObject("WallContainer").transform;
-            _wallContainer.SetParent(transform);
-        }
     }
 #endif
     #endregion
