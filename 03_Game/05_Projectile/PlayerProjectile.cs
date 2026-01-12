@@ -5,6 +5,8 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
+    [SerializeField] private Transform _aoePivot;
+
     // 캐싱
     protected Transform player;
     protected float[] levelValue;
@@ -82,96 +84,68 @@ public class PlayerProjectile : BaseProjectile
                     gameObject.SetActive(false);
                 }
                 break;
-            case ProjectileHitType.Persistent:
-            case ProjectileHitType.Timed:
-                targets.Add(collision);
+            default:
                 break;
         }
     }
 
     protected override float CalculateDamage()
     {
-        return attack.MaxValue * data.DamageMultiplier;
+        // todo: 스킬 레벨에 따른 대미지 증가
+        return attack.MaxValue;
     }
 
     protected override void UpdateFlyPhase()
     {
         if (!data.HasAreaPhase || passCount > 0) return;
-        phaseTimer += Time.deltaTime;
-        if (phaseTimer > data.AoEData.FlyPhaseDuration)
-        {
-            phaseTimer = 0f;
-            EnterAreaPhase();
-        }
+
+        flyTimer += Time.deltaTime;
+        if (flyTimer < data.AoEData.FlyPhaseDuration) return;
+
+        flyTimer = 0f;
+        EnterAreaPhase();
     }
 
     /// <summary>
-    /// 즉발 장판이면 hit, 아니면 장판 소환 시도
+    /// 즉발 장판이면 hit 하고 return, 아니면 틱 대미지로 계속 대미지
     /// </summary>
-    /// <exception cref="System.NotImplementedException"></exception>
     protected override void UpdateAreaPhase()
     {
-        if (!data.HasAreaPhase || data.AoEData == null) return;
+        if (!data.HasAreaPhase) return;
+
+        tickTimer += Time.deltaTime;
+        if (tickTimer < data.AoEData.TickInterval) return;
 
         Logger.Log("장판 켜짐");
+        Collider2D[] targets = CheckTargetsAndHit();
+
+        foreach (Collider2D target in targets)
+        {
+            HitContext context = GetHitContext(target, _aoePivot.position);
+            data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
+        }
 
         if (data.AoEData.IsInstant)
         {
-            Collider2D[] targets;
-
-            targets = data.AoEData.AoEShape switch
-            {
-                AoEShape.Circle => Physics2D.OverlapCircleAll(
-                    transform.position,
-                    data.AoEData.Radius,
-                    data.AoEData.AoETargetLayer),
-                AoEShape.Box => Physics2D.OverlapBoxAll(
-                    transform.position,
-                    data.AoEData.BoxSize,
-                    360,
-                    data.AoEData.AoETargetLayer),
-                _ => throw new System.NotImplementedException(),
-            };
-
-            foreach (Collider2D target in targets)
-            {
-                HitContext context = GetHitContext(target);
-                data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
-            }
-        }
-        else
-        {
-            TrySpawnAoE();
+            gameObject.SetActive(false);
         }
     }
 
-    /// <summary>
-    /// 장판 소환
-    /// </summary>
-    private void TrySpawnAoE()
+    private Collider2D[] CheckTargetsAndHit()
     {
-        if (data.AoEData.Prefab == null) return;
-        // todo: pool에 넣기
-        BaseAoE aoe = Instantiate(data.AoEData.Prefab);
-        aoe.Init(data.AoEData, GetHitContext(null));
-        aoe.transform.position = transform.position;
-    }
-
-    /// <summary>
-    /// 수호자 등 가만히 틱 대미지를 주는 애들
-    /// </summary>
-    protected override void UpdatePersistent()
-    {
-        tickIntervalTimer += Time.deltaTime;
-        if (tickIntervalTimer > data.TickInterval)
+        return data.AoEData.AoEShape switch
         {
-            foreach (Collider2D target in targets)
-            {
-                HitContext context = GetHitContext(target);
-                OnValidHit(in context);
-            }
-            tickIntervalTimer = 0f;
-        }
+            AoEShape.Circle => Physics2D.OverlapCircleAll(
+                _aoePivot.position,
+                data.AoEData.Radius,
+                data.AoEData.AoETargetLayer),
+            AoEShape.Box => Physics2D.OverlapBoxAll(
+                _aoePivot.position,
+                data.AoEData.BoxSize,
+                360,
+                data.AoEData.AoETargetLayer),
+            _ => throw new System.NotImplementedException(),
+        };
     }
 
     private HitContext GetHitContext(Collider2D target)
@@ -186,10 +160,82 @@ public class PlayerProjectile : BaseProjectile
         };
     }
 
+    private HitContext GetHitContext(Collider2D target, Vector3 position)
+    {
+        return new()
+        {
+            attacker = player,
+            damage = CalculateDamage(),
+            position = position,
+            directTarget = target,
+            projectileData = data
+        };
+    }
+
 #if UNITY_EDITOR
     protected override void Reset()
     {
         base.Reset();
+
+        _aoePivot = transform.FindChild<Transform>("AoEPivot");
+        if (_aoePivot == null)
+        {
+            _aoePivot = new GameObject("AoEPivot").transform;
+            Transform model = transform.FindChild<Transform>("Model");
+            _aoePivot.SetParent(model.transform);
+            _aoePivot.localPosition = Vector3.zero;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (data == null || data.AoEData == null) return;
+
+        Gizmos.color = Color.red;
+
+        switch (data.AoEData.AoEShape)
+        {
+            case AoEShape.Circle:
+                DrawCircle(_aoePivot.position, data.AoEData.Radius);
+                break;
+
+            case AoEShape.Box:
+                DrawBox(_aoePivot.position, data.AoEData.BoxSize);
+                break;
+        }
+    }
+
+    private void DrawCircle(Vector3 center, float radius)
+    {
+        const int SEGMENTS = 32;
+        Vector3 prev = center + Vector3.right * radius;
+
+        for (int i = 1; i <= SEGMENTS; i++)
+        {
+            float angle = i * Mathf.PI * 2f / SEGMENTS;
+            Vector3 next = center + new Vector3(
+                Mathf.Cos(angle) * radius,
+                Mathf.Sin(angle) * radius,
+                0f
+            );
+
+            Gizmos.DrawLine(prev, next);
+            prev = next;
+        }
+    }
+    private void DrawBox(Vector3 center, Vector2 size)
+    {
+        Vector3 half = size * 0.5f;
+
+        Vector3 tl = center + new Vector3(-half.x, half.y);
+        Vector3 tr = center + new Vector3(half.x, half.y);
+        Vector3 br = center + new Vector3(half.x, -half.y);
+        Vector3 bl = center + new Vector3(-half.x, -half.y);
+
+        Gizmos.DrawLine(tl, tr);
+        Gizmos.DrawLine(tr, br);
+        Gizmos.DrawLine(br, bl);
+        Gizmos.DrawLine(bl, tl);
     }
 #endif
 }
