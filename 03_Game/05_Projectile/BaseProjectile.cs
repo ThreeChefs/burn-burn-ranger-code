@@ -111,6 +111,15 @@ public class BaseProjectile : PoolObject, IAttackable
         float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
+
+    public virtual void Spawn(Vector2 spawnPos, Vector2 dir)
+    {
+        transform.position = spawnPos;
+
+        targetDir = dir;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
     #endregion
 
     #region 공격
