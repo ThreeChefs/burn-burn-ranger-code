@@ -1,22 +1,27 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 {
+    protected List<Monster> activatedMonsters = new();
+    protected List<Monster> deactivatedMonsters = new();
 
+    
     public override bool UsePool(MonsterPoolIndex poolIndex)
     {
-        if(nowPoolDic.ContainsKey(poolIndex)) return false;
-        if(_originPoolDic.ContainsKey(poolIndex) == false) return false;
+        if (nowPoolDic.ContainsKey(poolIndex)) return false;
+        if (_originPoolDic.ContainsKey(poolIndex) == false) return false;
 
-        MonsterPoolObjectData data= (MonsterPoolObjectData)_originPoolDic[poolIndex];
-        
+        MonsterPoolObjectData data = (MonsterPoolObjectData)_originPoolDic[poolIndex];
+
         if (data == null) return false;
         if (data.OriginPrefab == null) return false;
 
         BasePool newPool = Instantiate(poolPrefab);
+
+        newPool.OnActivateAction += OnActivateMonster;
+        newPool.OnDeactivateAction += OnDeactivateMonster;
+
         newPool.Init(_originPoolDic[poolIndex]);
         newPool.name = $"{poolIndex}_Pool";
         nowPoolDic.Add(poolIndex, newPool);
@@ -34,15 +39,11 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         float camWidth = cam.aspect * camHeight;
 
         Vector2 dir = Random.insideUnitCircle.normalized;
-       
-        
-        //Vector3 randomPos = player.transform.position + (Vector3)(dir * Define.RandomRange(Define.MinMonsterSpawnDistance, Define.MaxMonsterSpawnDistance));
         
         PoolObject monsterPoolObject = SpawnObject(poolIndex,
-            player.transform.position + new Vector3(dir.x*camWidth, dir.y * camHeight,0));
+            player.transform.position + new Vector3(dir.x * camWidth, dir.y * camHeight, 0));
 
-        // todo : Monster가 PoolObject로부터 상속받도록 변경 필요 또는 캐싱하고 있기
-        if(monsterPoolObject == null) return  null;
+        if (monsterPoolObject == null) return null;
 
         Monster monster = monsterPoolObject as Monster;
         monster.ApplyData(((MonsterPoolObjectData)_originPoolDic[poolIndex]).MonsterData);
@@ -77,8 +78,8 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         if (nowPoolDic.Count == 0) return;
         foreach (var pool in nowPoolDic.Values)
         {
-            MonsterPool monsterPool =  pool as MonsterPool;
-            if(monsterPool != null)
+            MonsterPool monsterPool = pool as MonsterPool;
+            if (monsterPool != null)
             {
                 monsterPool.KillAll();
             }
@@ -114,4 +115,56 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 
         return nearestMonster != null ? nearestMonster.transform : null;
     }
+
+    
+    /// <summary>
+    /// 살아있는 애중 아무나 데려오기
+    /// </summary>
+    /// <returns></returns>
+    public Transform GetRandomMonster()
+    {
+        PoolObject randomMonster = activatedMonsters.Random();
+        return randomMonster != null ? randomMonster.transform : null;
+    }
+
+    public void OnActivateMonster(PoolObject poolObject)
+    {
+        Monster monster = poolObject as Monster;
+
+        if (deactivatedMonsters.Contains(monster) == true)
+        {
+            deactivatedMonsters.Remove(monster);
+        }
+
+        if(activatedMonsters.Contains(monster) == false)
+        {
+            activatedMonsters.Add(monster);
+        }
+    }
+
+    public void OnDeactivateMonster(PoolObject poolObject) 
+    {
+        Monster monster = poolObject as Monster;
+
+        if(deactivatedMonsters.Contains(monster) == false)
+        {
+            deactivatedMonsters.Add(monster);
+        }
+
+        if(activatedMonsters.Contains(monster) == true)
+        {
+            activatedMonsters.Remove(monster);
+        }
+    }
+
+
+    private void OnDestroy()
+    {
+        foreach(var pool in nowPoolDic.Values)
+        {
+            pool.OnActivateAction -= OnActivateMonster;
+            pool.OnDeactivateAction -= OnDeactivateMonster; 
+        }
+    }
+
 }
