@@ -14,6 +14,7 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     public bool IsMaxLevel { get; private set; }
 
     protected Dictionary<SkillValueType, float[]> skillValues = new();
+    public IReadOnlyDictionary<SkillValueType, float[]> SkillValues => skillValues;
     #endregion
 
     #region 초기화

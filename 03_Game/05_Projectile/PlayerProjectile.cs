@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +9,7 @@ public class PlayerProjectile : BaseProjectile
 
     // 캐싱
     protected Transform player;
-    protected Dictionary<SkillValueType, float[]> levelValues = new();
+    protected ActiveSkill skill;
 
     // 스텟
     protected PlayerStat projectileSpeed;
@@ -21,18 +20,12 @@ public class PlayerProjectile : BaseProjectile
 
     protected override float Speed => base.Speed * projectileSpeed.MaxValue;
 
-    public override void Init(BaseStat attack, ScriptableObject originData)
+    public void Init(ActiveSkill activeSkill, ScriptableObject originData)
     {
+        skill = activeSkill;
         ActiveSkillData data = originData as ActiveSkillData;
-        foreach (SkillLevelValueEntry entry in data.LevelValues)
-        {
-            if (!levelValues.ContainsKey(entry.SkillValueType))
-            {
-                levelValues.Add(entry.SkillValueType, entry.Values);
-            }
-        }
 
-        base.Init(attack, data.ProjectileData);
+        base.Init(PlayerManager.Instance.Condition[StatType.Attack], data.ProjectileData);
     }
 
     #region Unity API
