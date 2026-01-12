@@ -5,7 +5,7 @@
     Stamina,
     Attack,
     Defense,
-    SkillRange,                 // 습득시 스킬무기의 범위증가 용도
+    ProjecttileRange,                 // 습득시 스킬무기의 범위증가 용도
     AttackCooldown,
     Speed,
     AddEXP,                     // 경험치 획득량 6%씩 증가
