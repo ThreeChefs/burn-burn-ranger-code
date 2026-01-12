@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Unity.VisualScripting;
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -24,7 +23,6 @@ public class BaseProjectile : PoolObject, IAttackable
     [SerializeField] protected Transform target;
     protected Vector3 targetPos;
     protected Vector3 targetDir;
-    protected HashSet<Collider2D> targets = new();
 
     // 이동
     protected virtual float Speed => data.Speed * speedMultiplier;
@@ -33,7 +31,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
     // 폭발 / 장판
     protected ProjectilePhase phase;
-    protected float phaseTimer;
+    protected float flyTimer;
     protected float tickTimer;
 
     #region Unity API
@@ -44,11 +42,6 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void Update()
     {
         UpdatePhase();
-
-        if (data.HitType == ProjectileHitType.Persistent)
-        {
-            UpdatePersistent();
-        }
 
         if (data.AliveTime < 0) return;
 
@@ -69,7 +62,6 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         base.OnDisableInternal();
         lifeTimer = 0f;
-        targets.Clear();
 
         trailVfx?.SetActive(false);
     }
@@ -89,7 +81,7 @@ public class BaseProjectile : PoolObject, IAttackable
         if (data.HasAreaPhase)
         {
             phase = ProjectilePhase.Fly;
-            phaseTimer = 0f;
+            flyTimer = 0f;
         }
 
         InitVisualData();
@@ -144,19 +136,8 @@ public class BaseProjectile : PoolObject, IAttackable
                     gameObject.SetActive(false);
                 }
                 break;
-            case ProjectileHitType.Persistent:
-            case ProjectileHitType.Timed:
-                targets.Add(collision);
+            default:
                 break;
-        }
-    }
-
-    protected virtual void OnTriggerExit2D(Collider2D collision)
-    {
-        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) != 0)
-        {
-            collision.TryGetComponent<IDamageable>(out var damageable);
-            targets.Remove(collision);
         }
     }
 
@@ -167,7 +148,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual float CalculateDamage()
     {
-        return attack.MaxValue * data.DamageMultiplier;
+        return attack.MaxValue;
     }
     #endregion
 
@@ -245,10 +226,10 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void UpdateFlyPhase()
     {
         if (!data.HasAreaPhase) return;
-        phaseTimer += Time.deltaTime;
-        if (phaseTimer > data.FlyPhaseDuration)
+        flyTimer += Time.deltaTime;
+        if (flyTimer > data.AoEData.FlyPhaseDuration)
         {
-            phaseTimer = 0f;
+            flyTimer = 0f;
             EnterAreaPhase();
         }
     }
@@ -262,17 +243,6 @@ public class BaseProjectile : PoolObject, IAttackable
     }
 
     protected virtual void UpdateAreaPhase()
-    {
-        tickTimer += Time.deltaTime;
-        if (tickTimer > data.TickInterval)
-        {
-            tickTimer = 0f;
-        }
-    }
-    #endregion
-
-    #region 
-    protected virtual void UpdatePersistent()
     {
     }
     #endregion

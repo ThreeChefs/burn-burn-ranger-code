@@ -24,7 +24,7 @@ public enum ProjectileAnchorType
     Owner       // 시전자(플레이어)를 따라감
 }
 
-public enum ExplosionShape
+public enum AoEShape
 {
     Circle,     // 원형 폭발
     Box         // 사각형 폭발

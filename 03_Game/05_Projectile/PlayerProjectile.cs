@@ -5,10 +5,10 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
+    [SerializeField] private Transform _aoePivot;
+
     // 캐싱
     protected Transform player;
-    protected SkillConfig skillConfig;
-
     protected float[] levelValue;
 
     // 스텟
@@ -23,7 +23,6 @@ public class PlayerProjectile : BaseProjectile
     public override void Init(BaseStat attack, ScriptableObject originData)
     {
         ActiveSkillData data = originData as ActiveSkillData;
-        skillConfig = data.SkillConfig;
         levelValue = data.LevelValue;
 
         base.Init(attack, data.ProjectileData);
@@ -50,7 +49,7 @@ public class PlayerProjectile : BaseProjectile
 
     private void OnValidHit(in HitContext context)
     {
-        foreach (BaseSkillEffectSO effect in skillConfig.Effects)
+        foreach (BaseEffectSO effect in data.HitEffects)
         {
             effect.Apply(in context);
         }
@@ -65,7 +64,13 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                if (passCount < 0) return;
+                // 관통 무한
+                if (passCount == -100)
+                {
+                    HitContext context = GetHitContext(collision);
+                    OnValidHit(in context);
+                    return;
+                }
                 else if (passCount > 0)
                 {
                     passCount--;
@@ -85,82 +90,68 @@ public class PlayerProjectile : BaseProjectile
                     gameObject.SetActive(false);
                 }
                 break;
-            case ProjectileHitType.Persistent:
-            case ProjectileHitType.Timed:
-                targets.Add(collision);
+            default:
                 break;
         }
     }
 
     protected override float CalculateDamage()
     {
-        return attack.MaxValue * data.DamageMultiplier;
+        // todo: 스킬 레벨에 따른 대미지 증가
+        return attack.MaxValue;
     }
 
     protected override void UpdateFlyPhase()
     {
         if (!data.HasAreaPhase || passCount > 0) return;
-        phaseTimer += Time.deltaTime;
-        if (phaseTimer > data.FlyPhaseDuration)
-        {
-            phaseTimer = 0f;
-            EnterAreaPhase();
-        }
-    }
 
-    protected override void UpdateAreaPhase()
-    {
-        tickTimer += Time.deltaTime;
-        if (tickTimer < data.TickInterval) return;
+        flyTimer += Time.deltaTime;
+        if (flyTimer < data.AoEData.FlyPhaseDuration) return;
 
-        tickTimer = 0f;
-
-        // todo: 장판은 캐싱이 아니라 overlap으로 할지 고민
-        //foreach (Collider2D target in targets)
-        //{
-        //    HitContext context = GetHitContext(target);
-        //    OnValidHit(in context);
-        //}
-
-        Logger.Log("장판 켜짐");
-
-        Collider2D[] hits;
-        hits = data.ExplosionShape switch
-        {
-            ExplosionShape.Circle => Physics2D.OverlapCircleAll(
-                transform.position,
-                data.ExplosionRadius,
-                data.ExplosionTargetLayer),
-            ExplosionShape.Box => Physics2D.OverlapBoxAll(
-                transform.position,
-                data.ExplosionBoxSize,
-                360,
-                data.ExplosionTargetLayer),
-            _ => throw new System.NotImplementedException(),
-        };
-
-        foreach (Collider2D hit in hits)
-        {
-            HitContext context = GetHitContext(hit);
-            OnValidHit(in context);
-        }
+        flyTimer = 0f;
+        EnterAreaPhase();
     }
 
     /// <summary>
-    /// 수호자 등 가만히 틱 대미지를 주는 애들
+    /// 즉발 장판이면 hit 하고 return, 아니면 틱 대미지로 계속 대미지
     /// </summary>
-    protected override void UpdatePersistent()
+    protected override void UpdateAreaPhase()
     {
-        tickIntervalTimer += Time.deltaTime;
-        if (tickIntervalTimer > data.TickInterval)
+        if (!data.HasAreaPhase) return;
+
+        tickTimer += Time.deltaTime;
+        if (tickTimer < data.AoEData.TickInterval) return;
+
+        Logger.Log("장판 켜짐");
+        Collider2D[] targets = CheckTargetsAndHit();
+
+        foreach (Collider2D target in targets)
         {
-            foreach (Collider2D target in targets)
-            {
-                HitContext context = GetHitContext(target);
-                OnValidHit(in context);
-            }
-            tickIntervalTimer = 0f;
+            HitContext context = GetHitContext(target, _aoePivot.position);
+            data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
         }
+
+        if (data.AoEData.IsInstant)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    private Collider2D[] CheckTargetsAndHit()
+    {
+        return data.AoEData.AoEShape switch
+        {
+            AoEShape.Circle => Physics2D.OverlapCircleAll(
+                _aoePivot.position,
+                data.AoEData.Radius,
+                data.AoEData.AoETargetLayer),
+            AoEShape.Box => Physics2D.OverlapBoxAll(
+                _aoePivot.position,
+                data.AoEData.BoxSize,
+                360,
+                data.AoEData.AoETargetLayer),
+            _ => throw new System.NotImplementedException(),
+        };
     }
 
     private HitContext GetHitContext(Collider2D target)
@@ -169,7 +160,19 @@ public class PlayerProjectile : BaseProjectile
         {
             attacker = player,
             damage = CalculateDamage(),
-            position = targetPos,
+            hitPos = transform.position,
+            directTarget = target,
+            projectileData = data
+        };
+    }
+
+    private HitContext GetHitContext(Collider2D target, Vector3 position)
+    {
+        return new()
+        {
+            attacker = player,
+            damage = CalculateDamage(),
+            hitPos = position,
             directTarget = target,
             projectileData = data
         };
@@ -179,6 +182,66 @@ public class PlayerProjectile : BaseProjectile
     protected override void Reset()
     {
         base.Reset();
+
+        _aoePivot = transform.FindChild<Transform>("AoEPivot");
+        if (_aoePivot == null)
+        {
+            _aoePivot = new GameObject("AoEPivot").transform;
+            Transform model = transform.FindChild<Transform>("Model");
+            _aoePivot.SetParent(model.transform);
+            _aoePivot.localPosition = Vector3.zero;
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (data == null || data.AoEData == null) return;
+
+        Gizmos.color = Color.red;
+
+        switch (data.AoEData.AoEShape)
+        {
+            case AoEShape.Circle:
+                DrawCircle(_aoePivot.position, data.AoEData.Radius);
+                break;
+
+            case AoEShape.Box:
+                DrawBox(_aoePivot.position, data.AoEData.BoxSize);
+                break;
+        }
+    }
+
+    private void DrawCircle(Vector3 center, float radius)
+    {
+        const int SEGMENTS = 32;
+        Vector3 prev = center + Vector3.right * radius;
+
+        for (int i = 1; i <= SEGMENTS; i++)
+        {
+            float angle = i * Mathf.PI * 2f / SEGMENTS;
+            Vector3 next = center + new Vector3(
+                Mathf.Cos(angle) * radius,
+                Mathf.Sin(angle) * radius,
+                0f
+            );
+
+            Gizmos.DrawLine(prev, next);
+            prev = next;
+        }
+    }
+    private void DrawBox(Vector3 center, Vector2 size)
+    {
+        Vector3 half = size * 0.5f;
+
+        Vector3 tl = center + new Vector3(-half.x, half.y);
+        Vector3 tr = center + new Vector3(half.x, half.y);
+        Vector3 br = center + new Vector3(half.x, -half.y);
+        Vector3 bl = center + new Vector3(-half.x, -half.y);
+
+        Gizmos.DrawLine(tl, tr);
+        Gizmos.DrawLine(tr, br);
+        Gizmos.DrawLine(br, bl);
+        Gizmos.DrawLine(bl, tl);
     }
 #endif
 }
