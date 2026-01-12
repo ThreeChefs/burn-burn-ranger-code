@@ -133,8 +133,20 @@ public class PlayerProjectile : BaseProjectile
     /// <param name="collision"></param>
     private void HandleReflection(Collider2D collision)
     {
-        Vector2 norm = (transform.position - collision.transform.position).normalized;
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(transform.position);
+            norm = ((Vector2)transform.position - hitPos).normalized;
+        }
+        else if (collision.gameObject.layer == Define.MonsterLayer)
+        {
+            norm = (transform.position - collision.transform.position).normalized;
+        }
+
         if (norm.sqrMagnitude < 0.0001f) return;
+
         targetDir = Vector2.Reflect(targetDir, norm).normalized;
         transform.position += targetDir * 0.05f;        // 재충돌 방지
     }
