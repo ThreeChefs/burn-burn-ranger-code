@@ -66,10 +66,33 @@ public class PlayerProjectile : BaseProjectile
 
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) == 0) return;
+        int layer = collision.gameObject.layer;
 
-        collision.TryGetComponent<IDamageable>(out var damageable);
+        if (IsHitTarget(layer))
+        {
+            HandleHit(collision);
+        }
 
+        if (IsReflectTarget(layer))
+        {
+            HandleReflection(collision);
+        }
+    }
+    #endregion
+
+    #region 충돌 처리
+    private bool IsHitTarget(int layer)
+    {
+        return ((1 << layer) & data.TargetLayerMask) == 0;
+    }
+
+    private bool IsReflectTarget(int layer)
+    {
+        return ((1 << layer) & data.ReflectionLayerMask) == 0;
+    }
+
+    private void HandleHit(Collider2D collision)
+    {
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
@@ -103,8 +126,14 @@ public class PlayerProjectile : BaseProjectile
                 break;
         }
     }
+
+    private void HandleReflection(Collider2D collision)
+    {
+
+    }
     #endregion
 
+    #region Pool Object 관리 - Spawn / OnEnable / OnDisable
     public override void Spawn(Vector2 spawnPos, Transform target)
     {
         base.Spawn(spawnPos, target);
@@ -137,6 +166,7 @@ public class PlayerProjectile : BaseProjectile
             skill.OnLevelUp -= UpdateScaleTo;
         }
     }
+    #endregion
 
     #region Phase 관리
     protected override void UpdateFlyPhase()
