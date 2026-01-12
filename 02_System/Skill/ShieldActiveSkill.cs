@@ -22,8 +22,10 @@ public class ShieldActiveSkill : ActiveSkill
         yield return null;
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
+
         if (_shieldProjectile != null)
         {
             _shieldProjectile.transform.position = this.transform.position;
@@ -54,9 +56,10 @@ public class ShieldActiveSkill : ActiveSkill
         _shieldProjectile.transform.localScale = Vector3.one * 2f * skillValues[SkillValueType.Scale][CurLevel - 1];
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         _shieldProjectile.gameObject?.SetActive(false);
+        base.OnDestroy();
     }
 
 }
