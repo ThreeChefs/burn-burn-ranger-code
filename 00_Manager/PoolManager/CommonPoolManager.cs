@@ -10,10 +10,10 @@ public class CommonPoolManager : PoolManager<CommonPoolManager, CommonPoolIndex>
 
     }
 
-    public override void UsePool(CommonPoolIndex poolIndex)
+    public override bool UsePool(CommonPoolIndex poolIndex)
     {
-        if (nowPoolDic.ContainsKey(poolIndex)) return;
-        if (_originPoolDic.ContainsKey(poolIndex) == false) return;
+        if (nowPoolDic.ContainsKey(poolIndex)) return false;
+        if (_originPoolDic.ContainsKey(poolIndex) == false) return false;
 
         PoolObject originPrefab = _originPoolDic[poolIndex].OriginPrefab;
 
@@ -22,6 +22,7 @@ public class CommonPoolManager : PoolManager<CommonPoolManager, CommonPoolIndex>
         newPool.name = $"{poolIndex}_Pool";
 
         nowPoolDic.Add(poolIndex, newPool);
+        return true;
     }
 
 

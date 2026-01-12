@@ -6,20 +6,22 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 {
 
-    public override void UsePool(MonsterPoolIndex poolIndex)
+    public override bool UsePool(MonsterPoolIndex poolIndex)
     {
-        if(nowPoolDic.ContainsKey(poolIndex)) return;
-        if(_originPoolDic.ContainsKey(poolIndex) == false) return;
+        if(nowPoolDic.ContainsKey(poolIndex)) return false;
+        if(_originPoolDic.ContainsKey(poolIndex) == false) return false;
 
         MonsterPoolObjectData data= (MonsterPoolObjectData)_originPoolDic[poolIndex];
         
-        if (data == null) return;
-        if (data.OriginPrefab == null) return;
-        
+        if (data == null) return false;
+        if (data.OriginPrefab == null) return false;
+
         BasePool newPool = Instantiate(poolPrefab);
         newPool.Init(_originPoolDic[poolIndex]);
         newPool.name = $"{poolIndex}_Pool";
         nowPoolDic.Add(poolIndex, newPool);
+
+        return true;
     }
 
 

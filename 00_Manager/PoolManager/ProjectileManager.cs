@@ -9,21 +9,23 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         base.Init();
     }
 
-    public override void UsePool(ProjectileDataIndex dataIndex)
+    public override bool UsePool(ProjectileDataIndex dataIndex)
     {
-        if (nowPoolDic.ContainsKey(dataIndex)) return;
-        if (_originPoolDic.ContainsKey(dataIndex) == false) return;
+        if (nowPoolDic.ContainsKey(dataIndex)) return false;
+        if (_originPoolDic.ContainsKey(dataIndex) == false) return false;
 
         ProjectileData data = (ProjectileData)_originPoolDic[dataIndex];
 
-        if (data == null) return;
-        if (data.OriginPrefab == null) return;
+        if (data == null) return false ;
+        if (data.OriginPrefab == null) return false;
 
         BasePool newPool = Instantiate(poolPrefab);
         newPool.Init(_originPoolDic[dataIndex]);
         newPool.name = $"{dataIndex}_Pool";
 
         nowPoolDic.Add(dataIndex, newPool);
+
+        return true;
     }
 
     public void UsePool(ProjectileDataIndex dataIndex, ActiveSkillData skillData)
