@@ -20,9 +20,6 @@ public class Dron : MonoBehaviour
         Vector3 _velocity = Vector3.zero;
         transform.position = Vector3.SmoothDamp(transform.position, _target.position, ref _velocity, _smoothTime);
 
-        //this.transform.position =
-        //    Vector3.MoveTowards(transform.position,_target.position, Time.deltaTime);
-
     }
 
 
