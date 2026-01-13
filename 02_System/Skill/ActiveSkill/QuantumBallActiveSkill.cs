@@ -19,7 +19,9 @@ public class QuantumBallActiveSkill : ActiveSkill
         target = MonsterManager.Instance.GetNearestMonster();
         if (target != null)
         {
-            prevProjectile = ProjectileManager.Instance.Spawn(projectileIndex, this, target).GetComponent<Transform>();
+            prevProjectile = ProjectileManager.Instance
+                .Spawn(projectileIndex, this, target, transform.position)
+                .GetComponent<Transform>();
 
             Logger.Log("대기");
             yield return projectileSpawnInterval;
@@ -28,7 +30,8 @@ public class QuantumBallActiveSkill : ActiveSkill
             int rand = Random.Range(count / 2, count);
             for (int i = 0; i < rand; i++)
             {
-                Vector2 dir = Quaternion.Euler(0, 0, Random.Range(0f, 360f)) * prevProjectile.forward;
+                Vector3 dir = prevProjectile.forward + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+                dir.Normalize();
                 ProjectileManager.Instance.Spawn(projectileIndex, this, dir, prevProjectile.position);
             }
         }
