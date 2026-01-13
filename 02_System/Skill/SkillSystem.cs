@@ -351,12 +351,26 @@ public class SkillSystem
                 icons[i] = combinationSkill.Icon;
             }
 
+            int curLevel;
+            string description;
+
+            if (skill == null)
+            {
+                curLevel = 0;
+                description = skillData.Descriptions[0];
+            }
+            else
+            {
+                curLevel = skill.CurLevel;
+                description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
+            }
+
             // dto 만들기
             skillSelectDtos.Add(new SkillSelectDto(
                 skillData.Id,
-                skill == null ? 0 : skill.CurLevel,
+                curLevel,
                 skillData.DisplayName,
-                skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel - 1 : 0],
+                description,
                 skillData.Icon,
                 skillData.Type,
                 icons));
