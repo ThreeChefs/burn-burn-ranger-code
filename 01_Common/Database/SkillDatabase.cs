@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SkillDatabase", menuName = "SO/Database/SkillDatabase")]
+[CreateAssetMenu(fileName = "SkillDatabase", menuName = "SO/Database/Skill Database")]
 public class SkillDatabase : SoDatabase
 {
 #if UNITY_EDITOR
