@@ -51,7 +51,14 @@ public class SkillSystem
 
         // todo: 기본 스킬 주기
         // ex. 쿠나이
-        TrySelectSkill(PlayerManager.Instance.Inventory.WeaponId);
+        Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
+        foreach (KeyValuePair<int, int> skill in defaultSkills)
+        {
+            for (int i = 0; i < skill.Value; i++)
+            {
+                TrySelectSkill(skill.Key);
+            }
+        }
     }
     #endregion
 
