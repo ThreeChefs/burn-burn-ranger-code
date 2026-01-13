@@ -256,11 +256,20 @@ public class SkillSystem
             if (combinationSkillTerm.Value == 2)
             {
                 SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
+                string description;
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[0];
+                }
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
                     0,
                     skillData.DisplayName,
-                    skillData.Descriptions[0],
+                    description,
                     skillData.Icon,
                     skillData.Type,
                     null));
@@ -368,12 +377,26 @@ public class SkillSystem
             if (skill == null)
             {
                 curLevel = 0;
-                description = skillData.Descriptions[0];
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[0];
+                }
             }
             else
             {
                 curLevel = skill.CurLevel;
-                description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
+                }
             }
 
             // dto 만들기
