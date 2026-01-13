@@ -6,7 +6,7 @@ public class Dron : MonoBehaviour
 {
     Transform _target;
     [SerializeField] float _followSpeed = 3f;
-    float _smoothTime = 0.08f;
+    float _smoothTime = 0.12f;
 
 
     public void SetTarget(Transform target)
@@ -14,16 +14,14 @@ public class Dron : MonoBehaviour
         _target = target;
     }
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
 
         Vector3 _velocity = Vector3.zero;
-        transform.position = Vector3.SmoothDamp(transform.position,_target.position,ref _velocity, _smoothTime);
+        transform.position = Vector3.SmoothDamp(transform.position, _target.position, ref _velocity, _smoothTime);
 
         //this.transform.position =
         //    Vector3.MoveTowards(transform.position,_target.position, Time.deltaTime);
-
-
 
     }
 
