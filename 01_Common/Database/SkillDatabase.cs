@@ -29,6 +29,7 @@ public class SkillDatabase : SoDatabase
     private void SortById()
     {
         var skills = GetDatabase<SkillData>();
+        List.Clear();
         skills.Sort((a, b) => a.Id.CompareTo(b.Id));
         skills.ForEach(skill => List.Add(skill));
     }
