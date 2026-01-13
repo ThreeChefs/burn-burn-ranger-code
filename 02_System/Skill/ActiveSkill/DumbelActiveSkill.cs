@@ -14,7 +14,6 @@ public class DumbelActiveSkill : ActiveSkill
             float angle = 360f / count * i;
             Vector3 dir = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.right;
 
-            Logger.Log("발사발사");
             ProjectileManager.Instance.Spawn(projectileIndex, this, dir, this.transform.position);
         }
 
