@@ -17,11 +17,12 @@ public class Monster : PoolObject, IDamageable
     [SerializeField] private float hitCooldown = 0.5f;
     private bool _canHit = true;
     public event Action<Monster> onDieAction;
+    private BossController bossController;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         spriter = GetComponentInChildren<SpriteRenderer>(true);
-
+        bossController = GetComponent<BossController>();
     }
     protected override void OnEnableInternal()
     {
@@ -55,10 +56,12 @@ public class Monster : PoolObject, IDamageable
     }
     protected virtual void FixedUpdate()
     {
-        var rush = GetComponent<BossRushSkill>();
-        if (rush != null && rush.IsUsingSkill)
-            return;
 
+        if (bossController != null && bossController.patternLocked)
+        {
+            rb.velocity = Vector2.zero;
+            return;
+        }
         if (target == null)
             return;
 
@@ -94,7 +97,7 @@ public class Monster : PoolObject, IDamageable
 
         if (collision.collider.TryGetComponent<StagePlayer>(out var player))
         {
-            Debug.Log($"{name} hit! data={monsterdata.name}, type={monsterdata.monsterType}, atk={Attack}");
+
             player.TakeDamage(Attack.CurValue);
             StartCoroutine(HitCooldown());
         }
@@ -128,9 +131,9 @@ public class Monster : PoolObject, IDamageable
     }
 
 
-    private void Die()
+    public void Die()
     {
-        Logger.Log("사망");
+
         DropItem();
         onDieAction?.Invoke(this);
         // Destroy(gameObject);

@@ -15,4 +15,5 @@ public enum MonsterPoolIndex
     MiniBoss_0,
     Boss_0,
     ItemBox,
+    TestBoss_0
 }
