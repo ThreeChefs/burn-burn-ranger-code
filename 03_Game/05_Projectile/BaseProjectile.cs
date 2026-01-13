@@ -281,7 +281,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
-        speedMultiplier = 0f;
+        speedMultiplier = data.AoEData.IsMoving ? 1f : 0f;
         tickTimer = 0f;
     }
 

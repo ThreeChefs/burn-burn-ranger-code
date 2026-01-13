@@ -177,6 +177,7 @@ public class PlayerProjectile : BaseProjectile
 
     protected override void OnDisableInternal()
     {
+        _scaleTween?.Kill();
         base.OnDisableInternal();
         tickIntervalTimer = 0f;
 
@@ -290,7 +291,8 @@ public class PlayerProjectile : BaseProjectile
     #region Level Value Utils
     private void UpdateScaleTo()
     {
-        Vector3 scale = transform.localScale * projectileRange.MaxValue;
+        if (projectileRange == null) return;
+        Vector3 scale = Vector3.one * projectileRange.MaxValue;
 
         // 스킬 시스템
         if (_scaleMultipliers != null)
@@ -298,7 +300,7 @@ public class PlayerProjectile : BaseProjectile
             scale *= _scaleMultipliers[skill.CurLevel - 1];
         }
 
-        _scaleTween?.Kill();
+        _scaleTween?.Complete();
         _scaleTween = transform.DOScale(scale, _scaleDuration);
     }
 

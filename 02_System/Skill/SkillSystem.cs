@@ -217,7 +217,7 @@ public class SkillSystem
             if (_combinationRequirementMap.ContainsKey(combinationId))
             {
                 _combinationRequirementMap[combinationId]++;
-                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].DisplayName}");
+                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId]?.DisplayName}");
             }
             else
             {
