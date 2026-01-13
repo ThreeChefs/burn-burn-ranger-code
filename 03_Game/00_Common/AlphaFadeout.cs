@@ -1,15 +1,10 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class AlphaFadeout : PoolObject
 {
     [SerializeField] SpriteRenderer _spr;
-    float _duration = 0.2f;
-
-    protected override void OnEnableInternal()
+    public void SetDuration(float duration)
     {
         Color color = _spr.color;
         color.a = 1f;
@@ -18,8 +13,7 @@ public class AlphaFadeout : PoolObject
         Color _targetColor = color;
         _targetColor.a = 0f;
 
-        _spr.DOColor(_targetColor, _duration).OnComplete(OnColorTweenEnd);
-
+        _spr.DOColor(_targetColor, duration).OnComplete(OnColorTweenEnd);
     }
 
     void OnColorTweenEnd()
