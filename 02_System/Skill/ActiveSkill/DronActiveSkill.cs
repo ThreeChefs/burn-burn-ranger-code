@@ -16,7 +16,7 @@ public class DronActiveSkill : ActiveSkill
     [SerializeField] DronType _type;
 
     Dron _dron;
-    WaitForSeconds _wait = new WaitForSeconds(0.01f);
+    WaitForSeconds _wait = new WaitForSeconds(0.02f);
     float _fireDistance = 4f;
     float _randomRange = 0.5f;
 
@@ -36,26 +36,18 @@ public class DronActiveSkill : ActiveSkill
         for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel - 1]; ++i)
         {
             float angle = 360f / count * i;
-            Vector3 dir = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.right;
 
-            Vector3 targetPos = this.transform.position + (dir * _fireDistance);
-            
-            Vector3 randomOffset =
-                  new Vector3(
-                    Define.RandomRange(-_randomRange, _randomRange),
-                    Define.RandomRange(-_randomRange, _randomRange),
-                    0f
-                );
-
-            Vector3 targetRandoPos = targetPos + randomOffset;
-
-            DronPlayerProjectile dronProjectile = (DronPlayerProjectile)ProjectileManager.Instance.Spawn(projectileIndex, this, dir, _dron.transform.position);
-            if (dronProjectile != null)
+            if (_type == DronType.A || _type == DronType.Destroyer)
             {
-                dronProjectile.SetTargetPosition(targetRandoPos);
+                Vector3 dir = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.right;
+                Fire(dir);
             }
 
-            CommonPoolManager.Instance.Spawn(CommonPoolIndex.DronAim, targetRandoPos);
+            if (_type == DronType.B || _type == DronType.Destroyer)
+            {
+                Vector3 dir = Quaternion.AngleAxis(-angle, Vector3.forward) * Vector3.right;
+                Fire(dir);
+            }
 
             yield return _wait;
 
@@ -63,5 +55,27 @@ public class DronActiveSkill : ActiveSkill
 
     }
 
+    public void Fire(Vector3 dir)
+    {
+        Vector3 targetPos = this.transform.position + (dir * _fireDistance);
+
+        Vector3 randomOffset =
+              new Vector3(
+                Define.RandomRange(-_randomRange, _randomRange),
+                Define.RandomRange(-_randomRange, _randomRange),
+                0f
+            );
+
+        Vector3 targetRandoPos = targetPos + randomOffset;
+
+        DronPlayerProjectile dronProjectile = (DronPlayerProjectile)ProjectileManager.Instance.Spawn(projectileIndex, this, dir, _dron.transform.position);
+        if (dronProjectile != null)
+        {
+            dronProjectile.SetTargetPosition(targetRandoPos);
+        }
+
+        AlphaFadeout fadeOut = (AlphaFadeout)CommonPoolManager.Instance.Spawn(CommonPoolIndex.DronAim, targetRandoPos);
+        fadeOut.SetDuration(Data.ProjectileData.AliveTime);
+    }
 
 }
