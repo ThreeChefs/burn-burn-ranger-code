@@ -216,30 +216,16 @@ public class BaseProjectile : PoolObject, IAttackable
 
         bool reflected = false;
 
-        // X축 경계
-        if (pos.x < minX)
+        if (pos.x < minX || pos.x > maxX)
         {
-            pos.x = minX;      // 위치 보정
-            dir.x *= -1;       // X축 반사
-            reflected = true;
-        }
-        else if (pos.x > maxX)
-        {
-            pos.x = maxX;
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
             dir.x *= -1;
             reflected = true;
         }
 
-        // Y축 경계
-        if (pos.y < minY)
+        if (pos.y < minY || pos.y > maxY)
         {
-            pos.y = minY;
-            dir.y *= -1;       // Y축 반사
-            reflected = true;
-        }
-        else if (pos.y > maxY)
-        {
-            pos.y = maxY;
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
             dir.y *= -1;
             reflected = true;
         }
