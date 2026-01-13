@@ -47,6 +47,7 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     ThunderProjectileData,
     ThunderBatteryProjectileData,
     DurianProjectileData,
+    DrillShotProjectileData,
 
     // 공통
     RangedProjectile
