@@ -14,7 +14,10 @@ public class Inventory
 
     // todo: 장비 아이템은 따로 관리
     // 현재는 테스트용으로 열기 -> private set으로 닫아두기
-    public int WeaponId { get; set; } = 30;
+    public Dictionary<int, int> RequiredSkills = new()
+    {
+        { 30, 1 }
+    };
 
     /// <summary>
     /// [public] 플레이어가 파괴될 때 실행
