@@ -12,7 +12,7 @@ public class FireBombActiveSkill : ActiveSkill
     static float fireDelay = 0.1f;
     WaitForSeconds fireDelayWait = new WaitForSeconds(fireDelay);
 
-    float radius = 3f;
+    float radius = 4f;
 
     protected override IEnumerator UseSkill(Transform target)
     {

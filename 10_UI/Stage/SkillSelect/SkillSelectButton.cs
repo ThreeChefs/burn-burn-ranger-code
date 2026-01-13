@@ -9,7 +9,9 @@ public class SkillSelectButton : BaseButton
     [SerializeField] private TextMeshProUGUI _descriptionText;
     [SerializeField] private Image _headerImg;
     [SerializeField] private Image _iconImg;
-    [SerializeField] SkillLevelPanel _skillLevelPanel;
+    [SerializeField] SkillLevelPanel _skillLevelPanels;
+
+    [SerializeField] GameObject[] _skillTypePanel;
 
     private SkillSelectUI _skillSelectUI;
     private SkillSelectDto _nowSkillData;
@@ -22,24 +24,31 @@ public class SkillSelectButton : BaseButton
     
     public void SetSkillButton(SkillSelectDto skillData)
     {
+        foreach (GameObject skill in _skillTypePanel)
+        {
+            skill.SetActive(false);
+        }
+
         _nowSkillData = skillData;
 
         _nameText.text = skillData.Name;
         _descriptionText.text = skillData.Description;
         _iconImg.sprite = skillData.Icon;
 
-        // todo : 헤더 이미지 색 달라지기
         switch (skillData.Type)
         {
             case SkillType.Active:
+                _skillTypePanel[0].SetActive(true);
                 break;
             case SkillType.Passive:
+                _skillTypePanel[1].SetActive(true);
                 break;
             case SkillType.Combination:
+                _skillTypePanel[2].SetActive(true);
                 break;
         }
         
-        _skillLevelPanel.Init(skillData.Type,skillData.CurLevel);
+        _skillLevelPanels.Init(skillData.Type,skillData.CurLevel);
         
     }
     
