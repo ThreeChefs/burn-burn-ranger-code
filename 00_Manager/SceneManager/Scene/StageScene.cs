@@ -12,6 +12,7 @@ public class StageScene : BaseScene
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.SoccerBallProjectileData);
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.QuantumBallProjectileData);
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.DurianProjectileData);
+        ProjectileManager.Instance.UsePool(ProjectileDataIndex.DrillShotProjectileData);
 
         CommonPoolManager.Instance.UsePool(CommonPoolIndex.DamageText);
     }
