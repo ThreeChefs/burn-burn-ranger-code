@@ -18,6 +18,7 @@ public class ActiveSkillData : SkillData
     {
         base.Reset();
         Type = SkillType.Active;
+        Descriptions = new string[Define.SkillMaxLevel];
         LevelValues.Add(new SkillLevelValueEntry(SkillValueType.AttackPower));
         LevelValues.Add(new SkillLevelValueEntry(SkillValueType.ProjectileCount));
         LevelValues.Add(new SkillLevelValueEntry(SkillValueType.Scale));

@@ -9,7 +9,7 @@ public class SkillData : ScriptableObject
     [field: Tooltip("스킬 이름")]
     [field: SerializeField] public string DisplayName { get; protected set; }
     [field: Tooltip("스킬 설명")]
-    [field: SerializeField] public string Description { get; protected set; }
+    [field: SerializeField] public string[] Descriptions { get; protected set; }
     [field: Tooltip("스킬 이미지")]
     [field: SerializeField] public Sprite Icon { get; protected set; }
     [field: Tooltip("해금 스테이지")]
@@ -27,6 +27,7 @@ public class SkillData : ScriptableObject
     {
         CombinationIds = new int[1];
         LevelValues = new();
+        Descriptions = new string[1];
     }
 #endif
 }

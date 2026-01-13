@@ -249,7 +249,7 @@ public class SkillSystem
                     skillData.Id,
                     0,
                     skillData.DisplayName,
-                    skillData.Description,
+                    skillData.Descriptions[0],
                     skillData.Icon,
                     skillData.Type,
                     null));
@@ -356,7 +356,7 @@ public class SkillSystem
                 skillData.Id,
                 skill == null ? 0 : skill.CurLevel,
                 skillData.DisplayName,
-                skillData.Description,
+                skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel - 1 : 0],
                 skillData.Icon,
                 skillData.Type,
                 icons));
