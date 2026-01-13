@@ -24,7 +24,7 @@ public class DronActiveSkill : ActiveSkill
     {
         base.Init(data);
 
-        _dron = Instantiate(_dronOrigin);
+        _dron = Instantiate(_dronOrigin, this.transform.position, Quaternion.identity);
         _dron.SetTarget(_dronPivot);
 
     }
@@ -80,7 +80,7 @@ public class DronActiveSkill : ActiveSkill
 
     private void OnDestroy()
     {
-        if(_dron != null)
+        if (_dron != null)
             Destroy(_dron.gameObject);
     }
 
