@@ -8,12 +8,6 @@ public class QuantumBallActiveSkill : ActiveSkill
 {
     private Transform prevProjectile;
 
-    public override void Init(SkillData data)
-    {
-        base.Init(data);
-        projectileSpawnInterval = new(projectileData.AliveTime);
-    }
-
     protected override IEnumerator UseSkill(Transform target = null)
     {
         target = MonsterManager.Instance.GetNearestMonster();
