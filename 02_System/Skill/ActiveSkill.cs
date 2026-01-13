@@ -49,11 +49,8 @@ public class ActiveSkill : BaseSkill
 
         if (_cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
         {
-            Transform target = MonsterManager.Instance.GetNearestMonster();
-            if (target == null) return;
-
             StopPlayingCoroutine();
-            _coroutine = StartCoroutine(UseSkill(target));
+            _coroutine = StartCoroutine(UseSkill());
 
             _cooldownTimer = 0f;
         }
@@ -69,13 +66,25 @@ public class ActiveSkill : BaseSkill
     /// <summary>
     /// 스킬 내부 로직
     /// </summary>
-    protected virtual IEnumerator UseSkill(Transform target)
+    protected virtual IEnumerator UseSkill(Transform transform = null)
     {
         for (int i = 0; i < skillValues[SkillValueType.ProjectileCount][CurLevel - 1]; i++)
         {
-            ProjectileManager.Instance.Spawn(projectileIndex, this, target, transform.position);
+            SpawnProjectile();
             yield return _projectileSpawnInterval;
         }
+    }
+
+    /// <summary>
+    /// 투사체 소환
+    /// </summary>
+    /// <returns></returns>
+    protected virtual PlayerProjectile SpawnProjectile()
+    {
+        Transform target = MonsterManager.Instance.GetNearestMonster();
+        if (target == null) return null;
+
+        return ProjectileManager.Instance.Spawn(projectileIndex, this, target, transform.position);
     }
 
     protected void StopPlayingCoroutine()
