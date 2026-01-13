@@ -1,0 +1,104 @@
+﻿using System;
+using System.Collections.Generic;
+
+/// <summary>
+/// 장비 장착 관리
+/// </summary>
+public class Equipment
+{
+    // 캐싱
+    private readonly PlayerCondition _condition;
+
+    private readonly Dictionary<EquipmentType, ItemInstance> _equipments;
+    public IReadOnlyDictionary<EquipmentType, ItemInstance> Equipments => _equipments;
+
+    // 이벤트
+    public event Action<EquipmentType> OnEquipmentChanged;
+
+    public Equipment(PlayerCondition condition)
+    {
+        // 캐싱
+        _condition = condition;
+
+        _equipments = new();
+
+        foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
+        {
+            _equipments[type] = null;
+        }
+
+        // todo: 장비 데이터 저장 / 로드
+        foreach (ItemInstance item in _equipments.Values)
+        {
+            ApplyEquipmentValue(item, EquipmentApplyType.Equip);
+        }
+    }
+
+    #region [public] 장비 장착 / 해제
+    public void Equip(ItemInstance item)
+    {
+        EquipmentType type = item.ItemData.EquipmentType;
+        Unequip(type);
+
+        _equipments[type] = item;
+        ApplyEquipmentValue(item, EquipmentApplyType.Equip);
+        OnEquipmentChanged?.Invoke(type);
+        // todo: ui랑 연결
+    }
+
+    public void Unequip(EquipmentType type)
+    {
+        if (_equipments.TryGetValue(type, out ItemInstance prev))
+        {
+            // 기존 장비 해제
+            if (prev != null)
+            {
+                ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
+            }
+        }
+    }
+    #endregion
+
+    #region 수치 계산
+    /// <summary>
+    /// 단일 장비 수치 계산
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="type"></param>
+    private void ApplyEquipmentValue(ItemInstance item, EquipmentApplyType type)
+    {
+        int sign = type == EquipmentApplyType.Equip ? 1 : -1;
+
+        if (item == null) return;
+
+        foreach (var equipmentEffect in item.ItemData.Equipments)
+        {
+            switch (equipmentEffect.EffectType)
+            {
+                case EquipmentEffectType.Stat:
+                    UpdateStat(equipmentEffect.ApplyType, equipmentEffect.Stat, equipmentEffect.Value * sign);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 스텟 값 업데이트
+    /// </summary>
+    /// <param name="applyType"></param>
+    /// <param name="statType"></param>
+    /// <param name="value"></param>
+    private void UpdateStat(EffectApplyType applyType, StatType statType, int value)
+    {
+        switch (applyType)
+        {
+            case EffectApplyType.Flat:
+                _condition[statType].UpdateEquipmentValue(value);
+                break;
+            case EffectApplyType.Percent:
+                _condition[statType].UpdateEquipmentValue(value * 0.01f);
+                break;
+        }
+    }
+    #endregion
+}
