@@ -209,7 +209,7 @@ public class PlayerProjectile : BaseProjectile
         tickTimer += Time.deltaTime;
         if (tickTimer < data.AoEData.TickInterval) return;
 
-        Logger.Log("장판 켜짐");
+        //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
 
         foreach (Collider2D target in targets)
