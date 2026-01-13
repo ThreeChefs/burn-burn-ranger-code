@@ -9,7 +9,7 @@ public class SoDatabase : ScriptableObject
 {
     [SerializeField] private List<ScriptableObject> _list = new();
     public int Count => _list.Count;
-
+    protected List<ScriptableObject> List => _list;
 
     public List<T> GetDatabase<T>() where T : ScriptableObject
     {
@@ -26,6 +26,4 @@ public class SoDatabase : ScriptableObject
 
         return newList;
     }
-
-    
 }
