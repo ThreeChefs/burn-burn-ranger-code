@@ -51,12 +51,16 @@ public class SkillSystem
 
         // todo: 기본 스킬 주기
         // ex. 쿠나이
+        // skill id, level 
         Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
-        foreach (KeyValuePair<int, int> skill in defaultSkills)
+        int maxKey = defaultSkills.Keys.Max();
+        for (int i = 0; i < maxKey; i++)    // 스킬 아이디로 순회
         {
-            for (int i = 0; i < skill.Value; i++)
+            if (!defaultSkills.TryGetValue(i, out int level)) continue;
+            SkillData skill = _skillDataCache[i];
+            for (int j = 0; j < level; j++)
             {
-                TrySelectSkill(skill.Key);
+                TrySelectSkill(i);
             }
         }
     }
