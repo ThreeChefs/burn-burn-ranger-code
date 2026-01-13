@@ -179,7 +179,10 @@ public class PlayerProjectile : BaseProjectile
     {
         _scaleTween?.Kill();
         base.OnDisableInternal();
+
+        // 타이머 초기화
         tickIntervalTimer = 0f;
+        tickTimer = 0f;
 
         if (skill != null)
         {
@@ -209,6 +212,8 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer += Time.deltaTime;
         if (tickTimer < data.AoEData.TickInterval) return;
+
+        tickTimer = 0f;
 
         //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
