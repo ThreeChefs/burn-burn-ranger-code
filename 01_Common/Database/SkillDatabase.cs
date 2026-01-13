@@ -20,23 +20,8 @@ public class SkillDatabase : SoDatabase
         {
             if (!List.Contains(skill))
             {
-                if (skill.Type != SkillType.Passive)
-                {
-                    AutoAddProjectileData(((ActiveSkillData)skill).ProjectileData);
-                }
                 List.Add(skill);
             }
-        }
-    }
-
-    private void AutoAddProjectileData(ProjectileData data)
-    {
-        if (data == null) return;
-
-        var db = AssetLoader.FindAndLoadByName<PoolObjectDatabase>("ProjectileDatabase");
-        if (!db.List.Contains(data))
-        {
-            db.List.Add(data);
         }
     }
 
