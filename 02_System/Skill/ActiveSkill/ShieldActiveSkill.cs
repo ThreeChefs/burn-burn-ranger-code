@@ -56,7 +56,9 @@ public class ShieldActiveSkill : ActiveSkill
 
     protected override void OnDestroy()
     {
-        _shieldProjectile.gameObject?.SetActive(false);
+        if(_shieldProjectile != null)
+            _shieldProjectile.gameObject?.SetActive(false);
+
         base.OnDestroy();
     }
 
