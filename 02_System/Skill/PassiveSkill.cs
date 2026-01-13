@@ -24,6 +24,6 @@ public class PassiveSkill : BaseSkill
         base.LevelUp();
 
         PlayerStat stat = PlayerManager.Instance.Condition[_passiveSkillData.StatType];
-        stat.UpdateBuffValue((stat.BaseValue == 0 ? 1 : stat.BaseValue) * _passiveSkillData.LevelValue[0] * CurLevel);
+        stat.UpdateBuffValue((stat.BaseValue == 0 ? 1 : stat.BaseValue) * skillValues[SkillValueType.StatBuff][0] * CurLevel);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -14,13 +15,16 @@ public class PlayerWallet
     #region 초기화 & 파괴
     public PlayerWallet()
     {
+        _wallets = new();
+
         // todo: 플레이어 초기화 시 저장된 값 불러오기
-        _wallets = new()
+        foreach (WalletType wallet in Enum.GetValues(typeof(WalletType)))
         {
-            { WalletType.Energy, new(5, WalletType.Energy) },
-            { WalletType.Gold, new(10, WalletType.Gold) },
-            { WalletType.Gem, new(0, WalletType.Gem) }
-        };
+            _wallets.Add(wallet, new Wallet(0, wallet));
+        }
+
+        _wallets[WalletType.Gold].Add(100);
+        _wallets[WalletType.Energy].Add(5);
     }
 
     /// <summary>

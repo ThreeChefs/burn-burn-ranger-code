@@ -34,9 +34,13 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float flyTimer;
     protected float tickTimer;
 
+    // 카메라
+    protected Camera cam;
+
     #region Unity API
     protected virtual void Start()
     {
+        cam = Camera.main;
     }
 
     protected virtual void Update()
@@ -67,7 +71,7 @@ public class BaseProjectile : PoolObject, IAttackable
     }
 
     #region 초기화
-    public virtual void Init(BaseStat attack, ScriptableObject originData)
+    public virtual void Init(BaseStat attack, PoolObjectData originData)
     {
         this.attack = attack;
 
@@ -108,6 +112,15 @@ public class BaseProjectile : PoolObject, IAttackable
 
         targetPos = target.position;
         targetDir = (targetPos - transform.position).normalized;
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    public virtual void Spawn(Vector2 spawnPos, Vector2 dir)
+    {
+        transform.position = spawnPos;
+
+        targetDir = dir;
         float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
@@ -152,44 +165,31 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
-    // 움직임
+    #region 움직임
     private void MoveAndRotate()
     {
         switch (type)
         {
-            case ProjectileMoveType.Straight:
-                ChaseMove();
-                break;
             case ProjectileMoveType.Guidance:
                 GuidanceMove();
                 GuidanceRotate();
                 break;
+            case ProjectileMoveType.Straight:
+                MoveDefault();
+                break;
             case ProjectileMoveType.Reflection:
-                ReflectionMove();
-                ReflectionRotate();
+                MoveDefault();
+                HandleScreenReflection();
                 break;
         }
     }
 
-    #region 탄환 타입 - Chase (단일 추격)
-    protected virtual void ChaseMove()
+    protected virtual void MoveDefault()
     {
         Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
         transform.position += targetPos;
     }
-    #endregion
 
-    #region 탄환 타입 - Hover (주위)
-    protected virtual void HoverMove()
-    {
-    }
-
-    protected virtual void HoverRotate()
-    {
-    }
-    #endregion
-
-    #region 탄환 타입 - Guidance (유도 추격)
     protected virtual void GuidanceMove()
     {
     }
@@ -197,15 +197,44 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual void GuidanceRotate()
     {
     }
-    #endregion
 
-    #region 탄환 타입 - Reflection (반사)
-    protected virtual void ReflectionMove()
+    protected virtual void HandleScreenReflection()
     {
-    }
+        if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
 
-    protected virtual void ReflectionRotate()
-    {
+        Vector2 pos = transform.position;
+        Vector2 dir = targetDir;
+        Vector2 camPos = cam.transform.position;
+
+        float halfH = cam.orthographicSize;
+        float halfW = halfH * cam.aspect;
+
+        float minX = camPos.x - halfW;
+        float maxX = camPos.x + halfW;
+        float minY = camPos.y - halfH;
+        float maxY = camPos.y + halfH;
+
+        bool reflected = false;
+
+        if (pos.x < minX || pos.x > maxX)
+        {
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
+            dir.x *= -1;
+            reflected = true;
+        }
+
+        if (pos.y < minY || pos.y > maxY)
+        {
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
+            dir.y *= -1;
+            reflected = true;
+        }
+
+        if (reflected)
+        {
+            targetDir = dir.normalized;
+            transform.position = pos;
+        }
     }
     #endregion
 
@@ -238,7 +267,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
-        speedMultiplier = 0f;
+        speedMultiplier = data.AoEData.IsMoving ? 1f : 0f;
         tickTimer = 0f;
     }
 

@@ -39,4 +39,9 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         this.transform.DOScale(1.0f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
+
+    private void OnDisable()
+    {
+        DOTween.Kill(this.transform);
+    }
 }

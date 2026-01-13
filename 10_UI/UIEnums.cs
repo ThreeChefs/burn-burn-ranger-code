@@ -14,6 +14,7 @@ public enum UIName
     UI_Equipment,
     UI_PickUp,
     UI_HomeBottomMenu,
+    UI_HomeTopBar,
 
     UI_StageSelect,
 

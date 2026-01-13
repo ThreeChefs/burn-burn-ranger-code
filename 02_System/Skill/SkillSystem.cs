@@ -51,7 +51,18 @@ public class SkillSystem
 
         // todo: 기본 스킬 주기
         // ex. 쿠나이
-        TrySelectSkill(PlayerManager.Instance.Inventory.WeaponId);
+        // skill id, level 
+        Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
+        int maxKey = defaultSkills.Keys.Max();
+        for (int i = 0; i <= maxKey; i++)    // 스킬 아이디로 순회
+        {
+            if (!defaultSkills.TryGetValue(i, out int level)) continue;
+            SkillData skill = _skillDataCache[i];
+            for (int j = 0; j < level; j++)
+            {
+                TrySelectSkill(i);
+            }
+        }
     }
     #endregion
 
@@ -108,7 +119,7 @@ public class SkillSystem
         _activeSkillCount++;
         ActiveSkillData data = _skillDataCache[id] as ActiveSkillData;
         ActiveSkill activeSkill = GameObject.Instantiate(data.ActiveSkillPrefab);
-        activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainers);
+        activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainer);
         activeSkill.transform.localPosition = Vector3.zero;
         return activeSkill;
     }
@@ -206,7 +217,7 @@ public class SkillSystem
             if (_combinationRequirementMap.ContainsKey(combinationId))
             {
                 _combinationRequirementMap[combinationId]++;
-                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].DisplayName}");
+                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId]?.DisplayName}");
             }
             else
             {
@@ -245,11 +256,20 @@ public class SkillSystem
             if (combinationSkillTerm.Value == 2)
             {
                 SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
+                string description;
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[0];
+                }
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
                     0,
                     skillData.DisplayName,
-                    skillData.Description,
+                    description,
                     skillData.Icon,
                     skillData.Type,
                     null));
@@ -351,12 +371,40 @@ public class SkillSystem
                 icons[i] = combinationSkill.Icon;
             }
 
+            int curLevel;
+            string description;
+
+            if (skill == null)
+            {
+                curLevel = 0;
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[0];
+                }
+            }
+            else
+            {
+                curLevel = skill.CurLevel;
+                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+                {
+                    description = "설명 쓰세요!!!!!!!!!!!!!";
+                }
+                else
+                {
+                    description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
+                }
+            }
+
             // dto 만들기
             skillSelectDtos.Add(new SkillSelectDto(
                 skillData.Id,
-                skill == null ? 0 : skill.CurLevel,
+                curLevel,
                 skillData.DisplayName,
-                skillData.Description,
+                description,
                 skillData.Icon,
                 skillData.Type,
                 icons));

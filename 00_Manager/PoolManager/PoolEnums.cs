@@ -5,7 +5,7 @@
 public enum CommonPoolIndex
 {
     DamageText,
-
+    DronAim,
 }
 
 public enum MonsterPoolIndex

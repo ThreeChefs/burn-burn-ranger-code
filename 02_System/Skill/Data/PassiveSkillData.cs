@@ -11,7 +11,7 @@ public class PassiveSkillData : SkillData
     {
         base.Reset();
         Type = SkillType.Passive;
-        LevelValue = new float[1];
+        LevelValues.Add(new SkillLevelValueEntry(SkillValueType.StatBuff, 1));
     }
 #endif
 }

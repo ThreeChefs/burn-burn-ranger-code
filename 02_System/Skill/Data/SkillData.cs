@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class SkillData : ScriptableObject
@@ -8,7 +9,7 @@ public class SkillData : ScriptableObject
     [field: Tooltip("스킬 이름")]
     [field: SerializeField] public string DisplayName { get; protected set; }
     [field: Tooltip("스킬 설명")]
-    [field: SerializeField] public string Description { get; protected set; }
+    [field: SerializeField] public string[] Descriptions { get; protected set; }
     [field: Tooltip("스킬 이미지")]
     [field: SerializeField] public Sprite Icon { get; protected set; }
     [field: Tooltip("해금 스테이지")]
@@ -18,13 +19,33 @@ public class SkillData : ScriptableObject
     [field: SerializeField] public SkillType Type { get; protected set; }
     [field: Tooltip("돌파 조합 스킬 정보")]
     [field: SerializeField] public int[] CombinationIds { get; protected set; }
-    [field: Tooltip("레벨에 따른 수치 (플레이어의 기본 공격력에 곱해짐)")]
-    [field: SerializeField] public float[] LevelValue { get; protected set; }
+    [field: Tooltip("레벨에 따른 수치")]
+    [field: SerializeField] public List<SkillLevelValueEntry> LevelValues { get; protected set; }
 
 #if UNITY_EDITOR
     protected virtual void Reset()
     {
         CombinationIds = new int[1];
+        LevelValues = new();
+        Descriptions = new string[1];
     }
 #endif
+}
+
+[System.Serializable]
+public class SkillLevelValueEntry
+{
+    [field: SerializeField] public SkillValueType SkillValueType { get; private set; }
+    [field: SerializeField] public float[] Values { get; private set; }
+
+    public SkillLevelValueEntry()
+    {
+        Values = new float[Define.SkillMaxLevel];
+    }
+
+    public SkillLevelValueEntry(SkillValueType skillValueType, int count = Define.SkillMaxLevel)
+    {
+        SkillValueType = skillValueType;
+        Values = new float[count];
+    }
 }

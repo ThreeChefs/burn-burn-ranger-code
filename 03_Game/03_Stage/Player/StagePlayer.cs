@@ -36,7 +36,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
 
     // 액티브 스킬 컨테이너
-    [field: SerializeField] public Transform SkillContainers { get; private set; }
+    [field: SerializeField] public Transform SkillContainer { get; private set; }
 
     // 캐싱
     public PlayerCondition Condition { get; private set; }
@@ -81,6 +81,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         // hp 바 연결
         StatSliderUI statSliderUI = UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot) as StatSliderUI;
         statSliderUI.Init(_health);
+
+
     }
 
     private void Update()
@@ -221,7 +223,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _gemCollector.radius = 0.5f;
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
         _renderers = GetComponentsInChildren<SpriteRenderer>();
-        SkillContainers = transform.FindChild<Transform>("SkillContainer");
+        SkillContainer = transform.FindChild<Transform>("SkillContainer");
     }
 #endif
     #endregion

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
@@ -5,27 +6,50 @@ using UnityEngine;
 /// </summary>
 public class PlayerProjectile : BaseProjectile
 {
+    #region 필드
     [SerializeField] private Transform _aoePivot;
 
     // 캐싱
     protected Transform player;
-    protected float[] levelValue;
+    protected ActiveSkill skill;
 
     // 스텟
-    protected PlayerStat attackCooldown;
     protected PlayerStat projectileSpeed;
+    protected PlayerStat projectileRange;
 
     // 타이머
     protected float tickIntervalTimer;
 
-    protected override float Speed => base.Speed * projectileSpeed.MaxValue;
-
-    public override void Init(BaseStat attack, ScriptableObject originData)
+    // 이동 속도
+    protected override float Speed
     {
-        ActiveSkillData data = originData as ActiveSkillData;
-        levelValue = data.LevelValue;
+        get
+        {
+            float speed = base.Speed * projectileSpeed.MaxValue;
+            if (_speedMultiplier != null)
+            {
+                speed *= _speedMultiplier[skill.CurLevel - 1];
+            }
+            return speed;
+        }
+    }
+    private float[] _speedMultiplier;
 
-        base.Init(attack, data.ProjectileData);
+    // 크기
+    private float[] _scaleMultipliers;
+    private Tween _scaleTween;
+    private float _scaleDuration = 1f;
+    #endregion
+
+    public void Init(ActiveSkill activeSkill, PoolObjectData originData)
+    {
+        skill = activeSkill;
+        ActiveSkillData data = skill.Data;
+
+        skill.SkillValues.TryGetValue(SkillValueType.ProjectileSpeed, out _speedMultiplier);
+        skill.SkillValues.TryGetValue(SkillValueType.Scale, out _scaleMultipliers);
+
+        base.Init(PlayerManager.Instance.Condition[StatType.Attack], originData);
     }
 
     #region Unity API
@@ -36,31 +60,39 @@ public class PlayerProjectile : BaseProjectile
         // 스텟 캐싱
         player = PlayerManager.Instance.StagePlayer.transform;
         PlayerCondition condition = PlayerManager.Instance.Condition;
-        attackCooldown = condition[StatType.AttackCooldown];
         projectileSpeed = condition[StatType.ProjectileSpeed];
-    }
-    #endregion
-
-    protected override void OnDisableInternal()
-    {
-        base.OnDisableInternal();
-        tickIntervalTimer = 0f;
-    }
-
-    private void OnValidHit(in HitContext context)
-    {
-        foreach (BaseEffectSO effect in data.HitEffects)
-        {
-            effect.Apply(in context);
-        }
+        projectileRange = condition[StatType.ProjecttileRange];
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) == 0) return;
+        int layer = collision.gameObject.layer;
 
-        collision.TryGetComponent<IDamageable>(out var damageable);
+        if (IsHitTarget(layer))
+        {
+            HandleHit(collision);
+        }
 
+        if (IsReflectTarget(layer))
+        {
+            HandleReflection(collision);
+        }
+    }
+    #endregion
+
+    #region 충돌 처리
+    private bool IsHitTarget(int layer)
+    {
+        return ((1 << layer) & data.TargetLayerMask) != 0;
+    }
+
+    private bool IsReflectTarget(int layer)
+    {
+        return ((1 << layer) & data.ReflectionLayerMask) != 0;
+    }
+
+    private void HandleHit(Collider2D collision)
+    {
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
@@ -95,12 +127,71 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
-    protected override float CalculateDamage()
+    /// <summary>
+    /// 특정 콜라이더에 반사 처리
+    /// </summary>
+    /// <param name="collision"></param>
+    private void HandleReflection(Collider2D collision)
     {
-        // todo: 스킬 레벨에 따른 대미지 증가
-        return attack.MaxValue;
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(transform.position);
+            norm = ((Vector2)transform.position - hitPos).normalized;
+        }
+        else if (collision.gameObject.layer == Define.MonsterLayer)
+        {
+            norm = (transform.position - collision.transform.position).normalized;
+        }
+
+        if (norm.sqrMagnitude < 0.0001f) return;
+
+        targetDir = Vector2.Reflect(targetDir, norm).normalized;
+        transform.position += targetDir * 0.05f;        // 재충돌 방지
+    }
+    #endregion
+
+    #region Pool Object 관리 - Spawn / OnEnable / OnDisable
+    public override void Spawn(Vector2 spawnPos, Transform target)
+    {
+        base.Spawn(spawnPos, target);
+        SetScale();
     }
 
+    public override void Spawn(Vector2 spawnPos, Vector2 dir)
+    {
+        base.Spawn(spawnPos, dir);
+        SetScale();
+    }
+
+    protected override void OnEnableInternal()
+    {
+        base.OnEnableInternal();
+
+        if (skill != null)
+        {
+            skill.OnLevelUp += UpdateScaleTo;
+        }
+    }
+
+    protected override void OnDisableInternal()
+    {
+        _scaleTween?.Kill();
+        base.OnDisableInternal();
+
+        // 타이머 초기화
+        tickIntervalTimer = 0f;
+        tickTimer = 0f;
+
+        if (skill != null)
+        {
+            skill.OnLevelUp -= UpdateScaleTo;
+        }
+    }
+    #endregion
+
+    #region Phase 관리
     protected override void UpdateFlyPhase()
     {
         if (!data.HasAreaPhase || passCount > 0) return;
@@ -122,7 +213,9 @@ public class PlayerProjectile : BaseProjectile
         tickTimer += Time.deltaTime;
         if (tickTimer < data.AoEData.TickInterval) return;
 
-        Logger.Log("장판 켜짐");
+        tickTimer = 0f;
+
+        //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
 
         foreach (Collider2D target in targets)
@@ -136,18 +229,39 @@ public class PlayerProjectile : BaseProjectile
             gameObject.SetActive(false);
         }
     }
+    #endregion
+
+    #region Hit Utils
+    protected override float CalculateDamage()
+    {
+        return attack.MaxValue * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1];
+    }
+
+    private void OnValidHit(in HitContext context)
+    {
+        foreach (BaseEffectSO effect in data.HitEffects)
+        {
+            effect.Apply(in context);
+        }
+    }
 
     private Collider2D[] CheckTargetsAndHit()
     {
+        float scaleMultiplier = 1f;
+        if (_scaleMultipliers != null)
+        {
+            scaleMultiplier *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+
         return data.AoEData.AoEShape switch
         {
             AoEShape.Circle => Physics2D.OverlapCircleAll(
                 _aoePivot.position,
-                data.AoEData.Radius,
+                data.AoEData.Radius * projectileRange.MaxValue * scaleMultiplier,
                 data.AoEData.AoETargetLayer),
             AoEShape.Box => Physics2D.OverlapBoxAll(
                 _aoePivot.position,
-                data.AoEData.BoxSize,
+                data.AoEData.BoxSize * projectileRange.MaxValue * scaleMultiplier,
                 360,
                 data.AoEData.AoETargetLayer),
             _ => throw new System.NotImplementedException(),
@@ -177,6 +291,36 @@ public class PlayerProjectile : BaseProjectile
             projectileData = data
         };
     }
+    #endregion
+
+    #region Level Value Utils
+    private void UpdateScaleTo()
+    {
+        if (projectileRange == null) return;
+        Vector3 scale = Vector3.one * projectileRange.MaxValue;
+
+        // 스킬 시스템
+        if (_scaleMultipliers != null)
+        {
+            scale *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+
+        _scaleTween?.Complete();
+        _scaleTween = transform.DOScale(scale, _scaleDuration);
+    }
+
+    private void SetScale()
+    {
+        if (projectileRange == null) return;
+
+        Vector3 scale = Vector3.one * projectileRange.MaxValue;
+        if (_scaleMultipliers != null)
+        {
+            scale *= _scaleMultipliers[skill.CurLevel - 1];
+        }
+        transform.localScale = scale;
+    }
+    #endregion
 
 #if UNITY_EDITOR
     protected override void Reset()

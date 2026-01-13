@@ -43,7 +43,8 @@ public class BasePool : MonoBehaviour
         
         newGameObject.gameObject.name = nowPoolSize.ToString();
         nowPoolSize++;
-        
+
+        newGameObject.InitPoolObject();
         deactivatedObjectsPool.Add(newGameObject);
         
         // PoolObject 가 Disable 될 때 
