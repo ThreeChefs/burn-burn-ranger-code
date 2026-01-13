@@ -43,6 +43,7 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     BrickProjectileData,
     DumbelProjectileData,
     DronProjectileData,
+    QuantumBallProjectileData,
 
     // 공통
     RangedProjectile
