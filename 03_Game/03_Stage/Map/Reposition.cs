@@ -1,27 +1,35 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 /// <summary>
 /// 맵 재배치
 /// </summary>
+[RequireComponent(typeof(Tilemap))]
+[RequireComponent(typeof(TilemapRenderer))]
 public class Reposition : MonoBehaviour
 {
-    private void OnTriggerExit2D(Collider2D collision)
+    private Transform _player;
+    private float _threshold;
+
+    private void Start()
     {
-        if (collision.CompareTag(Define.PlayerTag))
+        _player = PlayerManager.Instance.StagePlayer.transform;
+        _threshold = Define.MapSize * 1.05f;
+    }
+
+    private void Update()
+    {
+        Vector3 diff = _player.position - transform.position;
+
+        float threshold = Define.MapSize * 1.05f;
+
+        if (Mathf.Abs(diff.x) > threshold)
         {
-            Vector3 diff = PlayerManager.Instance.StagePlayer.transform.position - transform.position;
-            Vector3 movePos = transform.position;
-
-            if (Mathf.Abs(diff.x) > Mathf.Abs(diff.y))
-            {
-                movePos += (diff.x > 0 ? 1 : -1) * Define.MapSize * 2 * Vector3.right;
-            }
-            else
-            {
-                movePos += (diff.y > 0 ? 1 : -1) * Define.MapSize * 2 * Vector3.up;
-            }
-
-            transform.position = movePos;
+            transform.position += Mathf.Sign(diff.x) * Define.MapSize * 2f * Vector3.right;
+        }
+        else if (Mathf.Abs(diff.y) > threshold)
+        {
+            transform.position += Mathf.Sign(diff.y) * Define.MapSize * 2f * Vector3.up;
         }
     }
 }
