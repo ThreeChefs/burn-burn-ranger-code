@@ -96,29 +96,24 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
+                HitContext context = GetHitContext(collision);
+                OnValidHit(in context);
+
                 // 관통 무한
-                if (passCount == -100)
+                if (passCount == Define.InfinitePass)
                 {
-                    HitContext context = GetHitContext(collision);
-                    OnValidHit(in context);
                     return;
                 }
-                else if (passCount > 0)
+
+                passCount--;
+
+                if (passCount <= 0)
                 {
-                    passCount--;
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();
                     }
-                    else
-                    {
-                        HitContext context = GetHitContext(collision);
-                        OnValidHit(in context);
-                    }
-                }
 
-                if (passCount == 0)
-                {
                     gameObject.SetActive(false);
                 }
                 break;
