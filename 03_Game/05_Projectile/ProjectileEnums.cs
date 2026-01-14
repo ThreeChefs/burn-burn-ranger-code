@@ -34,22 +34,25 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
 {
     // 스킬
     KunaiProjectileData,            // 쿠나이
-    GhostShurikenProjectileData,
-    RangedAttack,
-    FireBombProjectileData,
-    RocketProjectileData,
-    ShieldProjectileData,
-    SoccerBallProjectileData,
-    BrickProjectileData,
-    DumbelProjectileData,
-    DronProjectileData,
-    QuantumBallProjectileData,
-    ThunderProjectileData,
-    ThunderBatteryProjectileData,
-    DurianProjectileData,
-    DrillShotProjectileData,
-    SharkBeakCannonProjectileData,
+    GhostShurikenProjectileData,    // 유령수리검
+    FireBombProjectileData,         // 화염병
+    RocketProjectileData,           // 로켓
+    ShieldProjectileData,           // 방어막
+    SoccerBallProjectileData,       // 축구공
+    BrickProjectileData,            // 벽돌
+    DumbelProjectileData,           // 덤벨
+    DronProjectileData,             // 드론
+    QuantumBallProjectileData,      // 양자공
+    ThunderProjectileData,          // 번개
+    ThunderBatteryProjectileData,   // 천둥배터리
+    DurianProjectileData,           // 두리안
+    DrillShotProjectileData,        // 드릴
+    SharkBeakCannonProjectileData,  // 상어포
+    BoomerangProjectileData,        // 부메랑
 
+
+    RangedAttack,                   // 
+    
     // 공통
     RangedProjectile
 }
