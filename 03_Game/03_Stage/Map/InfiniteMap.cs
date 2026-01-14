@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 /// <summary>
 /// 무한 맵
@@ -6,24 +7,29 @@ using UnityEngine;
 public class InfiniteMap : MonoBehaviour
 {
     [Header("맵")]
-    [SerializeField] private SpriteRenderer[] _renderers;
+    [SerializeField] private Tilemap[] _tilemaps;
 
-    public void Init(Sprite sprite)
+    /// <summary>
+    /// [public] 타일맵 배치
+    /// </summary>
+    /// <param name="tilemap"></param>
+    public void Init(Tilemap tilemap)
     {
-        foreach (SpriteRenderer renderer in _renderers)
+        for (int i = 0; i < Define.TilemapCount; i++)
         {
-            renderer.sprite = sprite;
+            Tilemap newTilemap = Instantiate(tilemap, transform);
+            _tilemaps[i] = newTilemap;
+
+            _tilemaps[i].transform.localPosition = new Vector2(
+                Define.MapSize / 2 * (i % 2 == 0 ? -1 : 1),
+                Define.MapSize / 2 * (i < 2 ? -1 : 1));
         }
     }
 
 #if UNITY_EDITOR
     private void Reset()
     {
-        _renderers = new SpriteRenderer[4];
-        _renderers[0] = transform.FindChild<SpriteRenderer>("Square");
-        _renderers[1] = transform.FindChild<SpriteRenderer>("Square_1");
-        _renderers[2] = transform.FindChild<SpriteRenderer>("Square_2");
-        _renderers[3] = transform.FindChild<SpriteRenderer>("Square_3");
+        _tilemaps = new Tilemap[4];
     }
 #endif
 }
