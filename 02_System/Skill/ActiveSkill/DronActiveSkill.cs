@@ -16,7 +16,6 @@ public class DronActiveSkill : ActiveSkill
     [SerializeField] DronType _type;
 
     Dron _dron;
-    WaitForSeconds _wait = new WaitForSeconds(0.02f);
     float _fireDistance = 4f;
     float _randomRange = 0.5f;
 
@@ -49,7 +48,7 @@ public class DronActiveSkill : ActiveSkill
                 Fire(dir);
             }
 
-            yield return _wait;
+            yield return projectileSpawnInterval;
 
         }
 
