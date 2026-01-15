@@ -2,7 +2,6 @@ using UnityEngine;
 
 public static class ItemUtils
 {
-    #region 아이템 클래스 색상
     public static readonly Color ColorNormal = new(0.75f, 0.75f, 0.75f); // 회색
     public static readonly Color ColorRare = new(0.30f, 0.69f, 0.31f); // 녹색
     public static readonly Color ColorElite = new(0.13f, 0.59f, 0.95f); // 파랑
@@ -30,9 +29,12 @@ public static class ItemUtils
         Color baseColor = GetClassColor(itemClass);
         return baseColor * 1.15f;
     }
-    #endregion
 
-    #region 아이템 등급 문자열
+    /// <summary>
+    /// 아이템 등급 문자열 반환
+    /// </summary>
+    /// <param name="itemClass"></param>
+    /// <returns></returns>
     public static string GetClassString(ItemClass itemClass = ItemClass.None)
     {
         return itemClass switch
@@ -45,7 +47,19 @@ public static class ItemUtils
             _ => "None"
         };
     }
-    #endregion
+
+    public static int GetClassMaxLevel(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 5,
+            ItemClass.Rare => 10,
+            ItemClass.Elite => 15,
+            ItemClass.Epic => 20,
+            ItemClass.Legendary => 25,
+            _ => 1
+        };
+    }
 
 #if UNITY_EDITOR
     // 아이템 집어넣을 때 id 값 편하게 하려고 만든 값

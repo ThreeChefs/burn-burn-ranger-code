@@ -77,6 +77,48 @@ public class ItemDetailUI : BaseUI
         // 아이템 이벤트 구독 해제
     }
     #endregion
+
+    public void SetItem(ItemInstance instance)
+    {
+        if (_curItem.Equals(instance)) return;
+        _curItem = instance;
+
+        ItemClass itemClass = instance.ItemClass;
+        ItemData itemData = instance.ItemData;
+
+        _itemClassBadge.color = ItemUtils.GetClassColor(itemClass);
+        _itemClassText.text = ItemUtils.GetClassString(itemClass);
+        _itemName.text = itemData.DisplayName;
+
+        _itemIcon.sprite = itemData.Icon;
+        _itemIconOutline.effectColor = ItemUtils.GetHighlightColor(itemClass);
+        _itemLevel.text = $"레벨: {instance.Level}/{ItemUtils.GetClassMaxLevel(itemClass)}";
+        _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
+        _statValue.text = "100";       // todo: item utils에서 스탯 계산식 구현 후 반영
+        _itemDescription.text = itemData.Description;
+
+        for (int i = 0; i < MaxSkillCount; i++)
+        {
+            if (i < itemData.Equipments.Length)
+            {
+                // todo: item class로 lock/unlock 표기하기
+                _skillColors[i].color = ItemUtils.GetClassColor(itemClass);
+                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor(itemClass);
+                _skillDescriptions[i].text = itemData.Equipments[i].Description;
+                _skillDescriptions[i].transform.parent.gameObject.SetActive(true);
+            }
+            else
+            {
+                _skillColors[i].gameObject.SetActive(false);
+                _skillDescriptions[i].transform.parent.gameObject.SetActive(false);
+            }
+        }
+
+        _goldText.text = $"{_gold.Value}/요구골드";
+        _scrollText.text = $"{_scroll.Value}/요구스크롤";
+
+        _equipButtonText.text = instance.IsEquipped ? "장착 해제" : "장착";
+    }
 #if UNITY_EDITOR
     private void Reset()
     {
