@@ -78,8 +78,6 @@ public class StageWaveController
             PlayerManager.Instance.StagePlayer.AddGold(_nowWave.WaveClearGold);
 
             SpawnWaveRewardBox();
-            
-
         }
 
         _nowWave = wave;
@@ -229,6 +227,13 @@ public class StageWaveController
             else
             {
                 Logger.Log("스테이지 클리어");
+
+                if (_nowWave != null)
+                {
+                    _saveExp += _nowWave.WaveClearExp;
+                    PlayerManager.Instance.StagePlayer.AddGold(_nowWave.WaveClearGold);
+                }
+
                 OnStageEndAction?.Invoke();
             }
         }
