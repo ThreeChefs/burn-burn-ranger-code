@@ -30,18 +30,18 @@ public static class AssetLoader
     }
 
     /// <summary>
-    /// T 타입의 특정 SO 찾기
+    /// T 타입의 특정 오브젝트 찾기
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="name"></param>
     /// <returns></returns>
-    public static T FindAndLoadByName<T>(string name) where T : ScriptableObject
+    public static T FindAndLoadByName<T>(string name) where T : UnityEngine.Object
     {
-        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T)} {name}");
+        string[] guids = AssetDatabase.FindAssets($"t:{typeof(T).Name} {name}");
 
         if (guids.Length == 0)
         {
-            Logger.Log($"{name} SO 못 찾음");
+            Logger.Log($"{name} 오브젝트 못 찾음");
             return null;
         }
 
