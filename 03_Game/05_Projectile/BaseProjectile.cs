@@ -29,6 +29,9 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float speedMultiplier;
     protected float lifeTimer;
 
+    // 유도
+    protected float guidanceTimer;
+
     // 폭발 / 장판
     protected ProjectilePhase phase;
     protected float flyTimer;
@@ -49,6 +52,17 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (data.AliveTime < 0) return;
 
+        if (type == ProjectileMoveType.Guidance)
+        {
+            if (data.GuidanceTime < 0) return;
+
+            guidanceTimer += Time.deltaTime;
+            if (guidanceTimer > data.GuidanceTime)
+            {
+                type = ProjectileMoveType.Straight;
+            }
+        }
+
         lifeTimer += Time.deltaTime;
         if (lifeTimer > data.AliveTime)
         {
@@ -66,6 +80,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         base.OnDisableInternal();
         lifeTimer = 0f;
+        guidanceTimer = 0f;
 
         trailVfx?.SetActive(false);
     }
