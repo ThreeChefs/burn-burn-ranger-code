@@ -48,7 +48,7 @@ public class ProjectileData : PoolObjectData
     [field: SerializeField] public AoEData AoEData { get; private set; }
 
 #if UNITY_EDITOR
-    private void Reset()
+    protected virtual void Reset()
     {
         AliveTime = 2f;
     }

@@ -7,8 +7,17 @@ public class WhistleArrowProjectile : PlayerProjectile
 
     private Tween _rotateTween;
     private Tween _findTargetTween;
-    private float _rotationDuration = 0.5f;
-    private float _findTargetInterval = 0.5f;
+    private float _rotationDuration;
+    private float _findTargetInterval;
+
+    public override void Init(ActiveSkill activeSkill, PoolObjectData originData)
+    {
+        base.Init(activeSkill, originData);
+
+        var data = originData as WhistleArrowProjectileData;
+        _rotationDuration = data.RotationDuration;
+        _findTargetInterval = data.FindTargetInterval;
+    }
 
     protected override void HandleHit(Collider2D collision)
     {

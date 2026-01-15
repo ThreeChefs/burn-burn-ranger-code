@@ -41,7 +41,7 @@ public class PlayerProjectile : BaseProjectile
     private float _scaleDuration = 1f;
     #endregion
 
-    public void Init(ActiveSkill activeSkill, PoolObjectData originData)
+    public virtual void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
         skill = activeSkill;
         ActiveSkillData data = skill.Data;
