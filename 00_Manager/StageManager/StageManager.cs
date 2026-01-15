@@ -228,15 +228,6 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     #endregion
-}
 
 
-// 슬롯 정보만 줘서 슬롯 눌러서 정보 확인한다는 등의 동작은 불가능한 형태임
-// 나중에 해당 동작 필요할 때 생각해보기
-public struct StageRewardInfo
-{
-    public ItemType type;
-    public ItemClass itemClass;
-    public Sprite spr;
-    public int count;
 }
