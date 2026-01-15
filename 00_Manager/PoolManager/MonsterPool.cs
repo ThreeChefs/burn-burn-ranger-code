@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Linq;
 
 public class MonsterPool : BasePool
 {
@@ -9,19 +7,19 @@ public class MonsterPool : BasePool
     {
         PoolObject newGameObject = Instantiate(originPrefab);
         newGameObject.gameObject.SetActive(false);
-        
+
         newGameObject.gameObject.name = nowPoolSize.ToString();
         nowPoolSize++;
-        
+
         deactivatedObjectsPool.Add(newGameObject);
-        
+
         // PoolObject 가 Disable 될 때 
         newGameObject.OnDisableAction += OnDeactivatePoolObject;
 
 
         // 몬스터 세팅
         Monster monster = newGameObject.GetComponent<Monster>();
-        if(monster != null)
+        if (monster != null)
         {
             MonsterPoolObjectData monsterData = poolObjectData as MonsterPoolObjectData;
             monster.ApplyData(monsterData.MonsterData);
@@ -40,21 +38,13 @@ public class MonsterPool : BasePool
 
     public void KillAll()
     {
-        // 반대로
-
-        foreach(Monster monster in activatedObjectsPool)
+        foreach (var obj in activatedObjectsPool.ToArray())
         {
-            monster.BombDie();
+            if (obj is Monster monster)
+            {
+                monster.BombDie();
+            }
         }
-
-        //for(int i = ActivatedObjectsPool.Count -1; i >=0; i--)
-        //{
-        //    Monster monster = ActivatedObjectsPool[i] as Monster;
-        //    if (monster != null)
-        //    {
-        //        monster.BombDie();
-        //    }
-        //}
     }
 
 }
