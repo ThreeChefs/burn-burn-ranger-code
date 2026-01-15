@@ -3,6 +3,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 /// <summary>
 /// UI - 아이템 상세 정보 창
 /// </summary>
@@ -34,8 +38,10 @@ public class ItemDetailUI : BaseUI
     private const int PrefabSkillInfoHeight = 80;
 
     [Header("Wallet")]
-    [SerializeField] private TextMeshProUGUI _gold;
-    [SerializeField] private TextMeshProUGUI _scroll;
+    [SerializeField] private TextMeshProUGUI _goldText;
+    [SerializeField] private TextMeshProUGUI _scrollText;
+    private Wallet _gold;
+    private Wallet _scroll;
 
     [Header("Buttons")]
     [SerializeField] private Button _equipButton;
@@ -60,8 +66,10 @@ public class ItemDetailUI : BaseUI
         _itemLevel = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
         _itemDescription = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Description");
 
-        _skillInfoParent = transform.FindChild<RectTransform>("SkillList");
+        _attackIcon = LoadIcon256("ItemIcon_Gear_Sword");
+        _healthIcon = LoadIcon256("ItemIcon_Heart_Red");
 
+        _skillInfoParent = transform.FindChild<RectTransform>("SkillList");
         _skillColors = new(MaxSkillCount);
         _skillColorOutlines = new(MaxSkillCount);
         _skillDescriptions = new(MaxSkillCount);
@@ -72,12 +80,19 @@ public class ItemDetailUI : BaseUI
             _skillDescriptions.Add(child.FindChild<TextMeshProUGUI>("Text (TMP) - SkillDescription"));
         }
 
-        _gold = transform.FindChild<Transform>("Bar_Gold").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
-        _scroll = transform.FindChild<Transform>("Bar_Scroll").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
+        _goldText = transform.FindChild<Transform>("Bar_Gold").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
+        _scrollText = transform.FindChild<Transform>("Bar_Scroll").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
 
         _equipButton = transform.FindChild<Button>("Button - Equip");
         _levelUpButton = transform.FindChild<Button>("Button - LevelUp");
         _allLevelUpButton = transform.FindChild<Button>("Button - AllLevelUp");
+    }
+
+    private const string ICON_256_PATH = "Assets/10_Artworks/99_External/Layer Lab/GUI Pro-SuperCasual/ResourcesData/Sprites/Components/Icon_ItemIcons/256/";
+
+    private Sprite LoadIcon256(string fileName)
+    {
+        return AssetDatabase.LoadAssetAtPath<Sprite>(ICON_256_PATH + fileName + ".png");
     }
 #endif
 }
