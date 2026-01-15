@@ -49,6 +49,8 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     DrillShotProjectileData,        // 드릴
     SharkBeakCannonProjectileData,  // 상어포
     BoomerangProjectileData,        // 부메랑
+    ThornSpearProjectileData,       // 가시창 원본
+    ThornSpearChildProjectileData,  // 가시창 가시
 
 
     RangedAttack,                   // 
