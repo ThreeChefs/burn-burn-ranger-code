@@ -16,10 +16,12 @@ public class ActiveSkill : BaseSkill
     // 총알
     protected ProjectileData projectileData;
     protected ProjectileDataIndex projectileIndex;
+    protected bool spawnOnce;
 
     // 코루틴
     private Coroutine _coroutine;
     protected WaitForSeconds projectileSpawnInterval;
+
 
     public override void Init(SkillData data)
     {
@@ -31,11 +33,11 @@ public class ActiveSkill : BaseSkill
         _cooldown = activeSkillData.Cooldown;
 
         projectileData = activeSkillData.ProjectileData;
-
         if (!Enum.TryParse(projectileData.name, true, out projectileIndex))
         {
             Logger.LogWarning("풀에 사용할 투사체 enum 변환 실패");
         }
+        spawnOnce = false;
 
         _attackCooldown = PlayerManager.Instance.Condition[StatType.AttackCooldown];
         projectileSpawnInterval = new WaitForSeconds(activeSkillData.SpawnInterval);
@@ -47,8 +49,13 @@ public class ActiveSkill : BaseSkill
         base.Update();
         _cooldownTimer += Time.deltaTime;
 
-        if (_cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
+        if (!spawnOnce && _cooldownTimer > _cooldown * (1 - _attackCooldown.MaxValue))
         {
+            if (activeSkillData.Cooldown < 0)
+            {
+                spawnOnce = true;
+            }
+
             StopPlayingCoroutine();
             _coroutine = StartCoroutine(UseSkill());
 
