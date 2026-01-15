@@ -19,6 +19,7 @@ public class ItemDetailUI : BaseUI
     [SerializeField] private TextMeshProUGUI _itemName;
 
     [Header("Item Info")]
+    [SerializeField] private Image _itemIconContainer;
     [SerializeField] private Image _itemIcon;
     [SerializeField] private Image _statIcon;
     [SerializeField] private TextMeshProUGUI _statValue;
@@ -75,7 +76,7 @@ public class ItemDetailUI : BaseUI
     {
         base.AwakeInternal();
 
-        _itemIconOutline = _itemIcon.GetComponent<Outline>();
+        _itemIconOutline = _itemIconContainer.GetComponent<Outline>();
         _equipButtonText = _equipButton.GetComponentInChildren<TextMeshProUGUI>(true);
 
         ResetList();
@@ -108,8 +109,9 @@ public class ItemDetailUI : BaseUI
         _itemClassText.text = ItemUtils.GetClassString(itemClass);
         _itemName.text = itemData.DisplayName;
 
-        _itemIcon.sprite = itemData.Icon;
+        _itemIconContainer.color = ItemUtils.GetClassColor(itemClass);
         _itemIconOutline.effectColor = ItemUtils.GetHighlightColor(itemClass);
+        _itemIcon.sprite = itemData.Icon;
         _itemLevel.text = $"레벨: {instance.Level}/{ItemUtils.GetClassMaxLevel(itemClass)}";
         _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
         _statValue.text = "100";       // todo: item utils에서 스탯 계산식 구현 후 반영
@@ -151,6 +153,7 @@ public class ItemDetailUI : BaseUI
         _itemClassText = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Class");
         _itemName = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Name");
 
+        _itemIconContainer = transform.FindChild<Image>("Component_Icon");
         _itemIcon = transform.FindChild<Image>("Image - ItemIcon");
         _statIcon = transform.FindChild<Image>("Image - StatIcon");
         _statValue = transform.FindChild<TextMeshProUGUI>("Text (TMP) - StatValue");
