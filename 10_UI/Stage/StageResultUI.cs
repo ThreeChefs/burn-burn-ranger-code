@@ -13,6 +13,9 @@ public class StageResultUI : PopupUI
     [SerializeField] private TextMeshProUGUI _expText;
 
     [SerializeField] private Button _nextButton;
+
+    [SerializeField] private ResultRewardListPanel rewardPanel;
+
     
     public void Start()
     {
@@ -25,15 +28,19 @@ public class StageResultUI : PopupUI
         _nextButton.onClick.AddListener(NextScene);
     }
 
-    public void Init(int gold, int exp)
+    public void Init(int gold, int exp, StageRewardInfo[] rewards )
     {
         // 보상 골드, 경험치 표시
         _goldText.text = gold.ToString();
         _expText.text = exp.ToString();
     }
 
+
+
+    
     void NextScene()
     {
         GameManager.Instance.Scene.LoadSceneWithCoroutine(SceneType.MainScene);
     }
+
 }

@@ -27,7 +27,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     private bool _isPlaying = false;
-    public bool IsPlaying => _isPlaying;
+    public bool IsPlaying => _isPlaying; 
 
     private int _killCount = 0;
     public int KillCount => _killCount;
@@ -162,7 +162,8 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
         if (resultUI != null)
         {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue + _nowStage.RewardGold, _waveController.SaveExp + _nowStage.RewardExp);
+            
+            //resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue + _nowStage.RewardGold, _waveController.SaveExp + _nowStage.RewardExp);
         }
 
         // 보상 지급
@@ -179,7 +180,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
         if (resultUI != null)
         {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
+            //resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급
@@ -227,4 +228,15 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     #endregion
+}
+
+
+// 슬롯 정보만 줘서 슬롯 눌러서 정보 확인한다는 등의 동작은 불가능한 형태임
+// 나중에 해당 동작 필요할 때 생각해보기
+public struct StageRewardInfo
+{
+    public ItemType type;
+    public ItemClass itemClass;
+    public Sprite spr;
+    public int count;
 }
