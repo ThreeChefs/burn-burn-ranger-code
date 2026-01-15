@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,7 +17,7 @@ public class StageResultUI : PopupUI
 
     [SerializeField] private ResultRewardListPanel rewardPanel;
 
-    
+
     public void Start()
     {
         _stageNumberText.text = (StageManager.Instance.NowStageNumber + 1).ToString();
@@ -28,16 +29,18 @@ public class StageResultUI : PopupUI
         _nextButton.onClick.AddListener(NextScene);
     }
 
-    public void Init(int gold, int exp, StageRewardInfo[] rewards )
+    public void Init(int gold, int exp, List<StageRewardInfo> rewards = null)
     {
         // 보상 골드, 경험치 표시
         _goldText.text = gold.ToString();
         _expText.text = exp.ToString();
+
+       
     }
 
 
 
-    
+
     void NextScene()
     {
         GameManager.Instance.Scene.LoadSceneWithCoroutine(SceneType.MainScene);

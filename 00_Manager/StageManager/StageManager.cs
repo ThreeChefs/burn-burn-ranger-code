@@ -162,12 +162,13 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
         if (resultUI != null)
         {
-            
-            //resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue + _nowStage.RewardGold, _waveController.SaveExp + _nowStage.RewardExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue + _nowStage.RewardGold,
+                        _waveController.SaveExp + _nowStage.RewardExp,
+                        GiveReward());
         }
 
         // 보상 지급
-        PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // ㅅ테이지 클리어 보상 추가
+        PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // 스테이지 클리어 보상 추가
         PlayerManager.Instance.StagePlayer.UpdateGold();
         PlayerManager.Instance.Condition.GlobalLevel.AddExp(_nowStage.RewardExp + _waveController.SaveExp);
     }
@@ -180,13 +181,45 @@ public class StageManager : SceneSingletonManager<StageManager>
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
         if (resultUI != null)
         {
-            //resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
+            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
         }
 
         // 보상 지급
         PlayerManager.Instance.StagePlayer.UpdateGold();
         PlayerManager.Instance.Condition.GlobalLevel.AddExp(_waveController.SaveExp);   // 쌓인 경험치만 지급
     }
+
+    List<StageRewardInfo> GiveReward()
+    {
+        float rand = UnityEngine.Random.value;
+
+        List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
+
+        for (int i = 0; i < _nowStage.RewardBoxCount; i++)
+        {
+            StageRewardInfo newRewardInfo = default;
+
+            if (rand <= StageDefine.StageClearEquipRewardWeight)
+            {
+                // 장비 주기
+                newRewardInfo.type = ItemType.Equipment;
+                newRewardInfo.itemInfo = GetEquipReward(_nowStage.ItemBoxData);
+
+                // 진짜로 플레이어한테도 줘야함!
+            }
+            else
+            {
+                // 업그레이드 재료 주기
+                newRewardInfo.type = ItemType.Equipment;
+                newRewardInfo.upgradeMaterialType = GetUpgradeMaterial();
+            }
+
+            rewardInfos.Add(newRewardInfo);
+        }
+
+        return rewardInfos;
+    }
+
 
     #endregion
 
@@ -230,4 +263,39 @@ public class StageManager : SceneSingletonManager<StageManager>
     #endregion
 
 
+    #region 임시
+
+    // 리팩토링 되면 제공받은 함수로 사용하기!
+
+    ItemInstance GetEquipReward(ItemBoxData itmeBoxData)
+    {
+        float rand = UnityEngine.Random.value * 100f;
+        float cumulative = 0f;
+
+        foreach (ItemBoxEntry entry in itmeBoxData.ItemBoxEntries)
+        {
+            cumulative += entry.Weight;
+            if (rand <= cumulative)
+            {
+                int index = UnityEngine.Random.Range(0, entry.Items.Count);
+                return new ItemInstance(entry.ItemClass, entry.Items[index]);
+            }
+        }
+
+        return null;
+    }
+
+    WalletType GetUpgradeMaterial()
+    {
+        return (WalletType)Define.Random.Next((int)WalletType.UpgradeMaterial_Weapon,
+            (int)WalletType.UpgradeMaterial_Weapon + StageDefine.EquipTypeCount);
+
+    }
+
+    #endregion
+
+
+
+
 }
+
