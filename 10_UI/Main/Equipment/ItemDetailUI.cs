@@ -39,8 +39,9 @@ public class ItemDetailUI : BaseUI
     [Header("Wallet")]
     [SerializeField] private TextMeshProUGUI _goldText;
     [SerializeField] private TextMeshProUGUI _scrollText;
-    private Wallet _gold;
-    private Wallet _scroll;
+    private Wallet Gold => PlayerManager.Instance.Wallet[WalletType.Gold];
+    // todo: 스크롤으로 변경
+    private Wallet Scroll => PlayerManager.Instance.Wallet[WalletType.Gem];
 
     [Header("Buttons")]
     [SerializeField] private Button _equipButton;
@@ -53,13 +54,6 @@ public class ItemDetailUI : BaseUI
     #endregion
 
     #region Unity API
-    private void Start()
-    {
-        _gold = PlayerManager.Instance.Wallet[WalletType.Gold];
-        // todo: 스크롤으로 변경
-        _scroll = PlayerManager.Instance.Wallet[WalletType.Gem];
-    }
-
     private void OnEnable()
     {
         //버튼
@@ -138,8 +132,8 @@ public class ItemDetailUI : BaseUI
             }
         }
 
-        _goldText.text = $"{_gold.Value}/요구골드";
-        _scrollText.text = $"{_scroll.Value}/요구스크롤";
+        _goldText.text = $"{Gold.Value}/요구골드";
+        _scrollText.text = $"{Scroll.Value}/요구스크롤";
 
         _equipButtonText.text = instance.IsEquipped ? "장착 해제" : "장착";
     }
