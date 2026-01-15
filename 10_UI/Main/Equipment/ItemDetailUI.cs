@@ -31,10 +31,10 @@ public class ItemDetailUI : BaseUI
 
     [Header("Skill Info")]
     [SerializeField] private RectTransform _skillInfoParent;
-    [SerializeField] List<GameObject> _skillDetails;
-    List<Image> _skillColors;
-    List<Outline> _skillColorOutlines;
-    List<TextMeshProUGUI> _skillDescriptions;
+    [SerializeField] private List<GameObject> _skillDetails;
+    private List<Image> _skillColors;
+    private List<Outline> _skillColorOutlines;
+    private List<TextMeshProUGUI> _skillDescriptions;
     private const int MaxSkillCount = 5;
 
     [Header("Wallet")]
@@ -54,12 +54,6 @@ public class ItemDetailUI : BaseUI
     #endregion
 
     #region Unity API
-    private void Awake()
-    {
-        _itemIconOutline = _itemIcon.GetComponent<Outline>();
-        _equipButtonText = _equipButton.GetComponentInChildren<TextMeshProUGUI>(true);
-    }
-
     private void Start()
     {
         _gold = PlayerManager.Instance.Wallet[WalletType.Gold];
@@ -80,6 +74,32 @@ public class ItemDetailUI : BaseUI
         _equipButton.onClick.RemoveAllListeners();
 
         // 아이템 이벤트 구독 해제
+    }
+    #endregion
+
+    #region 초기화
+    protected override void AwakeInternal()
+    {
+        base.AwakeInternal();
+
+        _itemIconOutline = _itemIcon.GetComponent<Outline>();
+        _equipButtonText = _equipButton.GetComponentInChildren<TextMeshProUGUI>(true);
+
+        ResetList();
+    }
+
+    private void ResetList()
+    {
+        _skillColors = new();
+        _skillColorOutlines = new();
+        _skillDescriptions = new();
+
+        for (int i = 0; i < MaxSkillCount; i++)
+        {
+            _skillColors.Add(_skillDetails[i].GetComponentInChildren<Image>());
+            _skillColorOutlines.Add(_skillDetails[i].GetComponentInChildren<Outline>());
+            _skillDescriptions.Add(_skillDetails[i].GetComponentInChildren<TextMeshProUGUI>());
+        }
     }
     #endregion
 
