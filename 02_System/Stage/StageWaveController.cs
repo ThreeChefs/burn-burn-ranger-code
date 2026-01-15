@@ -49,7 +49,7 @@ public class StageWaveController
 
         for (int i = 0; i < nowStageData.StageWaves.Count; ++i)
         {
-            StageWaveData waveData = nowStageData.StageWaves[i].WavePawnData;
+            StageWaveData waveData = nowStageData.StageWaves[i].WaveData;
             
             if (waveData == null) continue;
             if (waveData.Monsters == null) continue;
@@ -81,7 +81,7 @@ public class StageWaveController
         _nowWave = wave;
         _nowSpawnDelay = 0;
 
-        switch (wave.WavePawnData.WaveType)
+        switch (wave.WaveData.WaveType)
         {
             case WaveType.Continuous:
                 _nowContinuousWave = wave;
@@ -95,14 +95,14 @@ public class StageWaveController
                 break;
 
             case WaveType.Boss:
-                SpawnBossMonster(wave.WavePawnData);
+                SpawnBossMonster(wave.WaveData);
                 break;
         }
 
 
         if (_nowContinuousWave != null)
         {
-            switch (_nowContinuousWave.WavePawnData.WaveType)
+            switch (_nowContinuousWave.WaveData.WaveType)
             {
                 case WaveType.Super:
                     // todo : 몬스터가 몰려옵니다~
@@ -118,18 +118,18 @@ public class StageWaveController
     public void Update()
     {
         // 플레이 시간 갱신
-        if (_nowWave.WavePawnData.WaveType != WaveType.Boss)
+        if (_nowWave.WaveData.WaveType != WaveType.Boss)
         {
             _playTime += Time.deltaTime;
 
             // 상시 스폰 웨이브일 때, 스폰 시간 갱신
-            if (_nowContinuousWave.WavePawnData.WaveType == WaveType.Continuous || _nowContinuousWave.WavePawnData.WaveType == WaveType.Super)
+            if (_nowContinuousWave.WaveData.WaveType == WaveType.Continuous || _nowContinuousWave.WaveData.WaveType == WaveType.Super)
             {
                 _nowSpawnDelay += Time.deltaTime;
 
                 if (_nowContinuousWave != null)
                 {
-                    if (_nowContinuousWave.WavePawnData.SpawnDelay <= _nowSpawnDelay)
+                    if (_nowContinuousWave.WaveData.SpawnDelay <= _nowSpawnDelay)
                     {
                         SpawnMonster();
                         _nowSpawnDelay = 0;
@@ -171,14 +171,14 @@ public class StageWaveController
     void SpawnMonster()
     {
         if (_nowContinuousWave == null) return;
-        if (_nowContinuousWave.WavePawnData.Monsters == null) return;
-        if (_nowContinuousWave.WavePawnData.Monsters.Count == 0) return;
+        if (_nowContinuousWave.WaveData.Monsters == null) return;
+        if (_nowContinuousWave.WaveData.Monsters.Count == 0) return;
 
-        for (int i = 0; i < _nowContinuousWave.WavePawnData.SpawnCount; ++i)
+        for (int i = 0; i < _nowContinuousWave.WaveData.SpawnCount; ++i)
         {
-            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.WavePawnData.Monsters.Count);
+            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.WaveData.Monsters.Count);
 
-            MonsterManager.Instance.SpawnWaveMonster(_nowContinuousWave.WavePawnData.Monsters[monsterIdx]);
+            MonsterManager.Instance.SpawnWaveMonster(_nowContinuousWave.WaveData.Monsters[monsterIdx]);
         }
     }
 

@@ -12,7 +12,7 @@ public class StageWaveEntry
     [SerializeField] int _waveClearGold = 100;
     [SerializeField] StageWaveData _stageWaveData;
 
-    public StageWaveData WavePawnData => _stageWaveData;
+    public StageWaveData WaveData => _stageWaveData;
     public int WaveClearExp => _waveClearExp;
     public int WaveClearGold => _waveClearGold;
 }
