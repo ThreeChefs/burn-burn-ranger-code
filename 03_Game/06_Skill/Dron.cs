@@ -5,7 +5,6 @@ using UnityEngine;
 public class Dron : MonoBehaviour
 {
     Transform _target;
-    [SerializeField] float _followSpeed = 3f;
     float _smoothTime = 0.12f;
 
 

@@ -33,7 +33,7 @@ public class BrickPlayerProjectile : PlayerProjectile
     Vector3 _prevPos;
     Quaternion _targetRot;
 
-    private void Update()
+    protected override void Update()
     {
         base.Update();
 
@@ -41,8 +41,8 @@ public class BrickPlayerProjectile : PlayerProjectile
 
     }
 
-    
-    private void FixedUpdate()
+
+    protected override void FixedUpdate()
     {
         Vector3 currentPos = transform.position;
         Vector3 moveDir = currentPos - _prevPos;

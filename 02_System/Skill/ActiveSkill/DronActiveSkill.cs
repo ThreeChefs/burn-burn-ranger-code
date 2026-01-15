@@ -77,7 +77,7 @@ public class DronActiveSkill : ActiveSkill
         fadeOut.SetDuration(Data.ProjectileData.AliveTime);
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
         if (_dron != null)
             Destroy(_dron.gameObject);
