@@ -69,7 +69,7 @@ public class ItemSlot : MonoBehaviour
         level.gameObject.SetActive(true);
         count.gameObject.SetActive(true);
 
-        itemClass.color = ItemClassColor.GetClassColor(itemInstance.ItemClass);
+        itemClass.color = ItemUtils.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
         level.text = itemInstance.Level.ToString();
         count.text = itemInstance.Count == 0 ? "" : itemInstance.Count.ToString();
@@ -84,7 +84,7 @@ public class ItemSlot : MonoBehaviour
         transform.FindOrInstantiate(ref level, "Text (TMP) - Level");
         transform.FindOrInstantiate(ref count, "Text (TMP) - Count");
 
-        itemClass.color = ItemClassColor.GetClassColor();
+        itemClass.color = ItemUtils.GetClassColor();
         icon.sprite = null;
 
         button = GetComponent<Button>();
