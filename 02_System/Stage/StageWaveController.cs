@@ -76,6 +76,10 @@ public class StageWaveController
             // 이전 웨이브 클리어 보상 저장
             _saveExp += _nowWave.WaveClearExp;
             PlayerManager.Instance.StagePlayer.AddGold(_nowWave.WaveClearGold);
+
+            SpawnWaveRewardBox();
+            
+
         }
 
         _nowWave = wave;
@@ -164,6 +168,16 @@ public class StageWaveController
         {
             MonsterManager.Instance.SpawnWaveMonster(MonsterPoolIndex.ItemBox);
             _itemBoxSpawnCount++;
+        }
+    }
+
+    
+    void SpawnWaveRewardBox()
+    {
+        // 이전 웨이브 보상 뿌리기
+        for (int i = 0; i < _nowWave.WaveData.ClearRewardType.Length; ++i)
+        {
+
         }
     }
 
