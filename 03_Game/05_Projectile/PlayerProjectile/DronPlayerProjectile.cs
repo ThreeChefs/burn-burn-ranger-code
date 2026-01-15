@@ -35,14 +35,14 @@ public class DronPlayerProjectile : PlayerProjectile
     Vector3 _prevPos;
     Quaternion _targetRot;
 
-    private void Update()
+    protected override void Update()
     {
         base.Update();
         this.transform.rotation = Quaternion.Lerp(this.transform.rotation, _targetRot, Time.deltaTime * 10f);
     }
 
 
-    private void FixedUpdate()
+    protected override void FixedUpdate()
     {
         Vector3 currentPos = transform.position;
         Vector3 moveDir = currentPos - _prevPos;

@@ -41,7 +41,7 @@ public class PlayerProjectile : BaseProjectile
     private float _scaleDuration = 1f;
     #endregion
 
-    public void Init(ActiveSkill activeSkill, PoolObjectData originData)
+    public virtual void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
         skill = activeSkill;
         ActiveSkillData data = skill.Data;
@@ -91,34 +91,29 @@ public class PlayerProjectile : BaseProjectile
         return ((1 << layer) & data.ReflectionLayerMask) != 0;
     }
 
-    private void HandleHit(Collider2D collision)
+    protected virtual void HandleHit(Collider2D collision)
     {
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
+                HitContext context = GetHitContext(collision);
+                OnValidHit(in context);
+
                 // 관통 무한
-                if (passCount == -100)
+                if (passCount == Define.InfinitePass)
                 {
-                    HitContext context = GetHitContext(collision);
-                    OnValidHit(in context);
                     return;
                 }
-                else if (passCount > 0)
+
+                passCount--;
+
+                if (passCount <= 0)
                 {
-                    passCount--;
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();
                     }
-                    else
-                    {
-                        HitContext context = GetHitContext(collision);
-                        OnValidHit(in context);
-                    }
-                }
 
-                if (passCount == 0)
-                {
                     gameObject.SetActive(false);
                 }
                 break;
@@ -147,8 +142,8 @@ public class PlayerProjectile : BaseProjectile
 
         if (norm.sqrMagnitude < 0.0001f) return;
 
-        targetDir = Vector2.Reflect(targetDir, norm).normalized;
-        transform.position += targetDir * 0.05f;        // 재충돌 방지
+        moveDir = Vector2.Reflect(moveDir, norm).normalized;
+        transform.position += moveDir * 0.05f;        // 재충돌 방지
     }
     #endregion
 

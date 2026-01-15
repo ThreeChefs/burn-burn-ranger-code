@@ -13,6 +13,8 @@ public static class Define
 
     // 스킬
     // 시스템
+    public const int InfinitePass = -100;
+
     public const int SkillMaxLevel = 5;
     public const int ActiveSkillMaxCount = 6;
     public const int PassiveSkillMaxCount = 6;
@@ -29,7 +31,9 @@ public static class Define
     // 몬스터 최대 소환
     public const int MaxMonsterSpawnCount = 300;
 
+    // 맵
     public const int MapSize = 40;
+    public const int TilemapCount = 4;
 
     // 태그
     public const string PlayerTag = "Player";
