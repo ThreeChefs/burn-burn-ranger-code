@@ -6,9 +6,7 @@ public class WhistleArrowProjectile : PlayerProjectile
     private bool _hasHitTarget = false;
 
     private Tween _rotateTween;
-    private Tween _findTargetTween;
     private float _rotationDuration;
-    private float _findTargetInterval;
 
     public override void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
@@ -16,7 +14,6 @@ public class WhistleArrowProjectile : PlayerProjectile
 
         var data = originData as WhistleArrowProjectileData;
         _rotationDuration = data.RotationDuration;
-        _findTargetInterval = data.FindTargetInterval;
     }
 
     protected override void HandleHit(Collider2D collision)
@@ -31,16 +28,25 @@ public class WhistleArrowProjectile : PlayerProjectile
 
     protected override void SetGuidance()
     {
-        if (_hasHitTarget)
+        if (!_hasHitTarget && !target.gameObject.activeSelf || _hasHitTarget)
         {
-            target = null;
-            StartRotate();
-            StartFindTarget();
-            moveDir = transform.right;    // 진행 방향으로 유지
-            return;
-        }
+            target = MonsterManager.Instance.GetRandomMonster();
+            if (target == null)
+            {
+                moveDir = Vector2.zero;
+                return;
+            }
+            _hasHitTarget = false;
 
-        base.SetGuidance();
+            if ((target.position - transform.position).normalized == moveDir)
+            {
+                _rotateTween?.Kill();
+                _rotateTween = null;
+            }
+            StartRotate();
+
+            moveDir = transform.right;    // 진행 방향으로 유지
+        }
     }
 
     private void StartRotate()
@@ -48,30 +54,8 @@ public class WhistleArrowProjectile : PlayerProjectile
         if (_rotateTween != null && _rotateTween.IsActive()) return;
 
         _rotateTween = transform
-            .DORotate(new Vector3(0, 0, 360), _rotationDuration, RotateMode.LocalAxisAdd)
+            .DORotate(new Vector3(0, 0, 360), _rotationDuration, RotateMode.FastBeyond360)
             .SetLoops(-1)
             .SetEase(Ease.Linear);
-    }
-
-    private void StartFindTarget()
-    {
-        if (_findTargetTween != null && _findTargetTween.IsActive()) return;
-
-        _findTargetTween = DOVirtual.DelayedCall(_findTargetInterval, FindTarget).SetLoops(-1);
-    }
-
-    private void FindTarget()
-    {
-        target = MonsterManager.Instance.GetRandomMonster();
-
-        if (target == null) return;
-
-        _hasHitTarget = false;
-
-        _rotateTween?.Kill();
-        _findTargetTween?.Kill();
-
-        _rotateTween = null;
-        _findTargetTween = null;
     }
 }
