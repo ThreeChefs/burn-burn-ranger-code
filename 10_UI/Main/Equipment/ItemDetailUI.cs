@@ -21,21 +21,21 @@ public class ItemDetailUI : BaseUI
 
     [Header("Item Info")]
     [SerializeField] private Image _itemIcon;
-    [SerializeField] private Outline _itemIconOutline;
     [SerializeField] private Image _statIcon;
     [SerializeField] private TextMeshProUGUI _statValue;
     [SerializeField] private TextMeshProUGUI _itemLevel;
     [SerializeField] private TextMeshProUGUI _itemDescription;
     [SerializeField] private Sprite _attackIcon;
     [SerializeField] private Sprite _healthIcon;
+    private Outline _itemIconOutline;
 
     [Header("Skill Info")]
     [SerializeField] private RectTransform _skillInfoParent;
-    [SerializeField] List<Image> _skillColors;
-    [SerializeField] List<Outline> _skillColorOutlines;
-    [SerializeField] List<TextMeshProUGUI> _skillDescriptions;
+    [SerializeField] List<GameObject> _skillDetails;
+    List<Image> _skillColors;
+    List<Outline> _skillColorOutlines;
+    List<TextMeshProUGUI> _skillDescriptions;
     private const int MaxSkillCount = 5;
-    private const int PrefabSkillInfoHeight = 80;
 
     [Header("Wallet")]
     [SerializeField] private TextMeshProUGUI _goldText;
@@ -47,11 +47,36 @@ public class ItemDetailUI : BaseUI
     [SerializeField] private Button _equipButton;
     [SerializeField] private Button _levelUpButton;
     [SerializeField] private Button _allLevelUpButton;
+    private TextMeshProUGUI _equipButtonText;
 
     // 캐싱
     private ItemInstance _curItem;
     #endregion
 
+    #region Unity API
+    private void Awake()
+    {
+        _itemIconOutline = _itemIcon.GetComponent<Outline>();
+        _equipButtonText = _equipButton.GetComponentInChildren<TextMeshProUGUI>(true);
+    }
+
+    private void Start()
+    {
+        _gold = PlayerManager.Instance.Wallet[WalletType.Gold];
+        // todo: 스크롤으로 변경
+        _scroll = PlayerManager.Instance.Wallet[WalletType.Gem];
+    }
+
+    private void OnEnable()
+    {
+        // 아이템 이벤트 구독
+    }
+
+    private void OnDisable()
+    {
+        // 아이템 이벤트 구독 해제
+    }
+    #endregion
 #if UNITY_EDITOR
     private void Reset()
     {
@@ -60,7 +85,6 @@ public class ItemDetailUI : BaseUI
         _itemName = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Name");
 
         _itemIcon = transform.FindChild<Image>("Image - ItemIcon");
-        _itemIconOutline = transform.FindChild<Outline>("Image - ItemIcon");
         _statIcon = transform.FindChild<Image>("Image - StatIcon");
         _statValue = transform.FindChild<TextMeshProUGUI>("Text (TMP) - StatValue");
         _itemLevel = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
@@ -70,14 +94,10 @@ public class ItemDetailUI : BaseUI
         _healthIcon = LoadIcon256("ItemIcon_Heart_Red");
 
         _skillInfoParent = transform.FindChild<RectTransform>("SkillList");
-        _skillColors = new(MaxSkillCount);
-        _skillColorOutlines = new(MaxSkillCount);
-        _skillDescriptions = new(MaxSkillCount);
+        _skillDetails = new(MaxSkillCount);
         foreach (Transform child in _skillInfoParent)
         {
-            _skillColors.Add(child.FindChild<Image>("Image - Class"));
-            _skillColorOutlines.Add(child.FindChild<Outline>("Image - Class"));
-            _skillDescriptions.Add(child.FindChild<TextMeshProUGUI>("Text (TMP) - SkillDescription"));
+            _skillDetails.Add(child.gameObject);
         }
 
         _goldText = transform.FindChild<Transform>("Bar_Gold").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
