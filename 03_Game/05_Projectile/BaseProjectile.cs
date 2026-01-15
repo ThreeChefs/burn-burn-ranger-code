@@ -21,8 +21,8 @@ public class BaseProjectile : PoolObject, IAttackable
 
     // 타겟
     [SerializeField] protected Transform target;
-    protected Vector3 targetPos;
-    protected Vector3 targetDir;
+    protected Vector3 movePos;
+    protected Vector3 moveDir;
 
     // 이동
     protected virtual float Speed => data.Speed * speedMultiplier;
@@ -125,9 +125,9 @@ public class BaseProjectile : PoolObject, IAttackable
         transform.position = spawnPos;
         this.target = target;
 
-        targetPos = target.position;
-        targetDir = (targetPos - transform.position).normalized;
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        movePos = target.position;
+        moveDir = (movePos - transform.position).normalized;
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
@@ -135,8 +135,8 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         transform.position = spawnPos;
 
-        targetDir = dir;
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        moveDir = dir;
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
     #endregion
@@ -198,16 +198,16 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual void Move()
     {
-        Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
+        Vector3 targetPos = Speed * Time.fixedDeltaTime * moveDir;
         transform.position += targetPos;
     }
 
     protected virtual void SetGuidance()
     {
         if (target == null) return;
-        targetDir = (target.position - transform.position).normalized;
+        moveDir = (target.position - transform.position).normalized;
 
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
@@ -216,7 +216,7 @@ public class BaseProjectile : PoolObject, IAttackable
         if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
 
         Vector2 pos = transform.position;
-        Vector2 dir = targetDir;
+        Vector2 dir = moveDir;
         Vector2 camPos = cam.transform.position;
 
         float halfH = cam.orthographicSize;
@@ -245,7 +245,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (reflected)
         {
-            targetDir = dir.normalized;
+            moveDir = dir.normalized;
             transform.position = pos;
         }
     }

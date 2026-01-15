@@ -91,7 +91,7 @@ public class PlayerProjectile : BaseProjectile
         return ((1 << layer) & data.ReflectionLayerMask) != 0;
     }
 
-    private void HandleHit(Collider2D collision)
+    protected virtual void HandleHit(Collider2D collision)
     {
         switch (data.HitType)
         {
@@ -142,8 +142,8 @@ public class PlayerProjectile : BaseProjectile
 
         if (norm.sqrMagnitude < 0.0001f) return;
 
-        targetDir = Vector2.Reflect(targetDir, norm).normalized;
-        transform.position += targetDir * 0.05f;        // 재충돌 방지
+        moveDir = Vector2.Reflect(moveDir, norm).normalized;
+        transform.position += moveDir * 0.05f;        // 재충돌 방지
     }
     #endregion
 
