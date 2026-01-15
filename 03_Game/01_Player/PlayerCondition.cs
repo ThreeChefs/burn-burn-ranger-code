@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 /// <summary>
@@ -98,4 +98,21 @@ public class PlayerCondition
     {
         _statDict[type].UpdateEquipmentValue(value);
     }
+
+    public PlayerProgressSave ExportProgress()
+    {
+        return new PlayerProgressSave
+        {
+            level = GlobalLevel.Level,
+            currentExp = GlobalLevel.CurrentExp
+        };
+    }
+
+    public void ImportProgress(PlayerProgressSave progress)
+    {
+        if (progress == null) return;
+        GlobalLevel.SetLevelAndExp(progress.level, progress.currentExp);
+    }
+
+
 }

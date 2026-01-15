@@ -24,6 +24,8 @@ public class WavePattern : MonoBehaviour
     [Header("디버그")]
     [SerializeField] private bool debugGizmos = true;
 
+    private WaitForSeconds _waitWarning;
+    private WaitForSeconds _waitInterval;
     private Transform _player;
     private void Awake()
     {
@@ -39,6 +41,8 @@ public class WavePattern : MonoBehaviour
         {
             damageArea.gameObject.SetActive(false);
         }
+        _waitWarning = new WaitForSeconds(warningTime);
+        _waitInterval = new WaitForSeconds(stepInterval);
     }
 
     public void BindPlayer(Transform player)
@@ -69,8 +73,8 @@ public class WavePattern : MonoBehaviour
         {
             float angle = angleDegSequence[i];
             safeArea.rotation = Quaternion.Euler(0f, 0f, angle);
-            yield return new WaitForSeconds(warningTime);
-            yield return new WaitForSeconds(stepInterval);
+            yield return _waitWarning;
+            yield return _waitInterval;
         }
         safeArea.gameObject.SetActive(false);
         for (int i = 0; i < angleDegSequence.Count; i++)
@@ -84,25 +88,25 @@ public class WavePattern : MonoBehaviour
             }
             if (instantCheckOnce)
             {
-                DoSingleHitCheck(centerPos, angle);
-                yield return new WaitForSeconds(activeTime);
+                HitCheck(centerPos, angle);
+                yield return _waitWarning;
             }
             else
             {
-                yield return DoContinuousHitCheck(centerPos, angle, activeTime);
+                yield return DoContinuousHitCheck(centerPos, angle, warningTime);
             }
             if (damageArea != null)
             {
                 damageArea.gameObject.SetActive(false);
             }
-            yield return new WaitForSeconds(stepInterval);
+            yield return _waitInterval;
         }
         dangerCircle.gameObject.SetActive(false);
         if (damageArea != null) damageArea.gameObject.SetActive(false);
         safeArea.gameObject.SetActive(false);
     }
 
-    private void DoSingleHitCheck(Vector3 centerPos, float angleDeg)
+    private void HitCheck(Vector3 centerPos, float angleDeg)  // 데미지 판정
     {
         if (_player == null)
         {
@@ -123,8 +127,7 @@ public class WavePattern : MonoBehaviour
                 if (IsInsideArena(_player.position, centerPos) && !IsInSafeStripe(_player.position, centerPos, angleDeg))
                 {
                     ApplyDamageToPlayer(_player, damage);
-                    // 연속 데미지면 틱 간격을 두는 게 보통이라 여기서 0.2f 같은 딜레이를 줘도 됨
-                    // 지금은 간단히 한 번 맞추고 빠져나오게 하려면 break;
+
                     break;
                 }
             }
@@ -149,14 +152,13 @@ public class WavePattern : MonoBehaviour
         // 띠의 "폭 방향"(법선) = 길이방향을 90도 회전
         Vector2 normal = new Vector2(-stripeDir.y, stripeDir.x);
 
-        // 플레이어 위치를 법선 방향으로 투영한 값의 절댓값이 halfWidth 이내면 안전
+
         float distToCenterLine = Mathf.Abs(Vector2.Dot(p, normal));
         return distToCenterLine <= safeAreaWidth;
     }
     private void ApplyDamageToPlayer(Transform player, float dmg)
     {
-        // 너 프로젝트에 맞춰 연결하면 됨.
-        // 예: StagePlayer or IDamageable
+
         if (player.TryGetComponent<IDamageable>(out var d))
         {
             d.TakeDamage(dmg);
