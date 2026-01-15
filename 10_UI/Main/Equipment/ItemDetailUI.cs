@@ -18,8 +18,12 @@ public class ItemDetailUI : BaseUI
     [Header("Item Info")]
     [SerializeField] private Image _itemIcon;
     [SerializeField] private Outline _itemIconOutline;
+    [SerializeField] private Image _statIcon;
+    [SerializeField] private TextMeshProUGUI _statValue;
     [SerializeField] private TextMeshProUGUI _itemLevel;
     [SerializeField] private TextMeshProUGUI _itemDescription;
+    [SerializeField] private Sprite _attackIcon;
+    [SerializeField] private Sprite _healthIcon;
 
     [Header("Skill Info")]
     [SerializeField] private RectTransform _skillInfoParent;
@@ -48,8 +52,11 @@ public class ItemDetailUI : BaseUI
         _itemClassBadge = transform.FindChild<Image>("Image - ClassBadge");
         _itemClassText = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Class");
         _itemName = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Name");
+
         _itemIcon = transform.FindChild<Image>("Image - ItemIcon");
         _itemIconOutline = transform.FindChild<Outline>("Image - ItemIcon");
+        _statIcon = transform.FindChild<Image>("Image - StatIcon");
+        _statValue = transform.FindChild<TextMeshProUGUI>("Text (TMP) - StatValue");
         _itemLevel = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Level");
         _itemDescription = transform.FindChild<TextMeshProUGUI>("Text (TMP) - Description");
 
