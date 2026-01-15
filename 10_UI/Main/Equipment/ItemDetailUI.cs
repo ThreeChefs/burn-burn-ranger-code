@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,10 +30,10 @@ public class ItemDetailUI : BaseUI
 
     [Header("Skill Info")]
     [SerializeField] private RectTransform _skillInfoParent;
-    [SerializeField] private List<GameObject> _skillDetails;
-    private List<Image> _skillColors;
-    private List<Outline> _skillColorOutlines;
-    private List<TextMeshProUGUI> _skillDescriptions;
+    [SerializeField] private GameObject[] _skillDetails;
+    private Image[] _skillColors;
+    private Outline[] _skillColorOutlines;
+    private TextMeshProUGUI[] _skillDescriptions;
     private const int MaxSkillCount = 5;
 
     [Header("Wallet")]
@@ -90,15 +89,15 @@ public class ItemDetailUI : BaseUI
 
     private void ResetList()
     {
-        _skillColors = new();
-        _skillColorOutlines = new();
-        _skillDescriptions = new();
+        _skillColors = new Image[MaxSkillCount];
+        _skillColorOutlines = new Outline[MaxSkillCount];
+        _skillDescriptions = new TextMeshProUGUI[MaxSkillCount];
 
         for (int i = 0; i < MaxSkillCount; i++)
         {
-            _skillColors.Add(_skillDetails[i].GetComponentInChildren<Image>());
-            _skillColorOutlines.Add(_skillDetails[i].GetComponentInChildren<Outline>());
-            _skillDescriptions.Add(_skillDetails[i].GetComponentInChildren<TextMeshProUGUI>());
+            _skillColors[i] = _skillDetails[i].GetComponentInChildren<Image>();
+            _skillColorOutlines[i] = _skillDetails[i].GetComponentInChildren<Outline>();
+            _skillDescriptions[i] = _skillDetails[i].GetComponentInChildren<TextMeshProUGUI>();
         }
     }
     #endregion
@@ -168,10 +167,10 @@ public class ItemDetailUI : BaseUI
         _healthIcon = LoadIcon256("ItemIcon_Heart_Red");
 
         _skillInfoParent = transform.FindChild<RectTransform>("SkillList");
-        _skillDetails = new(MaxSkillCount);
-        foreach (Transform child in _skillInfoParent)
+        _skillDetails = new GameObject[MaxSkillCount];
+        for (int i = 0; i < MaxSkillCount; i++)
         {
-            _skillDetails.Add(child.gameObject);
+            _skillDetails[i] = _skillInfoParent.GetChild(i).gameObject;
         }
 
         _goldText = transform.FindChild<Transform>("Bar_Gold").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
