@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StageResultUI : BaseUI
+public class StageResultUI : PopupUI
 {
     [SerializeField] private TextMeshProUGUI _stageNumberText;
     [SerializeField] private TextMeshProUGUI _killCountText;
