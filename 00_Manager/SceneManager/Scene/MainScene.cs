@@ -7,6 +7,7 @@
         
         UIManager.Instance.LoadUI(UIName.UI_Home);
         UIManager.Instance.LoadUI(UIName.UI_Equipment, false);
+        UIManager.Instance.LoadUI(UIName.UI_ItemDetail, false);
         UIManager.Instance.LoadUI(UIName.UI_Shop, false);
         UIManager.Instance.LoadUI(UIName.UI_PickUp, false);
     }

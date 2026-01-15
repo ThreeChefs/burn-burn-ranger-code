@@ -12,6 +12,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     public PlayerCondition Condition { get; private set; }
     public PlayerWallet Wallet { get; private set; }
     public Inventory Inventory { get; private set; }
+    public Equipment Equipment { get; private set; }
 
     protected override void Init()
     {

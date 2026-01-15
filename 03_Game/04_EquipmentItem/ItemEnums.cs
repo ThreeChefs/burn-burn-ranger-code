@@ -62,3 +62,10 @@ public enum BuffType
 {
     Invincible
 }
+
+// 장비 적용 타입
+enum EquipmentApplyType
+{
+    Equip,
+    Unequip
+}
