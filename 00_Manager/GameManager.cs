@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Sirenix.OdinInspector;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : GlobalSingletonManager<GameManager>
@@ -7,8 +8,14 @@ public class GameManager : GlobalSingletonManager<GameManager>
     public SceneController Scene = new();
     public DataManager Data { get; private set; }
 
+
+    // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
+    public StageClearProgress StageClearProgress = new();
+
+
     [SerializeField] SoDatabase _stageDatabase;
     public List<StageData> StageDatabase { get; private set; }
+
 
     protected override void Init()
     {
@@ -21,7 +28,6 @@ public class GameManager : GlobalSingletonManager<GameManager>
         // Data.Save();
     }
 
-
     #region StageSelect
 
     private int _selectedStageNumber = 1;
@@ -33,6 +39,27 @@ public class GameManager : GlobalSingletonManager<GameManager>
     }
 
     #endregion
+
+
+
+    #region 저장
+
+    [Title("저장 시스템 테스트")]
+    [Button("저장")]
+    public void SaveData()
+    {
+
+    }
+
+
+    [Button("불러오기")]
+    public void LoadData()
+    {
+    }
+
+
+    #endregion
+
 
 
 }
