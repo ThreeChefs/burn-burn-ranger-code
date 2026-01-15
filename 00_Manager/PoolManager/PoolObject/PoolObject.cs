@@ -29,17 +29,18 @@ public class PoolObject : MonoBehaviour
 
     protected virtual void OnEnableInternal()
     {
-        
+
     }
 
     private void OnDisable()
     {
         OnDisableInternal();
         OnDisableAction?.Invoke(this);
+        this.transform.localScale = Vector3.one;   
     }
 
     protected virtual void OnDisableInternal()
     {
-        
+
     }
 }
