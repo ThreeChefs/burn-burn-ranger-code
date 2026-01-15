@@ -168,34 +168,32 @@ public class BaseProjectile : PoolObject, IAttackable
     #region 움직임
     private void MoveAndRotate()
     {
-        switch (type)
+        if (type == ProjectileMoveType.Guidance)
         {
-            case ProjectileMoveType.Guidance:
-                GuidanceMove();
-                GuidanceRotate();
-                break;
-            case ProjectileMoveType.Straight:
-                MoveDefault();
-                break;
-            case ProjectileMoveType.Reflection:
-                MoveDefault();
-                HandleScreenReflection();
-                break;
+            SetGuidance();
+        }
+
+        Move();
+
+        if (type == ProjectileMoveType.Reflection)
+        {
+            HandleScreenReflection();
         }
     }
 
-    protected virtual void MoveDefault()
+    protected virtual void Move()
     {
         Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
         transform.position += targetPos;
     }
 
-    protected virtual void GuidanceMove()
+    protected virtual void SetGuidance()
     {
-    }
+        if (target == null) return;
+        targetDir = (target.position - transform.position).normalized;
 
-    protected virtual void GuidanceRotate()
-    {
+        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     protected virtual void HandleScreenReflection()
