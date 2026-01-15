@@ -85,7 +85,7 @@ public class ItemDetailUI : BaseUI
 
     public void SetItem(ItemInstance instance)
     {
-        if (_curItem.Equals(instance)) return;
+        if (_curItem != null && _curItem.Equals(instance)) return;
         _curItem = instance;
 
         ItemClass itemClass = instance.ItemClass;
