@@ -1,34 +1,22 @@
-using DG.Tweening;
 using UnityEngine;
 
 public class WhistleArrowProjectile : PlayerProjectile
 {
-    private bool _hasHitTarget = false;
-
-    private Tween _rotateTween;
-    private float _rotationDuration;
+    [SerializeField] private float _maxTurnDegPerSec = 30f; // 회전 한계
 
     public override void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
         base.Init(activeSkill, originData);
-
-        var data = originData as WhistleArrowProjectileData;
-        _rotationDuration = data.RotationDuration;
     }
 
-    protected override void HandleHit(Collider2D collision)
+    protected override void Move()
     {
-        if (collision.transform == target)
-        {
-            _hasHitTarget = true;
-        }
-
-        base.HandleHit(collision);
+        base.Move();
     }
 
     protected override void SetGuidance()
     {
-        if (!_hasHitTarget && !target.gameObject.activeSelf || _hasHitTarget)
+        if (target == null || !target.gameObject.activeSelf)
         {
             target = MonsterManager.Instance.GetRandomMonster();
             if (target == null)
@@ -36,26 +24,22 @@ public class WhistleArrowProjectile : PlayerProjectile
                 moveDir = Vector2.zero;
                 return;
             }
-            _hasHitTarget = false;
-
-            if ((target.position - transform.position).normalized == moveDir)
-            {
-                _rotateTween?.Kill();
-                _rotateTween = null;
-            }
-            StartRotate();
-
-            moveDir = transform.right;    // 진행 방향으로 유지
         }
-    }
 
-    private void StartRotate()
-    {
-        if (_rotateTween != null && _rotateTween.IsActive()) return;
+        Vector2 toTarget = target.position - transform.position;
 
-        _rotateTween = transform
-            .DORotate(new Vector3(0, 0, 360), _rotationDuration, RotateMode.FastBeyond360)
-            .SetLoops(-1)
-            .SetEase(Ease.Linear);
+        float currentAngle = transform.eulerAngles.z;
+        float targetAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg;
+
+        float angularSpeedDeg = _maxTurnDegPerSec * Mathf.Rad2Deg;
+
+        float newAngle = Mathf.MoveTowardsAngle(
+            currentAngle,
+            targetAngle,
+            angularSpeedDeg * Time.fixedDeltaTime
+        );
+
+        transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
+        moveDir = transform.right;
     }
 }
