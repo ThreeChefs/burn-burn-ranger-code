@@ -231,14 +231,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         AddKillCountAction?.Invoke(_killCount);
     }
 
-    public Transform GetNearestMonster()
-    {
-        return MonsterManager.Instance.GetNearestMonster();
-    }
-
-
     #endregion
-
 
     #region Test
     [Title("Test")]
