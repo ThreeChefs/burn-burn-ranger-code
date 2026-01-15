@@ -5,11 +5,13 @@ public class FlyingBallPlayerProjectile : PlayerProjectile
 {
     [SerializeField] float _radiusExpandSpeed = 2f;
     [SerializeField] float _angleExpandSpeed = 360;
+    [SerializeField] float _startRadius = 0f;
+    
+    float _nowRadius = 0;
 
     Vector3 _spawnDir = Vector3.zero;
     Vector3 _startPos;
     float _nowAngle = 0f;
-    float _nowRadius = 0;
 
 
     public override void Spawn(Vector2 spawnPos, Vector2 dir)
@@ -18,11 +20,11 @@ public class FlyingBallPlayerProjectile : PlayerProjectile
 
         _startPos = spawnPos;
         _nowAngle = 0;
-        _nowRadius = 0;
+        _nowRadius = _startRadius;
         _spawnDir = dir;
 
         transform.localScale = Vector3.zero;
-        transform.DOScale(1, projectileRange.MaxValue);  // 
+        transform.DOScale(1f, 0.5f);
 
     }
 
