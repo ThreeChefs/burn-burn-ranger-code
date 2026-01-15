@@ -77,13 +77,11 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     public void KillAll()
     {
         if (nowPoolDic.Count == 0) return;
-        foreach (var pool in nowPoolDic.Values)
+
+        for (int i = activatedMonsters.Count -1 ; i > 0; i--)
         {
-            MonsterPool monsterPool = pool as MonsterPool;
-            if (monsterPool != null)
-            {
-                monsterPool.KillAll();
-            }
+            if(activatedMonsters[i] != null)
+                activatedMonsters[i].BombDie();
         }
     }
 

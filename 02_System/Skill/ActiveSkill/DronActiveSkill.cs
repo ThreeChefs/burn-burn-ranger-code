@@ -16,7 +16,6 @@ public class DronActiveSkill : ActiveSkill
     [SerializeField] DronType _type;
 
     Dron _dron;
-    WaitForSeconds _wait = new WaitForSeconds(0.02f);
     float _fireDistance = 4f;
     float _randomRange = 0.5f;
 
@@ -24,7 +23,7 @@ public class DronActiveSkill : ActiveSkill
     {
         base.Init(data);
 
-        _dron = Instantiate(_dronOrigin);
+        _dron = Instantiate(_dronOrigin, this.transform.position, Quaternion.identity);
         _dron.SetTarget(_dronPivot);
 
     }
@@ -49,7 +48,7 @@ public class DronActiveSkill : ActiveSkill
                 Fire(dir);
             }
 
-            yield return _wait;
+            yield return projectileSpawnInterval;
 
         }
 
@@ -76,6 +75,12 @@ public class DronActiveSkill : ActiveSkill
 
         AlphaFadeout fadeOut = (AlphaFadeout)CommonPoolManager.Instance.Spawn(CommonPoolIndex.DronAim, targetRandoPos);
         fadeOut.SetDuration(Data.ProjectileData.AliveTime);
+    }
+
+    protected override void OnDestroy()
+    {
+        if (_dron != null)
+            Destroy(_dron.gameObject);
     }
 
 }

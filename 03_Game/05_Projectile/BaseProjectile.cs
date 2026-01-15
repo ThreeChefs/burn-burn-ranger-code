@@ -21,13 +21,16 @@ public class BaseProjectile : PoolObject, IAttackable
 
     // 타겟
     [SerializeField] protected Transform target;
-    protected Vector3 targetPos;
-    protected Vector3 targetDir;
+    protected Vector3 movePos;
+    protected Vector3 moveDir;
 
     // 이동
     protected virtual float Speed => data.Speed * speedMultiplier;
     protected float speedMultiplier;
     protected float lifeTimer;
+
+    // 유도
+    protected float guidanceTimer;
 
     // 폭발 / 장판
     protected ProjectilePhase phase;
@@ -49,6 +52,17 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (data.AliveTime < 0) return;
 
+        if (type == ProjectileMoveType.Guidance)
+        {
+            if (data.GuidanceTime < 0) return;
+
+            guidanceTimer += Time.deltaTime;
+            if (guidanceTimer > data.GuidanceTime)
+            {
+                type = ProjectileMoveType.Straight;
+            }
+        }
+
         lifeTimer += Time.deltaTime;
         if (lifeTimer > data.AliveTime)
         {
@@ -66,6 +80,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         base.OnDisableInternal();
         lifeTimer = 0f;
+        guidanceTimer = 0f;
 
         trailVfx?.SetActive(false);
     }
@@ -110,9 +125,9 @@ public class BaseProjectile : PoolObject, IAttackable
         transform.position = spawnPos;
         this.target = target;
 
-        targetPos = target.position;
-        targetDir = (targetPos - transform.position).normalized;
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        movePos = target.position;
+        moveDir = (movePos - transform.position).normalized;
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
@@ -120,8 +135,8 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         transform.position = spawnPos;
 
-        targetDir = dir;
-        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+        moveDir = dir;
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
     #endregion
@@ -168,34 +183,32 @@ public class BaseProjectile : PoolObject, IAttackable
     #region 움직임
     private void MoveAndRotate()
     {
-        switch (type)
+        if (type == ProjectileMoveType.Guidance)
         {
-            case ProjectileMoveType.Guidance:
-                GuidanceMove();
-                GuidanceRotate();
-                break;
-            case ProjectileMoveType.Straight:
-                MoveDefault();
-                break;
-            case ProjectileMoveType.Reflection:
-                MoveDefault();
-                HandleScreenReflection();
-                break;
+            SetGuidance();
+        }
+
+        Move();
+
+        if (type == ProjectileMoveType.Reflection)
+        {
+            HandleScreenReflection();
         }
     }
 
-    protected virtual void MoveDefault()
+    protected virtual void Move()
     {
-        Vector3 targetPos = Speed * Time.fixedDeltaTime * targetDir;
+        Vector3 targetPos = Speed * Time.fixedDeltaTime * moveDir;
         transform.position += targetPos;
     }
 
-    protected virtual void GuidanceMove()
+    protected virtual void SetGuidance()
     {
-    }
+        if (target == null) return;
+        moveDir = (target.position - transform.position).normalized;
 
-    protected virtual void GuidanceRotate()
-    {
+        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     protected virtual void HandleScreenReflection()
@@ -203,7 +216,7 @@ public class BaseProjectile : PoolObject, IAttackable
         if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
 
         Vector2 pos = transform.position;
-        Vector2 dir = targetDir;
+        Vector2 dir = moveDir;
         Vector2 camPos = cam.transform.position;
 
         float halfH = cam.orthographicSize;
@@ -216,37 +229,23 @@ public class BaseProjectile : PoolObject, IAttackable
 
         bool reflected = false;
 
-        // X축 경계
-        if (pos.x < minX)
+        if (pos.x < minX || pos.x > maxX)
         {
-            pos.x = minX;      // 위치 보정
-            dir.x *= -1;       // X축 반사
-            reflected = true;
-        }
-        else if (pos.x > maxX)
-        {
-            pos.x = maxX;
+            pos.x = Mathf.Clamp(pos.x, minX, maxX);
             dir.x *= -1;
             reflected = true;
         }
 
-        // Y축 경계
-        if (pos.y < minY)
+        if (pos.y < minY || pos.y > maxY)
         {
-            pos.y = minY;
-            dir.y *= -1;       // Y축 반사
-            reflected = true;
-        }
-        else if (pos.y > maxY)
-        {
-            pos.y = maxY;
+            pos.y = Mathf.Clamp(pos.y, minY, maxY);
             dir.y *= -1;
             reflected = true;
         }
 
         if (reflected)
         {
-            targetDir = dir.normalized;
+            moveDir = dir.normalized;
             transform.position = pos;
         }
     }
@@ -281,7 +280,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
-        speedMultiplier = 0f;
+        speedMultiplier = data.AoEData.IsMoving ? 1f : 0f;
         tickTimer = 0f;
     }
 

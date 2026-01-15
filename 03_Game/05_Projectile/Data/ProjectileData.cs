@@ -48,7 +48,7 @@ public class ProjectileData : PoolObjectData
     [field: SerializeField] public AoEData AoEData { get; private set; }
 
 #if UNITY_EDITOR
-    private void Reset()
+    protected virtual void Reset()
     {
         AliveTime = 2f;
     }
@@ -60,7 +60,10 @@ public class AoEData
 {
     [field: Tooltip("Fly 상태 유지 시간 (-1: 피격 때까지 날아감")]
     [field: SerializeField] public float FlyPhaseDuration { get; private set; }
+    [field: Tooltip("즉발기")]
     [field: SerializeField] public bool IsInstant { get; private set; }
+    [field: Tooltip("장판 움직임")]
+    [field: SerializeField] public bool IsMoving { get; private set; }
     [field: HideIf(nameof(IsInstant))]
     [field: Tooltip("장판 수명")]
     [field: SerializeField] public float Duration { get; private set; }

@@ -54,7 +54,7 @@ public class SkillSystem
         // skill id, level 
         Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
         int maxKey = defaultSkills.Keys.Max();
-        for (int i = 0; i < maxKey; i++)    // 스킬 아이디로 순회
+        for (int i = 0; i <= maxKey; i++)    // 스킬 아이디로 순회
         {
             if (!defaultSkills.TryGetValue(i, out int level)) continue;
             SkillData skill = _skillDataCache[i];
@@ -217,7 +217,7 @@ public class SkillSystem
             if (_combinationRequirementMap.ContainsKey(combinationId))
             {
                 _combinationRequirementMap[combinationId]++;
-                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId].DisplayName}");
+                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId]?.DisplayName}");
             }
             else
             {

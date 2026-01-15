@@ -41,7 +41,7 @@ public class PlayerProjectile : BaseProjectile
     private float _scaleDuration = 1f;
     #endregion
 
-    public void Init(ActiveSkill activeSkill, PoolObjectData originData)
+    public virtual void Init(ActiveSkill activeSkill, PoolObjectData originData)
     {
         skill = activeSkill;
         ActiveSkillData data = skill.Data;
@@ -91,34 +91,29 @@ public class PlayerProjectile : BaseProjectile
         return ((1 << layer) & data.ReflectionLayerMask) != 0;
     }
 
-    private void HandleHit(Collider2D collision)
+    protected virtual void HandleHit(Collider2D collision)
     {
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
+                HitContext context = GetHitContext(collision);
+                OnValidHit(in context);
+
                 // 관통 무한
-                if (passCount == -100)
+                if (passCount == Define.InfinitePass)
                 {
-                    HitContext context = GetHitContext(collision);
-                    OnValidHit(in context);
                     return;
                 }
-                else if (passCount > 0)
+
+                passCount--;
+
+                if (passCount <= 0)
                 {
-                    passCount--;
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();
                     }
-                    else
-                    {
-                        HitContext context = GetHitContext(collision);
-                        OnValidHit(in context);
-                    }
-                }
 
-                if (passCount == 0)
-                {
                     gameObject.SetActive(false);
                 }
                 break;
@@ -147,8 +142,8 @@ public class PlayerProjectile : BaseProjectile
 
         if (norm.sqrMagnitude < 0.0001f) return;
 
-        targetDir = Vector2.Reflect(targetDir, norm).normalized;
-        transform.position += targetDir * 0.05f;        // 재충돌 방지
+        moveDir = Vector2.Reflect(moveDir, norm).normalized;
+        transform.position += moveDir * 0.05f;        // 재충돌 방지
     }
     #endregion
 
@@ -177,8 +172,12 @@ public class PlayerProjectile : BaseProjectile
 
     protected override void OnDisableInternal()
     {
+        _scaleTween?.Kill();
         base.OnDisableInternal();
+
+        // 타이머 초기화
         tickIntervalTimer = 0f;
+        tickTimer = 0f;
 
         if (skill != null)
         {
@@ -208,6 +207,8 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer += Time.deltaTime;
         if (tickTimer < data.AoEData.TickInterval) return;
+
+        tickTimer = 0f;
 
         //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
@@ -290,7 +291,8 @@ public class PlayerProjectile : BaseProjectile
     #region Level Value Utils
     private void UpdateScaleTo()
     {
-        Vector3 scale = transform.localScale * projectileRange.MaxValue;
+        if (projectileRange == null) return;
+        Vector3 scale = Vector3.one * projectileRange.MaxValue;
 
         // 스킬 시스템
         if (_scaleMultipliers != null)
@@ -298,7 +300,7 @@ public class PlayerProjectile : BaseProjectile
             scale *= _scaleMultipliers[skill.CurLevel - 1];
         }
 
-        _scaleTween?.Kill();
+        _scaleTween?.Complete();
         _scaleTween = transform.DOScale(scale, _scaleDuration);
     }
 

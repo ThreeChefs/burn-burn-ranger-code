@@ -9,9 +9,6 @@ public class FireBombActiveSkill : ActiveSkill
     // 초토화때 사용
     [SerializeField] List<Transform> _visualSprs;
 
-    static float fireDelay = 0.1f;
-    WaitForSeconds fireDelayWait = new WaitForSeconds(fireDelay);
-
     float radius = 4f;
 
     protected override IEnumerator UseSkill(Transform target)
@@ -31,7 +28,7 @@ public class FireBombActiveSkill : ActiveSkill
                 {
                     ThrowFireBomb(fireCount, target, firePos);
                     fireCount++;
-                    yield return fireDelayWait;
+                    yield return projectileSpawnInterval;
                 }
                 else
                 {

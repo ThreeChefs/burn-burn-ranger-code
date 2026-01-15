@@ -29,7 +29,7 @@ public class BottomBarUI : BaseUI
             string uiEnumValue = "UI_" + _buttons[i].name.Split("Button_Bottom_")[1];
             if (!Enum.TryParse(uiEnumValue, out UIName uiName))
             {
-                Logger.LogWarning($"UIName 없음: {uiName}");
+                Logger.LogWarning($"UIName 없음: {uiEnumValue}");
             }
 
             _buttonActions[i] = () =>

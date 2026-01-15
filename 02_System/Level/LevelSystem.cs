@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 public class LevelSystem
@@ -64,5 +64,20 @@ public class LevelSystem
         Level++;
         OnLevelChanged?.Invoke(Level);
         RequiredExp = GetRequiredExp(Level);
+    }
+
+    public void SetLevelAndExp(int level, float currentExp)   // 저장데이터 불러오기용 로드메서드 
+    {
+        Level = Math.Max(1, level);
+        CurrentExp = Math.Max(0f, currentExp);
+
+        RequiredExp = GetRequiredExp(Level);
+
+        while (CurrentExp > RequiredExp)
+        {
+            CurrentExp -= RequiredExp;
+            Level++;
+            RequiredExp = GetRequiredExp(Level);
+        }
     }
 }
