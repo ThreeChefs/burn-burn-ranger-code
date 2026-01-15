@@ -69,11 +69,16 @@ public class ItemDetailUI : BaseUI
 
     private void OnEnable()
     {
+        //버튼
+        _equipButton.onClick.AddListener(Equip);
+
         // 아이템 이벤트 구독
     }
 
     private void OnDisable()
     {
+        _equipButton.onClick.RemoveAllListeners();
+
         // 아이템 이벤트 구독 해제
     }
     #endregion
@@ -119,6 +124,13 @@ public class ItemDetailUI : BaseUI
 
         _equipButtonText.text = instance.IsEquipped ? "장착 해제" : "장착";
     }
+
+    private void Equip()
+    {
+        PlayerManager.Instance.Equipment.Equip(_curItem);
+        gameObject.SetActive(false);
+    }
+
 #if UNITY_EDITOR
     private void Reset()
     {

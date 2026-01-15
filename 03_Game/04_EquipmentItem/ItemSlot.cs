@@ -19,7 +19,7 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI level;
     [SerializeField] protected TextMeshProUGUI count;
 
-    public ItemInstance ItemInstance { get; protected set; }
+    private ItemInstance _itemInstance;
 
     #region Unity API
     protected void Awake()
@@ -41,7 +41,7 @@ public class ItemSlot : MonoBehaviour
     #region 초기화
     protected virtual void Init()
     {
-        if (ItemInstance == null)
+        if (_itemInstance == null)
         {
             itemClass.gameObject.SetActive(false);
             icon.gameObject.SetActive(false);
@@ -52,6 +52,8 @@ public class ItemSlot : MonoBehaviour
 
     protected virtual void OnClickButton()
     {
+        ItemDetailUI ui = UIManager.Instance.ShowUI(UIName.UI_ItemDetail) as ItemDetailUI;
+        ui.SetItem(_itemInstance);
     }
     #endregion
 
@@ -62,7 +64,7 @@ public class ItemSlot : MonoBehaviour
     /// <param name="itemInstance"></param>
     public virtual void SetSlot(ItemInstance itemInstance)
     {
-        ItemInstance = itemInstance;
+        _itemInstance = itemInstance;
 
         itemClass.gameObject.SetActive(true);
         icon.gameObject.SetActive(true);

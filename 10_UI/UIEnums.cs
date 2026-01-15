@@ -12,6 +12,7 @@ public enum UIName
     UI_Home,
     UI_Shop,
     UI_Equipment,
+    UI_ItemDetail,
     UI_PickUp,
     UI_HomeBottomMenu,
     UI_HomeTopBar,
