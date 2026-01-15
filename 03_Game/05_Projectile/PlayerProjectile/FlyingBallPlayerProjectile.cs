@@ -1,9 +1,8 @@
+using DG.Tweening;
 using UnityEngine;
 
 public class FlyingBallPlayerProjectile : PlayerProjectile
 {
-    
-
     [SerializeField] float _radiusExpandSpeed = 2f;
     [SerializeField] float _angleExpandSpeed = 360;
 
@@ -21,6 +20,9 @@ public class FlyingBallPlayerProjectile : PlayerProjectile
         _nowAngle = 0;
         _nowRadius = 0;
         _spawnDir = dir;
+
+        transform.localScale = Vector3.zero;
+        transform.DOScale(1, projectileRange.MaxValue);  // 
 
     }
 
