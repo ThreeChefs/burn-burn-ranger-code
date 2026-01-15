@@ -1,4 +1,4 @@
-public class StageScene : BaseScene
+﻿public class StageScene : BaseScene
 {
     private void Start()
     {

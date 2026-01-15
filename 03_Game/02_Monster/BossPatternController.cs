@@ -31,7 +31,7 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
         boss = bossController;
         CollectPatterns();
         // 이미 붙어있는 패턴들에게 boss 바인딩
-        for (int i = 0; i < _patterns.Count; i++)
+        for (int i = 0; i < _patterns.Count; i++)  // 캐싱한 _patterns 를 상속된 친구들 수집하여 패턴실행
             _patterns[i].Bind(boss);
     }
 

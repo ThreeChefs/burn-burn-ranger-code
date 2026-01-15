@@ -1,15 +1,14 @@
 ﻿using System;
-using UnityEngine;
 
 [Serializable]
 public class SaveData
 {
-    public string SceneName;
-    public Vector3 PlayerPosition;
-    public int ClearChapterNumber;
-    public string PlayerPositionX;
-    public string PlayerPositionY;
-    public string PlayerPositionZ;
+    public PlayerProgressSave playerProgress = new PlayerProgressSave();
+}
 
-    public bool hasWatchedIntroVideo;
+[Serializable]
+public class PlayerProgressSave
+{
+    public int level = 1;
+    public float currentExp = 0f;
 }
