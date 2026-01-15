@@ -25,11 +25,14 @@ public class ThornSpearActiveSkill : ActiveSkill
 
     private void Start()
     {
+        float rad = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
+
         _origin = ProjectileManager.Instance.Spawn(
             ProjectileDataIndex.ThornSpearProjectileData,
             this,
-            null,
-            new Vector2(Random.Range(-1, 1), Random.Range(-1, 1))).transform;
+            dir,
+            transform.position).transform;
     }
 
     protected override PlayerProjectile SpawnProjectile()
@@ -37,7 +40,7 @@ public class ThornSpearActiveSkill : ActiveSkill
         float angle = _startAngleDeg - _angleStep * _index;
         float rad = angle * Mathf.Deg2Rad;
 
-        _index %= _count;
+        _index = (_index + 1) % _count;
 
         Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
         return ProjectileManager.Instance.Spawn(projectileIndex, this, dir, _origin.position);
