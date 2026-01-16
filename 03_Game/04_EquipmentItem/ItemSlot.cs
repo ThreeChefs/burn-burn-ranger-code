@@ -73,7 +73,7 @@ public class ItemSlot : MonoBehaviour
         itemClass.color = ItemUtils.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
         level.text = itemInstance.Level.ToString();
-        count.text = itemInstance.Count == 0 ? "" : itemInstance.Count.ToString();
+        count.text = itemInstance.Count < 2 ? "" : itemInstance.Count.ToString();
     }
 
     public virtual void ResetSlot()
