@@ -22,7 +22,6 @@ public class BaseSlot : MonoBehaviour
         if(slotInfo.ContentClassLevel != ItemClass.None)
         {
             itemClass.gameObject.SetActive(true);
-            itemClass.color = ItemClassColor.GetClassColor(slotInfo.ContentClassLevel);
         }
         else
         {
