@@ -96,6 +96,7 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
+                SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
                 HitContext context = GetHitContext(collision);
                 OnValidHit(in context);
 
@@ -210,6 +211,11 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer = 0f;
 
+        if (sfxCoroutine == null)
+        {
+            sfxCoroutine = StartCoroutine(PlaySfx());
+        }
+
         //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
 
@@ -224,6 +230,7 @@ public class PlayerProjectile : BaseProjectile
             gameObject.SetActive(false);
         }
     }
+
     #endregion
 
     #region Hit Utils

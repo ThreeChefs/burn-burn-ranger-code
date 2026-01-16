@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -7,9 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BaseProjectile : PoolObject, IAttackable
 {
+    #region 필드
     [Header("비주얼")]
     [SerializeField] protected Transform vfxs;
-    protected GameObject trailVfx;
 
     protected ProjectileData data;
 
@@ -37,8 +38,15 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float flyTimer;
     protected float tickTimer;
 
+    // 효과음
+    protected SfxName sfxName;
+    protected int sfxIndex;
+    protected Coroutine sfxCoroutine;
+    private WaitForSeconds _sfxDuration;
+
     // 카메라
     protected Camera cam;
+    #endregion
 
     #region Unity API
     protected virtual void Start()
@@ -79,10 +87,14 @@ public class BaseProjectile : PoolObject, IAttackable
     protected override void OnDisableInternal()
     {
         base.OnDisableInternal();
+
+        // 타이머
         lifeTimer = 0f;
         guidanceTimer = 0f;
 
-        trailVfx?.SetActive(false);
+        // sfx 코루틴
+        StopCoroutine(sfxCoroutine);
+        sfxCoroutine = null;
     }
 
     #region 초기화
@@ -110,14 +122,11 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         // 비주얼
         ProjectileVisualData visualData = data.VisualData;
-        if (visualData != null)
-        {
-            if (visualData.TrailVfxPrefab != null)
-            {
-                trailVfx = Instantiate(visualData.TrailVfxPrefab);
-                trailVfx.transform.SetParent(vfxs);
-            }
-        }
+
+        sfxName = SfxName.Sfx_Projectile;
+        sfxIndex = visualData.SfxIndex;
+
+        _sfxDuration = new WaitForSeconds(visualData.SfxInterval);
     }
 
     public virtual void Spawn(Vector2 spawnPos, Transform target)
@@ -286,6 +295,17 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual void UpdateAreaPhase()
     {
+    }
+    #endregion
+
+    #region 사운드
+    protected IEnumerator PlaySfx()
+    {
+        while (true)
+        {
+            SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
+            yield return _sfxDuration;
+        }
     }
     #endregion
 

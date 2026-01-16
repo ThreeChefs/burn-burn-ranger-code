@@ -3,7 +3,10 @@ public enum SfxName
 {
     // UI
     Sfx_Click,
-    
+
+    // In Stage
+    Sfx_Projectile,
+
     Test,
 }
 
@@ -27,4 +30,6 @@ public enum AudioClipIndex
     // UI
     Sfx_Click,
 
+    // In Stage
+    Sfx_Projectile,
 }
