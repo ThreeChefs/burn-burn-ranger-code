@@ -12,6 +12,8 @@ public class Equipment
     private readonly Dictionary<EquipmentType, ItemInstance> _equipments;
     public IReadOnlyDictionary<EquipmentType, ItemInstance> Equipments => _equipments;
 
+    private bool _doneEquip;
+
     // 이벤트
     public event Action OnEquipmentChanged;
 
@@ -46,11 +48,16 @@ public class Equipment
     /// <param name="item"></param>
     public void Equip(ItemInstance item)
     {
+        _doneEquip = true;
+
         EquipmentType type = item.ItemData.EquipmentType;
         Unequip(item);
+        _doneEquip = false;
 
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
+
+        OnEquipmentChanged?.Invoke();
     }
 
     /// <summary>
@@ -68,7 +75,11 @@ public class Equipment
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
             }
         }
-        OnEquipmentChanged?.Invoke();
+
+        if (!_doneEquip)
+        {
+            OnEquipmentChanged?.Invoke();
+        }
     }
 
     /// <summary>
