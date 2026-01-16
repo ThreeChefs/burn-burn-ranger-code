@@ -159,18 +159,27 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameClearAction?.Invoke();
         PauseGame();
 
-        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
-        if (resultUI != null)
-        {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue + _nowStage.RewardGold,
-                        _waveController.SaveExp + _nowStage.RewardExp,
-                        GiveReward());
-        }
-
         // 보상 지급
         PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // 스테이지 클리어 보상 추가
         PlayerManager.Instance.StagePlayer.UpdateGold();
         PlayerManager.Instance.Condition.GlobalLevel.AddExp(_nowStage.RewardExp + _waveController.SaveExp);
+        List<StageRewardInfo> rewards = GiveReward();
+
+        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
+        if (resultUI != null)
+        {
+            StageResultInfo resultInfo = new StageResultInfo
+            {
+                stageName = _nowStage.StageName,
+                playTIme = PlayTime,
+                killCount = KillCount,
+                gold = PlayerManager.Instance.StagePlayer.GoldValue + +_nowStage.RewardGold,
+                exp = _waveController.SaveExp + _nowStage.RewardExp,
+            };
+
+            resultUI.Init(resultInfo, rewards);
+        }
+
     }
 
     public void GameOver()
@@ -178,16 +187,30 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameOverAction?.Invoke();
         PauseGame();
 
-        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
-        if (resultUI != null)
-        {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
-        }
-
         // 보상 지급
         PlayerManager.Instance.StagePlayer.UpdateGold();
         PlayerManager.Instance.Condition.GlobalLevel.AddExp(_waveController.SaveExp);   // 쌓인 경험치만 지급
+
+
+        // UI 표시
+        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
+        if (resultUI != null)
+        {
+            StageResultInfo resultInfo = new StageResultInfo
+            {
+                stageName = _nowStage.StageName,
+                playTIme = PlayTime,
+                killCount = KillCount,
+                gold = PlayerManager.Instance.StagePlayer.GoldValue,
+                exp = _waveController.SaveExp,
+            };
+
+            // todo : GameOver 했을 때에도 모아둔 보상을 까서 전달해야함
+            resultUI.Init(resultInfo, null);
+        }
+
     }
+
 
     List<StageRewardInfo> GiveReward()
     {

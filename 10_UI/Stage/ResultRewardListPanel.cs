@@ -11,6 +11,8 @@ public class ResultRewardListPanel : MonoBehaviour
 
     public void SetRewardList(List<StageRewardInfo> rewards)
     {
+        if (rewards == null) return;
+
         for (int i = 0; i < rewards.Count; i++)
         {
             if (rewards != null)
@@ -18,7 +20,10 @@ public class ResultRewardListPanel : MonoBehaviour
                 if (rewards[i].type == ItemType.Equipment)
                 {
                     ItemSlot newItemSlot = Instantiate(_itemSlotOrigin, _layoutGroup.transform);
-                    newItemSlot.SetSlot(rewards[i].itemInfo);
+                    if(rewards[i].itemInfo !=null)
+                    {
+                        newItemSlot.SetSlot(rewards[i].itemInfo);
+                    }
                 }
                 else if (rewards[i].type == ItemType.UpgradeMaterial)
                 {
