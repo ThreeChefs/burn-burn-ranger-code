@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class EquipmentUI : BaseUI
 {
-    // todo: json으로 빼거나 default인 거 체크하기
-    [SerializeField] private List<ItemData> _defaultData;
     [SerializeField] private ItemSlot _itemSlotPrefab;
 
     private Inventory _inventory;
@@ -58,11 +56,6 @@ public class EquipmentUI : BaseUI
 
     protected override void AwakeInternal()
     {
-        // todo: 데이터 빼기
-        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("MetalSuit"));
-        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("Kunai"));
-        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("Kunai"));
-
         _equipmentSlots = new();
         foreach (Transform child in _equipmentSlotParent)
         {
@@ -76,10 +69,6 @@ public class EquipmentUI : BaseUI
 
     private void Init()
     {
-        // todo: 초기 데이터 나중에 어떻게 할지 얘기해보긴 해야함
-        _defaultData.ForEach(data => _inventory.Add(
-            new ItemInstance((ItemClass)UnityEngine.Random.Range(1, 5), data)));
-
         for (int i = 0; i < _inventory.Items.Count; i++)
         {
             AddItemSlot();
@@ -181,8 +170,6 @@ public class EquipmentUI : BaseUI
 #if UNITY_EDITOR
     private void Reset()
     {
-        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("Kunai"));
-        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("MilitaryUniform"));
         _itemSlotPrefab = AssetLoader.FindAndLoadByName("ItemSlot").GetComponent<ItemSlot>();
         _equipmentSlotParent = transform.FindChild<Transform>("Slots");
         _inventoryUI = transform.FindChild<RectTransform>("Content");

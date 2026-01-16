@@ -19,6 +19,22 @@ public class Inventory
         { 30, 1 }
     };
 
+    public Inventory()
+    {
+        // todo: 나중에 인벤토리 초기화하기
+        List<ItemData> defaultData = new()
+        {
+            AssetLoader.FindAndLoadByName<ItemData>("MetalSuit"),
+            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
+            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
+            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
+            AssetLoader.FindAndLoadByName<ItemData>("MilitaryUniform")
+        };
+
+        defaultData.ForEach(data => Add(
+            new ItemInstance((ItemClass)UnityEngine.Random.Range(1, 5), data)));
+    }
+
     /// <summary>
     /// [public] 플레이어가 파괴될 때 실행
     /// </summary>

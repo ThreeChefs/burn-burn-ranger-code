@@ -26,10 +26,10 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
 
     private void OnDestroy()
     {
-        Condition.OnDestroy();
-        Wallet.OnDestroy();
-        Inventory.OnDestroy();
-        Equipment.OnDestroy();
+        Condition?.OnDestroy();
+        Wallet?.OnDestroy();
+        Inventory?.OnDestroy();
+        Equipment?.OnDestroy();
     }
 
     /// <summary>
