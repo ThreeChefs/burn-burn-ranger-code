@@ -71,11 +71,13 @@ public class PlayerProjectile : BaseProjectile
         if (IsHitTarget(layer))
         {
             HandleHit(collision);
+            PlaySfxOnce();
         }
 
         if (IsReflectTarget(layer))
         {
             HandleReflection(collision);
+            PlaySfxOnce();
         }
     }
     #endregion
@@ -96,10 +98,7 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                if (sfxIndex >= 0 && !useCustomSfx)
-                {
-                    SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
-                }
+
                 HitContext context = GetHitContext(collision);
                 OnValidHit(in context);
 

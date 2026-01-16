@@ -267,6 +267,7 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             moveDir = dir.normalized;
             transform.position = pos;
+            PlaySfxOnce();
         }
     }
     #endregion
@@ -310,6 +311,14 @@ public class BaseProjectile : PoolObject, IAttackable
     #endregion
 
     #region 사운드
+    protected void PlaySfxOnce()
+    {
+        if (sfxIndex >= 0 && !useCustomSfx)
+        {
+            SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
+        }
+    }
+
     protected IEnumerator PlaySfx()
     {
         while (true)
