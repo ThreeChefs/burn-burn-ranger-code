@@ -2,7 +2,7 @@ using System;
 
 // 나중에 PlayingStageProgress 가 있을 수 있으니 헷갈리지 않게..
 // StageClearProgress 
-public class StageClearProgress
+public class StageProgress
 {
     int _clearStageNum = 0;             // 현재 클리어한 스테이지 번호 / 1스테이지 클리어 한 상태라면 1로 저장된 상태
 
@@ -17,9 +17,9 @@ public class StageClearProgress
     public int LastPlayingStageRecord => _lastPlayingStageRecord;
 
 
-    public StageClearProgressSave ExportProgress()
+    public StageProgressSaveInfo ExportProgress()
     {
-        return new StageClearProgressSave
+        return new StageProgressSaveInfo
         {
             clearStageNum = _clearStageNum,
             openedStageRewardStep = _openedStageRewardStep,
@@ -29,7 +29,7 @@ public class StageClearProgress
     }
 
 
-    public void ImportStageProgress(StageClearProgressSave stageClearProgressSave)
+    public void ImportStageProgress(StageProgressSaveInfo stageClearProgressSave)
     {
         _clearStageNum = stageClearProgressSave.clearStageNum;
         _openedStageRewardStep = stageClearProgressSave.openedStageRewardStep;
@@ -47,7 +47,7 @@ public class StageClearProgress
 }
 
 [Serializable]
-public class StageClearProgressSave
+public class StageProgressSaveInfo
 {
     public int clearStageNum;
     public int openedStageRewardStep;
