@@ -12,7 +12,6 @@ public class EquipmentUI : BaseUI
     // 장착 중인 장비
     [SerializeField] private Transform _equipmentSlotParent;
     private Dictionary<EquipmentType, ItemSlot> _equipmentSlots;
-    private int _equipmentCount;
 
     // 장비 인벤토리 
     [SerializeField] private RectTransform _inventoryUI;
@@ -95,25 +94,27 @@ public class EquipmentUI : BaseUI
     /// </summary>
     private void UpdateEquipUI()
     {
+        UpdateEquipmentSlots();
+
         ItemInstance item = null;
         int itemIndex = 0;
+        int slotIndex = 0;
 
         // todo: 인벤토리 정렬
 
-        for (int slotIndex = 0; slotIndex < _inventorySlots.Count; slotIndex++)
+        while (slotIndex < _inventorySlots.Count
+            && TryGetNextUnequippedItem(ref itemIndex, out item))
         {
-            // 장착한 장비일 경우 스킵
-            if (!TryGetNextUnequippedItem(ref itemIndex, out item)) break;
-
             _inventorySlots[slotIndex].SetSlot(item);
             _inventorySlots[slotIndex].gameObject.SetActive(true);
             Logger.Log($"인벤토리 {slotIndex} 번째 장비 슬롯에 설정");
+            slotIndex++;
         }
 
         // 남은 슬롯 비활성화
-        for (int j = itemIndex - _equipmentCount; j < _inventorySlots.Count; j++)
+        for (int i = slotIndex; i < _inventorySlots.Count; i++)
         {
-            _inventorySlots[j].gameObject.SetActive(false);
+            _inventorySlots[i].gameObject.SetActive(false);
         }
     }
 
@@ -131,11 +132,7 @@ public class EquipmentUI : BaseUI
             index++;
 
             // 장착한 장비 시 스킵
-            if (_equipment.IsEquip(item))
-            {
-                UpdateEquipmentSlot(item, EquipmentApplyType.Equip);
-                continue;
-            }
+            if (_equipment.IsEquip(item)) continue;
 
             return true;
         }
@@ -144,19 +141,28 @@ public class EquipmentUI : BaseUI
         return false;
     }
 
-    private void UpdateEquipmentSlot(ItemInstance item, EquipmentApplyType applyType)
+    private void UpdateEquipmentSlots()
     {
-        ItemSlot equipmentSlot = _equipmentSlots[item.ItemData.EquipmentType];
-        if (applyType == EquipmentApplyType.Equip)
+        // 리셋
+        foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
         {
-            equipmentSlot.SetSlot(item);
-            _equipmentCount = Math.Min(_equipmentCount + 1, _equipmentSlots.Count);
-            Logger.Log($"{item.ItemData.EquipmentType} 타입 장비 장착");
+            _equipmentSlots[type].ResetSlot();
         }
-        else
+
+        ItemSlot slot;
+        foreach (KeyValuePair<EquipmentType, ItemInstance> pair in _equipment.Equipments)
         {
-            equipmentSlot.ResetSlot();
-            _equipmentCount = Math.Max(_equipmentCount - 1, 0);
+            if (pair.Value == null)
+            {
+                slot = _equipmentSlots[pair.Key];
+                slot.ResetSlot();
+            }
+            else
+            {
+                slot = _equipmentSlots[pair.Key];
+                slot.SetSlot(pair.Value);
+                Logger.Log($"{pair.Value.ItemData.EquipmentType} 타입 장비 장착");
+            }
         }
     }
 
