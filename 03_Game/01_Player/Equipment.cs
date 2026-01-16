@@ -13,7 +13,7 @@ public class Equipment
     public IReadOnlyDictionary<EquipmentType, ItemInstance> Equipments => _equipments;
 
     // 이벤트
-    public event Action<ItemInstance, EquipmentApplyType> OnEquipmentChanged;
+    public event Action OnEquipmentChanged;
 
     public Equipment(PlayerCondition condition)
     {
@@ -51,8 +51,6 @@ public class Equipment
 
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
-
-        OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Equip);
     }
 
     /// <summary>
@@ -68,9 +66,9 @@ public class Equipment
             if (prev != null)
             {
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
-                OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Unequip);
             }
         }
+        OnEquipmentChanged?.Invoke();
     }
 
     /// <summary>
@@ -103,7 +101,7 @@ public class Equipment
 
         // 장비 자체 수치 계산
         (StatType statType, int value) = item.GetStatAndValue();
-        _condition[statType].UpdateBuffValue(value * sign);
+        _condition[statType].UpdateEquipmentValue(value * sign);
 
         // 장비 등급에 따른 수치 계산
         foreach (var equipmentEffect in item.ItemData.Equipments)

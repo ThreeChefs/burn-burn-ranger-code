@@ -25,7 +25,7 @@ public class EquipmentUI : BaseUI
         Init();
 
         _inventory.OnInventoryChanged += UpdateInventoryUI;
-        _equipment.OnEquipmentChanged += HandleUpdateEquipmentSlot;
+        _equipment.OnEquipmentChanged += UpdateEquipUI;
     }
 
     private void OnEnable()
@@ -37,8 +37,8 @@ public class EquipmentUI : BaseUI
         }
         if (_equipment != null)
         {
-            _equipment.OnEquipmentChanged -= HandleUpdateEquipmentSlot;
-            _equipment.OnEquipmentChanged += HandleUpdateEquipmentSlot;
+            _equipment.OnEquipmentChanged -= UpdateEquipUI;
+            _equipment.OnEquipmentChanged += UpdateEquipUI;
         }
     }
 
@@ -50,7 +50,7 @@ public class EquipmentUI : BaseUI
         }
         if (_equipment != null)
         {
-            _equipment.OnEquipmentChanged -= HandleUpdateEquipmentSlot;
+            _equipment.OnEquipmentChanged -= UpdateEquipUI;
         }
     }
 
@@ -107,6 +107,7 @@ public class EquipmentUI : BaseUI
 
             _inventorySlots[slotIndex].SetSlot(item);
             _inventorySlots[slotIndex].gameObject.SetActive(true);
+            Logger.Log($"인벤토리 {slotIndex} 번째 장비 슬롯에 설정");
         }
 
         // 남은 슬롯 비활성화
@@ -130,7 +131,11 @@ public class EquipmentUI : BaseUI
             index++;
 
             // 장착한 장비 시 스킵
-            if (_equipment.IsEquip(item)) continue;
+            if (_equipment.IsEquip(item))
+            {
+                UpdateEquipmentSlot(item, EquipmentApplyType.Equip);
+                continue;
+            }
 
             return true;
         }
@@ -139,21 +144,20 @@ public class EquipmentUI : BaseUI
         return false;
     }
 
-    private void HandleUpdateEquipmentSlot(ItemInstance item, EquipmentApplyType applyType)
+    private void UpdateEquipmentSlot(ItemInstance item, EquipmentApplyType applyType)
     {
         ItemSlot equipmentSlot = _equipmentSlots[item.ItemData.EquipmentType];
         if (applyType == EquipmentApplyType.Equip)
         {
             equipmentSlot.SetSlot(item);
             _equipmentCount = Math.Min(_equipmentCount + 1, _equipmentSlots.Count);
+            Logger.Log($"{item.ItemData.EquipmentType} 타입 장비 장착");
         }
         else
         {
             equipmentSlot.ResetSlot();
             _equipmentCount = Math.Max(_equipmentCount - 1, 0);
         }
-
-        UpdateEquipUI();
     }
 
     /// <summary>
