@@ -32,7 +32,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     private int _killCount = 0;
     public int KillCount => _killCount;
 
-    
+
 
 
     // 액션
@@ -131,6 +131,11 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
     #region 이벤트
+    public void OnDieMonster(Monster monster)
+    {
+        _killCount += 1;
+        AddKillCountAction?.Invoke(_killCount);
+    }
 
     void SpawnSkillSelectUI(int level)
     {
@@ -159,16 +164,27 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameClearAction?.Invoke();
         PauseGame();
 
+        // 보상 지급
+        PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // 스테이지 클리어 보상 추가
+        PlayerManager.Instance.StagePlayer.UpdateGold();
+        PlayerManager.Instance.Condition.GlobalLevel.AddExp(_nowStage.RewardExp + _waveController.SaveExp);
+        List<StageRewardInfo> rewards = GiveReward();
+
         StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Victory);
         if (resultUI != null)
         {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
+            StageResultInfo resultInfo = new StageResultInfo
+            {
+                stageName = _nowStage.StageName,
+                playTIme = PlayTime,
+                killCount = KillCount,
+                gold = PlayerManager.Instance.StagePlayer.GoldValue + +_nowStage.RewardGold,
+                exp = _waveController.SaveExp + _nowStage.RewardExp,
+            };
+
+            resultUI.Init(resultInfo, rewards);
         }
 
-        // 보상 지급
-        PlayerManager.Instance.StagePlayer.AddGold(_nowStage.RewardGold);   // ㅅ테이지 클리어 보상 추가
-        PlayerManager.Instance.StagePlayer.UpdateGold();
-        PlayerManager.Instance.Condition.GlobalLevel.AddExp(_nowStage.RewardExp + _waveController.SaveExp);
     }
 
     public void GameOver()
@@ -176,35 +192,136 @@ public class StageManager : SceneSingletonManager<StageManager>
         OnGameOverAction?.Invoke();
         PauseGame();
 
-        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
-        if (resultUI != null)
-        {
-            resultUI.Init(PlayerManager.Instance.StagePlayer.GoldValue, _waveController.SaveExp);
-        }
-
         // 보상 지급
         PlayerManager.Instance.StagePlayer.UpdateGold();
         PlayerManager.Instance.Condition.GlobalLevel.AddExp(_waveController.SaveExp);   // 쌓인 경험치만 지급
+
+
+        // UI 표시
+        StageResultUI resultUI = (StageResultUI)UIManager.Instance.SpawnUI(UIName.UI_Defeat);
+        if (resultUI != null)
+        {
+            StageResultInfo resultInfo = new StageResultInfo
+            {
+                stageName = _nowStage.StageName,
+                playTIme = PlayTime,
+                killCount = KillCount,
+                gold = PlayerManager.Instance.StagePlayer.GoldValue,
+                exp = _waveController.SaveExp,
+            };
+
+            // todo : GameOver 했을 때에도 모아둔 보상을 까서 전달해야함
+            resultUI.Init(resultInfo, null);
+        }
+
+    }
+
+
+    List<StageRewardInfo> GiveReward()
+    {
+        float rand = UnityEngine.Random.value;
+
+        List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
+
+        StageRewardInfo weaponMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Weapon };
+        StageRewardInfo armortMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Armor };
+        StageRewardInfo shoesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Shoes };
+        StageRewardInfo glovesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Gloves };
+        StageRewardInfo beltMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Belt };
+        StageRewardInfo necklaceMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Necklace };
+
+        for (int i = 0; i < _nowStage.RewardBoxCount; i++)
+        {
+            StageRewardInfo newRewardInfo = default;
+
+            if (rand <= StageDefine.StageClearEquipRewardWeight)
+            {
+                // 장비 주기
+                newRewardInfo.type = ItemType.Equipment;
+                newRewardInfo.itemInfo = GetEquipReward(_nowStage.ItemBoxData);
+                newRewardInfo.count += 1;
+
+                rewardInfos.Add(newRewardInfo);
+
+            }
+            else
+            {
+                switch (GetUpgradeMaterial())
+                {
+                    case WalletType.UpgradeMaterial_Weapon:
+                        weaponMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Armor:
+                        armortMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Shoes:
+                        shoesMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Gloves:
+                        glovesMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Belt:
+                        beltMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Necklace:
+                        necklaceMaterial.count += 1;
+                        break;
+                }
+            }
+        }
+
+        if (weaponMaterial.count > 0) rewardInfos.Add(weaponMaterial);
+        if (armortMaterial.count > 0) rewardInfos.Add(armortMaterial);
+        if (shoesMaterial.count > 0) rewardInfos.Add(shoesMaterial);
+        if (glovesMaterial.count > 0) rewardInfos.Add(glovesMaterial);
+        if (beltMaterial.count > 0) rewardInfos.Add(beltMaterial);
+        if (necklaceMaterial.count > 0) rewardInfos.Add(necklaceMaterial);
+
+        for (int i = 0; i < rewardInfos.Count; ++i)
+        {
+            // 장비 어떻게 주면 되는지?
+
+            if (rewardInfos[i].type == ItemType.UpgradeMaterial)
+                PlayerManager.Instance.Wallet[rewardInfos[i].upgradeMaterialType].Add(rewardInfos.Count);
+        }
+
+
+        return rewardInfos;
     }
 
     #endregion
 
-    #region  몬스터
 
-    public void OnDieMonster(Monster monster)
+    #region 임시
+
+    // 리팩토링 되면 제공받은 함수로 사용하기!
+
+    ItemInstance GetEquipReward(ItemBoxData itmeBoxData)
     {
-        _killCount += 1;
-        AddKillCountAction?.Invoke(_killCount);
+        float rand = UnityEngine.Random.value * 100f;
+        float cumulative = 0f;
+
+        foreach (ItemBoxEntry entry in itmeBoxData.ItemBoxEntries)
+        {
+            cumulative += entry.Weight;
+            if (rand <= cumulative)
+            {
+                int index = UnityEngine.Random.Range(0, entry.Items.Count);
+                return new ItemInstance(entry.ItemClass, entry.Items[index]);
+            }
+        }
+
+        return null;
     }
 
-    public Transform GetNearestMonster()
+    WalletType GetUpgradeMaterial()
     {
-        return MonsterManager.Instance.GetNearestMonster();
-    }
+        return (WalletType)Define.Random.Next((int)WalletType.UpgradeMaterial_Weapon,
+            (int)WalletType.UpgradeMaterial_Weapon + StageDefine.EquipTypeCount);
 
+    }
 
     #endregion
-
 
     #region Test
     [Title("Test")]
@@ -227,4 +344,10 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     #endregion
+
+
+
+
+
 }
+

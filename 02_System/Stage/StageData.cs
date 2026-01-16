@@ -13,7 +13,8 @@ public class StageData : ScriptableObject
     [Title("Reward Data")]
     [SerializeField] private int _rewardExp = 100;      // 보상 경험치
     [SerializeField] private int _rewardGold = 100;     // 보상 골드
-    [SerializeField] private int _rewardBoxCount = 5;   // 랜덤으로 장비 업그레이드 스크롤 나오는 갯수
+    [SerializeField] private int _rewardBoxCount = 5;   // 랜덤으로 장비나 업그레이드 스크롤 나오는 갯수
+    [SerializeField] ItemBoxData _itemBoxData;          // 랜덤으로 나올 장비의 정보들 (픽업시스템 재활용)
     
     [Title("Map Data")]
     [SerializeField] InfiniteMap _map;
@@ -30,6 +31,7 @@ public class StageData : ScriptableObject
     public int RewardBoxCount => _rewardBoxCount;
     public string StageName => _stageName;
     public Sprite StageIcon => _stageIcon;
+    public ItemBoxData ItemBoxData => _itemBoxData;
 
 
     private void OnValidate()
