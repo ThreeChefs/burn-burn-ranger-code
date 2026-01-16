@@ -126,7 +126,7 @@ public class Equipment
                 _condition[statType].UpdateEquipmentValue(value);
                 break;
             case EffectApplyType.Percent:
-                _condition[statType].UpdateEquipmentValue(value * 0.01f);
+                _condition[statType].UpdateEquipmentValue(_condition[statType].BaseValue * value * 0.01f);
                 break;
         }
     }

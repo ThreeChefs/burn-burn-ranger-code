@@ -32,7 +32,7 @@ public class PlayerStat : BaseStat
     /// <param name="value"></param>
     public void UpdateEquipmentValue(float value)
     {
-        EquipmentValue = value;
+        EquipmentValue += value;
 
         CurValue = Mathf.Min(CurValue, MaxValue);
 
