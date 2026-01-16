@@ -47,7 +47,7 @@ public class Equipment
     public void Equip(ItemInstance item)
     {
         EquipmentType type = item.ItemData.EquipmentType;
-        Unequip(type);
+        Unequip(item);
 
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
@@ -57,12 +57,13 @@ public class Equipment
     /// <summary>
     /// [public] 장비 장착 해제
     /// </summary>
-    /// <param name="type"></param>
-    public void Unequip(EquipmentType type)
+    /// <param name="item"></param>
+    public void Unequip(ItemInstance item)
     {
+        EquipmentType type = item.ItemData.EquipmentType;
         if (_equipments.TryGetValue(type, out ItemInstance prev))
         {
-            // 기존 장비 해제
+            _equipments[type] = null;
             if (prev != null)
             {
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
