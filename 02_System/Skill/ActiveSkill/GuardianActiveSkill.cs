@@ -16,24 +16,25 @@ public class GuardianActiveSkill : ActiveSkill
 
     protected override IEnumerator UseSkill(Transform target = null)
     {
+        Vector2 originPos = transform.position;
+        yield return projectileSpawnInterval;
         for (int i = 0; i < _count; i++)
         {
             ProjectileManager.Instance.Spawn(
                 projectileIndex,
                 this,
                 Vector2.zero,
-                position: CalcSpawnPos(),
+                position: CalcSpawnPos(originPos),
                 parent: transform);
-            yield return projectileSpawnInterval;
         }
     }
 
-    private Vector2 CalcSpawnPos()
+    private Vector2 CalcSpawnPos(Vector2 standardPos)
     {
-        float rad = 360 / _count * _index * Mathf.Deg2Rad;
+        float rad = 360f / _count * _index * Mathf.Deg2Rad;
         _index = (_index + 1) % _count;
 
-        Vector2 pos = (Vector2)transform.position + new Vector2(Mathf.Cos(rad) * _multiplier, Mathf.Sin(rad) * _multiplier);
+        Vector2 pos = standardPos + new Vector2(Mathf.Cos(rad) * _multiplier, Mathf.Sin(rad) * _multiplier);
         return pos;
     }
 
