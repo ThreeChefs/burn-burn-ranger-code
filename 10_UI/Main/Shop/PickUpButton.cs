@@ -15,11 +15,11 @@ public class PickUpButton : BaseButton
     [SerializeField] private TextMeshProUGUI _requiredValue;
 
     private PickUpSystem _pickUpSystem;
-    private List<ItemInstance> _items = new();
+    private readonly List<ItemInstance> _items = new();
 
     private void Start()
     {
-        _pickUpSystem = FindAnyObjectByType<PickUpSystem>();
+        _pickUpSystem = GameManager.Instance.PickUpSystem;
         foreach (BoxWallet wallet in _boxWallets)
         {
             PlayerManager.Instance.Wallet[wallet.WalletType].OnValueChanged += CheckWallet;
