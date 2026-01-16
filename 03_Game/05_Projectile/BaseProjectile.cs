@@ -39,6 +39,7 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float tickTimer;
 
     // 효과음
+    protected bool useCustomSfx;            // sfx를 사용하는 시점을 커스텀
     protected SfxName sfxName;
     protected int sfxIndex;
     protected Coroutine sfxCoroutine;
@@ -125,6 +126,13 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         // 비주얼
         ProjectileVisualData visualData = data.VisualData;
+
+        if (visualData == null)
+        {
+            Logger.Log($"{data.name}에서 자율적으로 sfx 사용");
+            useCustomSfx = true;
+            return;
+        }
 
         sfxName = SfxName.Sfx_Projectile;
         sfxIndex = visualData.SfxIndex;

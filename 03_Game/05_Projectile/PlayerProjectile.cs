@@ -96,7 +96,7 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                if (sfxIndex >= 0)
+                if (sfxIndex >= 0 && !useCustomSfx)
                 {
                     SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
                 }
@@ -214,7 +214,7 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer = 0f;
 
-        if (sfxIndex >= 0 && sfxCoroutine == null)
+        if (sfxIndex >= 0 && !useCustomSfx && sfxCoroutine == null)
         {
             sfxCoroutine = StartCoroutine(PlaySfx());
         }
