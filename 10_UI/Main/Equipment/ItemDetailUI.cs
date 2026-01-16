@@ -119,7 +119,7 @@ public class ItemDetailUI : BaseUI
         _itemIcon.sprite = itemData.Icon;
         _itemLevel.text = $"레벨: {instance.Level}/{ItemUtils.GetClassMaxLevel(itemClass)}";
         _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
-        _statValue.text = "100";       // todo: item utils에서 스탯 계산식 구현 후 반영
+        _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
         _itemDescription.text = itemData.Description;
 
         for (int i = 0; i < MaxSkillCount; i++)
@@ -127,8 +127,8 @@ public class ItemDetailUI : BaseUI
             if (i < itemData.Equipments.Length)
             {
                 // todo: item class로 lock/unlock 표기하기
-                _skillColors[i].color = ItemUtils.GetClassColor(itemClass);
-                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor(itemClass);
+                _skillColors[i].color = ItemUtils.GetClassColor((ItemClass)i + 1);
+                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor((ItemClass)i + 1);
                 _skillDescriptions[i].text = itemData.Equipments[i].Description;
                 _skillDescriptions[i].transform.parent.gameObject.SetActive(true);
             }

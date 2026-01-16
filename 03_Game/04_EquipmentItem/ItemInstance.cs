@@ -21,6 +21,21 @@ public class ItemInstance
         Level = 1;
     }
 
+    public (StatType, int) GetStatAndValue()
+    {
+        EquipmentType type = ItemData.EquipmentType;
+        int defaultValue = ItemUtils.GetDefaultStatValue(ItemClass, type);
+        int levelValue = CalcLevelValue();
+
+        return (ItemUtils.GetStatType(type), defaultValue + levelValue);
+    }
+
+    private int CalcLevelValue()
+    {
+        // todo: 장비에 따라 수치 다르게 계산하도록 수정
+        return Level * 20;
+    }
+
     public override string ToString()
     {
         return $"ItemClass: {ItemClass} " + ItemData.ToString();

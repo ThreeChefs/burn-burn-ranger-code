@@ -101,6 +101,11 @@ public class Equipment
 
         if (item == null) return;
 
+        // 장비 자체 수치 계산
+        (StatType statType, int value) = item.GetStatAndValue();
+        _condition[statType].UpdateBuffValue(value * sign);
+
+        // 장비 등급에 따른 수치 계산
         foreach (var equipmentEffect in item.ItemData.Equipments)
         {
             switch (equipmentEffect.EffectType)
