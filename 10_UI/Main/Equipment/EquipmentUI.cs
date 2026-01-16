@@ -58,6 +58,11 @@ public class EquipmentUI : BaseUI
 
     protected override void AwakeInternal()
     {
+        // todo: 데이터 빼기
+        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("MetalSuit"));
+        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("Kunai"));
+        _defaultData.Add(AssetLoader.FindAndLoadByName<ItemData>("Kunai"));
+
         _equipmentSlots = new();
         foreach (Transform child in _equipmentSlotParent)
         {
@@ -72,7 +77,8 @@ public class EquipmentUI : BaseUI
     private void Init()
     {
         // todo: 초기 데이터 나중에 어떻게 할지 얘기해보긴 해야함
-        _defaultData.ForEach(data => _inventory.Add(new ItemInstance(ItemClass.Normal, data)));
+        _defaultData.ForEach(data => _inventory.Add(
+            new ItemInstance((ItemClass)UnityEngine.Random.Range(1, 5), data)));
 
         for (int i = 0; i < _inventory.Items.Count; i++)
         {
@@ -100,27 +106,48 @@ public class EquipmentUI : BaseUI
     /// </summary>
     private void UpdateEquipUI()
     {
-        int i = 0;
-        for (int j = 0; i < _inventory.Items.Count && j < _inventorySlots.Count; i++, j++)
+        ItemInstance item = null;
+        int itemIndex = 0;
+
+        // todo: 인벤토리 정렬
+
+        for (int slotIndex = 0; slotIndex < _inventorySlots.Count; slotIndex++)
         {
-            ItemInstance item = _inventory.Items[i];
+            // 장착한 장비일 경우 스킵
+            if (!TryGetNextUnequippedItem(ref itemIndex, out item)) break;
 
-            // 장착한 장비 시 스킵
-            if (_equipment.IsEquip(item))
-            {
-                i++;
-                continue;
-            }
-
-            _inventorySlots[j].SetSlot(item);
-            _inventorySlots[j].gameObject.SetActive(true);
+            _inventorySlots[slotIndex].SetSlot(item);
+            _inventorySlots[slotIndex].gameObject.SetActive(true);
         }
 
-        for (int j = i - _equipmentCount; j < _inventorySlots.Count; j++)
+        // 남은 슬롯 비활성화
+        for (int j = itemIndex - _equipmentCount; j < _inventorySlots.Count; j++)
         {
             _inventorySlots[j].gameObject.SetActive(false);
         }
-        //_inventorySlots.Sort();
+    }
+
+    /// <summary>
+    /// 장착한 장비인지 확인하고, 아닐 경우 아이템 반환
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private bool TryGetNextUnequippedItem(ref int index, out ItemInstance item)
+    {
+        while (index < _inventory.Items.Count)
+        {
+            item = _inventory.Items[index];
+            index++;
+
+            // 장착한 장비 시 스킵
+            if (_equipment.IsEquip(item)) continue;
+
+            return true;
+        }
+
+        item = null;
+        return false;
     }
 
     private void HandleUpdateEquipmentSlot(ItemInstance item, EquipmentApplyType applyType)
