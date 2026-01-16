@@ -13,15 +13,11 @@ public class BossNormalPattern2 : BossPatternBase
     [SerializeField] private float stepAngle = 10f;
     [SerializeField] private float shotInterval = 0.03f;
     [SerializeField] private int loops = 1;
-    [SerializeField] private float cooldown = 2f;
-    private float _nextReadyTime;
+
 
     protected override bool CanRun()
     {
-        if (Time.time < _nextReadyTime)
-        {
-            return false;
-        }
+
         if (projectilePrefab == null)
         {
             return false;
@@ -31,7 +27,7 @@ public class BossNormalPattern2 : BossPatternBase
 
     protected override IEnumerator Execute()
     {
-        _nextReadyTime = Time.time + cooldown;
+
 
         int shotsPerLoop = Mathf.CeilToInt(360f / Mathf.Max(0.01f, stepAngle));
         float angle = startAngle;
