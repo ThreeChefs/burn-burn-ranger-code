@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class BaseSlot : MonoBehaviour
 {
     [SerializeField] protected Image iconImg;
-    [SerializeField] protected Image itemClass;
     [SerializeField] protected TextMeshProUGUI countText;
 
     public virtual void SetSlot(SlotInfo slotInfo)
@@ -18,15 +17,6 @@ public class BaseSlot : MonoBehaviour
         }
 
         countText.text = slotInfo.ContentCount.ToString();
-
-        if(slotInfo.ContentClassLevel != ItemClass.None)
-        {
-            itemClass.gameObject.SetActive(true);
-        }
-        else
-        {
-            itemClass.gameObject.SetActive(false);
-        }
 
     }
 
