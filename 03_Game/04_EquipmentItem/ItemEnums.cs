@@ -21,6 +21,10 @@ public enum EquipmentType
 {
     Weapon,
     Armor,
+    Necklace,
+    Gloves,
+    Belt,
+    Shoes,
 }
 
 // 장비 효과
