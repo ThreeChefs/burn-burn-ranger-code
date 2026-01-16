@@ -13,7 +13,7 @@ public class Equipment
     public IReadOnlyDictionary<EquipmentType, ItemInstance> Equipments => _equipments;
 
     // 이벤트
-    public event Action<EquipmentType> OnEquipmentChanged;
+    public event Action<ItemInstance, EquipmentApplyType> OnEquipmentChanged;
 
     public Equipment(PlayerCondition condition)
     {
@@ -51,7 +51,8 @@ public class Equipment
 
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
-        OnEquipmentChanged?.Invoke(type);
+
+        OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Equip);
     }
 
     /// <summary>
@@ -69,6 +70,8 @@ public class Equipment
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
             }
         }
+
+        OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Unequip);
     }
 
     /// <summary>

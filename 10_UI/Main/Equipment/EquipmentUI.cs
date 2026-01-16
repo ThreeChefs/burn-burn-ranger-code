@@ -9,6 +9,7 @@ public class EquipmentUI : BaseUI
     [SerializeField] private ItemSlot _itemSlotPrefab;
 
     private Inventory _inventory;
+    private Equipment _equipment;
 
     // 장착 중인 장비
     [SerializeField] private Transform _equipmentSlotParent;
@@ -21,9 +22,37 @@ public class EquipmentUI : BaseUI
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
+        _equipment = PlayerManager.Instance.Equipment;
         Init();
 
         _inventory.OnInventoryChanged += UpdateInventoryUI;
+        _equipment.OnEquipmentChanged += HandleUpdateEquipmentSlot;
+    }
+
+    private void OnEnable()
+    {
+        if (_inventory != null)
+        {
+            _inventory.OnInventoryChanged -= UpdateInventoryUI;
+            _inventory.OnInventoryChanged += UpdateInventoryUI;
+        }
+        if (_equipment != null)
+        {
+            _equipment.OnEquipmentChanged -= HandleUpdateEquipmentSlot;
+            _equipment.OnEquipmentChanged += HandleUpdateEquipmentSlot;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_inventory != null)
+        {
+            _inventory.OnInventoryChanged -= UpdateInventoryUI;
+        }
+        if (_equipment != null)
+        {
+            _equipment.OnEquipmentChanged -= HandleUpdateEquipmentSlot;
+        }
     }
 
     protected override void AwakeInternal()
@@ -44,16 +73,69 @@ public class EquipmentUI : BaseUI
         // todo: 초기 데이터 나중에 어떻게 할지 얘기해보긴 해야함
         _defaultData.ForEach(data => _inventory.Add(new ItemInstance(ItemClass.Normal, data)));
 
-        // todo: 장비 슬롯도 초기화
-        foreach (ItemInstance item in _inventory.Items)
+        for (int i = 0; i < _inventory.Items.Count; i++)
         {
-            ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
-            _inventorySlots.Add(itemSlot);
-            itemSlot.SetSlot(item);
-            itemSlot.transform.SetParent(_inventoryUI, false);
+            AddItemSlot();
         }
 
+        UpdateEquipUI();
+
+        // todo: 레이아웃 대신 직접 계산
+        //_inventoryUI.GetComponent<GridLayoutGroup>().enabled = false;
+        //_inventoryUI.GetComponent<ContentSizeFitter>().enabled = false;
+    }
+
+    private void AddItemSlot()
+    {
+        ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
+        itemSlot.transform.SetParent(_inventoryUI, false);
+        _inventorySlots.Add(itemSlot);
+    }
+
+    /// <summary>
+    /// 인벤토리 전부 순회하며 슬롯 업데이트 하기
+    /// todo: 리스트 전부 순회 말고 단순화 방법 있나 생각해보기
+    /// 앞의 슬롯이 빠지면 다시 그려줘야한다는 건 변함이 없기는 함
+    /// </summary>
+    private void UpdateEquipUI()
+    {
+        int i = 0;
+        for (int j = 0; i < _inventory.Items.Count && j < _inventorySlots.Count; i++, j++)
+        {
+            ItemInstance item = _inventory.Items[i];
+
+            // 장착한 장비 시 스킵
+            if (_equipment.IsEquip(item))
+            {
+                _equipmentSlots[item.ItemData.EquipmentType].SetSlot(item);
+                i++;
+                continue;
+            }
+
+            _inventorySlots[j].SetSlot(item);
+            _inventorySlots[j].gameObject.SetActive(true);
+        }
+
+        for (int j = i; j < _inventorySlots.Count; j++)
+        {
+            _inventorySlots[j].gameObject.SetActive(false);
+        }
         //_inventorySlots.Sort();
+    }
+
+    private void HandleUpdateEquipmentSlot(ItemInstance item, EquipmentApplyType applyType)
+    {
+        ItemSlot equipmentSlot = _equipmentSlots[item.ItemData.EquipmentType];
+        if (applyType == EquipmentApplyType.Equip)
+        {
+            equipmentSlot.SetSlot(item);
+        }
+        else
+        {
+            equipmentSlot.ResetSlot();
+        }
+
+        UpdateEquipUI();
     }
 
     /// <summary>

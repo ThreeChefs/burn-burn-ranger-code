@@ -67,7 +67,7 @@ public enum BuffType
 }
 
 // 장비 적용 타입
-enum EquipmentApplyType
+public enum EquipmentApplyType
 {
     Equip,
     Unequip

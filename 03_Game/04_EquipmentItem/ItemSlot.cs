@@ -64,17 +64,31 @@ public class ItemSlot : MonoBehaviour
     /// <param name="itemInstance"></param>
     public virtual void SetSlot(ItemInstance itemInstance)
     {
+        if (_itemInstance != null && _itemInstance.Equals(itemInstance)) return;
+
         _itemInstance = itemInstance;
 
-        itemClass.gameObject.SetActive(true);
-        icon.gameObject.SetActive(true);
-        level.gameObject.SetActive(true);
-        count.gameObject.SetActive(true);
+        SetActiveComponent(true);
 
         itemClass.color = ItemUtils.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
         level.text = itemInstance.Level.ToString();
         count.text = itemInstance.Count == 0 ? "" : itemInstance.Count.ToString();
+    }
+
+    public virtual void ResetSlot()
+    {
+        _itemInstance = null;
+
+        SetActiveComponent(false);
+    }
+
+    private void SetActiveComponent(bool active)
+    {
+        itemClass.gameObject.SetActive(active);
+        icon.gameObject.SetActive(active);
+        level.gameObject.SetActive(active);
+        count.gameObject.SetActive(active);
     }
     #endregion
 
