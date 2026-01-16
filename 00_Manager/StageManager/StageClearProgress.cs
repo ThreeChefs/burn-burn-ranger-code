@@ -28,6 +28,16 @@ public class StageClearProgress
         };
     }
 
+
+    public void ImportStageProgress(StageClearProgressSave stageClearProgressSave)
+    {
+        _clearStageNum = stageClearProgressSave.clearStageNum;
+        _openedStageRewardStep = stageClearProgressSave.openedStageRewardStep;
+        _receivedStageRewardStep = stageClearProgressSave.receivedStageRewardStep;
+        _lastPlayingStageRecord = stageClearProgressSave.lastPlayingStageRecord;
+    }
+
+
     public void SaveStagePrgress(int stageNum, int lastPlayingStageRecord)
     {
         _clearStageNum = stageNum;
