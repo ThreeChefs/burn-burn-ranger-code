@@ -54,10 +54,11 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     FlyingBallProjectileData,       // 플라잉볼 (부메랑->마그네틱다트)
     WhistleArrowProjectileData,     // 휘파람 화살
     LaserProjectileData,            // 레이저
-    DeathLaserProjectileData,  // 죽음의 레이저
-    
+    DeathLaserProjectileData,       // 죽음의 레이저
+    GuardianProjectileData,         // 수호자
+
     RangedAttack,                   // 
-    
+
     // 공통
     RangedProjectile
 }
