@@ -131,7 +131,7 @@ public class Monster : PoolObject, IDamageable
     }
 
 
-    public void Die()
+    public virtual void Die()
     {
 
         DropItem();

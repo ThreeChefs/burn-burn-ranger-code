@@ -2,6 +2,7 @@ using UnityEngine;
 
 public static class ItemUtils
 {
+    #region 아이템 등급 - 색상
     public static readonly Color ColorNormal = new(0.75f, 0.75f, 0.75f); // 회색
     public static readonly Color ColorRare = new(0.30f, 0.69f, 0.31f); // 녹색
     public static readonly Color ColorElite = new(0.13f, 0.59f, 0.95f); // 파랑
@@ -29,7 +30,9 @@ public static class ItemUtils
         Color baseColor = GetClassColor(itemClass);
         return baseColor * 1.15f;
     }
+    #endregion
 
+    #region 아이템 등급 - 문자열
     /// <summary>
     /// 아이템 등급 문자열 반환
     /// </summary>
@@ -47,7 +50,9 @@ public static class ItemUtils
             _ => "None"
         };
     }
+    #endregion
 
+    #region 아이템 등급 - 레벨
     public static int GetClassMaxLevel(ItemClass itemClass)
     {
         return itemClass switch
@@ -60,6 +65,120 @@ public static class ItemUtils
             _ => 1
         };
     }
+    #endregion
+
+    #region 아이템 등급 - 스텟 수치
+    public static int GetDefaultStatValue(ItemClass itemClass, EquipmentType equipmentType)
+    {
+        return equipmentType switch
+        {
+            EquipmentType.Weapon => GetWeaponValue(itemClass),
+            EquipmentType.Necklace => GetNecklaceValue(itemClass),
+            EquipmentType.Gloves => GetGlovesValue(itemClass),
+            EquipmentType.Armor => GetArmorValue(itemClass),
+            EquipmentType.Belt => GetBeltValue(itemClass),
+            EquipmentType.Shoes => GetShoesValue(itemClass),
+            _ => 0,
+        };
+    }
+
+    private static int GetWeaponValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 10,
+            ItemClass.Rare => 20,
+            ItemClass.Elite => 30,
+            ItemClass.Epic => 50,
+            ItemClass.Legendary => 100,
+            _ => 10
+        };
+    }
+
+    private static int GetArmorValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 50,
+            ItemClass.Rare => 70,
+            ItemClass.Elite => 100,
+            ItemClass.Epic => 200,
+            ItemClass.Legendary => 500,
+            _ => 10
+        };
+    }
+
+    private static int GetNecklaceValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 7,
+            ItemClass.Rare => 14,
+            ItemClass.Elite => 21,
+            ItemClass.Epic => 35,
+            ItemClass.Legendary => 70,
+            _ => 10
+        };
+    }
+
+    private static int GetGlovesValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 8,
+            ItemClass.Rare => 16,
+            ItemClass.Elite => 24,
+            ItemClass.Epic => 40,
+            ItemClass.Legendary => 80,
+            _ => 10
+        };
+    }
+
+    private static int GetBeltValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 38,
+            ItemClass.Rare => 53,
+            ItemClass.Elite => 75,
+            ItemClass.Epic => 150,
+            ItemClass.Legendary => 300,
+            _ => 10
+        };
+    }
+
+    private static int GetShoesValue(ItemClass itemClass)
+    {
+        return itemClass switch
+        {
+            ItemClass.Normal => 38,
+            ItemClass.Rare => 53,
+            ItemClass.Elite => 75,
+            ItemClass.Epic => 150,
+            ItemClass.Legendary => 300,
+            _ => 10
+        };
+    }
+    #endregion
+
+    #region 아이템 타입
+    public static StatType GetStatType(EquipmentType type)
+    {
+        switch (type)
+        {
+            case EquipmentType.Weapon:
+            case EquipmentType.Necklace:
+            case EquipmentType.Gloves:
+                return StatType.Attack;
+            case EquipmentType.Armor:
+            case EquipmentType.Belt:
+            case EquipmentType.Shoes:
+                return StatType.Health;
+            default:
+                throw new System.NotImplementedException();
+        }
+    }
+    #endregion
 
 #if UNITY_EDITOR
     // 아이템 집어넣을 때 id 값 편하게 하려고 만든 값

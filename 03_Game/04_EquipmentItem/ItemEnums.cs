@@ -22,6 +22,10 @@ public enum EquipmentType
 {
     Weapon,
     Armor,
+    Necklace,
+    Gloves,
+    Belt,
+    Shoes,
 }
 
 // 장비 효과
@@ -64,7 +68,7 @@ public enum BuffType
 }
 
 // 장비 적용 타입
-enum EquipmentApplyType
+public enum EquipmentApplyType
 {
     Equip,
     Unequip

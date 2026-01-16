@@ -46,9 +46,9 @@ public class ItemDetailUI : BaseUI
 
     [Header("Buttons")]
     [SerializeField] private Button _equipButton;
+    [SerializeField] private Button _unequipButton;
     [SerializeField] private Button _levelUpButton;
     [SerializeField] private Button _allLevelUpButton;
-    private TextMeshProUGUI _equipButtonText;
 
     // 캐싱
     private ItemInstance _curItem;
@@ -59,6 +59,7 @@ public class ItemDetailUI : BaseUI
     {
         //버튼
         _equipButton.onClick.AddListener(Equip);
+        _unequipButton.onClick.AddListener(Unequip);
 
         // 아이템 이벤트 구독
     }
@@ -66,6 +67,7 @@ public class ItemDetailUI : BaseUI
     private void OnDisable()
     {
         _equipButton.onClick.RemoveAllListeners();
+        _unequipButton.onClick.RemoveAllListeners();
 
         // 아이템 이벤트 구독 해제
     }
@@ -77,7 +79,6 @@ public class ItemDetailUI : BaseUI
         base.AwakeInternal();
 
         _itemIconOutline = _itemIconContainer.GetComponent<Outline>();
-        _equipButtonText = _equipButton.GetComponentInChildren<TextMeshProUGUI>(true);
 
         ResetList();
     }
@@ -97,6 +98,10 @@ public class ItemDetailUI : BaseUI
     }
     #endregion
 
+    /// <summary>
+    /// [public] 아이템 정보 ui에 반영하기
+    /// </summary>
+    /// <param name="instance"></param>
     public void SetItem(ItemInstance instance)
     {
         if (_curItem != null && _curItem.Equals(instance)) return;
@@ -114,7 +119,7 @@ public class ItemDetailUI : BaseUI
         _itemIcon.sprite = itemData.Icon;
         _itemLevel.text = $"레벨: {instance.Level}/{ItemUtils.GetClassMaxLevel(itemClass)}";
         _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
-        _statValue.text = "100";       // todo: item utils에서 스탯 계산식 구현 후 반영
+        _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
         _itemDescription.text = itemData.Description;
 
         for (int i = 0; i < MaxSkillCount; i++)
@@ -122,8 +127,8 @@ public class ItemDetailUI : BaseUI
             if (i < itemData.Equipments.Length)
             {
                 // todo: item class로 lock/unlock 표기하기
-                _skillColors[i].color = ItemUtils.GetClassColor(itemClass);
-                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor(itemClass);
+                _skillColors[i].color = ItemUtils.GetClassColor((ItemClass)i + 1);
+                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor((ItemClass)i + 1);
                 _skillDescriptions[i].text = itemData.Equipments[i].Description;
                 _skillDescriptions[i].transform.parent.gameObject.SetActive(true);
             }
@@ -137,13 +142,28 @@ public class ItemDetailUI : BaseUI
         _goldText.text = $"{Gold.Value}/요구골드";
         _scrollText.text = $"{Scroll.Value}/요구스크롤";
 
-        _equipButtonText.text = instance.IsEquipped ? "장착 해제" : "장착";
+        UpdateEquipButton();
     }
 
     private void Equip()
     {
         PlayerManager.Instance.Equipment.Equip(_curItem);
+        UpdateEquipButton();
         gameObject.SetActive(false);
+    }
+
+    private void Unequip()
+    {
+        PlayerManager.Instance.Equipment.Unequip(_curItem);
+        UpdateEquipButton();
+        gameObject.SetActive(false);
+    }
+
+    private void UpdateEquipButton()
+    {
+        bool isEquipped = PlayerManager.Instance.Equipment.IsEquip(_curItem);
+        _equipButton.gameObject.SetActive(!isEquipped);
+        _unequipButton.gameObject.SetActive(isEquipped);
     }
 
 #if UNITY_EDITOR
@@ -174,6 +194,7 @@ public class ItemDetailUI : BaseUI
         _scrollText = transform.FindChild<Transform>("Bar_Scroll").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
 
         _equipButton = transform.FindChild<Button>("Button - Equip");
+        _unequipButton = transform.FindChild<Button>("Button - Unequip");
         _levelUpButton = transform.FindChild<Button>("Button - LevelUp");
         _allLevelUpButton = transform.FindChild<Button>("Button - AllLevelUp");
     }

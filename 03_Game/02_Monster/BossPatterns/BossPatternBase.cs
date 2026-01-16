@@ -12,7 +12,7 @@ public abstract class BossPatternBase : MonoBehaviour
 
     protected BossController boss;
 
-    private float _nextReadyTime;
+    public float _nextReadyTime;
     private bool _hasRunOnce;
 
     public string PatternName => string.IsNullOrWhiteSpace(patternName) ? GetType().Name : patternName;
