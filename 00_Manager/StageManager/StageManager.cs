@@ -27,12 +27,12 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     private bool _isPlaying = false;
-    public bool IsPlaying => _isPlaying; 
+    public bool IsPlaying => _isPlaying;
 
     private int _killCount = 0;
     public int KillCount => _killCount;
 
-    
+
 
 
     // 액션
@@ -131,6 +131,11 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
     #region 이벤트
+    public void OnDieMonster(Monster monster)
+    {
+        _killCount += 1;
+        AddKillCountAction?.Invoke(_killCount);
+    }
 
     void SpawnSkillSelectUI(int level)
     {
@@ -218,6 +223,13 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
 
+        StageRewardInfo weaponMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Weapon };
+        StageRewardInfo armortMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Armor };
+        StageRewardInfo shoesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Shoes };
+        StageRewardInfo glovesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Gloves };
+        StageRewardInfo beltMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Belt };
+        StageRewardInfo necklaceMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Necklace };
+
         for (int i = 0; i < _nowStage.RewardBoxCount; i++)
         {
             StageRewardInfo newRewardInfo = default;
@@ -227,53 +239,54 @@ public class StageManager : SceneSingletonManager<StageManager>
                 // 장비 주기
                 newRewardInfo.type = ItemType.Equipment;
                 newRewardInfo.itemInfo = GetEquipReward(_nowStage.ItemBoxData);
+                newRewardInfo.count += 1;
 
-                // 진짜로 플레이어한테도 줘야함!
+                rewardInfos.Add(newRewardInfo);
+
             }
             else
             {
-                // 업그레이드 재료 주기
-                newRewardInfo.type = ItemType.Equipment;
-                newRewardInfo.upgradeMaterialType = GetUpgradeMaterial();
+                switch (GetUpgradeMaterial())
+                {
+                    case WalletType.UpgradeMaterial_Weapon:
+                        weaponMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Armor:
+                        armortMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Shoes:
+                        shoesMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Gloves:
+                        glovesMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Belt:
+                        beltMaterial.count += 1;
+                        break;
+                    case WalletType.UpgradeMaterial_Necklace:
+                        necklaceMaterial.count += 1;
+                        break;
+                }
             }
-
-            rewardInfos.Add(newRewardInfo);
         }
+
+        if (weaponMaterial.count > 0) rewardInfos.Add(weaponMaterial);
+        if (armortMaterial.count > 0) rewardInfos.Add(armortMaterial);
+        if (shoesMaterial.count > 0) rewardInfos.Add(shoesMaterial);
+        if (glovesMaterial.count > 0) rewardInfos.Add(glovesMaterial);
+        if (beltMaterial.count > 0) rewardInfos.Add(beltMaterial);
+        if (necklaceMaterial.count > 0) rewardInfos.Add(necklaceMaterial);
+
+        for (int i = 0; i < rewardInfos.Count; ++i)
+        {
+            // 장비 어떻게 주면 되는지?
+
+            if (rewardInfos[i].type == ItemType.UpgradeMaterial)
+                PlayerManager.Instance.Wallet[rewardInfos[i].upgradeMaterialType].Add(rewardInfos.Count);
+        }
+
 
         return rewardInfos;
-    }
-
-
-    #endregion
-
-    #region  몬스터
-
-    public void OnDieMonster(Monster monster)
-    {
-        _killCount += 1;
-        AddKillCountAction?.Invoke(_killCount);
-    }
-
-    #endregion
-
-    #region Test
-    [Title("Test")]
-    public bool IsTest = false;
-    public int TestStageNum = 0;
-
-    [Button("Test Stage Start")]
-    public void TestStart()
-    {
-        if (_isPlaying)
-        {
-            Logger.Log("이미 플레이 중");
-            return;
-        }
-
-        if (SetStageData(TestStageNum))
-        {
-            GameStart();
-        }
     }
 
     #endregion
@@ -309,6 +322,29 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     #endregion
+
+    #region Test
+    [Title("Test")]
+    public bool IsTest = false;
+    public int TestStageNum = 0;
+
+    [Button("Test Stage Start")]
+    public void TestStart()
+    {
+        if (_isPlaying)
+        {
+            Logger.Log("이미 플레이 중");
+            return;
+        }
+
+        if (SetStageData(TestStageNum))
+        {
+            GameStart();
+        }
+    }
+
+    #endregion
+
 
 
 
