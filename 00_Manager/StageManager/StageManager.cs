@@ -117,14 +117,11 @@ public class StageManager : SceneSingletonManager<StageManager>
         {
             GameManager.Instance.Scene.ReLoadSceneAsync();
         }
-        
         // 테스트용
         if (Input.GetKeyDown(KeyCode.Q))
         {
             SpawnSkillSelectUI(_player.StageLevel.Level);
         }
-        
-        
         if (_isPlaying == false) return;
         _waveController?.Update();
     }
@@ -185,6 +182,9 @@ public class StageManager : SceneSingletonManager<StageManager>
             resultUI.Init(resultInfo, rewards);
         }
 
+
+        // 스테이지 진행 정보 저장
+        GameManager.Instance.StageClearProgress.SaveStagePrgress(NowStageNumber + 1, (int)PlayTime);
     }
 
     public void GameOver()
@@ -214,7 +214,10 @@ public class StageManager : SceneSingletonManager<StageManager>
             resultUI.Init(resultInfo, null);
         }
 
+        // 스테이지 진행 정보 저장
+        GameManager.Instance.StageClearProgress.SaveStagePrgress(NowStageNumber, (int)PlayTime);
     }
+
 
 
     List<StageRewardInfo> GiveReward()

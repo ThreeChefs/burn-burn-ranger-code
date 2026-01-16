@@ -10,7 +10,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
 
     // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
-    public StageClearProgress StageClearProgress = new();
+    public StageProgress StageClearProgress = new();
 
 
     [SerializeField] SoDatabase _stageDatabase;
