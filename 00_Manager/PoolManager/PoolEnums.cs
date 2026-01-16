@@ -15,5 +15,7 @@ public enum MonsterPoolIndex
     MiniBoss_0,
     Boss_0,
     ItemBox,
-    TestBoss_0
+    TestBoss_0,
+    PoisonMonster,
+    TestBoss_2,
 }

@@ -3,6 +3,7 @@ public enum ItemType
 {
     General,
     Equipment,
+    UpgradeMaterial,    // 업그레이드 재화 / 슬롯 표시를 위한 타입분류
 }
 
 // 아이템 등급
