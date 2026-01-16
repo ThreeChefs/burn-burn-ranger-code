@@ -90,6 +90,11 @@ public class ItemSlot : MonoBehaviour
         level.gameObject.SetActive(active);
         count.gameObject.SetActive(active);
     }
+
+    public bool IsEmpty()
+    {
+        return _itemInstance == null;
+    }
     #endregion
 
 #if UNITY_EDITOR

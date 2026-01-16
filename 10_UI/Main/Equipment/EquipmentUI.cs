@@ -14,6 +14,7 @@ public class EquipmentUI : BaseUI
     // 장착 중인 장비
     [SerializeField] private Transform _equipmentSlotParent;
     private Dictionary<EquipmentType, ItemSlot> _equipmentSlots;
+    private int _equipmentCount;
 
     // 장비 인벤토리 
     [SerializeField] private RectTransform _inventoryUI;
@@ -107,7 +108,6 @@ public class EquipmentUI : BaseUI
             // 장착한 장비 시 스킵
             if (_equipment.IsEquip(item))
             {
-                _equipmentSlots[item.ItemData.EquipmentType].SetSlot(item);
                 i++;
                 continue;
             }
@@ -116,7 +116,7 @@ public class EquipmentUI : BaseUI
             _inventorySlots[j].gameObject.SetActive(true);
         }
 
-        for (int j = i; j < _inventorySlots.Count; j++)
+        for (int j = i - _equipmentCount; j < _inventorySlots.Count; j++)
         {
             _inventorySlots[j].gameObject.SetActive(false);
         }
@@ -129,10 +129,12 @@ public class EquipmentUI : BaseUI
         if (applyType == EquipmentApplyType.Equip)
         {
             equipmentSlot.SetSlot(item);
+            _equipmentCount = Math.Min(_equipmentCount + 1, _equipmentSlots.Count);
         }
         else
         {
             equipmentSlot.ResetSlot();
+            _equipmentCount = Math.Max(_equipmentCount - 1, 0);
         }
 
         UpdateEquipUI();

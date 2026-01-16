@@ -68,10 +68,9 @@ public class Equipment
             if (prev != null)
             {
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
+                OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Unequip);
             }
         }
-
-        OnEquipmentChanged?.Invoke(item, EquipmentApplyType.Unequip);
     }
 
     /// <summary>
