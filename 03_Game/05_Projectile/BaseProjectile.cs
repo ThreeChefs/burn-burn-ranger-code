@@ -93,8 +93,11 @@ public class BaseProjectile : PoolObject, IAttackable
         guidanceTimer = 0f;
 
         // sfx 코루틴
-        StopCoroutine(sfxCoroutine);
-        sfxCoroutine = null;
+        if (sfxCoroutine != null)
+        {
+            StopCoroutine(sfxCoroutine);
+            sfxCoroutine = null;
+        }
     }
 
     #region 초기화
