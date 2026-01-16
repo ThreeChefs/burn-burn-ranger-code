@@ -34,7 +34,16 @@ public class Equipment
         }
     }
 
+    public void OnDestroy()
+    {
+        OnEquipmentChanged = null;
+    }
+
     #region [public] 장비 장착 / 해제
+    /// <summary>
+    /// [public] 장비 장착
+    /// </summary>
+    /// <param name="item"></param>
     public void Equip(ItemInstance item)
     {
         EquipmentType type = item.ItemData.EquipmentType;
@@ -43,9 +52,12 @@ public class Equipment
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
         OnEquipmentChanged?.Invoke(type);
-        // todo: ui랑 연결
     }
 
+    /// <summary>
+    /// [public] 장비 장착 해제
+    /// </summary>
+    /// <param name="type"></param>
     public void Unequip(EquipmentType type)
     {
         if (_equipments.TryGetValue(type, out ItemInstance prev))
@@ -56,6 +68,21 @@ public class Equipment
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
             }
         }
+    }
+
+    /// <summary>
+    /// [public] 현재 장착하고 있는 아이템인지 확인
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool IsEquip(ItemInstance item)
+    {
+        if (!_equipments.TryGetValue(item.ItemData.EquipmentType, out ItemInstance equipment))
+        {
+            return false;
+        }
+
+        return equipment != null && equipment.Equals(item);
     }
     #endregion
 

@@ -7,7 +7,6 @@ public class ItemInstance
     public ItemData ItemData { get; private set; }
     public int Count { get; private set; }
     public int Level { get; private set; }
-    public bool IsEquipped { get; private set; }
 
     /// <summary>
     /// [public] 생성자

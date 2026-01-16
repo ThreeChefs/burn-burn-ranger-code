@@ -21,6 +21,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Condition = new(_statData);
         Wallet = new();
         Inventory = new();
+        Equipment = new(Condition);
     }
 
     private void OnDestroy()
@@ -28,6 +29,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Condition.OnDestroy();
         Wallet.OnDestroy();
         Inventory.OnDestroy();
+        Equipment.OnDestroy();
     }
 
     /// <summary>
