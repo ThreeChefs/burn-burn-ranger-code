@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class GameManager : GlobalSingletonManager<GameManager>
 {
-    [SerializeField] SoDatabase _stageDatabase;
-    [SerializeField] GrowthDatabase _growthDatabase;
-
-
     // 각종 매니저들
     public SceneController Scene = new();
     public DataManager Data { get; private set; }
@@ -16,14 +12,24 @@ public class GameManager : GlobalSingletonManager<GameManager>
     // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
     public StageProgress StageClearProgress = new();
 
+
+    [Header("데이터베이스")]
+    [SerializeField] SoDatabase _stageDatabase;
+    [SerializeField] private SoDatabase _itemBoxDatabase;
+    [SerializeField] GrowthDatabase _growthDatabase;
+
     public List<StageData> StageDatabase { get; private set; }
     public List<GrowthInfoEntry> GrowthInfoSetp => _growthDatabase.GrowInfoEntries;
 
+    // 시스템
+    public PickUpSystem PickUpSystem { get; private set; }
 
     protected override void Init()
     {
         StageDatabase = _stageDatabase.GetDatabase<StageData>();
         Data = new DataManager();
+
+        PickUpSystem = new(_itemBoxDatabase);
     }
 
     private void OnApplicationQuit()
@@ -65,4 +71,11 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
 
 
+#if UNITY_EDITOR
+    private void Reset()
+    {
+        _stageDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("StageDatabase");
+        _itemBoxDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("ItemBoxDatabase");
+    }
+#endif
 }
