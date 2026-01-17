@@ -13,36 +13,38 @@ public class UpgradeMaterialSlot : BaseSlot
 
     public void SetSlot(WalletType type, int count)
     {
-        countText.text = count.ToString();
+        SlotInfo slotInfo = new SlotInfo
+        {
+            contentCount = count,
+        };
 
         switch (type)
         {
             case WalletType.UpgradeMaterial_Weapon:
-                iconImg.sprite = _weaponMaterialSpr;
+                slotInfo.contentSpr = _weaponMaterialSpr;
                 break;
 
             case WalletType.UpgradeMaterial_Armor:
-                iconImg.sprite = _armorMaterialSpr;
+                slotInfo.contentSpr = _armorMaterialSpr;
                 break;
 
             case WalletType.UpgradeMaterial_Shoes:
-                iconImg.sprite = _shoesMaterialSpr;
+                slotInfo.contentSpr = _shoesMaterialSpr;
                 break;
 
             case WalletType.UpgradeMaterial_Gloves:
-                iconImg.sprite = _glovesMaterialSpr;
+                slotInfo.contentSpr = _glovesMaterialSpr;
                 break;
 
             case WalletType.UpgradeMaterial_Belt:
-                iconImg.sprite= _beltMaterialSpr;
+                slotInfo.contentSpr = _beltMaterialSpr;
                 break;
 
             case WalletType.UpgradeMaterial_Necklace:
-                iconImg.sprite = _necklaceMaterialSpr;
+                slotInfo.contentSpr = _necklaceMaterialSpr;
                 break;
         }
 
-        
-        iconImg.gameObject.SetActive(true);
+        SetSlot(slotInfo);
     }
 }
