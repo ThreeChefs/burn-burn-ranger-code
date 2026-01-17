@@ -67,28 +67,6 @@ public class SceneController
     }
 
     /// <summary>
-    /// sceneName과 동일한 이름의 씬을 비동기로 로드합니다.
-    /// </summary>
-    /// <param name="sceneName"></param>
-    public void LoadSceneWithCoroutine(string sceneName)
-    {
-        if (sceneName == _curSceneType.ToString())
-        {
-            Logger.LogWarning("동일한 씬 로드");
-            return;
-        }
-        _curSceneType = SceneType.None;
-        _externalSceneName = sceneName;
-
-        if (_coroutine != null)
-        {
-            CustomCoroutineRunner.Instance.StopCoroutine(_coroutine);
-            _coroutine = null;
-        }
-        _coroutine = CustomCoroutineRunner.Instance.StartCoroutine(LoadSceneAsync());
-    }
-
-    /// <summary>
     /// 현재 씬을 비동기 리로드 합니다.
     /// </summary>
     public void ReLoadSceneAsync()
@@ -123,6 +101,8 @@ public class SceneController
         {
             yield return LoadInGame(sceneName);
         }
+
+        _coroutine = null;
     }
 
     private IEnumerator LoadBootstrap(string sceneName)
@@ -152,7 +132,6 @@ public class SceneController
         ui.StartAnim(false);
 
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
-        async.allowSceneActivation = false;
 
         Logger.Log($"{_curSceneType}으로 로딩 중...");
         while (async.progress < 0.9f)
@@ -162,7 +141,6 @@ public class SceneController
         }
 
         yield return _loadDelay;
-        async.allowSceneActivation = true;
     }
 
     /// <summary>
