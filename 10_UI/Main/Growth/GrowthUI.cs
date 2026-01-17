@@ -87,7 +87,7 @@ public class GrowthUI : BaseUI
     void OnClickGrowthSlot(GrowthSlot slot, int unlcokCount)
     {
         _panel.transform.position = slot.transform.position;
-        _panel.Open(slot, true);
+        _panel.Open(slot);
 
     }
 

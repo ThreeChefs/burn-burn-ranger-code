@@ -2,7 +2,6 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
 
 public class GrowthBubblePanel : MonoBehaviour
@@ -24,11 +23,16 @@ public class GrowthBubblePanel : MonoBehaviour
 
     float _openDuration = 0.2f;
     float _positionOffset = 60f;
-    Transform _targetSlot;
+    GrowthSlot _targetSlot;
 
-    public void Open(GrowthSlot slot, bool showButton)
+    private void Awake()
     {
-        _targetSlot = slot.transform;
+        _unlockBtn.onClick.AddListener(OnClickUnlock);
+    }
+
+    public void Open(GrowthSlot slot)
+    {
+        _targetSlot = slot;
 
         _headerText.text = StatTypeText.StatName[slot.GrowthInfo.StatType];
         _descText.text = StatTypeText.StatDescriptionName[slot.GrowthInfo.StatType];
@@ -36,7 +40,7 @@ public class GrowthBubblePanel : MonoBehaviour
         _goldText.text = slot.GrowthInfo.GrowthPrice.ToString();
         _valueText.text = slot.GrowthInfo.Value.ToString();
 
-        if(showButton)
+        if (GameManager.Instance.GrowthProgress.NormalUnlockCount == slot.UnlockCount - 1)
         {
             _unlockBtn.gameObject.SetActive(true);
         }
@@ -60,7 +64,7 @@ public class GrowthBubblePanel : MonoBehaviour
     private void Update()
     {
         if (_targetSlot != null)
-            this.transform.position = _targetSlot.position + new Vector3(0, _positionOffset, 0);
+            this.transform.position = _targetSlot.transform.position + new Vector3(0, _positionOffset, 0);
     }
 
 
@@ -72,5 +76,14 @@ public class GrowthBubblePanel : MonoBehaviour
     public void Hide()
     {
         this.transform.gameObject.SetActive(false);
+    }
+
+    public void OnClickUnlock()
+    {
+        if (PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(_targetSlot.GrowthInfo.GrowthPrice))
+        {
+            GameManager.Instance.GrowthProgress.UnlockNormalGrowth(_targetSlot.UnlockCount);
+            _unlockBtn.gameObject.SetActive(false);
+        }
     }
 }

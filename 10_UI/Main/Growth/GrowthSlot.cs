@@ -6,6 +6,7 @@ public class GrowthSlot : BaseSlot
 {
     [Title("성장 슬롯")]
     [SerializeField] Button _slotButton;
+    [SerializeField] GameObject _unlockableIcon;
 
     [Title("흑백 Material")]
     [SerializeField] Material _grayScaleMat;
@@ -13,35 +14,44 @@ public class GrowthSlot : BaseSlot
     public GrowthInfo GrowthInfo => _growthInfo;
     GrowthInfo _growthInfo;
 
-    public int UnlockCount { get; private set;  }
+    public int UnlockCount { get; private set; }
 
     public event Action<GrowthSlot, int> OnClickGrowthButtonAction;
 
 
     Image[] _images;
-    
+
 
     private void Awake()
     {
         _slotButton.onClick.AddListener(OnClickSlot);
 
-        _images= this.GetComponentsInChildren<Image>();
-        
+        _images = this.GetComponentsInChildren<Image>();
+
     }
 
-    public void SetSlot(SlotInfo slotInfo, GrowthInfo growthInfo, int unlockCount )
+    public void SetSlot(SlotInfo slotInfo, GrowthInfo growthInfo, int slotUnlockCount)
     {
         SetSlot(slotInfo);
         _growthInfo = growthInfo;
-        UnlockCount = unlockCount;
+        UnlockCount = slotUnlockCount;
 
-        if(GameManager.Instance.GrowthProgress.NormalUnlockCount > unlockCount -1)
+        int nowUnlockCount = GameManager.Instance.GrowthProgress.NormalUnlockCount;
+
+        if (nowUnlockCount >= slotUnlockCount - 1)
         {
+            if (nowUnlockCount == slotUnlockCount - 1)
+            {
+                _unlockableIcon.SetActive(true);
+            }
+
             SetLockImg(false);
         }
         else
         {
             SetLockImg(true);
+
+            _unlockableIcon.SetActive(false);
         }
     }
 

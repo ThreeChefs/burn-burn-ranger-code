@@ -1,10 +1,15 @@
 
 public class GrowthProgress
 {
-    int _normalUnlockCount = 5;       // 얼마나 열었는지
+    int _normalUnlockCount = 0;       // 얼마나 열었는지
     public int NormalUnlockCount => _normalUnlockCount;
 
     
+    public void UnlockNormalGrowth(int unlockCount)
+    {
+        _normalUnlockCount = unlockCount;
+    }
+
     public void ImportStageProgress(GrowthProgressSaveInfo info)
     {
         _normalUnlockCount = info.normalUnlockCount;
