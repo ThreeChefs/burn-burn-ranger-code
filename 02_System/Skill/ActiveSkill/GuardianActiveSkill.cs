@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GuardianActiveSkill : ActiveSkill
 {
-    [SerializeField] private float _multiplier = 1.5f;
+    [SerializeField] private float _radiusMultiplier = 1.5f;
     private int _count;
     private int _index;
 
@@ -34,7 +34,7 @@ public class GuardianActiveSkill : ActiveSkill
         float rad = 360f / _count * _index * Mathf.Deg2Rad;
         _index = (_index + 1) % _count;
 
-        Vector2 pos = standardPos + new Vector2(Mathf.Cos(rad) * _multiplier, Mathf.Sin(rad) * _multiplier);
+        Vector2 pos = standardPos + new Vector2(Mathf.Cos(rad) * _radiusMultiplier, Mathf.Sin(rad) * _radiusMultiplier);
         return pos;
     }
 
