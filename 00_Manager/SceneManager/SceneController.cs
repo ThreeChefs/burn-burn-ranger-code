@@ -20,7 +20,7 @@ public class SceneController
     private string _externalSceneName;
 
     private Coroutine _coroutine;
-    private readonly WaitForSeconds _loadDelay = new(0.3f);
+    private readonly WaitForSecondsRealtime _loadDelay = new(0.3f);
     #endregion
 
     #region 초기화
@@ -132,6 +132,7 @@ public class SceneController
         ui.StartAnim(false);
 
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
+        async.allowSceneActivation = false;
 
         Logger.Log($"{_curSceneType}으로 로딩 중...");
         while (async.progress < 0.9f)
@@ -141,6 +142,7 @@ public class SceneController
         }
 
         yield return _loadDelay;
+        async.allowSceneActivation = true;
     }
 
     /// <summary>
