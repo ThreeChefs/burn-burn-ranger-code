@@ -7,10 +7,11 @@ public class GrowthUI : BaseUI
 {
     [Title("UI")]
     [SerializeField] RectTransform _content;
+    [SerializeField] VerticalLayoutGroup _layoutGroup;
+    [SerializeField] Transform _empty;
 
     [Title("프리팹")]
     [SerializeField] GrowthSlot _slotOrigin;
-    [SerializeField] GameObject _linePrefab;
 
     [Title("Sprite")]
     [SerializeField] Sprite _attackSpr;
@@ -27,6 +28,11 @@ public class GrowthUI : BaseUI
     {
         List<GrowthInfoEntry> entries = GameManager.Instance.GrowthInfoSetp;
 
+        RectTransform slotRect = _slotOrigin.GetComponent<RectTransform>();
+        float slotHeight = slotRect.sizeDelta.x + _layoutGroup.spacing;
+
+        int slotCount = 0;
+
         for (int i = 0; i < entries.Count; ++i)
         {
 
@@ -34,11 +40,6 @@ public class GrowthUI : BaseUI
             {
                 GrowthSlot newSlot = Instantiate(_slotOrigin);
                 newSlot.transform.SetParent(_content);
-
-                if (i < entries.Count - 1)
-                {
-                    Instantiate(_linePrefab, _content);
-                }
 
                 SlotInfo slotInfo = new SlotInfo
                 {
@@ -66,11 +67,17 @@ public class GrowthUI : BaseUI
 
                 newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j]);
                 growthSlots.Add(newSlot);
+                slotCount += 1;
             }
 
-
-
         }
+
+        Instantiate(_empty, _content);
+        //_line.localScale = new Vector3(
+        //    slotCount * 10,
+        //    _line.localScale.y,
+        //    _line.localScale.z
+        //    );
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
     }
