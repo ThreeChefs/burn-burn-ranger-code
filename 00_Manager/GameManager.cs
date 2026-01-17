@@ -11,6 +11,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
     public StageProgress StageClearProgress = new();
+    public GrowthProgress GrowthProgress = new();
 
 
     [Header("데이터베이스")]

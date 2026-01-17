@@ -7,10 +7,13 @@ public class GrowthUI : BaseUI
 {
     [Title("UI")]
     [SerializeField] RectTransform _content;
+    [SerializeField] VerticalLayoutGroup _layoutGroup;
+    [SerializeField] RectTransform _spacing;
+    [SerializeField] GrowthBubblePanel _panel;
+    [SerializeField] Button _backButton;
 
     [Title("프리팹")]
     [SerializeField] GrowthSlot _slotOrigin;
-    [SerializeField] GameObject _linePrefab;
 
     [Title("Sprite")]
     [SerializeField] Sprite _attackSpr;
@@ -18,14 +21,22 @@ public class GrowthUI : BaseUI
     [SerializeField] Sprite _healSpr;
     [SerializeField] Sprite _defenseSpr;
 
-
     List<GrowthSlot> growthSlots = new List<GrowthSlot>();
+    float lastSpacing = 300f;
 
-
+    private void Awake()
+    {
+        _backButton.onClick.AddListener(OnClickBackButton);
+    }
 
     public void Start()
     {
         List<GrowthInfoEntry> entries = GameManager.Instance.GrowthInfoSetp;
+
+        RectTransform slotRect = _slotOrigin.GetComponent<RectTransform>();
+        float slotHeight = slotRect.sizeDelta.x + _layoutGroup.spacing;
+
+        int slotCount = 0;
 
         for (int i = 0; i < entries.Count; ++i)
         {
@@ -34,11 +45,6 @@ public class GrowthUI : BaseUI
             {
                 GrowthSlot newSlot = Instantiate(_slotOrigin);
                 newSlot.transform.SetParent(_content);
-
-                if (i < entries.Count - 1)
-                {
-                    Instantiate(_linePrefab, _content);
-                }
 
                 SlotInfo slotInfo = new SlotInfo
                 {
@@ -64,16 +70,33 @@ public class GrowthUI : BaseUI
                         break;
                 }
 
-                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j]);
+                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], slotCount);
                 growthSlots.Add(newSlot);
+                newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
+
+                slotCount += 1;
             }
-
-
 
         }
 
+        RectTransform spacing = Instantiate(_spacing, _content);
+        spacing.sizeDelta = new Vector2(spacing.sizeDelta.x, spacing.sizeDelta.y + lastSpacing);
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+
     }
 
+
+    void OnClickGrowthSlot(GrowthSlot slot, int unlcokCount)
+    {
+        _panel.transform.position = slot.transform.position;
+        _panel.Open(slot, true);
+
+    }
+
+    void OnClickBackButton()
+    {
+        _panel.Close();
+    }
 
 }

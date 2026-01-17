@@ -21,13 +21,11 @@ public class Reposition : MonoBehaviour
     {
         Vector3 diff = _player.position - transform.position;
 
-        float threshold = Define.MapSize * 1.05f;
-
-        if (Mathf.Abs(diff.x) > threshold)
+        if (Mathf.Abs(diff.x) > _threshold)
         {
             transform.position += Mathf.Sign(diff.x) * Define.MapSize * 2f * Vector3.right;
         }
-        else if (Mathf.Abs(diff.y) > threshold)
+        else if (Mathf.Abs(diff.y) > _threshold)
         {
             transform.position += Mathf.Sign(diff.y) * Define.MapSize * 2f * Vector3.up;
         }
