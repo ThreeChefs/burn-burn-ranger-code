@@ -1,6 +1,7 @@
 using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : GlobalSingletonManager<GameManager>
 {
@@ -71,6 +72,10 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     #endregion
 
+    protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Time.timeScale= 1.0f;
+    }
 
 
 #if UNITY_EDITOR
