@@ -12,5 +12,7 @@ public class MainScene : BaseScene
         UIManager.Instance.LoadUI(UIName.UI_PickUp, false);
 
         UIManager.Instance.LoadUI(UIName.UI_Growth, false);
+
+        UIManager.Instance.LoadUI(UIName.UI_InGameLoading, false);
     }
 }

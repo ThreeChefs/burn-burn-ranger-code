@@ -21,6 +21,10 @@ public enum UIName
 
     UI_StageSelect,
 
+    // Loading UI
+    UI_BootstrapLoading,
+    UI_InGameLoading,
+
     // World UI
     WorldUI_Hp
 }

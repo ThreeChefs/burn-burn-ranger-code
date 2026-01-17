@@ -20,6 +20,7 @@ public class SceneController
     private string _externalSceneName;
 
     private Coroutine _coroutine;
+    private readonly WaitForSeconds _loadDelay = new(0.3f);
     #endregion
 
     #region 초기화
@@ -114,12 +115,54 @@ public class SceneController
         // todo: 로딩 씬 필요
         string sceneName = _curSceneType == SceneType.None ? _externalSceneName : _curSceneType.ToString();
 
-        AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
-        while (!async.isDone)
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName(SceneType.LoadingScene.ToString()))
         {
-            yield return null;
-            Logger.Log($"로딩 상태: {async.progress * 100}%...");
+            yield return LoadBootstrap(sceneName);
         }
+        else
+        {
+            yield return LoadInGame(sceneName);
+        }
+    }
+
+    private IEnumerator LoadBootstrap(string sceneName)
+    {
+        BootstrapLoadingUI loadingUI = UIManager.Instance.ShowUI(UIName.UI_BootstrapLoading) as BootstrapLoadingUI;
+
+        AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
+        async.allowSceneActivation = false;
+
+        Logger.Log($"{_curSceneType}으로 로딩 중...");
+        while (async.progress < 0.9f)
+        {
+            if (loadingUI != null) { loadingUI.SetProgress(async.progress); }
+            Logger.Log($"진행률: {async.progress}");
+            yield return null;
+        }
+
+        if (loadingUI != null) { loadingUI.SetProgress(1f); }
+
+        yield return _loadDelay;
+        async.allowSceneActivation = true;
+    }
+
+    private IEnumerator LoadInGame(string sceneName)
+    {
+        InGameLoadingUI ui = UIManager.Instance.ShowUI(UIName.UI_InGameLoading) as InGameLoadingUI;
+        ui.StartAnim(false);
+
+        AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
+        async.allowSceneActivation = false;
+
+        Logger.Log($"{_curSceneType}으로 로딩 중...");
+        while (async.progress < 0.9f)
+        {
+            Logger.Log($"진행률: {async.progress}");
+            yield return null;
+        }
+
+        yield return _loadDelay;
+        async.allowSceneActivation = true;
     }
 
     /// <summary>
