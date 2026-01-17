@@ -107,7 +107,7 @@ public class GrowthUI : BaseUI
         if (_growthSlots.Count <= unlockCount) return;
 
         int slotCount = 0;
-        int unlockableLevel = 0;
+        int unlockableLevel = 1;
 
         foreach (List<GrowthSlot> slots in _growthSlots.Values)
         {
