@@ -8,7 +8,7 @@ public class GrowthUI : BaseUI
     [Title("UI")]
     [SerializeField] RectTransform _content;
     [SerializeField] VerticalLayoutGroup _layoutGroup;
-    [SerializeField] Transform _empty;
+    [SerializeField] RectTransform _spacing;
     [SerializeField] GrowthBubblePanel _panel;
     [SerializeField] Button _backButton;
 
@@ -21,8 +21,8 @@ public class GrowthUI : BaseUI
     [SerializeField] Sprite _healSpr;
     [SerializeField] Sprite _defenseSpr;
 
-
     List<GrowthSlot> growthSlots = new List<GrowthSlot>();
+    float lastSpacing = 300f;
 
     private void Awake()
     {
@@ -79,7 +79,8 @@ public class GrowthUI : BaseUI
 
         }
 
-        Instantiate(_empty, _content);
+        RectTransform spacing = Instantiate(_spacing, _content);
+        spacing.sizeDelta = new Vector2(spacing.sizeDelta.x, spacing.sizeDelta.y + lastSpacing);
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
 
@@ -89,7 +90,7 @@ public class GrowthUI : BaseUI
     void OnClickGrowthSlot(GrowthSlot slot, int unlcokCount)
     {
         _panel.transform.position = slot.transform.position;
-        _panel.Open(slot.GrowthInfo, true);
+        _panel.Open(slot, true);
 
     }
 
