@@ -60,6 +60,8 @@ public class ItemDetailUI : BaseUI
         //버튼
         _equipButton.onClick.AddListener(ClickEquipButton);
         _unequipButton.onClick.AddListener(ClickUnequipButton);
+        _levelUpButton.onClick.AddListener(ClickLevelUpButton);
+        _allLevelUpButton.onClick.AddListener(AllClickLevelUpButton);
 
         // 아이템 이벤트 구독
     }
@@ -68,6 +70,8 @@ public class ItemDetailUI : BaseUI
     {
         _equipButton.onClick.RemoveAllListeners();
         _unequipButton.onClick.RemoveAllListeners();
+        _levelUpButton.onClick.RemoveAllListeners();
+        _allLevelUpButton.onClick.RemoveAllListeners();
 
         // 아이템 이벤트 구독 해제
     }
@@ -117,9 +121,7 @@ public class ItemDetailUI : BaseUI
         _itemIconContainer.color = ItemUtils.GetClassColor(itemClass);
         _itemIconOutline.effectColor = ItemUtils.GetHighlightColor(itemClass);
         _itemIcon.sprite = itemData.Icon;
-        _itemLevel.text = $"레벨: {instance.Level}/{ItemUtils.GetClassMaxLevel(itemClass)}";
         _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
-        _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
         _itemDescription.text = itemData.Description;
 
         for (int i = 0; i < MaxSkillCount; i++)
@@ -139,9 +141,7 @@ public class ItemDetailUI : BaseUI
             }
         }
 
-        _goldText.text = $"{Gold.Value}/요구골드";
-        _scrollText.text = $"{Scroll.Value}/요구스크롤";
-
+        UpdateLevelValue();
         UpdateEquipButton();
     }
 
@@ -167,6 +167,33 @@ public class ItemDetailUI : BaseUI
         _equipButton.gameObject.SetActive(!isEquipped);
         _unequipButton.gameObject.SetActive(isEquipped);
     }
+
+    // 레벨업
+    private void ClickLevelUpButton()
+    {
+        if (_curItem.TryLevelUp())
+        {
+            UpdateLevelValue();
+        }
+    }
+
+    private void AllClickLevelUpButton()
+    {
+        if (_curItem.TryAllLevelUp())
+        {
+            UpdateLevelValue();
+        }
+    }
+
+    private void UpdateLevelValue()
+    {
+        _itemLevel.text = $"레벨: {_curItem.Level}/{ItemUtils.GetClassMaxLevel(_curItem.ItemClass)}";
+        _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
+
+        _goldText.text = $"{_curItem.GetUpgradeGold()}/{Gold.Value}";
+        _scrollText.text = $"{_curItem.GetUpgradeScroll()}/{Scroll.Value}";
+    }
+    #endregion
 
 #if UNITY_EDITOR
     private void Reset()
