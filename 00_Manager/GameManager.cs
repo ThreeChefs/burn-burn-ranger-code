@@ -1,9 +1,13 @@
-﻿using Sirenix.OdinInspector;
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : GlobalSingletonManager<GameManager>
 {
+    [SerializeField] SoDatabase _stageDatabase;
+    [SerializeField] GrowthDatabase _growthDatabase;
+
+
     // 각종 매니저들
     public SceneController Scene = new();
     public DataManager Data { get; private set; }
@@ -12,9 +16,8 @@ public class GameManager : GlobalSingletonManager<GameManager>
     // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
     public StageProgress StageClearProgress = new();
 
-
-    [SerializeField] SoDatabase _stageDatabase;
     public List<StageData> StageDatabase { get; private set; }
+    public List<GrowthInfoEntry> GrowthInfoSetp => _growthDatabase.GrowInfoEntries;
 
 
     protected override void Init()
