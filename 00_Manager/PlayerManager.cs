@@ -41,6 +41,41 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         return StagePlayer;
     }
 
+    /// <summary>
+    /// [public] 데이터 로드하기
+    /// </summary>
+    /// <param name="data"></param>
+    public void LoadData(InventorySaveData inventoryData)
+    {
+        foreach (ItemSaveData itemData in inventoryData.List)
+        {
+            var item = new ItemInstance(itemData.ItemClass, itemData.Id, itemData.Count, itemData.Level);
+            Inventory.Add(item);
+            if (itemData.IsEquipped)
+            {
+                Equipment.Equip(item);
+            }
+        }
+    }
+
+    public InventorySaveData SaveData()
+    {
+        InventorySaveData inventoryData = new();
+
+        foreach (ItemInstance item in Inventory.Items)
+        {
+            inventoryData.List.Add(new ItemSaveData(
+                item.ItemClass,
+                item.ItemData.Id,
+                item.Count,
+                item.Level,
+                Equipment.IsEquip(item)));
+        }
+
+        Logger.Log($"아이템 {inventoryData.List[2].ItemClass} {inventoryData.List[2].IsEquipped} {inventoryData.List[2].Level}");
+        return inventoryData;
+    }
+
     #region 에디터 전용
 #if UNITY_EDITOR
     protected virtual void Reset()

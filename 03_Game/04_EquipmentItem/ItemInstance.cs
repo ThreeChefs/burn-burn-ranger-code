@@ -13,6 +13,8 @@ public class ItemInstance
 
     public event Action OnLevelChanged;
 
+    private ItemDatabase ItemDatabase => GameManager.Instance.ItemDatabase;
+
     /// <summary>
     /// [public] 생성자
     /// </summary>
@@ -24,6 +26,14 @@ public class ItemInstance
         ItemData = itemData;
         Count = 1;
         Level = 1;
+    }
+
+    public ItemInstance(ItemClass itemClass, int id, int count, int level)
+    {
+        ItemClass = itemClass;
+        ItemData = ItemDatabase.FindById(id);
+        Count = count;
+        Level = level;
     }
 
     /// <summary>
