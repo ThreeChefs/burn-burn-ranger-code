@@ -21,23 +21,27 @@ public class GrowthUI : BaseUI
     [SerializeField] Sprite _healSpr;
     [SerializeField] Sprite _defenseSpr;
 
-    List<GrowthSlot> growthSlots = new List<GrowthSlot>();
-    float lastSpacing = 300f;
+    Dictionary<int, List<GrowthSlot>> _growthSlots = new();
+    int _growthSlotsCount = 0;
+
+    float _lastSpacing = 300f;
 
     protected override void AwakeInternal()
     {
         _backButton.onClick.AddListener(OnClickBackButton);
-
+        _panel.OnUnlockGrowthAction += OnUnlockGrowth;
 
         List<GrowthInfoEntry> entries = GameManager.Instance.GrowthInfoSetp;
 
         RectTransform slotRect = _slotOrigin.GetComponent<RectTransform>();
         float slotHeight = slotRect.sizeDelta.x + _layoutGroup.spacing;
 
-        int slotCount = 0;
+        _growthSlotsCount = 0;
 
         for (int i = 0; i < entries.Count; ++i)
         {
+            List<GrowthSlot> slots = new List<GrowthSlot>();
+            _growthSlots.Add(i, slots);
 
             for (int j = 0; j < entries[i].GrowthInfos.Count; ++j)
             {
@@ -68,16 +72,17 @@ public class GrowthUI : BaseUI
                         break;
                 }
 
-                slotCount += 1;
-                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], slotCount);
-                growthSlots.Add(newSlot);
+                _growthSlotsCount += 1; // 슬롯 해금 번호는 1부터
+                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], _growthSlotsCount);
+                slots.Add(newSlot);
+
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
             }
 
         }
 
         RectTransform spacing = Instantiate(_spacing, _content);
-        spacing.sizeDelta = new Vector2(spacing.sizeDelta.x, spacing.sizeDelta.y + lastSpacing);
+        spacing.sizeDelta = new Vector2(spacing.sizeDelta.x, spacing.sizeDelta.y + _lastSpacing);
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
 
@@ -88,12 +93,45 @@ public class GrowthUI : BaseUI
     {
         _panel.transform.position = slot.transform.position;
         _panel.Open(slot);
-
     }
 
     void OnClickBackButton()
     {
         _panel.Close();
+    }
+
+    void OnUnlockGrowth(int unlockCount)
+    {
+        // 번호 확인하고 아이콘 띄우기
+
+        if (_growthSlots.Count <= unlockCount) return;
+
+        int slotCount = 0;
+        int unlockableLevel = 0;
+
+        foreach (List<GrowthSlot> slots in _growthSlots.Values)
+        {
+
+            foreach (GrowthSlot slot in slots)
+            {
+                if (slotCount == unlockCount)
+                {
+                    slot.ShowUnlockableIcon();
+                    return;
+                }
+                slotCount += 1;
+            }
+
+            unlockableLevel += 1;
+
+            if (unlockableLevel > PlayerManager.Instance.Condition.GlobalLevel.Level)
+            {
+                break;
+            }
+
+        }
+
+
     }
 
 }

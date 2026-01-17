@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,6 +25,9 @@ public class GrowthBubblePanel : MonoBehaviour
     float _openDuration = 0.2f;
     float _positionOffset = 60f;
     GrowthSlot _targetSlot;
+
+    public event Action<int> OnUnlockGrowthAction;
+
 
     private void Awake()
     {
@@ -70,12 +74,14 @@ public class GrowthBubblePanel : MonoBehaviour
 
     public void Close()
     {
+        _unlockBtn.interactable = false;
         this.transform.DOScale(Vector3.zero, _openDuration).SetEase(Ease.InCirc).OnComplete(Hide);
     }
 
     public void Hide()
     {
         this.transform.gameObject.SetActive(false);
+        _unlockBtn.interactable = true;
     }
 
     public void OnClickUnlock()
@@ -83,7 +89,14 @@ public class GrowthBubblePanel : MonoBehaviour
         if (PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(_targetSlot.GrowthInfo.GrowthPrice))
         {
             GameManager.Instance.GrowthProgress.UnlockNormalGrowth(_targetSlot.UnlockCount);
+            
             _unlockBtn.gameObject.SetActive(false);
+
+            _targetSlot.HideUnlockableIcon();
+            _targetSlot.SetLockImg(false);
+            OnUnlockGrowthAction?.Invoke(_targetSlot.UnlockCount);
+
+            Close();
         }
     }
 }

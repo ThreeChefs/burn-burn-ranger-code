@@ -17,7 +17,7 @@ public class GrowthSlot : BaseSlot
     public int UnlockCount { get; private set; }
 
     public event Action<GrowthSlot, int> OnClickGrowthButtonAction;
-
+    
 
     Image[] _images;
 
@@ -26,7 +26,7 @@ public class GrowthSlot : BaseSlot
     {
         _slotButton.onClick.AddListener(OnClickSlot);
 
-        _images = this.GetComponentsInChildren<Image>();
+        _images = _slotButton.GetComponentsInChildren<Image>();
 
     }
 
@@ -38,20 +38,23 @@ public class GrowthSlot : BaseSlot
 
         int nowUnlockCount = GameManager.Instance.GrowthProgress.NormalUnlockCount;
 
-        if (nowUnlockCount >= slotUnlockCount - 1)
+        if (nowUnlockCount >= slotUnlockCount)
         {
-            if (nowUnlockCount == slotUnlockCount - 1)
-            {
-                _unlockableIcon.SetActive(true);
-            }
-
             SetLockImg(false);
         }
         else
         {
+            if (nowUnlockCount + 1 == slotUnlockCount)
+            {
+                _unlockableIcon.SetActive(true);
+            }
+            else
+            {
+                _unlockableIcon.SetActive(false);
+            }
+
             SetLockImg(true);
 
-            _unlockableIcon.SetActive(false);
         }
     }
 
@@ -69,6 +72,16 @@ public class GrowthSlot : BaseSlot
             else
                 _images[i].material = null;
         }
+    }
+
+    public void ShowUnlockableIcon()
+    {
+        _unlockableIcon.SetActive(true);
+    }
+
+    public void HideUnlockableIcon()
+    {
+        _unlockableIcon.SetActive(false);
     }
 
 }
