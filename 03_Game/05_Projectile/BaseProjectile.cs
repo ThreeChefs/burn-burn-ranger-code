@@ -1,4 +1,5 @@
-﻿using Unity.VisualScripting;
+﻿using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -7,9 +8,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))]
 public class BaseProjectile : PoolObject, IAttackable
 {
+    #region 필드
     [Header("비주얼")]
     [SerializeField] protected Transform vfxs;
-    protected GameObject trailVfx;
 
     protected ProjectileData data;
 
@@ -37,8 +38,16 @@ public class BaseProjectile : PoolObject, IAttackable
     protected float flyTimer;
     protected float tickTimer;
 
+    // 효과음
+    protected bool useCustomSfx;            // sfx를 사용하는 시점을 커스텀
+    protected SfxName sfxName;
+    protected int sfxIndex;
+    protected Coroutine sfxCoroutine;
+    private WaitForSeconds _sfxDuration;
+
     // 카메라
     protected Camera cam;
+    #endregion
 
     #region Unity API
     protected virtual void Start()
@@ -79,10 +88,17 @@ public class BaseProjectile : PoolObject, IAttackable
     protected override void OnDisableInternal()
     {
         base.OnDisableInternal();
+
+        // 타이머
         lifeTimer = 0f;
         guidanceTimer = 0f;
 
-        trailVfx?.SetActive(false);
+        // sfx 코루틴
+        if (sfxCoroutine != null)
+        {
+            StopCoroutine(sfxCoroutine);
+            sfxCoroutine = null;
+        }
     }
 
     #region 초기화
@@ -110,14 +126,18 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         // 비주얼
         ProjectileVisualData visualData = data.VisualData;
-        if (visualData != null)
+
+        if (visualData == null)
         {
-            if (visualData.TrailVfxPrefab != null)
-            {
-                trailVfx = Instantiate(visualData.TrailVfxPrefab);
-                trailVfx.transform.SetParent(vfxs);
-            }
+            Logger.Log($"{data.name}에서 자율적으로 sfx 사용");
+            useCustomSfx = true;
+            return;
         }
+
+        sfxName = SfxName.Sfx_Projectile;
+        sfxIndex = visualData.SfxIndex;
+
+        _sfxDuration = new WaitForSeconds(visualData.SfxInterval);
     }
 
     public virtual void Spawn(Vector2 spawnPos, Transform target)
@@ -247,6 +267,7 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             moveDir = dir.normalized;
             transform.position = pos;
+            PlaySfxOnce();
         }
     }
     #endregion
@@ -286,6 +307,25 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected virtual void UpdateAreaPhase()
     {
+    }
+    #endregion
+
+    #region 사운드
+    protected void PlaySfxOnce()
+    {
+        if (sfxIndex >= 0 && !useCustomSfx)
+        {
+            SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
+        }
+    }
+
+    protected IEnumerator PlaySfx()
+    {
+        while (true)
+        {
+            SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
+            yield return _sfxDuration;
+        }
     }
     #endregion
 

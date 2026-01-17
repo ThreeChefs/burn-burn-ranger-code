@@ -1,4 +1,4 @@
-﻿public class MainScene : BaseScene
+public class MainScene : BaseScene
 {
     private void Start()
     {
@@ -10,5 +10,7 @@
         UIManager.Instance.LoadUI(UIName.UI_ItemDetail, false);
         UIManager.Instance.LoadUI(UIName.UI_Shop, false);
         UIManager.Instance.LoadUI(UIName.UI_PickUp, false);
+
+        UIManager.Instance.LoadUI(UIName.UI_Growth, false);
     }
 }

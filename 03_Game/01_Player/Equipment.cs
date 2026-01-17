@@ -12,8 +12,10 @@ public class Equipment
     private readonly Dictionary<EquipmentType, ItemInstance> _equipments;
     public IReadOnlyDictionary<EquipmentType, ItemInstance> Equipments => _equipments;
 
+    private bool _doneEquip;
+
     // 이벤트
-    public event Action<EquipmentType> OnEquipmentChanged;
+    public event Action OnEquipmentChanged;
 
     public Equipment(PlayerCondition condition)
     {
@@ -34,28 +36,65 @@ public class Equipment
         }
     }
 
+    public void OnDestroy()
+    {
+        OnEquipmentChanged = null;
+    }
+
     #region [public] 장비 장착 / 해제
+    /// <summary>
+    /// [public] 장비 장착
+    /// </summary>
+    /// <param name="item"></param>
     public void Equip(ItemInstance item)
     {
+        _doneEquip = true;
+
         EquipmentType type = item.ItemData.EquipmentType;
-        Unequip(type);
+        Unequip(item);
+        _doneEquip = false;
 
         _equipments[type] = item;
         ApplyEquipmentValue(item, EquipmentApplyType.Equip);
-        OnEquipmentChanged?.Invoke(type);
-        // todo: ui랑 연결
+
+        OnEquipmentChanged?.Invoke();
     }
 
-    public void Unequip(EquipmentType type)
+    /// <summary>
+    /// [public] 장비 장착 해제
+    /// </summary>
+    /// <param name="item"></param>
+    public void Unequip(ItemInstance item)
     {
+        EquipmentType type = item.ItemData.EquipmentType;
         if (_equipments.TryGetValue(type, out ItemInstance prev))
         {
-            // 기존 장비 해제
+            _equipments[type] = null;
             if (prev != null)
             {
                 ApplyEquipmentValue(prev, EquipmentApplyType.Unequip);
             }
         }
+
+        if (!_doneEquip)
+        {
+            OnEquipmentChanged?.Invoke();
+        }
+    }
+
+    /// <summary>
+    /// [public] 현재 장착하고 있는 아이템인지 확인
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool IsEquip(ItemInstance item)
+    {
+        if (!_equipments.TryGetValue(item.ItemData.EquipmentType, out ItemInstance equipment))
+        {
+            return false;
+        }
+
+        return equipment != null && equipment.Equals(item);
     }
     #endregion
 
@@ -71,6 +110,11 @@ public class Equipment
 
         if (item == null) return;
 
+        // 장비 자체 수치 계산
+        (StatType statType, int value) = item.GetStatAndValue();
+        _condition[statType].UpdateEquipmentValue(value * sign);
+
+        // 장비 등급에 따른 수치 계산
         foreach (var equipmentEffect in item.ItemData.Equipments)
         {
             switch (equipmentEffect.EffectType)
@@ -96,7 +140,7 @@ public class Equipment
                 _condition[statType].UpdateEquipmentValue(value);
                 break;
             case EffectApplyType.Percent:
-                _condition[statType].UpdateEquipmentValue(value * 0.01f);
+                _condition[statType].UpdateEquipmentValue(_condition[statType].BaseValue * value * 0.01f);
                 break;
         }
     }

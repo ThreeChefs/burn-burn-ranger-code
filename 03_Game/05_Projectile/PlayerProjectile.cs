@@ -71,11 +71,13 @@ public class PlayerProjectile : BaseProjectile
         if (IsHitTarget(layer))
         {
             HandleHit(collision);
+            PlaySfxOnce();
         }
 
         if (IsReflectTarget(layer))
         {
             HandleReflection(collision);
+            PlaySfxOnce();
         }
     }
     #endregion
@@ -96,6 +98,7 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
+
                 HitContext context = GetHitContext(collision);
                 OnValidHit(in context);
 
@@ -210,6 +213,11 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer = 0f;
 
+        if (sfxIndex >= 0 && !useCustomSfx && sfxCoroutine == null)
+        {
+            sfxCoroutine = StartCoroutine(PlaySfx());
+        }
+
         //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
 
@@ -224,6 +232,7 @@ public class PlayerProjectile : BaseProjectile
             gameObject.SetActive(false);
         }
     }
+
     #endregion
 
     #region Hit Utils

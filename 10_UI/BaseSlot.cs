@@ -1,41 +1,52 @@
 
+using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BaseSlot : MonoBehaviour
+public class BaseSlot : MonoBehaviour, IPointerDownHandler, IPointerExitHandler, IPointerUpHandler
 {
     [SerializeField] protected Image iconImg;
-    [SerializeField] protected Image itemClass;
+
+    [SerializeField] bool _isCountable = true;
+    [ShowIf("_isCountable")]
     [SerializeField] protected TextMeshProUGUI countText;
 
-    public virtual void SetSlot(SlotInfo slotInfo)
+   
+    protected void SetSlot(SlotInfo slotInfo)
     {    
-        if(slotInfo.ContentImg != null )
+        if(slotInfo.contentSpr != null )
         {
             iconImg.gameObject.SetActive(true);
-            iconImg.sprite = slotInfo.ContentImg;
+            iconImg.sprite = slotInfo.contentSpr;
         }
 
-        countText.text = slotInfo.ContentCount.ToString();
-
-        if(slotInfo.ContentClassLevel != ItemClass.None)
+        if(_isCountable && countText != null)
         {
-            itemClass.gameObject.SetActive(true);
+            countText.text = slotInfo.contentCount.ToString();
         }
-        else
-        {
-            itemClass.gameObject.SetActive(false);
-        }
-
+       
     }
 
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+    }
+
+    public virtual void OnPointerExit(PointerEventData eventData)
+    {
+    }
+
+    public virtual void OnPointerDown(PointerEventData eventData)
+    {
+    }
 }
 
 
 public struct SlotInfo
 {
-    public Sprite ContentImg;
-    public int ContentCount;
-    public ItemClass ContentClassLevel;
+    public Sprite contentSpr;
+    public bool isCountable;
+    public int contentCount;
+    public ItemClass contentClassLevel;
 }

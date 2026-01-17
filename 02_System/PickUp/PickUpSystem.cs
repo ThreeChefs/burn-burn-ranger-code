@@ -1,23 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PickUpSystem : MonoBehaviour
+/// <summary>
+/// 픽업 시스템
+/// </summary>
+public class PickUpSystem
 {
-    [field: Header("데이터베이스")]
-    [field: SerializeField] private SoDatabase _itemBoxDatabase;
-
     // 캐싱
-    private Dictionary<int, ItemBoxData> _itemBoxCache;
+    private readonly Dictionary<int, ItemBoxData> _itemBoxCache;
 
-    private void Awake()
+    public PickUpSystem(SoDatabase itemBoxDatabase)
     {
         _itemBoxCache = new();
-        ConvertToDict();
-    }
-
-    private void ConvertToDict()
-    {
-        _itemBoxDatabase.GetDatabase<ItemBoxData>().ForEach(itemBoxData =>
+        itemBoxDatabase.GetDatabase<ItemBoxData>().ForEach(itemBoxData =>
         {
             if (_itemBoxCache.ContainsKey(itemBoxData.Id))
             {
@@ -51,11 +46,4 @@ public class PickUpSystem : MonoBehaviour
 
         return null;
     }
-
-#if UNITY_EDITOR
-    private void Reset()
-    {
-        _itemBoxDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("ItemBoxDatabase");
-    }
-#endif
 }
