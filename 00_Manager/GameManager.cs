@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameManager : GlobalSingletonManager<GameManager>
 {
     // 각종 매니저들
-    public SceneController Scene = new();
+    public SceneController Scene { get; private set; }
     public DataManager Data { get; private set; }
 
 
@@ -26,6 +26,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     protected override void Init()
     {
+        Scene = new();
         StageDatabase = _stageDatabase.GetDatabase<StageData>();
         Data = new DataManager();
 
