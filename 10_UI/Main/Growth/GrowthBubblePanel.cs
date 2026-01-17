@@ -21,7 +21,7 @@ public class GrowthBubblePanel : MonoBehaviour
     [Title("Button")]
     [SerializeField] Button _unlockBtn;
 
-    float _openDuration;
+    float _openDuration = 0.2f;
 
     public void Open(GrowthInfo info, bool showButton)
     {
