@@ -41,8 +41,7 @@ public class ItemInstance
 
         Level++;
         OnLevelChanged?.Invoke();
-
-        PlayerManager.Instance.Equipment.Equip(this);
+        CheckEquip();
 
         return true;
     }
@@ -61,10 +60,19 @@ public class ItemInstance
         if (doneLevelUp)
         {
             OnLevelChanged?.Invoke();
-            PlayerManager.Instance.Equipment.Equip(this);
+            CheckEquip();
         }
 
         return doneLevelUp;
+    }
+
+    private void CheckEquip()
+    {
+        Equipment equipment = PlayerManager.Instance.Equipment;
+        if (equipment.IsEquip(this))
+        {
+            equipment.Equip(this);
+        }
     }
 
     #region Utils - 수치 계산
