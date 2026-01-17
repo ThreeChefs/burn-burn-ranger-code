@@ -20,6 +20,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     [SerializeField] private Transform _hpBarPivot;
 
     // 이미지
+    [SerializeField] private Transform _moveDirectionArrow;
     [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
     protected bool IsLeft
@@ -81,8 +82,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
         // hp 바 연결
         StatSliderUI statSliderUI = UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot) as StatSliderUI;
         statSliderUI.Init(_health);
-
-
     }
 
     private void Update()
@@ -222,7 +221,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
         _gemCollector.radius = 0.5f;
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
-        _renderers = GetComponentsInChildren<SpriteRenderer>();
+        _moveDirectionArrow = transform.FindChild<Transform>("Sprite");
+        _renderers = transform.FindChild<Transform>("Model").GetComponentsInChildren<SpriteRenderer>();
         SkillContainer = transform.FindChild<Transform>("SkillContainer");
     }
 #endif
