@@ -1,15 +1,20 @@
 
 using System;
+using System.Collections.Generic;
 
 public class GrowthProgress
 {
     int _normalUnlockCount = 0;       // 얼마나 열었는지
     public int NormalUnlockCount => _normalUnlockCount;
 
-    
-    public void UnlockNormalGrowth(int unlockCount)
+
+    /// <summary>
+    /// UI 에서 해금하여 런타임에서 적용
+    /// </summary>
+    public void UnlockNormalGrowth(int unlockCount, GrowthInfo info)
     {
         _normalUnlockCount = unlockCount;
+        PlayerManager.Instance.Condition[info.StatType].Add(info.Value);
     }
 
     public void ImportGrowthPogress(GrowthProgressSaveInfo info)
