@@ -36,6 +36,11 @@ public class ItemSlot : MonoBehaviour
     {
         button.onClick.RemoveAllListeners();
     }
+
+    private void OnDestroy()
+    {
+        ResetSlot();
+    }
     #endregion
 
     #region 초기화
@@ -64,20 +69,28 @@ public class ItemSlot : MonoBehaviour
     /// <param name="itemInstance"></param>
     public virtual void SetSlot(ItemInstance itemInstance)
     {
-        if (_itemInstance != null && _itemInstance.Equals(itemInstance)) return;
-
+        if (_itemInstance != null)
+        {
+            if (_itemInstance.Equals(itemInstance)) return;
+            _itemInstance.OnLevelChanged -= UpdateLevel;
+        }
         _itemInstance = itemInstance;
+        _itemInstance.OnLevelChanged += UpdateLevel;
 
         SetActiveComponent(true);
 
         itemClass.color = ItemUtils.GetClassColor(itemInstance.ItemClass);
         icon.sprite = itemInstance.ItemData.Icon;
-        level.text = itemInstance.Level.ToString();
         count.text = itemInstance.Count < 2 ? "" : itemInstance.Count.ToString();
+        UpdateLevel();
     }
 
     public virtual void ResetSlot()
     {
+        if (_itemInstance != null)
+        {
+            _itemInstance.OnLevelChanged -= UpdateLevel;
+        }
         _itemInstance = null;
 
         SetActiveComponent(false);
@@ -94,6 +107,11 @@ public class ItemSlot : MonoBehaviour
     public bool IsEmpty()
     {
         return _itemInstance == null;
+    }
+
+    private void UpdateLevel()
+    {
+        level.text = _itemInstance.Level.ToString();
     }
     #endregion
 

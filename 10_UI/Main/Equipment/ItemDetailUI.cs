@@ -111,8 +111,8 @@ public class ItemDetailUI : BaseUI
         if (_curItem != null && _curItem.Equals(instance)) return;
         _curItem = instance;
 
-        ItemClass itemClass = instance.ItemClass;
-        ItemData itemData = instance.ItemData;
+        ItemClass itemClass = _curItem.ItemClass;
+        ItemData itemData = _curItem.ItemData;
 
         _itemClassBadge.color = ItemUtils.GetClassColor(itemClass);
         _itemClassText.text = ItemUtils.GetClassString(itemClass);

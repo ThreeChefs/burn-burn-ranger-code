@@ -23,7 +23,6 @@ public class EquipmentUI : BaseUI
         _equipment = PlayerManager.Instance.Equipment;
         Init();
 
-        _inventory.OnInventoryChanged += UpdateInventoryUI;
         _equipment.OnEquipmentChanged += UpdateEquipUI;
     }
 
@@ -31,9 +30,9 @@ public class EquipmentUI : BaseUI
     {
         if (_inventory != null)
         {
-            _inventory.OnInventoryChanged -= UpdateInventoryUI;
-            _inventory.OnInventoryChanged += UpdateInventoryUI;
+            UpdateInventoryUI();
         }
+
         if (_equipment != null)
         {
             _equipment.OnEquipmentChanged -= UpdateEquipUI;
@@ -43,10 +42,6 @@ public class EquipmentUI : BaseUI
 
     private void OnDisable()
     {
-        if (_inventory != null)
-        {
-            _inventory.OnInventoryChanged -= UpdateInventoryUI;
-        }
         if (_equipment != null)
         {
             _equipment.OnEquipmentChanged -= UpdateEquipUI;
@@ -68,23 +63,12 @@ public class EquipmentUI : BaseUI
 
     private void Init()
     {
-        for (int i = 0; i < _inventory.Items.Count; i++)
-        {
-            AddItemSlot();
-        }
-
+        UpdateInventoryUI();
         UpdateEquipUI();
 
         // todo: 레이아웃 대신 직접 계산
         //_inventoryUI.GetComponent<GridLayoutGroup>().enabled = false;
         //_inventoryUI.GetComponent<ContentSizeFitter>().enabled = false;
-    }
-
-    private void AddItemSlot()
-    {
-        ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
-        itemSlot.transform.SetParent(_inventoryUI, false);
-        _inventorySlots.Add(itemSlot);
     }
 
     /// <summary>
@@ -107,7 +91,7 @@ public class EquipmentUI : BaseUI
         {
             _inventorySlots[slotIndex].SetSlot(item);
             _inventorySlots[slotIndex].gameObject.SetActive(true);
-            Logger.Log($"인벤토리 {slotIndex} 번째 장비 슬롯에 설정");
+            //Logger.Log($"인벤토리 {slotIndex} 번째 장비 슬롯에 설정");
             slotIndex++;
         }
 
@@ -167,14 +151,22 @@ public class EquipmentUI : BaseUI
     }
 
     /// <summary>
-    /// 인벤토리에 들어온 마지막 아이템 슬롯 만들어서 적용
+    /// 인벤토리 슬롯 만들기
     /// </summary>
     private void UpdateInventoryUI()
     {
+        for (int i = _inventorySlots.Count; i < _inventory.Items.Count; i++)
+        {
+            AddItemSlot(i);
+        }
+    }
+
+    private void AddItemSlot(int index)
+    {
         ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
-        _inventorySlots.Add(itemSlot);
-        itemSlot.SetSlot(_inventory.Items[_inventory.Items.Count - 1]);
         itemSlot.transform.SetParent(_inventoryUI, false);
+        _inventorySlots.Add(itemSlot);
+        itemSlot.SetSlot(_inventory.Items[index]);
     }
 
 #if UNITY_EDITOR
