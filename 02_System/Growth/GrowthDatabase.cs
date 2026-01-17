@@ -24,7 +24,7 @@ public class GrowthDatabase : ScriptableObject
     void AutoAdd()
     {
         _growthInfoEntries= new List<GrowthInfoEntry>();   
-        for (int i = 0; i < Define.PlayerMaxLevel; ++i)
+        for (int i = 1; i < Define.PlayerMaxLevel; ++i)
         {
             GrowthInfoEntry entry = new GrowthInfoEntry(i);
             _growthInfoEntries.Add(entry);
