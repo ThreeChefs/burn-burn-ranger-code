@@ -6,6 +6,7 @@ public class LaserPattern : BossPatternBase
 {
     [Header("Laser")]
     [SerializeField] private GameObject laserPrefab;
+
     [SerializeField] private float laserLength = 30f;
     [SerializeField] private float laserThickness = 2f;
     private Transform laserPoint;
@@ -19,19 +20,36 @@ public class LaserPattern : BossPatternBase
     [SerializeField] private float damageMultiplierPerTick = 0.5f;
     [SerializeField] private float tickInterval = 0.2f;
 
+    [Header("Laser Point")]
+    [SerializeField] private Transform laserRoot;
+    [SerializeField] private Transform[] laserPoints;
     private Transform[] lasers;
+
+    [Header("Laser Effects")]
+    [SerializeField] private GameObject pointVfxPrefab;
+    [SerializeField] private Vector3 pointVfxLocalOffset = new Vector3(0f, 0f, 0f);
+    private Transform[] pointVfxRoots;
     private readonly Dictionary<int, float> nextTickTime = new();
+    private ParticleSystem[][] laserVfx;
 
 
     protected override bool CanRun()
     {
-        return boss != null && laserPrefab != null;
+        if (boss == null) return false;
+        if (laserPrefab == null) return false;
+        if (laserRoot == null) return false;
+        if (laserPoints == null || laserPoints.Length != 4) return false;
+        return true;
     }
 
     protected override IEnumerator Execute()
     {
+
         CreatLaser();
+        CreatePointVfx();
+
         SettingLaser(true);
+        SetPointVfx(true);
         Debug.Log("[LaserPattern] START");
         float t = 0f;
         while (t < UsingTime)
@@ -51,50 +69,143 @@ public class LaserPattern : BossPatternBase
             yield return null;
         }
         SettingLaser(false);
+        SetPointVfx(false);
         nextTickTime.Clear();
         Debug.Log("[LaserPattern] END");
     }
 
     private void CreatLaser()
     {
-        if (lasers != null)
-        {
-            return;
-        }
-        GameObject LaserPoint = new GameObject("LaserPoint");
-        LaserPoint.transform.SetParent(transform, false);
-        laserPoint = LaserPoint.transform;
-        lasers = new Transform[4];
+        if (lasers != null) return;
 
+        if (laserPoints == null || laserPoints.Length != 4)
+        {
+            Debug.LogError("[LaserPattern] LaserPoints not set correctly");
+            return;
+
+
+        }
+
+        lasers = new Transform[4];
+        laserVfx ??= new ParticleSystem[4][];
         for (int i = 0; i < 4; i++)
         {
-            GameObject gameObject = Instantiate(laserPrefab, laserPoint);
-            gameObject.name = $"Laser_{i}";
+            GameObject go = Instantiate(laserPrefab, laserPoints[i]);
 
-            var trigger = gameObject.GetComponent<LaserTrigger>();
+            go.name = $"Laser_{i}";
+
+            var trigger = go.GetComponent<LaserTrigger>();
             if (trigger != null)
-            {
                 trigger.Bind(this);
-            }
-            lasers[i] = gameObject.transform;
+            laserVfx[i] = go.GetComponentsInChildren<ParticleSystem>(true);
+            lasers[i] = go.transform;
+            lasers[i].localRotation = Quaternion.identity;
+            lasers[i].localScale = new Vector3(laserThickness, laserLength, 1f);
+            lasers[i].localPosition = Vector3.up;
+
         }
-        SetupLaser();
+
         SettingLaser(false);
 
     }
+    private void CreatePointVfx()
+    {
+        if (pointVfxRoots != null) return;
+        if (pointVfxPrefab == null) return;
+        if (lasers == null || lasers.Length != 4) return; // ✅ 레이저가 먼저 생성돼 있어야 함
 
+        pointVfxRoots = new Transform[4];
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (lasers[i] == null) continue;
+
+            GameObject vfxGo = Instantiate(pointVfxPrefab, lasers[i]); // ✅ 레이저 자식!
+            vfxGo.name = $"LaserPointVfx_{i}";
+
+            // ✅ 레이저 로컬 기준으로 위치 잡기 (빈공간 맞추는 곳)
+            vfxGo.transform.localPosition = pointVfxLocalOffset;
+            vfxGo.transform.localRotation = Quaternion.identity;
+
+            pointVfxRoots[i] = vfxGo.transform;
+
+            vfxGo.SetActive(false);
+        }
+    }
+    private void SetPointVfx(bool on)
+    {
+        if (pointVfxRoots == null) return;
+
+        for (int i = 0; i < pointVfxRoots.Length; i++)
+        {
+            var root = pointVfxRoots[i];
+            if (root == null) continue;
+
+            root.gameObject.SetActive(on);
+
+            var systems = root.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (var ps in systems)
+            {
+                if (on)
+                {
+                    ps.Clear(true);
+                    ps.Play(true);
+                }
+                else
+                {
+                    ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    ps.Clear(true);
+                }
+            }
+        }
+    }
     private void SettingLaser(bool active)
     {
         if (lasers == null) return;
+
         for (int i = 0; i < lasers.Length; i++)
         {
-            lasers[i].gameObject.SetActive(active);
+            if (lasers[i] == null) continue;
+
+            if (active)
+            {
+                // ✅ 먼저 켠 다음
+                lasers[i].gameObject.SetActive(true);
+
+                // ✅ 파티클 수동 재생 (Play On Awake OFF일 때 필수)
+                if (laserVfx != null && laserVfx[i] != null)
+                {
+                    foreach (var ps in laserVfx[i])
+                    {
+                        if (ps == null) continue;
+                        ps.Clear(true);
+                        ps.Play(true);
+                    }
+                }
+            }
+            else
+            {
+                // ✅ 끌 때: 잔상 제거
+                if (laserVfx != null && laserVfx[i] != null)
+                {
+                    foreach (var ps in laserVfx[i])
+                    {
+                        if (ps == null) continue;
+                        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                        ps.Clear(true);
+                    }
+                }
+
+                lasers[i].gameObject.SetActive(active);
+
+            }
         }
     }
 
     private void UpdateLasers(float angleDeg)
     {
-        laserPoint.localRotation = Quaternion.Euler(0, 0, angleDeg);
+        if (laserRoot == null) return;
+        laserRoot.localRotation = Quaternion.Euler(0, 0, angleDeg);
 
     }
 
@@ -120,35 +231,9 @@ public class LaserPattern : BossPatternBase
         {
             return;
         }
-
+        SetPointVfx(false);
         SettingLaser(false);
         nextTickTime.Clear();
     }
 
-    private void SetupLaser()
-    {
-        Debug.Log($"[LaserPattern] length={laserLength}, scale={lasers[0].localScale}");
-        float half = laserLength * 0.5f;
-
-        // 동
-        lasers[0].localPosition = Vector3.right * half;
-        lasers[0].localRotation = Quaternion.Euler(0, 0, 0);
-
-        // 서
-        lasers[1].localPosition = Vector3.left * half;
-        lasers[1].localRotation = Quaternion.Euler(0, 0, 180);
-
-        // 남
-        lasers[2].localPosition = Vector3.down * half;
-        lasers[2].localRotation = Quaternion.Euler(0, 0, -90);
-
-        // 북
-        lasers[3].localPosition = Vector3.up * half;
-        lasers[3].localRotation = Quaternion.Euler(0, 0, 90);
-
-        // 크기(길이/두께)
-        for (int i = 0; i < 4; i++)
-            lasers[i].localScale = new Vector3(laserLength, laserThickness, 1f);
-        Debug.Log($"[LaserPattern] AFTER length={laserLength}, scale={lasers[0].localScale}");
-    }
 }
