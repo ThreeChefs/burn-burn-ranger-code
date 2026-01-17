@@ -2,6 +2,7 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem.EnhancedTouch;
 using UnityEngine.UI;
 
 public class GrowthBubblePanel : MonoBehaviour
@@ -23,13 +24,17 @@ public class GrowthBubblePanel : MonoBehaviour
 
     float _openDuration = 0.2f;
 
-    public void Open(GrowthInfo info, bool showButton)
+    Transform _targetSlot;
+
+    public void Open(GrowthSlot slot, bool showButton)
     {
-        _headerText.text = StatTypeText.StatName[info.StatType];
-        _descText.text = StatTypeText.StatDescriptionName[info.StatType];
-        _subDescText.text = StatTypeText.StatGrowthDesc[info.StatType];
-        _goldText.text = info.GrowthPrice.ToString();
-        _valueText.text = info.Value.ToString();
+        _targetSlot = slot.transform;
+
+        _headerText.text = StatTypeText.StatName[slot.GrowthInfo.StatType];
+        _descText.text = StatTypeText.StatDescriptionName[slot.GrowthInfo.StatType];
+        _subDescText.text = StatTypeText.StatGrowthDesc[slot.GrowthInfo.StatType];
+        _goldText.text = slot.GrowthInfo.GrowthPrice.ToString();
+        _valueText.text = slot.GrowthInfo.Value.ToString();
 
         if(showButton)
         {
@@ -51,6 +56,13 @@ public class GrowthBubblePanel : MonoBehaviour
         this.transform.localScale = Vector3.zero;
         this.transform.DOScale(Vector3.one, _openDuration).SetEase(Ease.InCirc);
     }
+
+    private void Update()
+    {
+        if (_targetSlot != null)
+            this.transform.position = _targetSlot.position;
+    }
+
 
     public void Close()
     {
