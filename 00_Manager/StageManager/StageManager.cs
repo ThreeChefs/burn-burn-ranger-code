@@ -219,7 +219,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
 
-
+    // 스테이지 보상 제공
     List<StageRewardInfo> GiveReward()
     {
 
@@ -241,7 +241,9 @@ public class StageManager : SceneSingletonManager<StageManager>
             {
                 // 장비 주기
                 newRewardInfo.type = ItemType.Equipment;
-                newRewardInfo.itemInfo = GetEquipReward(_nowStage.ItemBoxData);
+
+                newRewardInfo.itemInfo = GameManager.Instance.PickUpSystem.PickUp(0);
+                
                 newRewardInfo.count += 1;
 
                 rewardInfos.Add(newRewardInfo);
@@ -249,7 +251,10 @@ public class StageManager : SceneSingletonManager<StageManager>
             }
             else
             {
-                switch (GetUpgradeMaterial())
+                WalletType randomUpgradeMaterial = (WalletType)Define.Random.Next((int)WalletType.UpgradeMaterial_Weapon, (int)WalletType.UpgradeMaterial_Weapon + StageDefine.EquipTypeCount);
+
+
+                switch (randomUpgradeMaterial)
                 {
                     case WalletType.UpgradeMaterial_Weapon:
                         weaponMaterial.count += 1;
@@ -294,40 +299,6 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     #endregion
 
-
-    #region 임시
-
-    // 리팩토링 되면 제공받은 함수로 사용하기!
-
-    ItemInstance GetEquipReward(ItemBoxData itmeBoxData)
-    {
-        float rand = UnityEngine.Random.value * 100f;
-        float cumulative = 0f;
-
-
-        if (itmeBoxData == null) return null;
-
-        foreach (ItemBoxEntry entry in itmeBoxData.ItemBoxEntries)
-        {
-            cumulative += entry.Weight;
-            if (rand <= cumulative)
-            {
-                int index = UnityEngine.Random.Range(0, entry.Items.Count);
-                return new ItemInstance(entry.ItemClass, entry.Items[index]);
-            }
-        }
-
-        return null;
-    }
-
-    WalletType GetUpgradeMaterial()
-    {
-        return (WalletType)Define.Random.Next((int)WalletType.UpgradeMaterial_Weapon,
-            (int)WalletType.UpgradeMaterial_Weapon + StageDefine.EquipTypeCount);
-
-    }
-
-    #endregion
 
     #region Test
     [Title("Test")]
