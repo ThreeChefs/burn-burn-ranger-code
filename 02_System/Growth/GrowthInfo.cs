@@ -32,7 +32,7 @@ public class GrowthInfoEntry
     [SerializeField] List<GrowthInfo> _growthInfos;
 
     public int UnlockLevel => _unlockLevel;
-    List<GrowthInfo> GrowthInfos => _growthInfos;
+    public List<GrowthInfo> GrowthInfos => _growthInfos;
 
     public GrowthInfoEntry(int unlockLevel)
     {
