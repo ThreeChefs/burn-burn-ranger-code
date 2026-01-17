@@ -9,6 +9,8 @@ public class GrowthUI : BaseUI
     [SerializeField] RectTransform _content;
     [SerializeField] VerticalLayoutGroup _layoutGroup;
     [SerializeField] Transform _empty;
+    [SerializeField] GrowthBubblePanel _panel;
+    [SerializeField] Button _backButton;
 
     [Title("프리팹")]
     [SerializeField] GrowthSlot _slotOrigin;
@@ -22,7 +24,10 @@ public class GrowthUI : BaseUI
 
     List<GrowthSlot> growthSlots = new List<GrowthSlot>();
 
-
+    private void Awake()
+    {
+        _backButton.onClick.AddListener(OnClickBackButton);
+    }
 
     public void Start()
     {
@@ -65,22 +70,31 @@ public class GrowthUI : BaseUI
                         break;
                 }
 
-                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j]);
+                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], slotCount);
                 growthSlots.Add(newSlot);
+                newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
+
                 slotCount += 1;
             }
 
         }
 
         Instantiate(_empty, _content);
-        //_line.localScale = new Vector3(
-        //    slotCount * 10,
-        //    _line.localScale.y,
-        //    _line.localScale.z
-        //    );
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(_content);
+
     }
 
+
+    void OnClickGrowthSlot(GrowthSlot slot, int unlcokCount)
+    {
+        _panel.Open(slot.GrowthInfo, true);
+
+    }
+
+    void OnClickBackButton()
+    {
+        _panel.Close();
+    }
 
 }
