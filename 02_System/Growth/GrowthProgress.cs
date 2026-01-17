@@ -24,7 +24,33 @@ public class GrowthProgress
             normalUnlockCount = _normalUnlockCount,
         };
     }
- 
+
+    /// <summary>
+    /// 저장된 정보 적용
+    /// </summary>
+    public void ApplySavedGrowthStat(List<GrowthInfoEntry> growthInfoEntries, int unlockCount)
+    {
+        int count = 0;
+
+        if (unlockCount <= 0) return;
+
+        // 스탯 적용하기
+        foreach (GrowthInfoEntry entry in growthInfoEntries)
+        {
+            foreach (GrowthInfo info in entry.GrowthInfos)
+            {
+                PlayerManager.Instance.Condition[info.StatType].Add(info.Value);
+                count++;
+            }
+
+            if (count >= unlockCount)
+            {
+                break;
+            }
+        }
+    }
+
+
 }
 
 [Serializable]
