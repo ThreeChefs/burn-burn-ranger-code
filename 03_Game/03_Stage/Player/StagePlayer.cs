@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DG.Tweening;
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -21,6 +22,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     // 이미지
     [SerializeField] private Transform _moveDirectionArrow;
+    [SerializeField] private float _rotateDuration = 0.75f;
+
     [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
     protected bool IsLeft
@@ -82,6 +85,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         // hp 바 연결
         StatSliderUI statSliderUI = UIManager.Instance.SpawnWorldUI(UIName.WorldUI_Hp, _hpBarPivot) as StatSliderUI;
         statSliderUI.Init(_health);
+
+        _moveDirectionArrow.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -92,6 +97,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
             _health.Add(_health.MaxValue * _heal.MaxValue);
             _healTimer = 0f;
         }
+
+        float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
+        _moveDirectionArrow.DORotate(new Vector3(0, 0, angle), _rotateDuration);
     }
 
     private void FixedUpdate()
@@ -131,10 +139,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (context.phase == InputActionPhase.Performed)
         {
             _inputVector = context.ReadValue<Vector2>();
+            _moveDirectionArrow.gameObject.SetActive(true);
         }
         else if (context.phase == InputActionPhase.Canceled)
         {
             _inputVector = Vector2.zero;
+            _moveDirectionArrow.gameObject.SetActive(false);
         }
     }
     #endregion
@@ -221,7 +231,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         }
         _gemCollector.radius = 0.5f;
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
-        _moveDirectionArrow = transform.FindChild<Transform>("Sprite");
+        _moveDirectionArrow = transform.FindChild<Transform>("MoveDirectionArrow");
         _renderers = transform.FindChild<Transform>("Model").GetComponentsInChildren<SpriteRenderer>();
         SkillContainer = transform.FindChild<Transform>("SkillContainer");
     }
