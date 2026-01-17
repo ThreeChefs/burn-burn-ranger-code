@@ -148,7 +148,8 @@ public class SceneController
 
     private IEnumerator LoadInGame(string sceneName)
     {
-        UIManager.Instance.ShowUI(UIName.UI_InGameLoading);
+        InGameLoadingUI ui = UIManager.Instance.ShowUI(UIName.UI_InGameLoading) as InGameLoadingUI;
+        ui.StartAnim(false);
 
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
         async.allowSceneActivation = false;
@@ -160,6 +161,7 @@ public class SceneController
             yield return null;
         }
 
+        yield return _loadDelay;
         async.allowSceneActivation = true;
     }
 

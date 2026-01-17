@@ -2,6 +2,8 @@ public class StageScene : BaseScene
 {
     private void Start()
     {
+        InGameLoadingUI loadingUi = UIManager.Instance.LoadUI(UIName.UI_InGameLoading) as InGameLoadingUI;
+        loadingUi.StartAnim(true);
 
         // todo : 임시! 플레이어, 스테이지 정보 읽고 사용될 수 있는 것들을 쭉 등록해줘야함.
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.KunaiProjectileData);

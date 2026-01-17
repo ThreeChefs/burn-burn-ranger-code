@@ -4,16 +4,23 @@ using UnityEngine;
 public class InGameLoadingUI : BaseUI
 {
     [SerializeField] private RectTransform _bg;
-    [SerializeField] private float _duration = 1f;
-    [SerializeField] private float _startScale = 10f;
-    [SerializeField] private float _endScale = 1f;
+    [SerializeField] private float _delay = 0.1f;
+    [SerializeField] private float _duration = 0.2f;
+    [SerializeField] private float _maxScale = 10f;
+    [SerializeField] private float _minScale = 1f;
 
-    public override void OpenUIInternal()
+    public void StartAnim(bool expandMode)
     {
-        base.OpenUIInternal();
-
-        _bg.localScale = Vector3.one * _startScale;
-        _bg.DOScale(_endScale, _duration);
+        if (expandMode)
+        {
+            _bg.localScale = Vector2.one * _minScale;
+            _bg.DOScale(_maxScale, _duration).SetDelay(_delay).OnComplete(() => gameObject.SetActive(false));
+        }
+        else
+        {
+            _bg.localScale = Vector3.one * _maxScale;
+            _bg.DOScale(_minScale, _duration).SetDelay(_delay);
+        }
     }
 
 #if UNITY_EDITOR
