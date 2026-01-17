@@ -222,7 +222,6 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     List<StageRewardInfo> GiveReward()
     {
-        float rand = UnityEngine.Random.value;
 
         List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
 
@@ -235,6 +234,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         for (int i = 0; i < _nowStage.RewardBoxCount; i++)
         {
+            float rand = UnityEngine.Random.value;
             StageRewardInfo newRewardInfo = default;
 
             if (rand <= StageDefine.StageClearEquipRewardWeight)
@@ -303,6 +303,9 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         float rand = UnityEngine.Random.value * 100f;
         float cumulative = 0f;
+
+
+        if (itmeBoxData == null) return null;
 
         foreach (ItemBoxEntry entry in itmeBoxData.ItemBoxEntries)
         {
