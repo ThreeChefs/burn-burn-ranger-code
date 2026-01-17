@@ -58,8 +58,8 @@ public class ItemDetailUI : BaseUI
     private void OnEnable()
     {
         //버튼
-        _equipButton.onClick.AddListener(Equip);
-        _unequipButton.onClick.AddListener(Unequip);
+        _equipButton.onClick.AddListener(ClickEquipButton);
+        _unequipButton.onClick.AddListener(ClickUnequipButton);
 
         // 아이템 이벤트 구독
     }
@@ -145,14 +145,16 @@ public class ItemDetailUI : BaseUI
         UpdateEquipButton();
     }
 
-    private void Equip()
+    #region 버튼
+    // 장비 장착 / 해제
+    private void ClickEquipButton()
     {
         PlayerManager.Instance.Equipment.Equip(_curItem);
         UpdateEquipButton();
         gameObject.SetActive(false);
     }
 
-    private void Unequip()
+    private void ClickUnequipButton()
     {
         PlayerManager.Instance.Equipment.Unequip(_curItem);
         UpdateEquipButton();
