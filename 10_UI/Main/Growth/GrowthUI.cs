@@ -70,7 +70,14 @@ public class GrowthUI : BaseUI
                 }
 
                 _growthSlotsCount += 1; // 슬롯 해금 번호는 1부터
-                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], _growthSlotsCount);
+
+                GrowthUnlockInfo unlockInfo = new GrowthUnlockInfo 
+                {
+                    unlockCount = _growthSlotsCount,
+                    unlockLevel = entries[i].UnlockLevel
+                };
+
+                newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], unlockInfo);
                 _growthSlots.Add(newSlot);
 
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
@@ -99,12 +106,10 @@ public class GrowthUI : BaseUI
 
     void OnUnlockGrowth(int unlockCount)
     {
-        // 번호 확인하고 아이콘 띄우기
-
         if (_growthSlots.Count <= unlockCount) return;
 
 
-        if (_growthSlots[unlockCount].GrowthInfo.UnLockableLevel <= PlayerManager.Instance.Condition.GlobalLevel.Level)
+        if (_growthSlots[unlockCount].UnlockInfo.unlockLevel <= PlayerManager.Instance.Condition.GlobalLevel.Level)
         {
             _growthSlots[unlockCount].ShowUnlockableIcon();
         }

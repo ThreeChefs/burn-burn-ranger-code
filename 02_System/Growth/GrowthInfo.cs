@@ -16,15 +16,10 @@ public class GrowthInfo
     public float Value => _value;
     public int GrowthPrice => _growthPrice;
 
-    private int _unlockableLevel;
-    public int UnLockableLevel => _unlockableLevel;
-
-
-    public GrowthInfo(int unlockableLevel, StatType statType, float value)
+    public GrowthInfo(StatType statType, float value)
     {
         _statType = statType;
         _value = value;
-        _unlockableLevel = unlockableLevel;
     }
 }
 
@@ -44,10 +39,16 @@ public class GrowthInfoEntry
         _unlockLevel = unlockLevel;
         
         _growthInfos = new List<GrowthInfo>();
-        _growthInfos.Add(new GrowthInfo(unlockLevel, StatType.Attack, 2));
-        _growthInfos.Add(new GrowthInfo(unlockLevel, StatType.Health, 2));
-        _growthInfos.Add(new GrowthInfo(unlockLevel, StatType.Defense, 2));
-        _growthInfos.Add(new GrowthInfo(unlockLevel, StatType.Heal, 2));
+        _growthInfos.Add(new GrowthInfo(StatType.Attack, 2));
+        _growthInfos.Add(new GrowthInfo(StatType.Health, 2));
+        _growthInfos.Add(new GrowthInfo(StatType.Defense, 2));
+        _growthInfos.Add(new GrowthInfo(StatType.Heal, 2));
 
     }
+}
+
+public struct GrowthUnlockInfo
+{
+    public int unlockLevel;
+    public int unlockCount;
 }
