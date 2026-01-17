@@ -2,16 +2,16 @@ using System.Collections.Generic;
 
 public class InventorySaveData
 {
-    public List<ItemSaveData> List { get; private set; } = new();
+    public List<ItemSaveData> List { get; set; } = new();
 }
 
 public struct ItemSaveData
 {
-    public ItemClass ItemClass { get; private set; }
-    public int Id { get; private set; }
-    public int Count { get; private set; }
-    public int Level { get; private set; }
-    public bool IsEquipped { get; private set; }
+    public ItemClass ItemClass { get; set; }
+    public int Id { get; set; }
+    public int Count { get; set; }
+    public int Level { get; set; }
+    public bool IsEquipped { get; set; }
 
     public ItemSaveData(
         ItemClass itemClass,
