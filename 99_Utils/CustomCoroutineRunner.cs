@@ -30,5 +30,6 @@ public class CustomCoroutineRunner : MonoBehaviour
         }
 
         _instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 }
