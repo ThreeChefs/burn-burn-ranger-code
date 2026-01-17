@@ -19,6 +19,8 @@ public class GameManager : GlobalSingletonManager<GameManager>
     [SerializeField] SoDatabase _stageDatabase;
     [SerializeField] private SoDatabase _itemBoxDatabase;
     [SerializeField] GrowthDatabase _growthDatabase;
+    [SerializeField] private ItemDatabase _itemDatabase;
+    public ItemDatabase ItemDatabase => _itemDatabase;
 
     public List<StageData> StageDatabase { get; private set; }
     public List<GrowthInfoEntry> GrowthInfoSetp => _growthDatabase.GrowInfoEntries;
@@ -83,6 +85,8 @@ public class GameManager : GlobalSingletonManager<GameManager>
     {
         _stageDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("StageDatabase");
         _itemBoxDatabase = AssetLoader.FindAndLoadByName<SoDatabase>("ItemBoxDatabase");
+        _growthDatabase = AssetLoader.FindAndLoadByName<GrowthDatabase>("GrowthDatabase");
+        _itemDatabase = AssetLoader.FindAndLoadByName<ItemDatabase>("ItemDatabase");
     }
 #endif
 }
