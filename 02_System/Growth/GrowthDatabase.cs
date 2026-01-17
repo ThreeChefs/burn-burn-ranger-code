@@ -30,5 +30,30 @@ public class GrowthDatabase : ScriptableObject
             _growthInfoEntries.Add(entry);
         }
     }
+
+    public void ApplyGrowthStat(PlayerCondition playerCondition, int unlockCount)
+    {
+        int count = 0;
+
+        if (unlockCount <= 0) return;
+
+        // 스탯 적용하기
+        foreach (GrowthInfoEntry entry in _growthInfoEntries)
+        {
+            foreach(GrowthInfo info in entry.GrowthInfos)
+            {
+                // PlayerCondition 에 적용하기!
+
+                count++;
+            }
+
+            if (count >= unlockCount)
+            {
+                break;
+            }
+        }
+
+    }
 }
+
 

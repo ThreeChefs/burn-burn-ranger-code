@@ -10,10 +10,11 @@ public class GrowthInfo
     [SerializeField] StatType _statType;     /// 레퍼런스 기준 Health, Heal, Attack, Defense / 우리는 더 만들 수도 있지
     
     [SerializeField] float _value;
-
+    [SerializeField] int _growthPrice = 1000;
 
     public StatType StatType => _statType;
     public float Value => _value;
+    public int GrowthPrice => _growthPrice;
 
 
     public GrowthInfo(StatType statType, float value)
