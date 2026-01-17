@@ -24,13 +24,11 @@ public class GrowthUI : BaseUI
     List<GrowthSlot> growthSlots = new List<GrowthSlot>();
     float lastSpacing = 300f;
 
-    private void Awake()
+    protected override void AwakeInternal()
     {
         _backButton.onClick.AddListener(OnClickBackButton);
-    }
 
-    public void Start()
-    {
+
         List<GrowthInfoEntry> entries = GameManager.Instance.GrowthInfoSetp;
 
         RectTransform slotRect = _slotOrigin.GetComponent<RectTransform>();
@@ -70,11 +68,10 @@ public class GrowthUI : BaseUI
                         break;
                 }
 
+                slotCount += 1;
                 newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], slotCount);
                 growthSlots.Add(newSlot);
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
-
-                slotCount += 1;
             }
 
         }
