@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LoadingUI : BaseUI
+public class BootstrapLoadingUI : BaseUI
 {
     [SerializeField] private Image _progress;
 

@@ -115,8 +115,19 @@ public class SceneController
         // todo: 로딩 씬 필요
         string sceneName = _curSceneType == SceneType.None ? _externalSceneName : _curSceneType.ToString();
 
-        var loadingUI = GameObject.FindAnyObjectByType<LoadingUI>();
-        if (loadingUI != null) { loadingUI.OpenUI(); }
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName(SceneType.LoadingScene.ToString()))
+        {
+            yield return LoadBootstrap(sceneName);
+        }
+        else
+        {
+            yield return LoadInGame(sceneName);
+        }
+    }
+
+    private IEnumerator LoadBootstrap(string sceneName)
+    {
+        BootstrapLoadingUI loadingUI = UIManager.Instance.ShowUI(UIName.UI_BootstrapLoading) as BootstrapLoadingUI;
 
         AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
         async.allowSceneActivation = false;
@@ -132,6 +143,23 @@ public class SceneController
         if (loadingUI != null) { loadingUI.SetProgress(1f); }
 
         yield return _loadDelay;
+        async.allowSceneActivation = true;
+    }
+
+    private IEnumerator LoadInGame(string sceneName)
+    {
+        UIManager.Instance.ShowUI(UIName.UI_InGameLoading);
+
+        AsyncOperation async = SceneManager.LoadSceneAsync(sceneName);
+        async.allowSceneActivation = false;
+
+        Logger.Log($"{_curSceneType}으로 로딩 중...");
+        while (async.progress < 0.9f)
+        {
+            Logger.Log($"진행률: {async.progress}");
+            yield return null;
+        }
+
         async.allowSceneActivation = true;
     }
 
