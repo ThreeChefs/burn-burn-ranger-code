@@ -23,7 +23,7 @@ public class GrowthBubblePanel : MonoBehaviour
     [SerializeField] Button _unlockBtn;
 
     float _openDuration = 0.2f;
-
+    float _positionOffset = 60f;
     Transform _targetSlot;
 
     public void Open(GrowthSlot slot, bool showButton)
@@ -60,7 +60,7 @@ public class GrowthBubblePanel : MonoBehaviour
     private void Update()
     {
         if (_targetSlot != null)
-            this.transform.position = _targetSlot.position;
+            this.transform.position = _targetSlot.position + new Vector3(0, _positionOffset, 0);
     }
 
 
