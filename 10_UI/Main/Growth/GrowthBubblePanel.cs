@@ -44,7 +44,8 @@ public class GrowthBubblePanel : MonoBehaviour
         _goldText.text = slot.GrowthInfo.GrowthPrice.ToString();
         _valueText.text = slot.GrowthInfo.Value.ToString();
 
-        if (GameManager.Instance.GrowthProgress.NormalUnlockCount == slot.UnlockCount - 1)
+        if (GameManager.Instance.GrowthProgress.NormalUnlockCount == slot.UnlockCount - 1
+            && slot.GrowthInfo.UnLockableLevel <= PlayerManager.Instance.Condition.GlobalLevel.Level)
         {
             _unlockBtn.gameObject.SetActive(true);
         }
@@ -89,7 +90,7 @@ public class GrowthBubblePanel : MonoBehaviour
         if (PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(_targetSlot.GrowthInfo.GrowthPrice))
         {
             GameManager.Instance.GrowthProgress.UnlockNormalGrowth(_targetSlot.UnlockCount);
-            
+
             _unlockBtn.gameObject.SetActive(false);
 
             _targetSlot.HideUnlockableIcon();

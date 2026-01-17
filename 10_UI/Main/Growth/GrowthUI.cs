@@ -21,7 +21,7 @@ public class GrowthUI : BaseUI
     [SerializeField] Sprite _healSpr;
     [SerializeField] Sprite _defenseSpr;
 
-    Dictionary<int, List<GrowthSlot>> _growthSlots = new();
+    List<GrowthSlot> _growthSlots = new();
     int _growthSlotsCount = 0;
 
     float _lastSpacing = 300f;
@@ -40,9 +40,6 @@ public class GrowthUI : BaseUI
 
         for (int i = 0; i < entries.Count; ++i)
         {
-            List<GrowthSlot> slots = new List<GrowthSlot>();
-            _growthSlots.Add(i, slots);
-
             for (int j = 0; j < entries[i].GrowthInfos.Count; ++j)
             {
                 GrowthSlot newSlot = Instantiate(_slotOrigin);
@@ -74,7 +71,7 @@ public class GrowthUI : BaseUI
 
                 _growthSlotsCount += 1; // 슬롯 해금 번호는 1부터
                 newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], _growthSlotsCount);
-                slots.Add(newSlot);
+                _growthSlots.Add(newSlot);
 
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
             }
@@ -106,31 +103,11 @@ public class GrowthUI : BaseUI
 
         if (_growthSlots.Count <= unlockCount) return;
 
-        int slotCount = 0;
-        int unlockableLevel = 1;
 
-        foreach (List<GrowthSlot> slots in _growthSlots.Values)
+        if (_growthSlots[unlockCount].GrowthInfo.UnLockableLevel <= PlayerManager.Instance.Condition.GlobalLevel.Level)
         {
-
-            foreach (GrowthSlot slot in slots)
-            {
-                if (slotCount == unlockCount)
-                {
-                    slot.ShowUnlockableIcon();
-                    return;
-                }
-                slotCount += 1;
-            }
-
-            unlockableLevel += 1;
-
-            if (unlockableLevel > PlayerManager.Instance.Condition.GlobalLevel.Level)
-            {
-                break;
-            }
-
+            _growthSlots[unlockCount].ShowUnlockableIcon();
         }
-
 
     }
 
