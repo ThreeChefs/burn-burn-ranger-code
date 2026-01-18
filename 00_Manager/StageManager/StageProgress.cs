@@ -1,5 +1,4 @@
 using System;
-
 // 나중에 PlayingStageProgress 가 있을 수 있으니 헷갈리지 않게..
 // StageClearProgress 
 public class StageProgress
@@ -11,7 +10,7 @@ public class StageProgress
 
     int _lastPlayingStageRecord = 0; // 클리어하지 못한 마지막 스테이지 기록 (00:00. 08:00 ... 등)
 
-    int _lastSelectedStage = 3;
+    int _lastSelectedStage = 1;
 
     public int ClearStageNum => _clearStageNum;
     public int OpenedStageRewardStep => _openedStageRewardStep;
