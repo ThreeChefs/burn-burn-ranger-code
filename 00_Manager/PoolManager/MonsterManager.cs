@@ -78,9 +78,9 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     {
         if (nowPoolDic.Count == 0) return;
 
-        for (int i = activatedMonsters.Count -1 ; i > 0; i--)
+        for (int i = activatedMonsters.Count - 1; i > 0; i--)
         {
-            if(activatedMonsters[i] != null)
+            if (activatedMonsters[i] != null)
                 activatedMonsters[i].BombDie();
         }
     }
@@ -186,14 +186,5 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         }
     }
 
-
-    private void OnDestroy()
-    {
-        foreach (var pool in nowPoolDic.Values)
-        {
-            pool.OnActivateAction -= OnActivateMonster;
-            pool.OnDeactivateAction -= OnDeactivateMonster;
-        }
-    }
 
 }
