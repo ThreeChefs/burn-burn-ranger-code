@@ -178,8 +178,8 @@ public class EquipmentUI : BaseUI
 #if UNITY_EDITOR
     private void Reset()
     {
-        _itemSlotPrefab = AssetLoader.FindAndLoadByName("ItemSlot").GetComponent<ItemSlot>();
-        _equipmentSlotParent = transform.FindChild<Transform>("Slots");
+        _itemSlotPrefab = AssetLoader.FindAndLoadByName("Button_ItemSlot_Inventory").GetComponent<InventoryItemSlot>();
+        _equipmentSlotParent = transform.FindChild<Transform>("EquipmentSlotList");
         _inventoryUI = transform.FindChild<RectTransform>("Content");
     }
 #endif
