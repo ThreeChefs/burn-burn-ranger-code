@@ -14,10 +14,10 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
     
     [Title("Scroll Options")]
     //[SerializeField] bool _isVertical;      // 아직 없음!
-    [SerializeField] float _stopVelocity  = 200;
     [SerializeField] float _maxScale = 1.1f;
     [SerializeField] float _minScale = 1.0f;
     [SerializeField] float _scaleRange = 300f;
+    float _stopVelocity  = 1000;
     
     ScrollRect _scrollRect;
     LayoutGroup _layoutGroup;
@@ -59,14 +59,14 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
             UpdateContentScale();
         }
 
-        if (_isDragging == false && velocity <= _stopVelocity
-            && _isSnapping == false )
+        if (_isDragging == false && velocity <= _stopVelocity&& _isSnapping == false )
         {
+
             _scrollRect.velocity = Vector2.zero;
-            
             _isSnapping = true;
             Snap();
         }
+
         
         UpdateContentScale();
     }
@@ -115,6 +115,7 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
         Vector3 pos = _contentsRect.localPosition;
         pos.x += deltaX;
 
+        _scrollRect.enabled = false;
         _snapTween = _contentsRect.DOLocalMoveX(pos.x, _snapDuration, true)
                                   .OnComplete(OnSnap);
 
@@ -123,8 +124,39 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
     void OnSnap()
     {
         OnSnapAction?.Invoke(_nowContentNum);
+        _scrollRect.enabled = true;
     }
-    
+
+
+    public void SetFocusContent(int index)
+    {
+        if (_contents == null || _contents.Count == 0) return;
+
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_contentsRect);
+
+        index = Mathf.Clamp(index, 0, _contents.Count - 1);
+
+        _snapTween?.Kill();
+        _scrollRect.velocity = Vector2.zero;
+        _isDragging = false;
+        _isSnapping = true;
+
+        RectTransform item = _contents[index];
+
+        float targetX = -item.anchoredPosition.x;
+
+        targetX += item.rect.width * 0.5f;
+
+        Vector2 pos = _contentsRect.anchoredPosition;
+        pos.x = targetX;
+        _contentsRect.anchoredPosition = pos;
+
+        _nowContentNum = index;
+        OnSnap();
+    }
+
+
     private void OnDragStart()
     {
         OnDragStartAction?.Invoke();
@@ -154,6 +186,7 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
     {
         _scrollRect = GetComponent<ScrollRect>();
     }
+
     public void OnDrag(PointerEventData eventData)
     {
         
