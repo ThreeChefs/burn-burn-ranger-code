@@ -9,15 +9,21 @@ public class MaterialItemSlot : ItemSlot
 
     public void SetSlot(ItemInstance itemInstance, ComposeItemSlot target)
     {
+        ResetSlot();
+
         SetSlot(itemInstance);
-        target.IsMaterial = true;
         Target = target;
+        Target.gameObject.SetActive(false);
     }
 
     public override void ResetSlot()
     {
         base.ResetSlot();
-        Target.IsMaterial = false;
-        Target = null;
+
+        if (Target != null)
+        {
+            Target.gameObject.SetActive(true);
+            Target = null;
+        }
     }
 }

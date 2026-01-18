@@ -5,15 +5,12 @@ public class ComposeItemSlot : ItemSlot
 {
     [SerializeField] private GameObject _lock;
 
-    public bool IsMaterial { get; set; }
-
     public event Action<ComposeItemSlot, ItemInstance> OnClickSlot;
 
     protected override void OnEnable()
     {
         base.OnEnable();
         UnLockButton();
-        IsMaterial = false;
     }
 
     private void OnDestroy()
@@ -35,13 +32,13 @@ public class ComposeItemSlot : ItemSlot
     #region 버튼
     public void LockButton()
     {
-        button.gameObject.SetActive(false);
+        button.enabled = false;
         _lock.SetActive(true);
     }
 
     public void UnLockButton()
     {
-        button.gameObject.SetActive(true);
+        button.enabled = true;
         _lock.SetActive(false);
     }
     #endregion

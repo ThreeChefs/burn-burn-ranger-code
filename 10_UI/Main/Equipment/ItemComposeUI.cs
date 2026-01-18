@@ -52,6 +52,19 @@ public class ItemComposeUI : BaseUI
         {
             item.OnClickSlot += OnClickInventorySlotButton;
         }
+
+        // 슬롯 초기화
+        _resultSlot.ResetSlot();
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            _materialSlots[i].ResetSlot();
+        }
+
+        for (int i = 0; i < _materialInstanaces.Length; i++)
+        {
+            _materialInstanaces[i] = null;
+        }
+        _resultInstance = null;
     }
 
     private void OnDisable()
@@ -84,6 +97,8 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickComposeButton()
     {
+        Count = 0;
+
         // 아이템 정보
         for (int i = 0; i < _materialInstanaces.Length; i++)
         {
@@ -119,6 +134,9 @@ public class ItemComposeUI : BaseUI
     /// <param name="item"></param>
     private void AddMaterialItem(ComposeItemSlot slot, ItemInstance item)
     {
+        _materialInstanaces[Count] = item;
+        _materialSlots[Count].SetSlot(_materialInstanaces[Count], slot);
+
         if (Count == 0)     // 아이템을 처음 고를 때만 
         {
             for (int i = 0; i < _inventorySlots.Count; i++)
@@ -127,9 +145,6 @@ public class ItemComposeUI : BaseUI
                 _inventorySlots[i].LockButton();
             }
         }
-
-        _materialInstanaces[Count] = item;
-        _materialSlots[Count].SetSlot(_materialInstanaces[Count], slot);
 
         Count++;
 
@@ -156,9 +171,8 @@ public class ItemComposeUI : BaseUI
             AddItemSlot(i);
         }
 
-        for (int i = 0; i < _inventorySlots.Count; i++)
+        for (int i = 0; i < _inventory.Items.Count; i++)
         {
-            if (_inventorySlots[i].IsMaterial) continue;
             _inventorySlots[i].SetSlot(_inventory.Items[i]);
         }
     }
