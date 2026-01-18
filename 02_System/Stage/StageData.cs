@@ -54,7 +54,14 @@ public class StageData : ScriptableObject
     [Button("기본 웨이브 생성")]
     void InitWaveData()
     {
-
+        _stageWaves = new List<StageWaveEntry>();
+         
+        _stageWaves.Add(new StageWaveEntry(0f, WaveType.Continuous, waveClearExp: 10, waveClearGold: 100));
+        _stageWaves.Add(new StageWaveEntry(60f, WaveType.MiniBoss, waveClearExp: 20, waveClearGold: 200));
+        _stageWaves.Add(new StageWaveEntry(120f, WaveType.Continuous, waveClearExp: 12, waveClearGold: 130));
+        _stageWaves.Add(new StageWaveEntry(180f, WaveType.Super, waveClearExp: 18, waveClearGold: 180));
+        _stageWaves.Add(new StageWaveEntry(240f, WaveType.MiniBoss, waveClearExp: 25, waveClearGold: 250));
+        _stageWaves.Add(new StageWaveEntry(300f, WaveType.Boss, waveClearExp: 50, waveClearGold: 500));
     }
 
     private void OnValidate()

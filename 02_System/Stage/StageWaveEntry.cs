@@ -48,4 +48,26 @@ public class StageWaveEntry
 
     // Inspector 용 파라미터
     bool _isContinuousWave => _waveType == WaveType.Continuous || _waveType == WaveType.Super;
+
+    public StageWaveEntry(
+        float waveStartTime,
+        WaveType waveType,
+        int waveClearExp = 10,
+        int waveClearGold = 100,
+        WaveClearRewardType[] clearRewardTypes = null,
+        MonsterSpawnInfo[] continuousMonsterSpawnInfos = null,
+        MonsterPoolIndex[] immediateSpawnMonsters = null
+    )
+    {
+        _waveStartTime = waveStartTime;
+        _waveType = waveType;
+
+        _waveClearExp = waveClearExp;
+        _waveClearGold = waveClearGold;
+
+        _clearRewardType = clearRewardTypes;
+
+        _continuousMonsterSpawnInfos = continuousMonsterSpawnInfos;
+        _immediateSpawnMonsters = immediateSpawnMonsters;
+    }
 }
