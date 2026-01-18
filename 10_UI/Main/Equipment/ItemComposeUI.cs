@@ -18,8 +18,23 @@ public class ItemComposeUI : BaseUI
     private List<ItemSlot> _inventorySlots = new();
 
     private ItemInstance _targetInstanace;
+    private ItemInstance[] _materialInstanaces;
     private ItemInstance _resultInstance;
     private int _count;
+    private int Count
+    {
+        get { return _count; }
+        set
+        {
+            _count = Mathf.Min(value, RequiringCount);
+
+            if (_count > 0)
+            {
+                _allComposeButton.gameObject.SetActive(_count == 0);
+                _composeButton.gameObject.SetActive(_count > 0);
+            }
+        }
+    }
     private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
     private void Start()
@@ -27,6 +42,22 @@ public class ItemComposeUI : BaseUI
         _inventory = PlayerManager.Instance.Inventory;
 
         Init();
+    }
+
+    private void OnEnable()
+    {
+        Count = 0;
+        _composeButton.onClick.AddListener(OnClickComposeButton);
+    }
+
+    private void OnDisable()
+    {
+        _composeButton.onClick.RemoveAllListeners();
+    }
+
+    protected override void AwakeInternal()
+    {
+        _materialInstanaces = new ItemInstance[2];
     }
 
     private void Init()
@@ -39,18 +70,33 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickSlotButton()
     {
-
-        _count++;
+        Count++;
     }
 
     private void OnClickComposeButton()
     {
+        // 아이템 정보
+        _inventory.Remove(_targetInstanace);
+        _inventory.Remove(_materialInstanaces[0]);
+        _inventory.Remove(_materialInstanaces[1]);
+        _inventory.Add(_resultInstance);
 
+        _targetInstanace = null;
+        _materialInstanaces[0] = null;
+        _materialInstanaces[1] = null;
+        _resultInstance = null;
+
+        // 슬롯
+        _originSlot.ResetSlot();
+        _materialSlots[0].ResetSlot();
+        _materialSlots[1].ResetSlot();
+        _resultSlot.ResetSlot();
     }
 
     private void AddItemInstance()
     {
-        _count = Mathf.Min(_count + 1, RequiringCount);
+        Count++;
+
         if (CheckCompose())
         {
             _resultInstance = new ItemInstance(_targetInstanace.ItemClass + 1, _targetInstanace.ItemData);
@@ -58,9 +104,13 @@ public class ItemComposeUI : BaseUI
         }
     }
 
+    /// <summary>
+    /// 합성할 수 있는지 체크하기
+    /// </summary>
+    /// <returns></returns>
     private bool CheckCompose()
     {
-        return RequiringCount >= _count;
+        return RequiringCount >= Count;
     }
 
     private void UpdateInventoryUI()
