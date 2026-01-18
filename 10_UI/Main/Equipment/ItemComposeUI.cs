@@ -4,22 +4,21 @@ using UnityEngine.UI;
 
 public class ItemComposeUI : BaseUI
 {
-    [SerializeField] private ItemSlot _itemSlotPrefab;
+    [SerializeField] private ComposeItemSlot _itemSlotPrefab;
     [SerializeField] private RectTransform _inventoryUI;
 
-    [SerializeField] private ItemSlot _resultSlot;
-    [SerializeField] private ItemSlot _originSlot;
-    [SerializeField] private ItemSlot[] _materialSlots;
+    [SerializeField] private MaterialItemSlot _resultSlot;
+    [SerializeField] private MaterialItemSlot[] _materialSlots;
 
     [SerializeField] private Button _allComposeButton;
     [SerializeField] private Button _composeButton;
 
     private Inventory _inventory;
-    private List<ItemSlot> _inventorySlots = new();
+    private List<ComposeItemSlot> _inventorySlots = new();
 
-    private ItemInstance _targetInstanace;
-    private ItemInstance[] _materialInstanaces;
+    private ItemInstance[] _materialInstanaces;             // 실제 재료 아이템
     private ItemInstance _resultInstance;
+
     private int _count;
     private int Count
     {
@@ -37,6 +36,7 @@ public class ItemComposeUI : BaseUI
     }
     private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
+    #region Unity API
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
@@ -46,87 +46,132 @@ public class ItemComposeUI : BaseUI
 
     private void OnEnable()
     {
-        Count = 0;
+        // 합성 버튼
         _composeButton.onClick.AddListener(OnClickComposeButton);
 
+        // 인벤토리 슬롯
         foreach (ComposeItemSlot item in _inventorySlots)
         {
-            item.OnClickSlot += OnClickSlotButton;
+            item.OnClickSlot += OnClickInventorySlotButton;
+        }
+
+        // 합성 재료 슬롯
+        _materialSlots[0].OnClickSlot += OnClickOriginMaterialButton;
+
+        ResetMaterialSlots();
+
+        if (_inventory != null)
+        {
+            UpdateInventoryUI();
         }
     }
 
     private void OnDisable()
     {
+        // 합성 버튼
         _composeButton.onClick.RemoveAllListeners();
 
+        // 인벤토리 슬롯
         foreach (ComposeItemSlot item in _inventorySlots)
         {
-            item.OnClickSlot -= OnClickSlotButton;
+            item.OnClickSlot -= OnClickInventorySlotButton;
         }
     }
+    #endregion
 
+    #region 초기화
     protected override void AwakeInternal()
     {
-        _materialInstanaces = new ItemInstance[2];
+        _materialInstanaces = new ItemInstance[RequiringCount];
     }
 
     private void Init()
     {
         UpdateInventoryUI();
+
+        foreach (ComposeItemSlot item in _inventorySlots)
+        {
+            item.OnClickSlot += OnClickInventorySlotButton;
+        }
     }
 
+    private void ResetMaterialSlots()
+    {
+        Count = 0;
+
+        _resultSlot.ResetSlot();
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            _materialSlots[i].ResetSlot();
+        }
+
+        for (int i = 0; i < _materialInstanaces.Length; i++)
+        {
+            _materialInstanaces[i] = null;
+        }
+        _resultInstance = null;
+
+        foreach (ComposeItemSlot slot in _inventorySlots)
+        {
+            slot.UnLockButton();
+        }
+    }
+    #endregion
+
+    #region 버튼 - 합성
     /// <summary>
     /// 합성 버튼 누를 경우 이벤트
     /// </summary>
     private void OnClickComposeButton()
     {
-        // 아이템 정보
-        _inventory.Remove(_targetInstanace);
-        _inventory.Remove(_materialInstanaces[0]);
-        _inventory.Remove(_materialInstanaces[1]);
+        // 아이템 삭제 & 주기
+        for (int i = 0; i < _materialInstanaces.Length; i++)
+        {
+            _inventory.Remove(_materialInstanaces[i]);
+        }
         _inventory.Add(_resultInstance);
 
-        _targetInstanace = null;
-        _materialInstanaces[0] = null;
-        _materialInstanaces[1] = null;
-        _resultInstance = null;
+        ResetMaterialSlots();   // 슬롯 정보 리셋
+        UpdateInventoryUI();    // 인벤토리 ui 리셋
+    }
+    #endregion
 
-        // 슬롯
-        _originSlot.ResetSlot();
-        _materialSlots[0].ResetSlot();
-        _materialSlots[1].ResetSlot();
-        _resultSlot.ResetSlot();
+    #region 버튼 - 인벤토리 슬롯
+    /// <summary>
+    /// 인벤토리 내부 슬롯 누르면 재료 아이템으로 이동
+    /// </summary>
+    private void OnClickInventorySlotButton(ComposeItemSlot slot, ItemInstance item)
+    {
+        if (Count < RequiringCount)
+        {
+            AddMaterialItem(slot, item);
+        }
+        UpdateInventoryUI();
     }
 
     /// <summary>
-    /// 슬롯 누르면 재료 아이템으로 이동
+    /// 인벤토리에 있는 아이템 재표 아이템에 넣기
     /// </summary>
-    private void OnClickSlotButton(ItemInstance item)
+    /// <param name="item"></param>
+    private void AddMaterialItem(ComposeItemSlot slot, ItemInstance item)
     {
-        if (Count == 0)
+        _materialInstanaces[Count] = item;
+        _materialSlots[Count].SetSlot(_materialInstanaces[Count], slot);
+
+        if (Count == 0)     // 아이템을 처음 고를 때만 
         {
-            AddOriginItem(item);
+            for (int i = 0; i < _inventorySlots.Count; i++)
+            {
+                if (_inventorySlots[i].EqualsItemClassAndData(_materialInstanaces[0])) continue;
+                _inventorySlots[i].LockButton();
+            }
         }
-        else
-        {
-            AddMaterialItem();
-        }
-    }
 
-    private void AddOriginItem(ItemInstance item)
-    {
-        _targetInstanace = item;
-
-        // todo: 다른 아이템 lock 하기
-    }
-
-    private void AddMaterialItem()
-    {
         Count++;
 
         if (CheckCompose())
         {
-            _resultInstance = new ItemInstance(_targetInstanace.ItemClass + 1, _targetInstanace.ItemData);
+            _resultInstance = new ItemInstance(_materialInstanaces[0].ItemClass + 1, _materialInstanaces[0].ItemData);
             _resultSlot.SetSlot(_resultInstance);
         }
     }
@@ -139,6 +184,17 @@ public class ItemComposeUI : BaseUI
     {
         return RequiringCount >= Count;
     }
+    #endregion
+
+    #region 버튼 - 재료 슬롯
+    /// <summary>
+    /// 원본 재료 슬롯 눌렀을 때 이벤트
+    /// </summary>
+    private void OnClickOriginMaterialButton()
+    {
+        ResetMaterialSlots();
+    }
+    #endregion
 
     private void UpdateInventoryUI()
     {
@@ -147,7 +203,7 @@ public class ItemComposeUI : BaseUI
             AddItemSlot(i);
         }
 
-        for (int i = 0; i < _inventorySlots.Count; i++)
+        for (int i = 0; i < _inventory.Items.Count; i++)
         {
             _inventorySlots[i].SetSlot(_inventory.Items[i]);
         }
@@ -155,7 +211,7 @@ public class ItemComposeUI : BaseUI
 
     private void AddItemSlot(int index)
     {
-        ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
+        ComposeItemSlot itemSlot = Instantiate(_itemSlotPrefab);
         itemSlot.transform.SetParent(_inventoryUI, false);
         _inventorySlots.Add(itemSlot);
         itemSlot.SetSlot(_inventory.Items[index]);
@@ -167,11 +223,11 @@ public class ItemComposeUI : BaseUI
         _itemSlotPrefab = AssetLoader.FindAndLoadByName("Button_ItemSlot_Compose").GetComponent<ComposeItemSlot>();
         _inventoryUI = transform.FindChild<RectTransform>("Content");
 
-        _resultSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Result");
-        _originSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Origin");
-        _materialSlots = new ItemSlot[2];
-        _materialSlots[0] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material");
-        _materialSlots[1] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material_1");
+        _resultSlot = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Result");
+        _materialSlots = new MaterialItemSlot[3];
+        _materialSlots[0] = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Material");
+        _materialSlots[1] = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Material_1");
+        _materialSlots[2] = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Material_2");
 
         _allComposeButton = transform.FindChild<Button>("Button - AllCompose");
         _composeButton = transform.FindChild<Button>("Button - Compose");

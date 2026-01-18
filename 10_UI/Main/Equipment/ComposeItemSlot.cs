@@ -4,7 +4,8 @@ using UnityEngine;
 public class ComposeItemSlot : ItemSlot
 {
     [SerializeField] private GameObject _lock;
-    public event Action<ItemInstance> OnClickSlot;
+
+    public event Action<ComposeItemSlot, ItemInstance> OnClickSlot;
 
     protected override void OnEnable()
     {
@@ -19,19 +20,25 @@ public class ComposeItemSlot : ItemSlot
 
     protected override void OnClickButton()
     {
-        OnClickSlot?.Invoke(instance);
+        OnClickSlot?.Invoke(this, instance);
+    }
+
+    public bool EqualsItemClassAndData(ItemInstance itemInstance)
+    {
+        return instance.ItemData.Id == itemInstance.ItemData.Id
+            && instance.ItemClass == itemInstance.ItemClass;
     }
 
     #region 버튼
     public void LockButton()
     {
-        button.gameObject.SetActive(false);
+        button.enabled = false;
         _lock.SetActive(true);
     }
 
     public void UnLockButton()
     {
-        button.gameObject.SetActive(true);
+        button.enabled = true;
         _lock.SetActive(false);
     }
     #endregion

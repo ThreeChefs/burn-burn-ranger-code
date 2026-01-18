@@ -58,12 +58,24 @@ public class Inventory
         // todo: 나중에 정렬 로직 빼기
         _items.Sort((a, b) =>
         {
+            // 클래스
             int result = b.ItemClass.CompareTo(a.ItemClass);
             if (result != 0)
+            {
                 return result;
+            }
 
-            return b.ItemData.EquipmentType.CompareTo(a.ItemData.EquipmentType);
+            // 장비 타입
+            result = b.ItemData.EquipmentType.CompareTo(a.ItemData.EquipmentType);
+            if (result != 0)
+            {
+                return result;
+            }
+
+            // 장비 아이디
+            return b.ItemData.Id.CompareTo(a.ItemData.Id);
         });
+
         OnInventoryChanged?.Invoke();
     }
 
@@ -74,6 +86,7 @@ public class Inventory
     public void Remove(ItemInstance item)
     {
         _items.Remove(item);
+
         OnInventoryChanged?.Invoke();
     }
 
