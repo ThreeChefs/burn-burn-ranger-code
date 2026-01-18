@@ -19,7 +19,7 @@ public class ItemSlot : MonoBehaviour
     [SerializeField] protected TextMeshProUGUI level;
     [SerializeField] protected TextMeshProUGUI count;
 
-    private ItemInstance _itemInstance;
+    protected ItemInstance instance;
 
     #region Unity API
     protected void Awake()
@@ -46,7 +46,7 @@ public class ItemSlot : MonoBehaviour
     #region 초기화
     protected virtual void Init()
     {
-        if (_itemInstance == null)
+        if (instance == null)
         {
             itemClass.gameObject.SetActive(false);
             icon.gameObject.SetActive(false);
@@ -58,7 +58,7 @@ public class ItemSlot : MonoBehaviour
     protected virtual void OnClickButton()
     {
         ItemDetailUI ui = UIManager.Instance.ShowUI(UIName.UI_ItemDetail) as ItemDetailUI;
-        ui.SetItem(_itemInstance);
+        ui.SetItem(instance);
     }
     #endregion
 
@@ -69,29 +69,29 @@ public class ItemSlot : MonoBehaviour
     /// <param name="itemInstance"></param>
     public virtual void SetSlot(ItemInstance itemInstance)
     {
-        if (_itemInstance != null)
+        if (instance != null)
         {
-            if (_itemInstance.Equals(itemInstance)) return;
-            _itemInstance.OnLevelChanged -= UpdateLevel;
+            if (instance.Equals(itemInstance)) return;
+            instance.OnLevelChanged -= UpdateLevel;
         }
-        _itemInstance = itemInstance;
-        _itemInstance.OnLevelChanged += UpdateLevel;
+        instance = itemInstance;
+        instance.OnLevelChanged += UpdateLevel;
 
         SetActiveComponent(true);
 
-        itemClass.color = ItemUtils.GetClassColor(itemInstance.ItemClass);
-        icon.sprite = itemInstance.ItemData.Icon;
-        count.text = itemInstance.Count < 2 ? "" : itemInstance.Count.ToString();
+        itemClass.color = ItemUtils.GetClassColor(instance.ItemClass);
+        icon.sprite = instance.ItemData.Icon;
+        count.text = instance.Count < 2 ? "" : instance.Count.ToString();
         UpdateLevel();
     }
 
     public virtual void ResetSlot()
     {
-        if (_itemInstance != null)
+        if (instance != null)
         {
-            _itemInstance.OnLevelChanged -= UpdateLevel;
+            instance.OnLevelChanged -= UpdateLevel;
         }
-        _itemInstance = null;
+        instance = null;
 
         SetActiveComponent(false);
     }
@@ -106,12 +106,12 @@ public class ItemSlot : MonoBehaviour
 
     public bool IsEmpty()
     {
-        return _itemInstance == null;
+        return instance == null;
     }
 
     private void UpdateLevel()
     {
-        level.text = _itemInstance.Level.ToString();
+        level.text = instance.Level.ToString();
     }
     #endregion
 
