@@ -11,10 +11,13 @@ public class StageProgress
 
     int _lastPlayingStageRecord = 0; // 클리어하지 못한 마지막 스테이지 기록 (00:00. 08:00 ... 등)
 
+    int _lastSelectedStage = 3;
+
     public int ClearStageNum => _clearStageNum;
     public int OpenedStageRewardStep => _openedStageRewardStep;
-    public int ReceivedStageRewardStep => _receivedStageRewardStep; 
+    public int ReceivedStageRewardStep => _receivedStageRewardStep;
     public int LastPlayingStageRecord => _lastPlayingStageRecord;
+    public int LastSelectedStage => _lastSelectedStage;
 
 
     public StageProgressSaveInfo ExportProgress()
@@ -25,6 +28,7 @@ public class StageProgress
             openedStageRewardStep = _openedStageRewardStep,
             receivedStageRewardStep = _receivedStageRewardStep,
             lastPlayingStageRecord = _lastPlayingStageRecord,
+            lastSelectedStage = _lastSelectedStage,
         };
     }
 
@@ -35,15 +39,24 @@ public class StageProgress
         _openedStageRewardStep = stageClearProgressSave.openedStageRewardStep;
         _receivedStageRewardStep = stageClearProgressSave.receivedStageRewardStep;
         _lastPlayingStageRecord = stageClearProgressSave.lastPlayingStageRecord;
+        _lastSelectedStage = stageClearProgressSave.lastSelectedStage;
     }
 
 
     public void SaveStagePrgress(int stageNum, int lastPlayingStageRecord)
     {
-        _clearStageNum = stageNum;
-        _lastPlayingStageRecord= lastPlayingStageRecord;
+        if(_clearStageNum <= stageNum)  // 진행단계보다 낮은스테이지를 플레이 했을 때, 진행도를 덮으면 안됨.
+            _clearStageNum = stageNum;
+
+        _lastSelectedStage = stageNum;
+        _lastPlayingStageRecord = lastPlayingStageRecord;
     }
-    
+
+    public void SaveLastSelectedStage(int selectedStageNum)
+    {
+        _lastSelectedStage = selectedStageNum;
+    }
+
 }
 
 [Serializable]
@@ -53,7 +66,7 @@ public class StageProgressSaveInfo
     public int openedStageRewardStep;
     public int receivedStageRewardStep;
     public int lastPlayingStageRecord;
-
+    public int lastSelectedStage;
 }
 
 
