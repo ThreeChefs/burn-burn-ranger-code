@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
-
 public class StageWaveController
 {
     public float PlayeTime => _playTime;
@@ -21,7 +18,7 @@ public class StageWaveController
     // todo : WaveQueue 도 WaveController 에 집어넣어놓기
     Queue<StageWaveEntry> _waveQueue = new Queue<StageWaveEntry>();
     public event Action OnStageEndAction;
-       
+
     private List<Monster> _nowBossMonsters;
 
     private int _saveExp = 0;
@@ -30,14 +27,18 @@ public class StageWaveController
     static float _itemBoxSpawnStartTime = 20; // 스테이지 시작 후 20초 뒤부터 박스 스폰
     static float _itemBoxSpawnInterval = 10; // 10초마다 박스 스폰
     int _itemBoxSpawnCount = 0;
+    bool _readyWarnningSign = false;
+
+    readonly string _bossWarnningSignText = "보스 접근 중!";
+    readonly string _superWaveWarnningSignText = "몬스터가 몰려옵니다!";
 
 
     public StageWaveController(StageData nowStageData)
     {
         if (nowStageData == null) return;
 
-        _nowBossMonsters  = new List<Monster>();
-        
+        _nowBossMonsters = new List<Monster>();
+
         _waveQueue = new Queue<StageWaveEntry>();
         for (int i = 0; i < nowStageData.StageWaves.Count; i++)
         {
@@ -50,10 +51,10 @@ public class StageWaveController
         for (int i = 0; i < nowStageData.StageWaves.Count; ++i)
         {
             StageWaveData waveData = nowStageData.StageWaves[i].WaveData;
-            
+
             if (waveData == null) continue;
             if (waveData.Monsters == null) continue;
-            
+
             for (int j = 0; j < waveData.Monsters.Count; ++j)
             {
                 MonsterPoolIndex poolIndex = waveData.Monsters[j];
@@ -65,13 +66,14 @@ public class StageWaveController
 
         // box 도 미리 로드
         MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
+        UIManager.Instance.LoadUI(UIName.UI_WarnningSign,false);
 
         EnterWave(_waveQueue.Dequeue());
     }
 
     public void EnterWave(StageWaveEntry wave)
     {
-        if(_nowWave != null)
+        if (_nowWave != null)
         {
             // 이전 웨이브 클리어 보상 저장
             _saveExp += _nowWave.WaveClearExp;
@@ -101,19 +103,12 @@ public class StageWaveController
                 break;
         }
 
-
-        if (_nowContinuousWave != null)
+        // 다음웨이브 체크
+        if (_waveQueue.Count > 0)
         {
-            switch (_nowContinuousWave.WaveData.WaveType)
-            {
-                case WaveType.Super:
-                    // todo : 몬스터가 몰려옵니다~
-                    break;
-
-                case WaveType.Boss:
-                    // todo : 보스 몬스터 알림
-                    break;
-            }
+            WaveType nextWaveType = _waveQueue.Peek().WaveData.WaveType;
+            if (nextWaveType == WaveType.Boss || nextWaveType == WaveType.Super)
+                _readyWarnningSign = true;  // 웨이브 준비
         }
     }
 
@@ -139,10 +134,38 @@ public class StageWaveController
                 }
             }
 
+
             // 다음 웨이브 시간 확인
             if (_waveQueue.Count > 0)
             {
-                if (_waveQueue.Peek().WaveStartTime <= _playTime)
+                // 다음 웨이브가 보스 웨이브라면
+
+                StageWaveEntry nextEntry = _waveQueue.Peek();
+
+                if (nextEntry.WaveData.WaveType == WaveType.Boss)
+                {
+                    if (nextEntry.WaveStartTime - 3f <= _playTime && _readyWarnningSign)
+                    {
+                        _readyWarnningSign = false;
+
+                        WarnningSignUI warnning = (WarnningSignUI)UIManager.Instance.ShowUI(UIName.UI_WarnningSign);
+                        switch (nextEntry.WaveData.WaveType)
+                        {
+                            case WaveType.Super:
+                                warnning.SetText(_superWaveWarnningSignText);
+                                break;
+
+                            case WaveType.Boss:
+                                warnning.SetText(_bossWarnningSignText);
+                                break;
+                        }
+
+                    }
+                }
+
+
+                // 다음 웨이브 진행 확인
+                if (nextEntry.WaveStartTime <= _playTime)
                 {
                     StageWaveEntry nextWaveData = _waveQueue.Dequeue();
                     EnterWave(nextWaveData);
@@ -169,7 +192,7 @@ public class StageWaveController
         }
     }
 
-    
+
     void SpawnWaveRewardBox()
     {
         // 이전 웨이브 보상 뿌리기
@@ -205,7 +228,7 @@ public class StageWaveController
                 _nowBossMonsters.Add(spawnedMonster);
                 spawnedMonster.onDieAction += OnDieBossMonster;
             }
-            
+
         }
     }
 
@@ -215,7 +238,7 @@ public class StageWaveController
         {
             _nowBossMonsters.Remove(monster);
         }
-        
+
         // 보스가 모두 죽었다면 다음 웨이브
         // 다음 웨이브가 없으면 스테이지 종료
         if (_nowBossMonsters.Count == 0)
