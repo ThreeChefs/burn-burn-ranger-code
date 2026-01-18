@@ -1,9 +1,11 @@
 using DG.Tweening;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using static CartoonFX.ExpressionParser.Token;
 
 public class PopupUI : BaseUI
 {
+    [SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
 
     protected override void AwakeInternal()
     {
@@ -13,12 +15,40 @@ public class PopupUI : BaseUI
     {
        // 자식 찾아서 애니메이션 주기
         Transform transform = this.transform.GetChild(0);
-        
-        if(transform != null)
+
+
+        switch (_openType)
         {
-            transform.localScale = Vector3.zero;
-            transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).SetUpdate(true);
+            case PopupUIOpenType.None:
+
+                break;
+
+            case PopupUIOpenType.Default:
+                if (transform != null)
+                {
+                    transform.localScale = Vector3.zero;
+                    transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).SetUpdate(true);
+                }
+                break;
+
+            case PopupUIOpenType.Horizontal:
+                if (transform != null)
+                {
+                    transform.localScale = new Vector3(0, 1, 1);
+                    transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).SetUpdate(true);
+                }
+                break;
+
+            case PopupUIOpenType.Vertical:
+                if (transform != null)
+                {
+                    transform.localScale = new Vector3(1, 0, 1);
+                    transform.DOScale(1f, 0.25f).SetEase(Ease.OutQuad).SetUpdate(true);
+                }
+                break;
         }
+
+      
 
     }
 
@@ -37,4 +67,12 @@ public class PopupUI : BaseUI
     }
 
 
+}
+
+public enum PopupUIOpenType
+{
+    None,
+    Default,
+    Horizontal,
+    Vertical,
 }
