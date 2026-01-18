@@ -37,7 +37,7 @@ public abstract class  SwipeScrollPanel : MonoBehaviour
     public event Action<int> OnSnapAction;
 
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _scrollRect = GetComponent<ScrollRect>();
         _layoutGroup = GetComponentInChildren<LayoutGroup>();
