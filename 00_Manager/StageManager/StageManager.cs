@@ -106,7 +106,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         // 게임 시작
         if (IsTest) return;
-        SetStageData(GameManager.Instance.SelectedStageNumber - 1);
+        SetStageData(GameManager.Instance.StageProgress.LastSelectedStage - 1);
         GameStart();
     }
 
@@ -184,7 +184,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageClearProgress.SaveStagePrgress(NowStageNumber + 1, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNumber + 1, (int)PlayTime);
     }
 
     public void GameOver()
@@ -215,7 +215,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageClearProgress.SaveStagePrgress(NowStageNumber, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNumber, (int)PlayTime);
     }
 
 

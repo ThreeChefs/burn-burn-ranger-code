@@ -11,7 +11,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
 
     // GameManager가 들고 있을 플레이 정보들 (플레이어 정보 외)
-    public StageProgress StageClearProgress = new();
+    public StageProgress StageProgress = new();
     public GrowthProgress GrowthProgress = new();
 
 
@@ -41,19 +41,6 @@ public class GameManager : GlobalSingletonManager<GameManager>
     {
         // Data.Save();
     }
-
-    #region StageSelect
-
-    private int _selectedStageNumber = 1;
-    public int SelectedStageNumber => _selectedStageNumber;
-
-    public void SetSelectedStage(int stageNumber)
-    {
-        _selectedStageNumber = stageNumber;
-    }
-
-    #endregion
-
 
 
     #region 저장
