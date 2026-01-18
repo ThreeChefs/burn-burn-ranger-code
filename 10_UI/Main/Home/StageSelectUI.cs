@@ -48,7 +48,7 @@ public class StageSelectUI : PopupUI
     
     void OnClickSelectButton()
     {
-        GameManager.Instance.SetSelectedStage(_nowSelectedStage);
+        GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStage);
         OnSelectStageEvent?.Invoke(_nowSelectedStage);
         gameObject.SetActive(false);
     }
