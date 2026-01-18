@@ -22,7 +22,11 @@ public class EquipmentUI : BaseUI
     {
         _inventory = PlayerManager.Instance.Inventory;
         _equipment = PlayerManager.Instance.Equipment;
+
         Init();
+
+        _inventory.OnInventoryChanged += UpdateInventoryUI;
+        _inventory.OnInventoryChanged += UpdateEquipUI;
 
         _equipment.OnEquipmentChanged += UpdateEquipUI;
     }
@@ -32,6 +36,9 @@ public class EquipmentUI : BaseUI
         if (_inventory != null)
         {
             UpdateInventoryUI();
+
+            _inventory.OnInventoryChanged += UpdateInventoryUI;
+            _inventory.OnInventoryChanged += UpdateEquipUI;
         }
 
         if (_equipment != null)
@@ -43,6 +50,12 @@ public class EquipmentUI : BaseUI
 
     private void OnDisable()
     {
+        if (_inventory != null)
+        {
+            _inventory.OnInventoryChanged -= UpdateInventoryUI;
+            _inventory.OnInventoryChanged -= UpdateEquipUI;
+        }
+
         if (_equipment != null)
         {
             _equipment.OnEquipmentChanged -= UpdateEquipUI;
