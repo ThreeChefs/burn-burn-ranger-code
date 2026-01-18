@@ -1,24 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemComposeUI : BaseUI
 {
     [SerializeField] private ItemSlot _itemSlotPrefab;
     [SerializeField] private RectTransform _inventoryUI;
 
-    private Inventory _inventory;
-    private Equipment _equipment;
+    [SerializeField] private ItemSlot _resultSlot;
+    [SerializeField] private ItemSlot _originSlot;
+    [SerializeField] private ItemSlot[] _materialSlots;
 
-    List<ItemSlot> _inventorySlots = new();
+    [SerializeField] private Button _allComposeButton;
+    [SerializeField] private Button _composeButton;
+
+    private Inventory _inventory;
+    private List<ItemSlot> _inventorySlots = new();
 
     private ItemInstance _targetInstanace;
+    private ItemInstance _resultInstance;
     private int _count;
     private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
-        _equipment = PlayerManager.Instance.Equipment;
 
         Init();
     }
@@ -28,13 +34,28 @@ public class ItemComposeUI : BaseUI
         UpdateInventoryUI();
     }
 
+    /// <summary>
+    /// 슬롯 누르면 재료 아이템으로 이동
+    /// </summary>
+    private void OnClickSlotButton()
+    {
+
+        _count++;
+    }
+
+    private void OnClickComposeButton()
+    {
+
+    }
+
     private void AddItemInstance()
     {
+        _count = Mathf.Min(_count + 1, RequiringCount);
         if (CheckCompose())
         {
-
+            _resultInstance = new ItemInstance(_targetInstanace.ItemClass + 1, _targetInstanace.ItemData);
+            _resultSlot.SetSlot(_resultInstance);
         }
-        _count++;
     }
 
     private bool CheckCompose()
@@ -68,6 +89,15 @@ public class ItemComposeUI : BaseUI
     {
         _itemSlotPrefab = AssetLoader.FindAndLoadByName("Button_ItemSlot_Compose").GetComponent<ComposeItemSlot>();
         _inventoryUI = transform.FindChild<RectTransform>("Content");
+
+        _resultSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Result");
+        _originSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Origin");
+        _materialSlots = new ItemSlot[2];
+        _materialSlots[0] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material");
+        _materialSlots[1] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material_1");
+
+        _allComposeButton = transform.FindChild<Button>("Button - AllCompose");
+        _composeButton = transform.FindChild<Button>("Button - Compose");
     }
 #endif
 }

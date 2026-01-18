@@ -57,8 +57,6 @@ public class ItemSlot : MonoBehaviour
 
     protected virtual void OnClickButton()
     {
-        ItemDetailUI ui = UIManager.Instance.ShowUI(UIName.UI_ItemDetail) as ItemDetailUI;
-        ui.SetItem(instance);
     }
     #endregion
 
