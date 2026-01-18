@@ -1,10 +1,15 @@
+using System;
+
 public class MaterialItemSlot : ItemSlot
 {
     public ComposeItemSlot Target { get; private set; }
 
+    public event Action OnClickSlot;
+
     protected override void OnClickButton()
     {
         ResetSlot();
+        OnClickSlot?.Invoke();
     }
 
     public void SetSlot(ItemInstance itemInstance, ComposeItemSlot target)

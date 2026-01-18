@@ -36,6 +36,7 @@ public class ItemComposeUI : BaseUI
     }
     private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
+    #region Unity API
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
@@ -45,26 +46,19 @@ public class ItemComposeUI : BaseUI
 
     private void OnEnable()
     {
-        Count = 0;
+        // 합성 버튼
         _composeButton.onClick.AddListener(OnClickComposeButton);
 
+        // 인벤토리 슬롯
         foreach (ComposeItemSlot item in _inventorySlots)
         {
             item.OnClickSlot += OnClickInventorySlotButton;
         }
 
-        // 슬롯 초기화
-        _resultSlot.ResetSlot();
-        for (int i = 0; i < _materialSlots.Length; i++)
-        {
-            _materialSlots[i].ResetSlot();
-        }
+        // 합성 재료 슬롯
+        _materialSlots[0].OnClickSlot += OnClickOriginMaterialButton;
 
-        for (int i = 0; i < _materialInstanaces.Length; i++)
-        {
-            _materialInstanaces[i] = null;
-        }
-        _resultInstance = null;
+        ResetMaterialSlots();
 
         if (_inventory != null)
         {
@@ -74,14 +68,18 @@ public class ItemComposeUI : BaseUI
 
     private void OnDisable()
     {
+        // 합성 버튼
         _composeButton.onClick.RemoveAllListeners();
 
+        // 인벤토리 슬롯
         foreach (ComposeItemSlot item in _inventorySlots)
         {
             item.OnClickSlot -= OnClickInventorySlotButton;
         }
     }
+    #endregion
 
+    #region 초기화
     protected override void AwakeInternal()
     {
         _materialInstanaces = new ItemInstance[RequiringCount];
@@ -97,6 +95,25 @@ public class ItemComposeUI : BaseUI
         }
     }
 
+    private void ResetMaterialSlots()
+    {
+        Count = 0;
+
+        _resultSlot.ResetSlot();
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            _materialSlots[i].ResetSlot();
+        }
+
+        for (int i = 0; i < _materialInstanaces.Length; i++)
+        {
+            _materialInstanaces[i] = null;
+        }
+        _resultInstance = null;
+    }
+    #endregion
+
+    #region 버튼 - 합성
     /// <summary>
     /// 합성 버튼 누를 경우 이벤트
     /// </summary>
@@ -122,7 +139,9 @@ public class ItemComposeUI : BaseUI
 
         UpdateInventoryUI();
     }
+    #endregion
 
+    #region 버튼 - 인벤토리 슬롯
     /// <summary>
     /// 인벤토리 내부 슬롯 누르면 재료 아이템으로 이동
     /// </summary>
@@ -170,6 +189,21 @@ public class ItemComposeUI : BaseUI
     {
         return RequiringCount >= Count;
     }
+    #endregion
+
+    #region 버튼 - 재료 슬롯
+    /// <summary>
+    /// 원본 재료 슬롯 눌렀을 때 이벤트
+    /// </summary>
+    private void OnClickOriginMaterialButton()
+    {
+        ResetMaterialSlots();
+        foreach (ComposeItemSlot slot in _inventorySlots)
+        {
+            slot.UnLockButton();
+        }
+    }
+    #endregion
 
     private void UpdateInventoryUI()
     {
