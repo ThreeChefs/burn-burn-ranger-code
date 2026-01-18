@@ -46,27 +46,37 @@ public class StageWaveController
         }
 
 
-        // 사용할 풀 로드
-
+        // 사용할 몬스터 로드
         for (int i = 0; i < nowStageData.StageWaves.Count; ++i)
         {
-            StageWaveData waveData = nowStageData.StageWaves[i].WaveData;
-
-            if (waveData == null) continue;
-            if (waveData.Monsters == null) continue;
-
-            for (int j = 0; j < waveData.Monsters.Count; ++j)
+            switch (nowStageData.StageWaves[i].WaveType)
             {
-                MonsterPoolIndex poolIndex = waveData.Monsters[j];
+                case WaveType.Continuous:
+                case WaveType.Super:
+                    MonsterSpawnInfo[] monsterSpawnInfo = nowStageData.StageWaves[i].ContinuouseMOnsterSpawnInfos;
+                    for (int j = 0; j < monsterSpawnInfo.Length; ++j)
+                    {
+                        MonsterManager.Instance.UsePool(monsterSpawnInfo[j].MonsterPoolIndex);
+                    }
+                    break;
 
-                MonsterManager.Instance.UsePool(poolIndex);
+                case WaveType.Boss:
+                case WaveType.MiniBoss:
+
+                    MonsterPoolIndex[] _monsterInfo = nowStageData.StageWaves[i].ImmediateSpawnMonsters;
+
+                    for(int j = 0;j < nowStageData.StageWaves[i].ContinuouseMOnsterSpawnInfos.Length; ++j)
+                    {
+                        MonsterManager.Instance.UsePool(_monsterInfo[i]);
+                    }
+                    break;
             }
         }
 
 
         // box 도 미리 로드
         MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
-        UIManager.Instance.LoadUI(UIName.UI_WarnningSign,false);
+        UIManager.Instance.LoadUI(UIName.UI_WarnningSign, false);
 
         EnterWave(_waveQueue.Dequeue());
     }
@@ -85,7 +95,7 @@ public class StageWaveController
         _nowWave = wave;
         _nowSpawnDelay = 0;
 
-        switch (wave.WaveData.WaveType)
+        switch (wave.WaveType)
         {
             case WaveType.Continuous:
                 _nowContinuousWave = wave;
@@ -99,14 +109,14 @@ public class StageWaveController
                 break;
 
             case WaveType.Boss:
-                SpawnBossMonster(wave.WaveData);
+                SpawnBossMonster(wave.ImmediateSpawnMonsters);
                 break;
         }
 
         // 다음웨이브 체크
         if (_waveQueue.Count > 0)
         {
-            WaveType nextWaveType = _waveQueue.Peek().WaveData.WaveType;
+            WaveType nextWaveType = _waveQueue.Peek().WaveType;
             if (nextWaveType == WaveType.Boss || nextWaveType == WaveType.Super)
                 _readyWarnningSign = true;  // 웨이브 준비
         }
@@ -115,22 +125,22 @@ public class StageWaveController
     public void Update()
     {
         // 플레이 시간 갱신
-        if (_nowWave.WaveData.WaveType != WaveType.Boss)
+        if (_nowWave.WaveType != WaveType.Boss)
         {
             _playTime += Time.deltaTime;
 
             // 상시 스폰 웨이브일 때, 스폰 시간 갱신
-            if (_nowContinuousWave.WaveData.WaveType == WaveType.Continuous || _nowContinuousWave.WaveData.WaveType == WaveType.Super)
+            if (_nowContinuousWave.WaveType == WaveType.Continuous || _nowContinuousWave.WaveType == WaveType.Super)
             {
                 _nowSpawnDelay += Time.deltaTime;
 
                 if (_nowContinuousWave != null)
                 {
-                    if (_nowContinuousWave.WaveData.SpawnDelay <= _nowSpawnDelay)
-                    {
-                        SpawnMonster();
-                        _nowSpawnDelay = 0;
-                    }
+                    //if (_nowContinuousWave.WaveData.SpawnDelay <= _nowSpawnDelay)
+                    //{
+                    //    SpawnMonster();
+                    //    _nowSpawnDelay = 0;
+                    //}
                 }
             }
 
@@ -142,14 +152,14 @@ public class StageWaveController
 
                 StageWaveEntry nextEntry = _waveQueue.Peek();
 
-                if (nextEntry.WaveData.WaveType == WaveType.Boss)
+                if (nextEntry.WaveType == WaveType.Boss)
                 {
                     if (nextEntry.WaveStartTime - 3f <= _playTime && _readyWarnningSign)
                     {
                         _readyWarnningSign = false;
 
                         WarnningSignUI warnning = (WarnningSignUI)UIManager.Instance.ShowUI(UIName.UI_WarnningSign);
-                        switch (nextEntry.WaveData.WaveType)
+                        switch (nextEntry.WaveType)
                         {
                             case WaveType.Super:
                                 warnning.SetText(_superWaveWarnningSignText);
@@ -196,7 +206,7 @@ public class StageWaveController
     void SpawnWaveRewardBox()
     {
         // 이전 웨이브 보상 뿌리기
-        for (int i = 0; i < _nowWave.WaveData.ClearRewardType.Length; ++i)
+        for (int i = 0; i < _nowWave.ClearRewardTypes.Length; ++i)
         {
 
         }
@@ -206,22 +216,22 @@ public class StageWaveController
     void SpawnMonster()
     {
         if (_nowContinuousWave == null) return;
-        if (_nowContinuousWave.WaveData.Monsters == null) return;
-        if (_nowContinuousWave.WaveData.Monsters.Count == 0) return;
+        if (_nowContinuousWave.ContinuouseMOnsterSpawnInfos == null) return;
+        if (_nowContinuousWave.ContinuouseMOnsterSpawnInfos.Length == 0) return;
 
-        for (int i = 0; i < _nowContinuousWave.WaveData.SpawnCount; ++i)
-        {
-            int monsterIdx = Define.Random.Next(0, _nowContinuousWave.WaveData.Monsters.Count);
+        //for (int i = 0; i < _nowContinuousWave.WaveData.SpawnCount; ++i)
+        //{
+        //    int monsterIdx = Define.Random.Next(0, _nowContinuousWave.WaveData.Monsters.Count);
 
-            MonsterManager.Instance.SpawnWaveMonster(_nowContinuousWave.WaveData.Monsters[monsterIdx]);
-        }
+        //    MonsterManager.Instance.SpawnWaveMonster(_nowContinuousWave.WaveData.Monsters[monsterIdx]);
+        //}
     }
 
-    void SpawnBossMonster(StageWaveData bossWave)
+    void SpawnBossMonster(MonsterPoolIndex[] monsterIndex)
     {
-        for (int i = 0; i < bossWave.Monsters.Count; ++i)
+        for (int i = 0; i < monsterIndex.Length; ++i)
         {
-            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(bossWave.Monsters[i]);
+            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(monsterIndex[i]);
 
             if (spawnedMonster != null)
             {

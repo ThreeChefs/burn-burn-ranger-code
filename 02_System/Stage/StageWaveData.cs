@@ -1,28 +1,22 @@
 using Sirenix.OdinInspector;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-
-[CreateAssetMenu(fileName = "Stage Wave Data", menuName = "SO/Stage/Stage Wave Data")]
-public class StageWaveData : ScriptableObject
+[Serializable]
+public class MonsterSpawnInfo
 {
-    [SerializeField] WaveType _waveType;
-    public WaveType WaveType => _waveType;
+    [SerializeField] MonsterPoolIndex _monsterIndex;
 
-    [SerializeField] private List<MonsterPoolIndex> _monsters;
-    public List<MonsterPoolIndex> Monsters => _monsters;
+    [TableColumnWidth(40)]
+    [SerializeField] float _spawnDelay;
 
-    [HideIf(nameof(_waveType), WaveType.Boss)]
-    [SerializeField] private float _spawnDelay = 1.0f;
+    [TableColumnWidth(40)]
+    [SerializeField] int _spawnCount;
+
+
+    public MonsterPoolIndex MonsterPoolIndex => _monsterIndex;
+    public int SpawnCount => _spawnCount;
     public float SpawnDelay => _spawnDelay;
-
-    [HideIf(nameof(_waveType), WaveType.Boss)]   // 보스는 list에 있는거 한 마리씩만
-    [SerializeField] private int _spawnCount = 1;
-    public float SpawnCount => _spawnCount;
-
-    [SerializeField] private WaveClearRewardType[] _clearRewardType;
-    public WaveClearRewardType[] ClearRewardType => _clearRewardType;
-
 }
 
 public enum WaveType
