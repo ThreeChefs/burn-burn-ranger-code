@@ -65,6 +65,11 @@ public class ItemComposeUI : BaseUI
             _materialInstanaces[i] = null;
         }
         _resultInstance = null;
+
+        if (_inventory != null)
+        {
+            UpdateInventoryUI();
+        }
     }
 
     private void OnDisable()
@@ -114,6 +119,8 @@ public class ItemComposeUI : BaseUI
             slot.ResetSlot();
         }
         _resultSlot.ResetSlot();
+
+        UpdateInventoryUI();
     }
 
     /// <summary>
