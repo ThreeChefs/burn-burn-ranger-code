@@ -28,7 +28,10 @@ public class Equipment
         {
             _equipments[type] = null;
         }
+    }
 
+    public void Init()
+    {
         // todo: 장비 데이터 저장 / 로드
         foreach (ItemInstance item in _equipments.Values)
         {
