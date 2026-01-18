@@ -6,8 +6,11 @@ public class MainScene : BaseScene
         UIManager.Instance.LoadUI(UIName.UI_HomeTopBar);
         
         UIManager.Instance.LoadUI(UIName.UI_Home);
+
         UIManager.Instance.LoadUI(UIName.UI_Equipment, false);
         UIManager.Instance.LoadUI(UIName.UI_ItemDetail, false);
+        UIManager.Instance.LoadUI(UIName.UI_ItemCompose, false);
+
         UIManager.Instance.LoadUI(UIName.UI_Shop, false);
         UIManager.Instance.LoadUI(UIName.UI_PickUp, false);
 

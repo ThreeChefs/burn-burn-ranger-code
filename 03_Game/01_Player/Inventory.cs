@@ -23,6 +23,8 @@ public class Inventory
 
     public void Init()
     {
+        if (_items.Count > 0) return;
+
         // todo: 나중에 인벤토리 초기화하기
         List<ItemData> defaultData = new()
         {
@@ -53,6 +55,15 @@ public class Inventory
     public void Add(ItemInstance item)
     {
         _items.Add(item);
+        // todo: 나중에 정렬 로직 빼기
+        _items.Sort((a, b) =>
+        {
+            int result = b.ItemClass.CompareTo(a.ItemClass);
+            if (result != 0)
+                return result;
+
+            return b.ItemData.EquipmentType.CompareTo(a.ItemData.EquipmentType);
+        });
         OnInventoryChanged?.Invoke();
     }
 

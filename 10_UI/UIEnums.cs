@@ -17,6 +17,7 @@ public enum UIName
     UI_Shop,
     UI_Equipment,
     UI_ItemDetail,
+    UI_ItemCompose,
     UI_PickUp,
     UI_Growth,
 
