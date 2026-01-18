@@ -110,6 +110,11 @@ public class ItemComposeUI : BaseUI
             _materialInstanaces[i] = null;
         }
         _resultInstance = null;
+
+        foreach (ComposeItemSlot slot in _inventorySlots)
+        {
+            slot.UnLockButton();
+        }
     }
     #endregion
 
@@ -119,25 +124,15 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickComposeButton()
     {
-        Count = 0;
-
-        // 아이템 정보
+        // 아이템 삭제 & 주기
         for (int i = 0; i < _materialInstanaces.Length; i++)
         {
             _inventory.Remove(_materialInstanaces[i]);
-            _materialInstanaces[i] = null;
         }
         _inventory.Add(_resultInstance);
-        _resultInstance = null;
 
-        // 슬롯
-        foreach (MaterialItemSlot slot in _materialSlots)
-        {
-            slot.ResetSlot();
-        }
-        _resultSlot.ResetSlot();
-
-        UpdateInventoryUI();
+        ResetMaterialSlots();   // 슬롯 정보 리셋
+        UpdateInventoryUI();    // 인벤토리 ui 리셋
     }
     #endregion
 
@@ -198,10 +193,6 @@ public class ItemComposeUI : BaseUI
     private void OnClickOriginMaterialButton()
     {
         ResetMaterialSlots();
-        foreach (ComposeItemSlot slot in _inventorySlots)
-        {
-            slot.UnLockButton();
-        }
     }
     #endregion
 
