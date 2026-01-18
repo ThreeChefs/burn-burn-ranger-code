@@ -4,22 +4,21 @@ using UnityEngine.UI;
 
 public class ItemComposeUI : BaseUI
 {
-    [SerializeField] private ItemSlot _itemSlotPrefab;
+    [SerializeField] private ComposeItemSlot _itemSlotPrefab;
     [SerializeField] private RectTransform _inventoryUI;
 
-    [SerializeField] private ItemSlot _resultSlot;
-    [SerializeField] private ItemSlot _originSlot;
-    [SerializeField] private ItemSlot[] _materialSlots;
+    [SerializeField] private ComposeItemSlot _resultSlot;
+    [SerializeField] private ComposeItemSlot[] _materialSlots;
 
     [SerializeField] private Button _allComposeButton;
     [SerializeField] private Button _composeButton;
 
     private Inventory _inventory;
-    private List<ItemSlot> _inventorySlots = new();
+    private List<ComposeItemSlot> _inventorySlots = new();
 
-    private ItemInstance _targetInstanace;
     private ItemInstance[] _materialInstanaces;
     private ItemInstance _resultInstance;
+
     private int _count;
     private int Count
     {
@@ -51,7 +50,7 @@ public class ItemComposeUI : BaseUI
 
         foreach (ComposeItemSlot item in _inventorySlots)
         {
-            item.OnClickSlot += OnClickSlotButton;
+            item.OnClickSlot += OnClickInventorySlotButton;
         }
     }
 
@@ -61,18 +60,23 @@ public class ItemComposeUI : BaseUI
 
         foreach (ComposeItemSlot item in _inventorySlots)
         {
-            item.OnClickSlot -= OnClickSlotButton;
+            item.OnClickSlot -= OnClickInventorySlotButton;
         }
     }
 
     protected override void AwakeInternal()
     {
-        _materialInstanaces = new ItemInstance[2];
+        _materialInstanaces = new ItemInstance[RequiringCount];
     }
 
     private void Init()
     {
         UpdateInventoryUI();
+
+        foreach (ComposeItemSlot item in _inventorySlots)
+        {
+            item.OnClickSlot += OnClickInventorySlotButton;
+        }
     }
 
     /// <summary>
@@ -81,52 +85,58 @@ public class ItemComposeUI : BaseUI
     private void OnClickComposeButton()
     {
         // 아이템 정보
-        _inventory.Remove(_targetInstanace);
-        _inventory.Remove(_materialInstanaces[0]);
-        _inventory.Remove(_materialInstanaces[1]);
+        for (int i = 0; i < _materialInstanaces.Length; i++)
+        {
+            _inventory.Remove(_materialInstanaces[i]);
+            _materialInstanaces[i] = null;
+        }
         _inventory.Add(_resultInstance);
-
-        _targetInstanace = null;
-        _materialInstanaces[0] = null;
-        _materialInstanaces[1] = null;
         _resultInstance = null;
 
         // 슬롯
-        _originSlot.ResetSlot();
-        _materialSlots[0].ResetSlot();
-        _materialSlots[1].ResetSlot();
+        foreach (ComposeItemSlot slot in _materialSlots)
+        {
+            slot.ResetSlot();
+        }
         _resultSlot.ResetSlot();
     }
 
     /// <summary>
     /// 슬롯 누르면 재료 아이템으로 이동
     /// </summary>
-    private void OnClickSlotButton(ItemInstance item)
+    private void OnClickInventorySlotButton(ItemInstance item)
     {
-        if (Count == 0)
+        if (Count < RequiringCount)
         {
-            AddOriginItem(item);
+            AddMaterialItem(item);
         }
-        else
-        {
-            AddMaterialItem();
-        }
+        UpdateInventoryUI();
     }
 
-    private void AddOriginItem(ItemInstance item)
+    /// <summary>
+    /// 인벤토리에 있는 아이템 재표 아이템에 넣기
+    /// </summary>
+    /// <param name="item"></param>
+    private void AddMaterialItem(ItemInstance item)
     {
-        _targetInstanace = item;
 
-        // todo: 다른 아이템 lock 하기
-    }
+        if (Count == 0)     // 아이템을 처음 고를 때만 
+        {
+            foreach (ComposeItemSlot slot in _inventorySlots)
+            {
+                if (slot.EqualsItemClassAndData(_materialInstanaces[0])) continue;
+                slot.LockButton();
+            }
+        }
 
-    private void AddMaterialItem()
-    {
+        _materialInstanaces[Count] = item;
+        _materialSlots[Count].SetSlot(_materialInstanaces[Count]);
+
         Count++;
 
         if (CheckCompose())
         {
-            _resultInstance = new ItemInstance(_targetInstanace.ItemClass + 1, _targetInstanace.ItemData);
+            _resultInstance = new ItemInstance(_materialInstanaces[0].ItemClass + 1, _materialInstanaces[0].ItemData);
             _resultSlot.SetSlot(_resultInstance);
         }
     }
@@ -149,13 +159,14 @@ public class ItemComposeUI : BaseUI
 
         for (int i = 0; i < _inventorySlots.Count; i++)
         {
+            if (_inventorySlots[i].IsMaterial) continue;
             _inventorySlots[i].SetSlot(_inventory.Items[i]);
         }
     }
 
     private void AddItemSlot(int index)
     {
-        ItemSlot itemSlot = Instantiate(_itemSlotPrefab);
+        ComposeItemSlot itemSlot = Instantiate(_itemSlotPrefab);
         itemSlot.transform.SetParent(_inventoryUI, false);
         _inventorySlots.Add(itemSlot);
         itemSlot.SetSlot(_inventory.Items[index]);
@@ -167,11 +178,11 @@ public class ItemComposeUI : BaseUI
         _itemSlotPrefab = AssetLoader.FindAndLoadByName("Button_ItemSlot_Compose").GetComponent<ComposeItemSlot>();
         _inventoryUI = transform.FindChild<RectTransform>("Content");
 
-        _resultSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Result");
-        _originSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Origin");
-        _materialSlots = new ItemSlot[2];
-        _materialSlots[0] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material");
-        _materialSlots[1] = transform.FindChild<ItemSlot>("Button_ItemSlot_Material_1");
+        _resultSlot = transform.FindChild<ComposeItemSlot>("Button_ItemSlot_Result");
+        _materialSlots = new ComposeItemSlot[3];
+        _materialSlots[0] = transform.FindChild<ComposeItemSlot>("Button_ItemSlot_Material");
+        _materialSlots[1] = transform.FindChild<ComposeItemSlot>("Button_ItemSlot_Material_1");
+        _materialSlots[2] = transform.FindChild<ComposeItemSlot>("Button_ItemSlot_Material_2");
 
         _allComposeButton = transform.FindChild<Button>("Button - AllCompose");
         _composeButton = transform.FindChild<Button>("Button - Compose");

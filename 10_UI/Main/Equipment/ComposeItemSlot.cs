@@ -4,12 +4,16 @@ using UnityEngine;
 public class ComposeItemSlot : ItemSlot
 {
     [SerializeField] private GameObject _lock;
+
+    public bool IsMaterial { get; set; }
+
     public event Action<ItemInstance> OnClickSlot;
 
     protected override void OnEnable()
     {
         base.OnEnable();
         UnLockButton();
+        IsMaterial = false;
     }
 
     private void OnDestroy()
@@ -20,6 +24,13 @@ public class ComposeItemSlot : ItemSlot
     protected override void OnClickButton()
     {
         OnClickSlot?.Invoke(instance);
+        IsMaterial = true;
+    }
+
+    public bool EqualsItemClassAndData(ItemInstance itemInstance)
+    {
+        return instance.ItemData.Id == itemInstance.ItemData.Id
+            && instance.ItemClass == itemInstance.ItemClass;
     }
 
     #region 버튼
