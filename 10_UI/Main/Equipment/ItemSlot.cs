@@ -27,12 +27,12 @@ public class ItemSlot : MonoBehaviour
         Init();
     }
 
-    protected void OnEnable()
+    protected virtual void OnEnable()
     {
         button.onClick.AddListener(OnClickButton);
     }
 
-    protected void OnDisable()
+    protected virtual void OnDisable()
     {
         button.onClick.RemoveAllListeners();
     }

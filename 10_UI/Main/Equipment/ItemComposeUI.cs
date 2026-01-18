@@ -48,11 +48,21 @@ public class ItemComposeUI : BaseUI
     {
         Count = 0;
         _composeButton.onClick.AddListener(OnClickComposeButton);
+
+        foreach (ComposeItemSlot item in _inventorySlots)
+        {
+            item.OnClickSlot += OnClickSlotButton;
+        }
     }
 
     private void OnDisable()
     {
         _composeButton.onClick.RemoveAllListeners();
+
+        foreach (ComposeItemSlot item in _inventorySlots)
+        {
+            item.OnClickSlot -= OnClickSlotButton;
+        }
     }
 
     protected override void AwakeInternal()
@@ -66,13 +76,8 @@ public class ItemComposeUI : BaseUI
     }
 
     /// <summary>
-    /// 슬롯 누르면 재료 아이템으로 이동
+    /// 합성 버튼 누를 경우 이벤트
     /// </summary>
-    private void OnClickSlotButton()
-    {
-        Count++;
-    }
-
     private void OnClickComposeButton()
     {
         // 아이템 정보
@@ -93,7 +98,29 @@ public class ItemComposeUI : BaseUI
         _resultSlot.ResetSlot();
     }
 
-    private void AddItemInstance()
+    /// <summary>
+    /// 슬롯 누르면 재료 아이템으로 이동
+    /// </summary>
+    private void OnClickSlotButton(ItemInstance item)
+    {
+        if (Count == 0)
+        {
+            AddOriginItem(item);
+        }
+        else
+        {
+            AddMaterialItem();
+        }
+    }
+
+    private void AddOriginItem(ItemInstance item)
+    {
+        _targetInstanace = item;
+
+        // todo: 다른 아이템 lock 하기
+    }
+
+    private void AddMaterialItem()
     {
         Count++;
 
