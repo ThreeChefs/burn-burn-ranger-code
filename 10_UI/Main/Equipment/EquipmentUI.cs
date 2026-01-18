@@ -17,6 +17,7 @@ public class EquipmentUI : BaseUI
     [SerializeField] private RectTransform _inventoryUI;
     private List<ItemSlot> _inventorySlots = new();
 
+    #region Unity API
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
@@ -47,7 +48,9 @@ public class EquipmentUI : BaseUI
             _equipment.OnEquipmentChanged -= UpdateEquipUI;
         }
     }
+    #endregion
 
+    #region 초기화
     protected override void AwakeInternal()
     {
         _equipmentSlots = new();
@@ -70,7 +73,9 @@ public class EquipmentUI : BaseUI
         //_inventoryUI.GetComponent<GridLayoutGroup>().enabled = false;
         //_inventoryUI.GetComponent<ContentSizeFitter>().enabled = false;
     }
+    #endregion
 
+    #region UI 업데이트
     /// <summary>
     /// 인벤토리 전부 순회하며 슬롯 업데이트 하기
     /// todo: 리스트 전부 순회 말고 단순화 방법 있나 생각해보기
@@ -168,6 +173,7 @@ public class EquipmentUI : BaseUI
         _inventorySlots.Add(itemSlot);
         itemSlot.SetSlot(_inventory.Items[index]);
     }
+    #endregion
 
 #if UNITY_EDITOR
     private void Reset()
