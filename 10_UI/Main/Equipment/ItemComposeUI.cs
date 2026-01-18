@@ -16,7 +16,8 @@ public class ItemComposeUI : BaseUI
     private Inventory _inventory;
     private List<ComposeItemSlot> _inventorySlots = new();
 
-    private ItemInstance[] _materialInstanaces;
+    private ItemInstance[] _materialInstanaces;             // 실제 재료 아이템
+    private ComposeItemSlot[] _materialTargetSlots;         // 재료 아이템 슬롯 - 재료 뺄 때 바로 빼기 위해 캐싱
     private ItemInstance _resultInstance;
 
     private int _count;
@@ -67,6 +68,7 @@ public class ItemComposeUI : BaseUI
     protected override void AwakeInternal()
     {
         _materialInstanaces = new ItemInstance[RequiringCount];
+        _materialTargetSlots = new ComposeItemSlot[RequiringCount];
     }
 
     private void Init()
@@ -102,13 +104,13 @@ public class ItemComposeUI : BaseUI
     }
 
     /// <summary>
-    /// 슬롯 누르면 재료 아이템으로 이동
+    /// 인벤토리 내부 슬롯 누르면 재료 아이템으로 이동
     /// </summary>
-    private void OnClickInventorySlotButton(ItemInstance item)
+    private void OnClickInventorySlotButton(ComposeItemSlot slot, ItemInstance item)
     {
         if (Count < RequiringCount)
         {
-            AddMaterialItem(item);
+            AddMaterialItem(slot, item);
         }
         UpdateInventoryUI();
     }
@@ -117,20 +119,21 @@ public class ItemComposeUI : BaseUI
     /// 인벤토리에 있는 아이템 재표 아이템에 넣기
     /// </summary>
     /// <param name="item"></param>
-    private void AddMaterialItem(ItemInstance item)
+    private void AddMaterialItem(ComposeItemSlot slot, ItemInstance item)
     {
-
         if (Count == 0)     // 아이템을 처음 고를 때만 
         {
-            foreach (ComposeItemSlot slot in _inventorySlots)
+            for (int i = 0; i < _inventorySlots.Count; i++)
             {
-                if (slot.EqualsItemClassAndData(_materialInstanaces[0])) continue;
-                slot.LockButton();
+                if (_inventorySlots[i].EqualsItemClassAndData(_materialInstanaces[0])) continue;
+                _inventorySlots[i].LockButton();
             }
         }
 
+        _materialTargetSlots[Count] = slot;
         _materialInstanaces[Count] = item;
         _materialSlots[Count].SetSlot(_materialInstanaces[Count]);
+        slot.IsMaterial = true;
 
         Count++;
 

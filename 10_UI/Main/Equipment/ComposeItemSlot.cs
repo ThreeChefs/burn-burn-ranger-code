@@ -7,7 +7,7 @@ public class ComposeItemSlot : ItemSlot
 
     public bool IsMaterial { get; set; }
 
-    public event Action<ItemInstance> OnClickSlot;
+    public event Action<ComposeItemSlot, ItemInstance> OnClickSlot;
 
     protected override void OnEnable()
     {
@@ -23,8 +23,7 @@ public class ComposeItemSlot : ItemSlot
 
     protected override void OnClickButton()
     {
-        OnClickSlot?.Invoke(instance);
-        IsMaterial = true;
+        OnClickSlot?.Invoke(this, instance);
     }
 
     public bool EqualsItemClassAndData(ItemInstance itemInstance)
