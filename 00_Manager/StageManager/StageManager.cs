@@ -1,5 +1,6 @@
 using Sirenix.OdinInspector;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     private List<StageData> _stageDatas = new List<StageData>();
 
     StageData _nowStage;
-    public int NowStageNumber { get; private set; }
+    public int NowStageNum { get; private set; }
 
     private StageWaveController _waveController;
     private StagePlayer _player;
@@ -56,21 +57,22 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
 
-    bool SetStageData(int stageNum)
+    bool SetStageData()
     {
-        NowStageNumber = stageNum;
+        NowStageNum = GameManager.Instance.StageProgress.LastSelectedStage;
+        int stageIndex = NowStageNum - 1;
 
-        if (_stageDatas.Count <= stageNum)
+        if (_stageDatas.Count < stageIndex)
         {
             Logger.Log("스테이지 없음!");
             return false;
         }
 
-        _nowStage = _stageDatas[stageNum];
+        _nowStage = _stageDatas[stageIndex];
 
-        if (_stageDatas[stageNum].Map != null)
+        if (_stageDatas[stageIndex].Map != null)
         {
-            Instantiate(_stageDatas[stageNum].Map);
+            Instantiate(_stageDatas[stageIndex].Map);
         }
 
         MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
@@ -184,7 +186,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNumber + 1, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNum + 1, (int)PlayTime);
     }
 
     public void GameOver()
@@ -215,7 +217,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNumber, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgress(NowStageNum, (int)PlayTime);
     }
 
 
