@@ -107,10 +107,16 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
 
         // 게임 시작
-        if (IsTest) return;
-        SetStageData(GameManager.Instance.StageProgress.LastSelectedStage - 1);
+        SetStageData();
+        StartCoroutine(StartRoutine());
+    }
+
+    IEnumerator StartRoutine()
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
         GameStart();
     }
+
 
     private void Update()
     {
@@ -300,32 +306,6 @@ public class StageManager : SceneSingletonManager<StageManager>
     }
 
     #endregion
-
-
-    #region Test
-    [Title("Test")]
-    public bool IsTest = false;
-    public int TestStageNum = 0;
-
-    [Button("Test Stage Start")]
-    public void TestStart()
-    {
-        if (_isPlaying)
-        {
-            Logger.Log("이미 플레이 중");
-            return;
-        }
-
-        if (SetStageData(TestStageNum))
-        {
-            GameStart();
-        }
-    }
-
-    #endregion
-
-
-
 
 
 }
