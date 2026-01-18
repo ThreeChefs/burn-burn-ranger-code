@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,8 +5,10 @@ using UnityEngine.UI;
 
 public class StageSelectPanel : SwipeScrollPanel
 {
-    private void Start()
+    protected override void Awake()
     {
+        base.Awake();
+
         _contents = new List<RectTransform>();
 
         for (int i = 0; i < GameManager.Instance.StageDatabase.Count; ++i)

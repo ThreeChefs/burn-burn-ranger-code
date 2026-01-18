@@ -20,8 +20,6 @@ public class StageSelectUI : PopupUI
     public event Action<int> OnSelectStageEvent;
 
 
-
-    // todo : 나중에는 제일 마지막에 플레이한 stage 체크하기
     private int _nowSelectedStage = 1;
 
     private void Awake()
@@ -29,27 +27,27 @@ public class StageSelectUI : PopupUI
         _selectButton.onClick.AddListener(OnClickSelectButton);
         _backButton.onClick.AddListener(OnClickBackButton);
 
-        _stageSelectPanel.OnSnapAction += SetStageNum;
-        
+        _stageSelectPanel.OnSnapAction += SetStageInfo;
     }
 
-    private void Start()
+    public override void OpenUIInternal()
     {
-        
-        SetStageNum(_nowSelectedStage);
+        base.OpenUIInternal();
+        _nowSelectedStage = GameManager.Instance.StageProgress.LastSelectedStage - 1;
+        _stageSelectPanel.SetFocusContent(_nowSelectedStage);
+        SetStageInfo(_nowSelectedStage);
     }
 
-    public void SetStageNum(int stageNum)
+    public void SetStageInfo(int stageNum)
     {
-        _nowSelectedStage  = stageNum + 1;
-        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStage - 1].StageName;
-
+        _nowSelectedStage  = stageNum;
+        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStage].StageName;
     }
     
     void OnClickSelectButton()
     {
-        GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStage);
-        OnSelectStageEvent?.Invoke(_nowSelectedStage);
+        GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStage + 1);
+        OnSelectStageEvent?.Invoke(_nowSelectedStage + 1);
         gameObject.SetActive(false);
     }
 
