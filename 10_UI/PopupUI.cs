@@ -1,8 +1,6 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
-using static CartoonFX.ExpressionParser.Token;
 
 public class PopupUI : BaseUI
 {
@@ -62,7 +60,7 @@ public class PopupUI : BaseUI
 
 
 
-        switch (_openType)
+        switch (_closeType)
         {
             case PopupUIOpenType.Default:
                 if (transform != null)
