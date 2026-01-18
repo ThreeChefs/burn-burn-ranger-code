@@ -11,7 +11,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     // POCO Class
     public PlayerCondition Condition { get; private set; }
     public PlayerWallet Wallet { get; private set; }
-    public Inventory Inventory { get; private set; }
+    [field: SerializeField] public Inventory Inventory { get; private set; }
     public Equipment Equipment { get; private set; }
 
     protected override void Init()
@@ -22,6 +22,12 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Wallet = new();
         Inventory = new();
         Equipment = new(Condition);
+    }
+
+    private void Start()
+    {
+        Inventory.Init();
+        Equipment.Init();
     }
 
     private void OnDestroy()

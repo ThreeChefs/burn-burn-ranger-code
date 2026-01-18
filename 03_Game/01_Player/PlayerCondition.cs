@@ -4,7 +4,6 @@ using System.Collections.Generic;
 /// <summary>
 /// 플레이어 상태 관리
 /// </summary>
-[Serializable]
 public class PlayerCondition
 {
     #region 필드

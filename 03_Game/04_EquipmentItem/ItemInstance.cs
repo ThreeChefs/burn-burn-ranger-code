@@ -4,12 +4,13 @@ using UnityEngine;
 /// <summary>
 /// 보유하고 있는 실제 아이템 데이터
 /// </summary>
+[Serializable]
 public class ItemInstance
 {
-    public ItemClass ItemClass { get; private set; }
-    public ItemData ItemData { get; private set; }
-    public int Count { get; private set; }
-    public int Level { get; private set; }
+    [field: SerializeField] public ItemClass ItemClass { get; private set; }
+    [field: SerializeField] public ItemData ItemData { get; private set; }
+    [field: SerializeField] public int Count { get; private set; }
+    [field: SerializeField] public int Level { get; private set; }
 
     public event Action OnLevelChanged;
 
