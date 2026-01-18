@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 /// <summary>
 /// 인벤토리
 /// </summary>
+[Serializable]
 public class Inventory
 {
-    private List<ItemInstance> _items = new();
+    [SerializeField] private List<ItemInstance> _items = new();
     public IReadOnlyList<ItemInstance> Items => _items;
 
     public event Action OnInventoryChanged;
@@ -19,16 +21,16 @@ public class Inventory
         { 30, 1 }
     };
 
-    public Inventory()
+    public void Init()
     {
         // todo: 나중에 인벤토리 초기화하기
         List<ItemData> defaultData = new()
         {
-            AssetLoader.FindAndLoadByName<ItemData>("MetalSuit"),
-            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
-            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
-            AssetLoader.FindAndLoadByName<ItemData>("Kunai"),
-            AssetLoader.FindAndLoadByName<ItemData>("MilitaryUniform")
+            GameManager.Instance.ItemDatabase.FindById(UnityEngine.Random.Range(0, 5)),
+            GameManager.Instance.ItemDatabase.FindById(UnityEngine.Random.Range(0, 5)),
+            GameManager.Instance.ItemDatabase.FindById(UnityEngine.Random.Range(0, 5)),
+            GameManager.Instance.ItemDatabase.FindById(UnityEngine.Random.Range(0, 5)),
+            GameManager.Instance.ItemDatabase.FindById(UnityEngine.Random.Range(0, 5)),
         };
 
         defaultData.ForEach(data => Add(
