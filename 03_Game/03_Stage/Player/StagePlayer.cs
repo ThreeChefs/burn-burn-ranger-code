@@ -164,6 +164,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         PlayerStat health = Condition[StatType.Health];
         if (health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
+            CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position);
             if (health.CurValue == 0)
             {
                 Logger.Log("플레이어 DIE");
