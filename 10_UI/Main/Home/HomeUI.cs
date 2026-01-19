@@ -24,7 +24,6 @@ public class HomeUI : BaseUI
         _stageSelectUI = (StageSelectUI)UIManager.Instance.LoadUI(UIName.UI_StageSelect, false);
         _stageSelectUI.OnSelectStageEvent += SetStageSelectButtonImg;
 
-        // todo : 마지막으로 플레이한 스테이지로 변경
         int lastStageIndex = GameManager.Instance.StageProgress.LastSelectedStage - 1;
         if (lastStageIndex > 0 && GameManager.Instance.StageDatabase.Count > lastStageIndex)
         {

@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
-    [SerializeField] private SoDatabase _skillDataBase;     // todo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
+    [SerializeField] private SoDatabase _skillDataBase;     // memo : 역시 다른 곳에 SO를 몰아두는게 낫지 않을지?! 
     private List<StageData> _stageDatas = new List<StageData>();
 
     StageData _nowStage;
@@ -75,8 +75,6 @@ public class StageManager : SceneSingletonManager<StageManager>
             Instantiate(_stageDatas[stageIndex].Map);
         }
 
-        MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
-
         _waveController = new StageWaveController(_nowStage);
         _waveController.OnStageEndAction += GameClear;
 
@@ -96,11 +94,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 스킬 시스템 생성
         _skillSystem = new SkillSystem(_skillDataBase, _player);
 
-
-
-        // todo : 
         // 카메라 세팅
-        // 나중에 맵이랑 연결해줘야함 
         if (Camera.main.TryGetComponent<FollowCamera>(out var camera))
         {
             camera.ConnectPlayer();
@@ -230,7 +224,6 @@ public class StageManager : SceneSingletonManager<StageManager>
     // 스테이지 보상 제공
     List<StageRewardInfo> GiveReward()
     {
-
         List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
 
         StageRewardInfo weaponMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Weapon };

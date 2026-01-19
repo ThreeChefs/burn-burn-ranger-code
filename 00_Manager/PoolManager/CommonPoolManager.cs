@@ -18,7 +18,7 @@ public class CommonPoolManager : PoolManager<CommonPoolManager, CommonPoolIndex>
         PoolObject originPrefab = _originPoolDic[poolIndex].OriginPrefab;
 
         BasePool newPool = Instantiate(poolPrefab);
-        newPool.Init(_originPoolDic[poolIndex]);    // todo : default size 지정 필요
+        newPool.Init(_originPoolDic[poolIndex]);
         newPool.name = $"{poolIndex}_Pool";
 
         nowPoolDic.Add(poolIndex, newPool);

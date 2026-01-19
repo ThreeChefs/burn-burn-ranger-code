@@ -24,7 +24,7 @@ public class StageUI : BaseUI
 
     private void Update()
     {
-        // todo event로 추가되면 이벤트로 바꾸기
+        // todo: event로 추가되면 이벤트로 바꾸기
         SetGoldCount(PlayerManager.Instance.StagePlayer.GoldValue);
     }
 
