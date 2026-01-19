@@ -229,6 +229,11 @@ public class PlayerProjectile : BaseProjectile
 
         if (data.AoEData.IsInstant)
         {
+            if (data.VisualData.ProjectileParticle != null)
+            {
+                Transform transform = Instantiate(data.VisualData.ProjectileParticle).GetComponent<Transform>();
+                transform.position = _aoePivot.position;
+            }
             gameObject.SetActive(false);
         }
     }
