@@ -9,27 +9,24 @@ public class StageWaveEntry
     [Tooltip("웨이브 시작 시간")]
     [Delayed, SerializeField] private float _waveStartTime;
 
+    [GUIColor(1f, 1f, 0f)]
     [Tooltip("웨이브 종류")]
     [SerializeField] private WaveType _waveType;
 
-    [FoldoutGroup("보상")]
-    [FoldoutGroup("보상/결과 보상")]
+    [FoldoutGroup("웨이브 보상")]
     [Tooltip("웨이브 클리어 경험치 / 결과 확인 시 받음")]
     [SerializeField] int _waveClearExp = 10;
 
-    [FoldoutGroup("보상/결과 보상")]
+    [FoldoutGroup("웨이브 보상")]
     [Tooltip("웨이브 클리어 골드 /  결과 확인 시 받음")]
     [SerializeField] int _waveClearGold = 100;
-
-    [FoldoutGroup("보상/필드 보상")]
-    [SerializeField] private WaveClearRewardType[] _clearRewardType;
 
     [FoldoutGroup("웨이브 등장 몬스터 설정")]
     [ShowIfGroup("웨이브 등장 몬스터 설정/@_isContinuousWave")]
     [TableList][SerializeField] private MonsterSpawnInfo[] _continuousMonsterSpawnInfos;
 
     [ShowIfGroup("웨이브 등장 몬스터 설정/@!_isContinuousWave")]
-    [SerializeField] private MonsterPoolIndex[] _immediateSpawnMonsters;
+    [TableList][SerializeField] private BossMonsterSpawnInfo[] _immediateSpawnMonsters;
 
     // public 프로퍼티
     public float WaveStartTime => _waveStartTime;
@@ -40,10 +37,8 @@ public class StageWaveEntry
 
     public int WaveClearGold => _waveClearGold;
 
-    public WaveClearRewardType[] ClearRewardTypes => _clearRewardType;
-
     public MonsterSpawnInfo[] ContinuouseMOnsterSpawnInfos => _continuousMonsterSpawnInfos;
-    public MonsterPoolIndex[] ImmediateSpawnMonsters => _immediateSpawnMonsters;
+    public BossMonsterSpawnInfo[] ImmediateSpawnMonsters => _immediateSpawnMonsters;
 
 
     // Inspector 용 파라미터
@@ -54,9 +49,8 @@ public class StageWaveEntry
         WaveType waveType,
         int waveClearExp = 10,
         int waveClearGold = 100,
-        WaveClearRewardType[] clearRewardTypes = null,
         MonsterSpawnInfo[] continuousMonsterSpawnInfos = null,
-        MonsterPoolIndex[] immediateSpawnMonsters = null
+        BossMonsterSpawnInfo[] immediateSpawnMonsters = null
     )
     {
         _waveStartTime = waveStartTime;
@@ -64,8 +58,6 @@ public class StageWaveEntry
 
         _waveClearExp = waveClearExp;
         _waveClearGold = waveClearGold;
-
-        _clearRewardType = clearRewardTypes;
 
         _continuousMonsterSpawnInfos = continuousMonsterSpawnInfos;
         _immediateSpawnMonsters = immediateSpawnMonsters;

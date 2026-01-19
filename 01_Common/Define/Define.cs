@@ -45,6 +45,7 @@ public static class Define
     // 레이어 이름
     public static int MonsterLayer = LayerMask.NameToLayer("Monster");
     public static int WallLayer = LayerMask.NameToLayer("Wall");
+    public static int PlayerLayer = LayerMask.NameToLayer("Player");
 
     // 디자인 - 홈
     public static float OriginPosY = 0f;
@@ -54,4 +55,5 @@ public static class Define
     public static float OriginScale = 1f;
     public static float TargetScale = 1.4f;
     public static float Duration = 1f;
+    
 }

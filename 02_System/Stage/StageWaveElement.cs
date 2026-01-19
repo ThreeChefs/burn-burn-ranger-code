@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using System;
 using UnityEngine;
 
@@ -6,11 +7,7 @@ using UnityEngine;
 public class MonsterSpawnInfo
 {
     [SerializeField] MonsterPoolIndex _monsterIndex;
-
-    [TableColumnWidth(40)]
     [SerializeField] float _spawnDelay;
-
-    [TableColumnWidth(40)]
     [SerializeField] int _spawnCount;
 
 
@@ -18,6 +15,19 @@ public class MonsterSpawnInfo
     public int SpawnCount => _spawnCount;
     public float SpawnDelay => _spawnDelay;
 }
+
+[Serializable]
+public class BossMonsterSpawnInfo
+{
+    [SerializeField] MonsterPoolIndex _monsterIndex;
+
+    [LabelText("처치 보상")]
+    [SerializeField] WaveClearRewardType[] _rewards;
+
+    public MonsterPoolIndex MonsterIndex => _monsterIndex;
+    public WaveClearRewardType[] Rewards => _rewards;
+}
+
 
 public enum WaveType
 {
@@ -29,10 +39,12 @@ public enum WaveType
 
 public enum WaveClearRewardType
 {
-    Gold_Coin = 0,
-    Gold_Ingot = 1,
-    Gold_Pocket = 2,
-    Gold_Box = 3,
+    None = 0,
+
+    Gold_Coin = 1,
+    Gold_Ingot = 2,
+    Gold_Pocket = 3,
+    Gold_Box = 4,
 
     Item_Magnetic = 100,
     Item_Meat = 101,

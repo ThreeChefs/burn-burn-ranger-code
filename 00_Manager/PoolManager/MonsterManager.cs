@@ -52,14 +52,6 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
 
     }
 
-    public Monster SpawnBossMonster(MonsterPoolIndex poolIndex)
-    {
-        DeactiveAllMonsters();
-
-        return SpawnWaveMonster(poolIndex);
-    }
-
-
     /// <summary>
     /// 그냥 없애기만 하는거
     /// </summary>
