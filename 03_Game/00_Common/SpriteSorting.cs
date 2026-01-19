@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// todo : dirtyflag 참고해보기
 public class SpriteSorting : MonoBehaviour
 {
     SpriteRenderer[] sprites;
@@ -9,12 +10,11 @@ public class SpriteSorting : MonoBehaviour
         sprites = GetComponentsInChildren<SpriteRenderer>();
     }
     
-    public void UpdateSorting(float pos)
+    private void LateUpdate()
     {
         for (int i = 0; i < sprites.Length; ++i)
         {
-            sprites[i].sortingOrder = (int)(pos * 1000) * -1;
+            sprites[i].sortingOrder = (int)(this.transform.position.y * 1000) * -1;
         }
-
     }
 }
