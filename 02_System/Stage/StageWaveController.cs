@@ -230,7 +230,6 @@ public class StageWaveController
                 {
                     for (int j = 0; j < spawnInfos[i].SpawnCount; ++j)
                     {
-                        Logger.Log("???");
                         MonsterManager.Instance.SpawnWaveMonster(spawnInfos[i].MonsterPoolIndex);
                     }
 
