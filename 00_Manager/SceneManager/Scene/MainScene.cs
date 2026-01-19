@@ -17,5 +17,13 @@ public class MainScene : BaseScene
         UIManager.Instance.LoadUI(UIName.UI_Growth, false);
 
         UIManager.Instance.LoadUI(UIName.UI_InGameLoading, false);
+
+        SoundManager.Instance.PlayBgm(BgmName.Main, volume: 0.6f);
+    }
+
+    private void OnDestroy()
+    {
+        SoundManager.Instance.StopBgm();
+        SoundManager.Instance.StopAllSfx();
     }
 }
