@@ -146,7 +146,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void StopBgm()
     {
-        _bgmAudioSource.Stop();
+        _bgmAudioSource?.Stop();
     }
 
     public void StopAllSfx()

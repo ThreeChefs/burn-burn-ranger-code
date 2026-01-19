@@ -20,7 +20,7 @@ public class StageSelectUI : PopupUI
     public event Action<int> OnSelectStageEvent;
 
 
-    private int _nowSelectedStage = 1;
+    private int _nowSelectedStageIndex = 1;
 
     private void Awake()
     {
@@ -33,21 +33,21 @@ public class StageSelectUI : PopupUI
     public override void OpenUIInternal()
     {
         base.OpenUIInternal();
-        _nowSelectedStage = GameManager.Instance.StageProgress.LastSelectedStage - 1;
-        _stageSelectPanel.SetFocusContent(_nowSelectedStage);
-        SetStageInfo(_nowSelectedStage);
+        _nowSelectedStageIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
+        _stageSelectPanel.SetFocusContent(_nowSelectedStageIndex);
+        SetStageInfo(_nowSelectedStageIndex);
     }
 
     public void SetStageInfo(int stageNum)
     {
-        _nowSelectedStage  = stageNum;
-        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStage].StageName;
+        _nowSelectedStageIndex  = stageNum;
+        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName;
     }
     
     void OnClickSelectButton()
     {
-        GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStage + 1);
-        OnSelectStageEvent?.Invoke(_nowSelectedStage + 1);
+        GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStageIndex + 1);
+        OnSelectStageEvent?.Invoke(_nowSelectedStageIndex + 1);
         gameObject.SetActive(false);
     }
 

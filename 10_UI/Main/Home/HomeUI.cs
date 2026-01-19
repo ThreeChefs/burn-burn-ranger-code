@@ -15,7 +15,7 @@ public class HomeUI : BaseUI
     {
         _playButton.onClick.AddListener(OnClickPlayButton);
         _stageSelectButton.onClick.AddListener(OnClickStageSelectButton);
-        
+
         _stageSelectButtonImg = _stageSelectButton.GetComponent<Image>();
     }
 
@@ -24,11 +24,16 @@ public class HomeUI : BaseUI
         _stageSelectUI = (StageSelectUI)UIManager.Instance.LoadUI(UIName.UI_StageSelect, false);
         _stageSelectUI.OnSelectStageEvent += SetStageSelectButtonImg;
 
-        int lastStageIndex = GameManager.Instance.StageProgress.LastSelectedStage - 1;
-        if (lastStageIndex > 0 && GameManager.Instance.StageDatabase.Count > lastStageIndex)
+        int lastStageIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
+        if (0 <= lastStageIndex && lastStageIndex < GameManager.Instance.StageDatabase.Count)
         {
             _stageName.text = GameManager.Instance.StageDatabase[lastStageIndex].StageName;
             _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[lastStageIndex].StageIcon;
+        }
+        else if (GameManager.Instance.StageDatabase.Count <= lastStageIndex)
+        {
+            _stageName.text = GameManager.Instance.StageDatabase[GameManager.Instance.StageDatabase.Count - 1].StageName;
+            _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[GameManager.Instance.StageDatabase.Count - 1].StageIcon;
         }
 
     }
@@ -46,12 +51,12 @@ public class HomeUI : BaseUI
 
     public void SetStageSelectButtonImg(int stageNum)
     {
-        if(stageNum-1 < 0 || stageNum-1 >= GameManager.Instance.StageDatabase.Count)
+        if (stageNum - 1 < 0 || stageNum - 1 >= GameManager.Instance.StageDatabase.Count)
         {
             return;
         }
 
-        _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[stageNum-1].StageIcon;
+        _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[stageNum - 1].StageIcon;
         _stageName.text = GameManager.Instance.StageDatabase[stageNum - 1].StageName;
     }
 }

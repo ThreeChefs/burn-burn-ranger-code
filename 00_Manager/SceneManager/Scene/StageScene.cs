@@ -17,5 +17,7 @@ public class StageScene : BaseScene
         ProjectileManager.Instance.UsePool(ProjectileDataIndex.DrillShotProjectileData);
 
         CommonPoolManager.Instance.UsePool(CommonPoolIndex.DamageText);
+        CommonPoolManager.Instance.UsePool(CommonPoolIndex.Particle_Explosion);
+        CommonPoolManager.Instance.UsePool(CommonPoolIndex.Particle_Blood);
     }
 }

@@ -24,6 +24,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     [SerializeField] private Transform _moveDirectionArrow;
     [SerializeField] private float _rotateDuration = 0.75f;
 
+    [SerializeField] private float _bloodParticleOffset = 1f;
     [SerializeField] private SpriteRenderer[] _renderers;
     private bool _isLeft;
     protected bool IsLeft
@@ -164,6 +165,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         PlayerStat health = Condition[StatType.Health];
         if (health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
+            CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
             if (health.CurValue == 0)
             {
                 Logger.Log("플레이어 DIE");
