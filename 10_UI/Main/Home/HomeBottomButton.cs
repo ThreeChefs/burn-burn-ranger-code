@@ -69,12 +69,8 @@ public class HomeBottomButton : MonoBehaviour
         _seq
             .Join(_icon.DOAnchorPosY(posY, _duration))
             .Join(_backGround.transform.DOScaleX(scaleX, _duration))
-            .Join(_backGround.DOColor(color, _duration));
-
-        if (showText)
-            _seq.OnStart(() => _textGo.SetActive(true));
-        else
-            _seq.OnComplete(() => _textGo.SetActive(false));
+            .Join(_backGround.DOColor(color, _duration))
+            .OnStart(() => _textGo.SetActive(showText));
     }
 
 
