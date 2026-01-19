@@ -1,9 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// 투사체용 이펙트
+/// 특정 시간 동안 활성화하는 파티클
 /// </summary>
-public class ProjectileParticle : PoolObject
+public class TimedParticle : PoolObject
 {
     [SerializeField] private float _particleTime = 0.2f;
 
