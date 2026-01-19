@@ -29,7 +29,21 @@ public class PickUpSystem
     /// <returns></returns>
     public ItemInstance PickUp(int id)
     {
-        ItemBoxData itemBoxData = _itemBoxCache[id];
+        return PickUp(_itemBoxCache[id]);
+    }
+
+    /// <summary>
+    /// 아이템 박스에서 랜덤으로 아이템 1개 뽑기
+    /// </summary>
+    /// <param name="itemBoxData"></param>
+    /// <returns></returns>
+    public ItemInstance PickUp(ItemBoxData itemBoxData)
+    {
+        if (itemBoxData == null)
+        {
+            Logger.LogWarning("아이템 박스 없음");
+            return null;
+        }
 
         float rand = Random.value * 100f;
         float cumulative = 0f;
