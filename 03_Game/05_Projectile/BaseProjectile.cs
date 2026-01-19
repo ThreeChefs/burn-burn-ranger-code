@@ -47,9 +47,20 @@ public class BaseProjectile : PoolObject, IAttackable
 
     // 카메라
     protected Camera cam;
+
+    // vfx
+    private TrailRenderer _trail;
     #endregion
 
     #region Unity API
+    private void Awake()
+    {
+        if (vfxs != null)
+        {
+            _trail = vfxs.GetComponentInChildren<TrailRenderer>();
+        }
+    }
+
     protected virtual void Start()
     {
         cam = Camera.main;
@@ -85,6 +96,16 @@ public class BaseProjectile : PoolObject, IAttackable
     }
     #endregion
 
+    protected override void OnEnableInternal()
+    {
+        base.OnEnableInternal();
+
+        if (_trail != null)
+        {
+            _trail.enabled = true;
+        }
+    }
+
     protected override void OnDisableInternal()
     {
         base.OnDisableInternal();
@@ -98,6 +119,12 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             StopCoroutine(sfxCoroutine);
             sfxCoroutine = null;
+        }
+
+        if (_trail != null)
+        {
+            _trail.Clear();
+            _trail.enabled = false;
         }
     }
 
