@@ -227,12 +227,13 @@ public class PlayerProjectile : BaseProjectile
             data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
         }
 
+        if (data.VisualData.UseParticlePool)
+        {
+            CommonPoolManager.Instance.Spawn(data.VisualData.PoolIndex, _aoePivot.position);
+        }
+
         if (data.AoEData.IsInstant)
         {
-            if (data.VisualData.UseParticlePool)
-            {
-                CommonPoolManager.Instance.Spawn(data.VisualData.PoolIndex, _aoePivot.position);
-            }
             gameObject.SetActive(false);
         }
     }
