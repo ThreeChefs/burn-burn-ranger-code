@@ -45,4 +45,5 @@ public static class Define
     // 레이어 이름
     public static int MonsterLayer = LayerMask.NameToLayer("Monster");
     public static int WallLayer = LayerMask.NameToLayer("Wall");
+    public static int PlayerLayer = LayerMask.NameToLayer("Player");
 }
