@@ -251,6 +251,7 @@ public class StageManager : SceneSingletonManager<StageManager>
                 newRewardInfo.type = ItemType.Equipment;
 
                 newRewardInfo.itemInfo = GameManager.Instance.PickUpSystem.PickUp(0);
+                PlayerManager.Instance.Inventory.Add(newRewardInfo.itemInfo);
                 
                 newRewardInfo.count += 1;
 
