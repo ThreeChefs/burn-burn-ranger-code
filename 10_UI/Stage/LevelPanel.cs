@@ -55,6 +55,8 @@ public class LevelPanel : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (PlayerManager.Instance.StagePlayer == null) return;
+
         PlayerManager.Instance.StagePlayer.StageLevel.OnExpChanged -= UpdateValue;
         PlayerManager.Instance.StagePlayer.StageLevel.OnLevelChanged -= UpdateLevel;
     }

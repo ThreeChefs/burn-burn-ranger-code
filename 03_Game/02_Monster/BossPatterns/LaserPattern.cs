@@ -112,7 +112,7 @@ public class LaserPattern : BossPatternBase
     {
         if (pointVfxRoots != null) return;
         if (pointVfxPrefab == null) return;
-        if (lasers == null || lasers.Length != 4) return; // ✅ 레이저가 먼저 생성돼 있어야 함
+        if (lasers == null || lasers.Length != 4) return;
 
         pointVfxRoots = new Transform[4];
 
@@ -120,10 +120,10 @@ public class LaserPattern : BossPatternBase
         {
             if (lasers[i] == null) continue;
 
-            GameObject vfxGo = Instantiate(pointVfxPrefab, lasers[i]); // ✅ 레이저 자식!
+            GameObject vfxGo = Instantiate(pointVfxPrefab, lasers[i]);
             vfxGo.name = $"LaserPointVfx_{i}";
 
-            // ✅ 레이저 로컬 기준으로 위치 잡기 (빈공간 맞추는 곳)
+
             vfxGo.transform.localPosition = pointVfxLocalOffset;
             vfxGo.transform.localRotation = Quaternion.identity;
 
@@ -169,10 +169,8 @@ public class LaserPattern : BossPatternBase
 
             if (active)
             {
-                // ✅ 먼저 켠 다음
                 lasers[i].gameObject.SetActive(true);
 
-                // ✅ 파티클 수동 재생 (Play On Awake OFF일 때 필수)
                 if (laserVfx != null && laserVfx[i] != null)
                 {
                     foreach (var ps in laserVfx[i])
@@ -185,7 +183,6 @@ public class LaserPattern : BossPatternBase
             }
             else
             {
-                // ✅ 끌 때: 잔상 제거
                 if (laserVfx != null && laserVfx[i] != null)
                 {
                     foreach (var ps in laserVfx[i])
