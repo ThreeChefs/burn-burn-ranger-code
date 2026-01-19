@@ -47,8 +47,14 @@ public class StageProgress
         if(_clearStageNum <= stageNum)  // 진행단계보다 낮은스테이지를 플레이 했을 때, 진행도를 덮으면 안됨.
             _clearStageNum = stageNum;
 
-        _lastSelectedStageNum = stageNum;
+        if (GameManager.Instance.StageDatabase.Count < stageNum)
+        {
+            _lastSelectedStageNum = GameManager.Instance.StageDatabase.Count;   // 최대 스테이지 넘은 이후
+        }
+        else _lastSelectedStageNum = stageNum;
+
         _lastPlayingStageRecord = lastPlayingStageRecord;
+
     }
 
     public void SaveLastSelectedStage(int selectedStageNum)

@@ -62,7 +62,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         NowStageNum = GameManager.Instance.StageProgress.LastSelectedStageNum;
         int stageIndex = NowStageNum - 1;
 
-        if (_stageDatas.Count < stageIndex)
+        if (_stageDatas.Count <= stageIndex || stageIndex < 0)
         {
             Logger.Log("스테이지 없음!");
             return false;
