@@ -178,6 +178,19 @@ public static class ItemUtils
                 throw new System.NotImplementedException();
         }
     }
+
+    public static WalletType GetRequiringScrollType(EquipmentType type)
+    {
+        return type switch
+        {
+            EquipmentType.Weapon => WalletType.UpgradeMaterial_Weapon,
+            EquipmentType.Necklace => WalletType.UpgradeMaterial_Necklace,
+            EquipmentType.Gloves => WalletType.UpgradeMaterial_Gloves,
+            EquipmentType.Armor => WalletType.UpgradeMaterial_Armor,
+            EquipmentType.Belt => WalletType.UpgradeMaterial_Belt,
+            EquipmentType.Shoes => WalletType.UpgradeMaterial_Shoes,
+        };
+    }
     #endregion
 
 #if UNITY_EDITOR

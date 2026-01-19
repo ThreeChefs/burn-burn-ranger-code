@@ -43,26 +43,28 @@ public class ItemInstance
     /// <returns></returns>
     public bool TryLevelUp()
     {
-        // todo: 스크롤 추가
-        if (!PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(GetUpgradeGold()))
+        if (CheckWallet())
         {
-            Logger.Log("재화 부족");
-            return false;
+            Level++;
+            OnLevelChanged?.Invoke();
+            CheckEquip();
+
+            return true;
         }
 
-        Level++;
-        OnLevelChanged?.Invoke();
-        CheckEquip();
-
-        return true;
+        Logger.Log("재화 부족");
+        return false;
     }
 
+    /// <summary>
+    /// [public] 일괄 레벨업하기
+    /// </summary>
+    /// <returns></returns>
     public bool TryAllLevelUp()
     {
         bool doneLevelUp = false;
 
-        // todo: 스크롤 추가
-        while (PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(GetUpgradeGold()))
+        while (CheckWallet())
         {
             doneLevelUp = true;
             Level++;
@@ -75,6 +77,16 @@ public class ItemInstance
         }
 
         return doneLevelUp;
+    }
+
+    /// <summary>
+    /// 재화 정보 사용할 수 있는지 확인하기
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckWallet()
+    {
+        return PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(GetUpgradeGold())
+            && PlayerManager.Instance.Wallet[ItemUtils.GetRequiringScrollType(ItemData.EquipmentType)].TryUse(GetUpgradeScroll());
     }
 
     private void CheckEquip()

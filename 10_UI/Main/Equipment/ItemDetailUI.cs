@@ -41,8 +41,6 @@ public class ItemDetailUI : BaseUI
     [SerializeField] private TextMeshProUGUI _goldText;
     [SerializeField] private TextMeshProUGUI _scrollText;
     private Wallet Gold => PlayerManager.Instance.Wallet[WalletType.Gold];
-    // todo: 스크롤으로 변경
-    private Wallet Scroll => PlayerManager.Instance.Wallet[WalletType.Gem];
 
     [Header("Buttons")]
     [SerializeField] private Button _equipButton;
@@ -121,7 +119,7 @@ public class ItemDetailUI : BaseUI
         _itemIconContainer.color = ItemUtils.GetClassColor(itemClass);
         _itemIconOutline.effectColor = ItemUtils.GetHighlightColor(itemClass);
         _itemIcon.sprite = itemData.Icon;
-        _statIcon.sprite = itemData.EquipmentType == EquipmentType.Weapon ? _attackIcon : _healthIcon;
+        _statIcon.sprite = ItemUtils.GetStatType(itemData.EquipmentType) == StatType.Attack ? _attackIcon : _healthIcon;
         _itemDescription.text = itemData.Description;
 
         for (int i = 0; i < MaxSkillCount; i++)
@@ -191,7 +189,8 @@ public class ItemDetailUI : BaseUI
         _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
 
         _goldText.text = $"{_curItem.GetUpgradeGold()}/{Gold.Value}";
-        _scrollText.text = $"{_curItem.GetUpgradeScroll()}/{Scroll.Value}";
+        WalletType walletType = ItemUtils.GetRequiringScrollType(_curItem.ItemData.EquipmentType);
+        _scrollText.text = $"{_curItem.GetUpgradeScroll()}/{PlayerManager.Instance.Wallet[walletType].Value}";
     }
     #endregion
 
