@@ -229,10 +229,9 @@ public class PlayerProjectile : BaseProjectile
 
         if (data.AoEData.IsInstant)
         {
-            if (data.VisualData.ProjectileParticle != null)
+            if (data.VisualData.UseParticlePool)
             {
-                Transform transform = Instantiate(data.VisualData.ProjectileParticle).GetComponent<Transform>();
-                transform.position = _aoePivot.position;
+                CommonPoolManager.Instance.Spawn(data.VisualData.PoolIndex, _aoePivot.position);
             }
             gameObject.SetActive(false);
         }

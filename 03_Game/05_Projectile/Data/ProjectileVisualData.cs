@@ -10,7 +10,8 @@ public class ProjectileVisualData : ScriptableObject
     [field: SerializeField] public float SfxInterval { get; private set; }
 
     [field: Header("Vfx")]
-    [field: SerializeField] public ProjectileParticle ProjectileParticle { get; private set; }
+    [field: SerializeField] public bool UseParticlePool { get; private set; }
+    [field: SerializeField] public CommonPoolIndex PoolIndex { get; private set; }
 
 #if UNITY_EDITOR
     private void Reset()

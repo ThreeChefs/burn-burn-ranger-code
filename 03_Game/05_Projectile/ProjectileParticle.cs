@@ -2,7 +2,6 @@ using UnityEngine;
 
 /// <summary>
 /// 투사체용 이펙트
-/// todo: 풀에 담기
 /// </summary>
 public class ProjectileParticle : PoolObject
 {
@@ -34,8 +33,7 @@ public class ProjectileParticle : PoolObject
         _timer += Time.deltaTime;
         if (_timer > _particleTime)
         {
-            Destroy(gameObject);
-            // todo: pool로 변경 후 disable
+            gameObject.SetActive(false);
             _timer = 0f;
         }
     }
