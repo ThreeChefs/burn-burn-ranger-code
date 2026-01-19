@@ -77,11 +77,11 @@ public class StageWaveController
                 case WaveType.Boss:
                 case WaveType.MiniBoss:
 
-                    MonsterPoolIndex[] _monsterInfo = nowStageData.StageWaves[i].ImmediateSpawnMonsters;
+                    BossMonsterSpawnInfo[] _monsterInfo = nowStageData.StageWaves[i].ImmediateSpawnMonsters;
 
                     for (int j = 0; j < _monsterInfo.Length; ++j)
                     {
-                        MonsterManager.Instance.UsePool(_monsterInfo[j]);
+                        MonsterManager.Instance.UsePool(_monsterInfo[j].MonsterIndex);
                     }
                     break;
             }
@@ -89,8 +89,7 @@ public class StageWaveController
 
         // box 도 미리 로드
         MonsterManager.Instance.UsePool(MonsterPoolIndex.ItemBox);
-        UIManager.Instance.LoadUI(UIName.UI_WarnningSign, false);
-
+ 
         // 첫 웨이브 진행
         EnterWave(_waveQueue.Dequeue());
     }
@@ -143,7 +142,7 @@ public class StageWaveController
                 // 특정 시간에 특정 몬스터 스폰
                 for(int i = 0; i < _nowWave.ImmediateSpawnMonsters.Length ;++i)
                 {
-                    MonsterManager.Instance.SpawnWaveMonster(_nowWave.ImmediateSpawnMonsters[i]);
+                    MonsterManager.Instance.SpawnWaveMonster(_nowWave.ImmediateSpawnMonsters[i].MonsterIndex);
                 }
                 break;
         }
@@ -278,17 +277,32 @@ public class StageWaveController
     void SpawnWaveRewardBox()
     {
         // 이전 웨이브 보상 뿌리기
-        for (int i = 0; i < _nowWave.ClearRewardTypes.Length; ++i)
-        {
+        //for (int i = 0; i < _nowWave.ClearRewardTypes.Length; ++i)
+        //{
 
-        }
+        //}
     }
 
-    void SpawnBossMonster(MonsterPoolIndex[] monsterIndex)
+    void SpawnBossMonster(BossMonsterSpawnInfo[] spawnInfo)
     {
-        for (int i = 0; i < monsterIndex.Length; ++i)
+        for (int i = 0; i < spawnInfo.Length; ++i)
         {
-            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(monsterIndex[i]);
+            Monster spawnedMonster = MonsterManager.Instance.SpawnBossMonster(spawnInfo[i].MonsterIndex);
+
+            int num = i;
+
+            WaveClearRewardType[] reward = spawnInfo[i].Rewards;
+
+            Action<Monster> dieAction = null;
+
+            dieAction = (Monster monster) =>
+            {
+                Debug.Log(monster.name + "_" + num + "_");
+                monster.onDieAction -= dieAction;
+            };
+
+            spawnedMonster.onDieAction += dieAction;
+
 
             if (spawnedMonster != null)
             {
@@ -330,5 +344,12 @@ public class StageWaveController
 
         monster.onDieAction -= OnDieBossMonster;
     }
+
+    
+    void SpawnWaveClearReward(WaveClearRewardType[] rewards)
+    {
+
+    }
+    
 
 }
