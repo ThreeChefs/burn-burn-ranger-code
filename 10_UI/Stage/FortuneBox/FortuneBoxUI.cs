@@ -1,18 +1,29 @@
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FortuneBoxUI : PopupUI
 {
+    [Title("UI 구성")]
     [SerializeField] FortuneBoxSlot[] slots;
+    [SerializeField] Button _button;
+    [SerializeField] TextMeshProUGUI _buttonText;
 
-    [Header("슬롯 설정")]
-    [SerializeField] int _columnCount = 4;
 
-    [Header("Focus 연출")]
+    [Title("Focus 연출")]
     [SerializeField] float _stepInterval = 0.05f;   // 포커스 속도
-    [SerializeField] int _focusTargetCount = 1;     // 포커스 타겟
+
+
+    WaveClearRewardType _type;
+    Coroutine _nowFocusRoutine;
+    WaitForSecondsRealtime _intervalWait;
+
+
+    #region 연출 슬롯 순서
 
     // 빙글빙글 안, 밖, 안, 밖 으로 4x4 일때 
     // 이 순서로 5개일때 연속으로 있을 자리를 픽해가자
@@ -39,9 +50,8 @@ public class FortuneBoxUI : PopupUI
         new[] {15}
     };
 
+    #endregion
 
-    Coroutine _nowFocusRoutine;
-    WaitForSecondsRealtime _intervalWait;
 
     protected override void AwakeInternal()
     {
@@ -49,11 +59,42 @@ public class FortuneBoxUI : PopupUI
         _intervalWait = new WaitForSecondsRealtime(_stepInterval);
     }
 
+
+    public void Init(WaveClearRewardType type)
+    {
+        _type = type;
+
+        switch (type)
+        {
+            case WaveClearRewardType.Fortune_Skill_Random:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_1:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_3:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_5:
+                break;
+        }
+
+    }
+
+
+    [Button("열기")]
     public override void OpenUIInternal()
     {
         base.OpenUIInternal();
 
+        _button.gameObject.SetActive(false);
+        _button.gameObject.transform.localScale = Vector3.zero;
+
+        StartCoroutine(ReadyRoutine());
+
     }
+
+
 
     [Button("기본")]
     void StartDefaultFocus()
@@ -75,12 +116,30 @@ public class FortuneBoxUI : PopupUI
 
 
     [Button("대각선")]
-    void StartDiagonalFocus()
+    IEnumerator ReadyRoutine()
     {
-        PlayFocus(GroupFocusRoutine(_diagonalOrder, 3));
+        yield return new WaitForSecondsRealtime(popupDuration);
+
+        yield return PlayFocus(GroupFocusRoutine(_diagonalOrder, 3));
+
+        _button.gameObject.SetActive(true);
+        _button.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
+
     }
 
-    void PlayFocus(IEnumerator _routine)
+    public void OnClickPickButton()
+    {
+
+    }
+
+    public void OnClickSkipButton()
+    {
+
+    }
+
+
+
+    Coroutine PlayFocus(IEnumerator _routine)
     {
         if (_nowFocusRoutine != null)
         {
@@ -88,6 +147,8 @@ public class FortuneBoxUI : PopupUI
         }
 
         _nowFocusRoutine = StartCoroutine(_routine);
+
+        return _nowFocusRoutine;
     }
 
     IEnumerator FocusRoutine(int[] order, int focusTargetCount, int round)
