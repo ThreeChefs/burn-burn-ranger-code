@@ -10,7 +10,8 @@ public class FortuneBoxUI : PopupUI
 {
     [Title("UI 구성")]
     [SerializeField] FortuneBoxSlot[] slots;
-    [SerializeField] Button _button;
+    [SerializeField] FortuneBoxButton _pickButton;
+    [SerializeField] FortuneBoxButton _skipButton;
     [SerializeField] TextMeshProUGUI _buttonText;
 
 
@@ -18,9 +19,10 @@ public class FortuneBoxUI : PopupUI
     [SerializeField] float _stepInterval = 0.05f;   // 포커스 속도
 
 
-    WaveClearRewardType _type;
+    WaveClearRewardType _type = WaveClearRewardType.Fortune_Skill_5;
     Coroutine _nowFocusRoutine;
     WaitForSecondsRealtime _intervalWait;
+    WaitForSecondsRealtime _skipWaitTime = new WaitForSecondsRealtime(1.5f);
 
 
     #region 연출 슬롯 순서
@@ -64,20 +66,7 @@ public class FortuneBoxUI : PopupUI
     {
         _type = type;
 
-        switch (type)
-        {
-            case WaveClearRewardType.Fortune_Skill_Random:
-                break;
-
-            case WaveClearRewardType.Fortune_Skill_1:
-                break;
-
-            case WaveClearRewardType.Fortune_Skill_3:
-                break;
-
-            case WaveClearRewardType.Fortune_Skill_5:
-                break;
-        }
+       
 
     }
 
@@ -87,14 +76,17 @@ public class FortuneBoxUI : PopupUI
     {
         base.OpenUIInternal();
 
-        _button.gameObject.SetActive(false);
-        _button.gameObject.transform.localScale = Vector3.zero;
+        _pickButton.SetInteractable(false);
+        _pickButton.gameObject.SetActive(false);
+        _pickButton.gameObject.transform.localScale = Vector3.zero;
+
+        _skipButton.SetInteractable(false);
+        _skipButton.gameObject.SetActive(false);
+        _skipButton.gameObject.transform.localScale = Vector3.zero;
 
         StartCoroutine(ReadyRoutine());
 
     }
-
-
 
     [Button("기본")]
     void StartDefaultFocus()
@@ -115,25 +107,67 @@ public class FortuneBoxUI : PopupUI
     }
 
 
-    [Button("대각선")]
     IEnumerator ReadyRoutine()
     {
         yield return new WaitForSecondsRealtime(popupDuration);
 
         yield return PlayFocus(GroupFocusRoutine(_diagonalOrder, 3));
 
-        _button.gameObject.SetActive(true);
-        _button.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
-
+        _pickButton.gameObject.SetActive(true);
+        _pickButton.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(
+            ()=>
+            {
+                _pickButton.SetInteractable(true);
+                _pickButton._buttonAction += OnClickPickButton;
+            });
     }
 
     public void OnClickPickButton()
     {
+        _pickButton.transform.DOScale(0f, 0.2f).SetEase(Ease.InCirc);
 
+
+        // 뽑기 진행
+        switch (_type)
+        {
+            case WaveClearRewardType.Fortune_Skill_Random:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_1:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_3:
+                break;
+
+            case WaveClearRewardType.Fortune_Skill_5:
+                StartZigzagFocus();
+                break;
+        }
+
+
+        // 스킵버튼 보여주기
+        StartCoroutine(ShowSkipButtonRoutine());
+        
+    }
+
+    IEnumerator ShowSkipButtonRoutine()
+    {
+        yield return _skipWaitTime;
+
+        _skipButton.gameObject.SetActive(true);
+        _skipButton.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(
+            () =>
+            {
+                _skipButton.SetInteractable(true);
+                _skipButton._buttonAction += OnClickSkipButton;
+            });
     }
 
     public void OnClickSkipButton()
     {
+        _skipButton.transform.DOScale(0f, 0.2f).SetEase(Ease.InCirc);
+
+        // 스킵하고 결과 바로 보여주기
 
     }
 
