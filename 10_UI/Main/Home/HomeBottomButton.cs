@@ -14,16 +14,6 @@ public class HomeBottomButton : MonoBehaviour
 
     [SerializeField] private UIName _targetUI;
 
-    [Header("애니메이션")]
-    [SerializeField] private float _originPosY = 0f;
-    [SerializeField] private float _targetPosY = 50f;
-    [SerializeField] private Color _originColor = new(0.20784315f, 0.20784315f, 0.3019608f);
-    [SerializeField] private Color _targetColor = new(1f, 0.64705884f, 0.19607845f);
-    [SerializeField] private float _originScale = 1f;
-    [SerializeField] private float _targetScale = 1.4f;
-
-    [SerializeField] private float _duration = 1f;
-
     private int _index;
     public event Action<int> OnClickButton;
 
@@ -54,9 +44,9 @@ public class HomeBottomButton : MonoBehaviour
     public void SetSelected(bool selected)
     {
         PlayAnim(
-            posY: selected ? _targetPosY : _originPosY,
-            scaleX: selected ? _targetScale : _originScale,
-            color: selected ? _targetColor : _originColor,
+            posY: selected ? Define.TargetPosY : Define.OriginPosY,
+            scaleX: selected ? Define.TargetScale : Define.OriginScale,
+            color: selected ? Define.TargetColor : Define.OriginColor,
             showText: selected
         );
     }
@@ -66,19 +56,17 @@ public class HomeBottomButton : MonoBehaviour
         _seq?.Kill();
         _seq = DOTween.Sequence();
 
-        _seq
-            .Join(_icon.DOAnchorPosY(posY, _duration))
-            .Join(_backGround.transform.DOScaleX(scaleX, _duration))
-            .Join(_backGround.DOColor(color, _duration))
+        _seq.Join(_icon.DOAnchorPosY(posY, Define.Duration))
+            .Join(_backGround.transform.DOScaleX(scaleX, Define.Duration))
+            .Join(_backGround.DOColor(color, Define.Duration))
             .OnStart(() => _textGo.SetActive(showText));
     }
-
 
     public void MoveTo(float targetX)
     {
         RectTransform rect = (RectTransform)transform;
         rect.DOKill();
-        rect.DOAnchorPosX(targetX, _duration);
+        rect.DOAnchorPosX(targetX, Define.Duration);
     }
 
 #if UNITY_EDITOR
