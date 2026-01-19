@@ -229,6 +229,10 @@ public class PlayerProjectile : BaseProjectile
 
         if (data.AoEData.IsInstant)
         {
+            if (data.VisualData.UseParticlePool)
+            {
+                CommonPoolManager.Instance.Spawn(data.VisualData.PoolIndex, _aoePivot.position);
+            }
             gameObject.SetActive(false);
         }
     }

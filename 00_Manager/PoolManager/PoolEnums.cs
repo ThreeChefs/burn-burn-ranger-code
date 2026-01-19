@@ -7,6 +7,8 @@ public enum CommonPoolIndex
     DamageText,
     DronAim,
     FortuneBox,
+    Particle_Explosion,
+    Particle_Blood,
 }
 
 public enum MonsterPoolIndex

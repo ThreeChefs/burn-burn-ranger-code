@@ -9,6 +9,10 @@ public class ProjectileVisualData : ScriptableObject
     [field: Tooltip("장판일 경우 효과음 간격")]
     [field: SerializeField] public float SfxInterval { get; private set; }
 
+    [field: Header("Vfx")]
+    [field: SerializeField] public bool UseParticlePool { get; private set; }
+    [field: SerializeField] public CommonPoolIndex PoolIndex { get; private set; }
+
 #if UNITY_EDITOR
     private void Reset()
     {
