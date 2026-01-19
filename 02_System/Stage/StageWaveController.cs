@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +33,9 @@ public class StageWaveController
     static float _itemBoxSpawnInterval = 10; // 10초마다 박스 스폰
     readonly string _bossWarnningSignText = "보스 접근 중!";     // warnningsign에 박아둘까
     readonly string _superWaveWarnningSignText = "몬스터가 몰려옵니다!";
+
+    static float _defaultOrthoSize = 12f;
+    static float _superWaveOrthoSize = 16f;
 
 
     #region public 프로퍼티
@@ -251,6 +255,11 @@ public class StageWaveController
                 switch (targetWave.WaveType)
                 {
                     case WaveType.Super:
+                        if(Camera.main.orthographicSize < _superWaveOrthoSize)
+                        {
+                            Camera.main.DOOrthoSize(_superWaveOrthoSize, 4.0f);
+                        }
+
                         warnning.SetText(_superWaveWarnningSignText);
                         break;
 
@@ -258,8 +267,8 @@ public class StageWaveController
                         warnning.SetText(_bossWarnningSignText);
                         break;
                 }
-
             }
+
         }
     }
 
