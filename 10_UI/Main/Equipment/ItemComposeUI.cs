@@ -7,7 +7,7 @@ public class ItemComposeUI : BaseUI
     [SerializeField] private ComposeItemSlot _itemSlotPrefab;
     [SerializeField] private RectTransform _inventoryUI;
 
-    [SerializeField] private MaterialItemSlot _resultSlot;
+    [SerializeField] private ItemSlot _resultSlot;
     [SerializeField] private MaterialItemSlot[] _materialSlots;
 
     [SerializeField] private Button _allComposeButton;
@@ -223,7 +223,7 @@ public class ItemComposeUI : BaseUI
         _itemSlotPrefab = AssetLoader.FindAndLoadByName("Button_ItemSlot_Compose").GetComponent<ComposeItemSlot>();
         _inventoryUI = transform.FindChild<RectTransform>("Content");
 
-        _resultSlot = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Result");
+        _resultSlot = transform.FindChild<ItemSlot>("Button_ItemSlot_Result");
         _materialSlots = new MaterialItemSlot[3];
         _materialSlots[0] = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Material");
         _materialSlots[1] = transform.FindChild<MaterialItemSlot>("Button_ItemSlot_Material_1");
