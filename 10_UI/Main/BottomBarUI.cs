@@ -8,6 +8,9 @@ public class BottomBarUI : BaseUI
     private int _index;
     private const int StartIndex = 2;
 
+    private const int OriginWidth = 200;
+    private const int TargetWidth = 280;
+
     protected override void AwakeInternal()
     {
         base.AwakeInternal();
@@ -16,9 +19,10 @@ public class BottomBarUI : BaseUI
 
     private void Start()
     {
-        foreach (HomeBottomButton button in _buttons)
+        for (int i = 0; i < _buttons.Length; i++)
         {
-            button.OnClickButton += SelectButton;
+            _buttons[i].Init(i);
+            _buttons[i].OnClickButton += SelectButton;
         }
 
         SelectButton(StartIndex);
@@ -53,6 +57,24 @@ public class BottomBarUI : BaseUI
         _buttons[index].StartAnim();
 
         _index = index;
+
+        float offset = TargetWidth - OriginWidth;
+
+        for (int i = 0; i < _buttons.Length; i++)
+        {
+            float x = OriginWidth * i;
+
+            if (i == _index)
+            {
+                x += offset / 2;
+            }
+            else if (i > _index)
+            {
+                x += offset;
+            }
+
+            _buttons[i].MoveTo(x + OriginWidth / 2);
+        }
     }
 
 #if UNITY_EDITOR

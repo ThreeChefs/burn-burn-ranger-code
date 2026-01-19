@@ -20,7 +20,7 @@ public class HomeBottomButton : MonoBehaviour
     [SerializeField] private Color _originColor = new(0.20784315f, 0.20784315f, 0.3019608f);
     [SerializeField] private Color _targetColor = new(1f, 0.64705884f, 0.19607845f);
     [SerializeField] private float _originScale = 1f;
-    [SerializeField] private float _targetScale = 1.25f;
+    [SerializeField] private float _targetScale = 1.4f;
 
     [SerializeField] private float _duration = 1f;
 
@@ -50,18 +50,25 @@ public class HomeBottomButton : MonoBehaviour
 
     public void StartAnim()
     {
+        _icon.DOAnchorPosY(_targetPosY, _duration);
+        _backGround.transform.DOScaleX(_targetScale, _duration);
+        _backGround.DOColor(_targetColor, _duration);
+        _textGo.SetActive(true);
+    }
+
+    public void EndAnim()
+    {
         _icon.DOAnchorPosY(_originPosY, _duration);
         _backGround.transform.DOScaleX(_originScale, _duration);
         _backGround.DOColor(_originColor, _duration);
         _textGo.SetActive(false);
     }
 
-    public void EndAnim()
+    public void MoveTo(float targetX)
     {
-        _icon.DOAnchorPosY(_targetPosY, _duration);
-        _backGround.transform.DOScaleX(_targetScale, _duration);
-        _backGround.DOColor(_targetColor, _duration);
-        _textGo.SetActive(false);
+        RectTransform rect = (RectTransform)transform;
+        rect.DOKill();
+        rect.DOAnchorPosX(targetX, _duration);
     }
 
 #if UNITY_EDITOR
