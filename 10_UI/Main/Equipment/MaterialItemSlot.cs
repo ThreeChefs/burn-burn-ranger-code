@@ -8,6 +8,7 @@ public class MaterialItemSlot : ItemSlot
 
     protected override void OnClickButton()
     {
+        base.OnClickButton();
         ResetSlot();
         OnClickSlot?.Invoke();
     }

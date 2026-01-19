@@ -20,6 +20,7 @@ public class ComposeItemSlot : ItemSlot
 
     protected override void OnClickButton()
     {
+        base.OnClickButton();
         OnClickSlot?.Invoke(this, instance);
     }
 

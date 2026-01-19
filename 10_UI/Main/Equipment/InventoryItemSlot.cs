@@ -5,6 +5,7 @@ public class InventoryItemSlot : ItemSlot
 {
     protected override void OnClickButton()
     {
+        base.OnClickButton();
         ItemDetailUI ui = UIManager.Instance.ShowUI(UIName.UI_ItemDetail) as ItemDetailUI;
         ui.SetItem(instance);
     }

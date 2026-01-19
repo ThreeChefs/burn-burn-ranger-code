@@ -57,6 +57,7 @@ public class ItemSlot : MonoBehaviour
 
     protected virtual void OnClickButton()
     {
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Click);
     }
     #endregion
 
