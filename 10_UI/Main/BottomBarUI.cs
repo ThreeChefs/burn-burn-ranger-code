@@ -52,9 +52,9 @@ public class BottomBarUI : BaseUI
 
         if (_index != -1)
         {
-            _buttons[_index].EndAnim();
+            _buttons[_index].SetSelected(false);
         }
-        _buttons[index].StartAnim();
+        _buttons[index].SetSelected(true);
 
         _index = index;
 

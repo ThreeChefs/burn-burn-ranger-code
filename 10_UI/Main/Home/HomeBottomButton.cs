@@ -27,6 +27,8 @@ public class HomeBottomButton : MonoBehaviour
     private int _index;
     public event Action<int> OnClickButton;
 
+    private Sequence _seq;
+
     private void OnEnable()
     {
         _button.onClick.AddListener(OnClick);
@@ -35,6 +37,7 @@ public class HomeBottomButton : MonoBehaviour
     private void OnDisable()
     {
         _button.onClick.RemoveAllListeners();
+        _seq?.Kill();
     }
 
     public void Init(int index)
@@ -48,21 +51,32 @@ public class HomeBottomButton : MonoBehaviour
         OnClickButton?.Invoke(_index);
     }
 
-    public void StartAnim()
+    public void SetSelected(bool selected)
     {
-        _icon.DOAnchorPosY(_targetPosY, _duration);
-        _backGround.transform.DOScaleX(_targetScale, _duration);
-        _backGround.DOColor(_targetColor, _duration);
-        _textGo.SetActive(true);
+        PlayAnim(
+            posY: selected ? _targetPosY : _originPosY,
+            scaleX: selected ? _targetScale : _originScale,
+            color: selected ? _targetColor : _originColor,
+            showText: selected
+        );
     }
 
-    public void EndAnim()
+    private void PlayAnim(float posY, float scaleX, Color color, bool showText)
     {
-        _icon.DOAnchorPosY(_originPosY, _duration);
-        _backGround.transform.DOScaleX(_originScale, _duration);
-        _backGround.DOColor(_originColor, _duration);
-        _textGo.SetActive(false);
+        _seq?.Kill();
+        _seq = DOTween.Sequence();
+
+        _seq
+            .Join(_icon.DOAnchorPosY(posY, _duration))
+            .Join(_backGround.transform.DOScaleX(scaleX, _duration))
+            .Join(_backGround.DOColor(color, _duration));
+
+        if (showText)
+            _seq.OnStart(() => _textGo.SetActive(true));
+        else
+            _seq.OnComplete(() => _textGo.SetActive(false));
     }
+
 
     public void MoveTo(float targetX)
     {
