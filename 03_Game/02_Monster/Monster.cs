@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class Monster : PoolObject, IDamageable
+public class Monster : PoolObject, IDamageable, IKnockbackable
 {
     [Header("Monster Data")]
     [SerializeField] private MonsterTypeData monsterdata;
@@ -18,6 +18,12 @@ public class Monster : PoolObject, IDamageable
     private bool _canHit = true;
     public event Action<Monster> onDieAction;
     private BossController bossController;
+
+    [Header("Knockback")]
+    [SerializeField] private float knockbackDuration = 0.1f;
+    [SerializeField] private bool Knockbackable = true;
+    private bool _isKnockback;
+    private Coroutine _knockbackCoroutine;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -170,5 +176,32 @@ public class Monster : PoolObject, IDamageable
         gameObject.layer = LayerMask.NameToLayer("Monster");
 
 
+    }
+
+    public void ApplyKnockback(Vector2 position, float force)
+    {
+        if (rb == null)
+        {
+            return;
+        }
+        Vector2 direction = ((Vector2)transform.position - position).normalized;
+        if (direction.sqrMagnitude < 0.0001f) direction = Vector2.up;
+
+        if (_knockbackCoroutine != null)
+        {
+            StopCoroutine(_knockbackCoroutine);
+        }
+        _knockbackCoroutine = StartCoroutine(KnockbackRoutine(direction, force));
+    }
+
+    private IEnumerator KnockbackRoutine(Vector2 direction, float force)
+    {
+        _isKnockback = true;
+        rb.velocity = Vector2.zero;
+        rb.AddForce(direction * force, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(knockbackDuration);
+        rb.velocity = Vector2.zero;
+        _isKnockback = false;
+        _knockbackCoroutine = null;
     }
 }
