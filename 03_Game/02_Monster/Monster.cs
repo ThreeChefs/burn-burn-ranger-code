@@ -24,6 +24,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     [SerializeField] private bool Knockbackable = true;
     private bool _isKnockback;
     private Coroutine _knockbackCoroutine;
+    private Coroutine _hitCooldownCoroutine;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -41,7 +42,26 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
 
     }
+    private void OnDisable()
+    {
 
+        if (_hitCooldownCoroutine != null)
+        {
+            StopCoroutine(_hitCooldownCoroutine);
+            _hitCooldownCoroutine = null;
+        }
+
+        if (_knockbackCoroutine != null)
+        {
+            StopCoroutine(_knockbackCoroutine);
+            _knockbackCoroutine = null;
+        }
+
+        _canHit = true;
+        _isKnockback = false;
+
+        if (rb != null) rb.velocity = Vector2.zero;
+    }
 
     public void Reset()
     {
@@ -100,7 +120,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         {
             return;
         }
-
+        if (!isActiveAndEnabled) return;
         if (collision.collider.TryGetComponent<StagePlayer>(out var player))
         {
 
@@ -184,6 +204,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         {
             return;
         }
+        if (!isActiveAndEnabled) return;
         Vector2 direction = ((Vector2)transform.position - position).normalized;
         if (direction.sqrMagnitude < 0.0001f) direction = Vector2.up;
 
