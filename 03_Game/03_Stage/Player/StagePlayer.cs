@@ -92,15 +92,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        _healTimer += Time.deltaTime;
-        if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
-        {
-            _health.Add(_health.MaxValue * _heal.MaxValue);
-            _healTimer = 0f;
-        }
-
-        float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
-        _moveDirectionArrow.DORotate(new Vector3(0, 0, angle), _rotateDuration);
+        HandleHeal();
+        UpdateArrow();
     }
 
     private void FixedUpdate()
@@ -122,6 +115,22 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
+    private void HandleHeal()
+    {
+        _healTimer += Time.deltaTime;
+        if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
+        {
+            _health.Add(_health.MaxValue * _heal.MaxValue);
+            _healTimer = 0f;
+        }
+    }
+
+    private void UpdateArrow()
+    {
+        float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
+        _moveDirectionArrow.DORotate(new Vector3(0, 0, angle), _rotateDuration);
+    }
+
     #region Move
     private void Move()
     {
@@ -137,16 +146,16 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-        {
-            _inputVector = context.ReadValue<Vector2>();
-            _moveDirectionArrow.gameObject.SetActive(true);
-        }
-        else if (context.phase == InputActionPhase.Canceled)
+        if (context.canceled)
         {
             _inputVector = Vector2.zero;
             _moveDirectionArrow.gameObject.SetActive(false);
+            DOTween.Kill(_moveDirectionArrow);
+            return;
         }
+
+        _inputVector = context.ReadValue<Vector2>();
+        _moveDirectionArrow.gameObject.SetActive(true);
     }
     #endregion
 
