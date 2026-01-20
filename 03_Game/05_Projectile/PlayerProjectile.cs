@@ -224,7 +224,7 @@ public class PlayerProjectile : BaseProjectile
             data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
         }
 
-        if (data.VisualData.UseParticlePool)
+        if (data.VisualData != null && data.VisualData.UseParticlePool)
         {
             CommonPoolManager.Instance.Spawn(data.VisualData.PoolIndex, _aoePivot.position);
         }
