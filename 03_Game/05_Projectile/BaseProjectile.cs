@@ -156,7 +156,6 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (visualData == null)
         {
-            Logger.Log($"{data.name}에서 자율적으로 sfx 사용");
             useCustomSfx = true;
             return;
         }
@@ -326,7 +325,6 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected void EnterAreaPhase()
     {
-        Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
         speedMultiplier = data.AoEData.IsMoving ? 1f : 0f;
         tickTimer = 0f;

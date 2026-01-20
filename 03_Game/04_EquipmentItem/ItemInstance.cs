@@ -52,7 +52,6 @@ public class ItemInstance
             return true;
         }
 
-        Logger.Log("재화 부족");
         return false;
     }
 

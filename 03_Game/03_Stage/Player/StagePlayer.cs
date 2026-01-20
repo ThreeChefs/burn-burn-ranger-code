@@ -168,13 +168,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
             if (health.CurValue == 0)
             {
-                Logger.Log("플레이어 DIE");
                 OnDieAction?.Invoke();
             }
         }
         else
         {
-            Logger.Log("플레이어 DIE");
             OnDieAction?.Invoke();
         }
     }
