@@ -55,5 +55,28 @@ public static class Define
     public static float OriginScale = 1f;
     public static float TargetScale = 1.4f;
     public static float Duration = 1f;
-    
+
+    // 모바일 확인
+    /// <summary>
+    /// 에디터에서는 항상 true,
+    /// 빌드에서는 모바일(Android/iOS)만 true
+    /// </summary>
+    public static bool IsMobileRuntime
+    {
+        get
+        {
+#if UNITY_EDITOR
+            return true;
+#else
+            return Application.platform == RuntimePlatform.Android
+                || Application.platform == RuntimePlatform.IPhonePlayer;
+#endif
+        }
+    }
+
+    /// <summary>
+    /// 모바일 전용 UI/입력 사용 가능 여부
+    /// (에디터에서는 강제 허용)
+    /// </summary>
+    public static bool EnableMobileUI => IsMobileRuntime;
 }

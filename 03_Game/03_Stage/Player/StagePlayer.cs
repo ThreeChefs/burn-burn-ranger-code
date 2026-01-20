@@ -23,6 +23,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 이미지
     [SerializeField] private Transform _moveDirectionArrow;
     [SerializeField] private float _rotateDuration = 0.75f;
+    private float _lastAngle;
 
     [SerializeField] private float _bloodParticleOffset = 1f;
     [SerializeField] private SpriteRenderer[] _renderers;
@@ -63,6 +64,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
+
+    // tween
+    private Tween _arrowRotateTween;
 
     // 이벤트
     public event Action OnDieAction;
@@ -106,6 +110,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
         Move();
     }
 
+    private void OnDisable()
+    {
+        _arrowRotateTween?.Kill();
+    }
+
     private void OnDestroy()
     {
         StageLevel.OnDestroy();
@@ -132,14 +141,34 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     private void UpdateArrow()
     {
+        if (_inputVector.sqrMagnitude < 0.001f)
+        {
+            _moveDirectionArrow.gameObject.SetActive(false);
+            _arrowRotateTween?.Kill();
+            _arrowRotateTween = null;
+            return;
+        }
+
+        _moveDirectionArrow.gameObject.SetActive(true);
+
         float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
-        _moveDirectionArrow.DORotate(new Vector3(0, 0, angle), _rotateDuration);
+
+        // 각도 변화 없으면 갱신 안 함
+        if (Mathf.Abs(Mathf.DeltaAngle(_lastAngle, angle)) < 0.1f)
+            return;
+
+        _lastAngle = angle;
+
+        _arrowRotateTween?.Kill();
+        _arrowRotateTween = _moveDirectionArrow
+            .DORotate(new Vector3(0, 0, angle), _rotateDuration)
+            .SetEase(Ease.OutCubic);
     }
 
     #region Move
     private void Move()
     {
-        if (Application.isMobilePlatform)
+        if (Define.EnableMobileUI)
         {
             _inputVector = _joyStick.Direction;
         }
@@ -158,13 +187,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (context.canceled)
         {
             _inputVector = Vector2.zero;
-            _moveDirectionArrow.gameObject.SetActive(false);
-            DOTween.Kill(_moveDirectionArrow);
             return;
         }
 
         _inputVector = context.ReadValue<Vector2>();
-        _moveDirectionArrow.gameObject.SetActive(true);
     }
     #endregion
 

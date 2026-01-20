@@ -28,10 +28,7 @@ public class JoyStickInput : BaseUI, IPointerDownHandler, IDragHandler, IPointer
     {
         _radiusOffset = _outerCircle.rect.width * 0.5f;
         _defaultLocalPos = _outerCircle.localPosition;
-        //if (!Application.isMobilePlatform)
-        //{
-        //    gameObject.SetActive(false);
-        //}
+        gameObject.SetActive(Define.EnableMobileUI);
     }
 
     public void OnPointerDown(PointerEventData eventData)
