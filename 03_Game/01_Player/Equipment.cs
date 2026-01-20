@@ -17,12 +17,16 @@ public class Equipment
     // 이벤트
     public event Action OnEquipmentChanged;
 
+    private readonly Dictionary<int, int> _havingSkills;
+    public IReadOnlyDictionary<int, int> HavingSkills => _havingSkills;
+
     public Equipment(PlayerCondition condition)
     {
         // 캐싱
         _condition = condition;
 
         _equipments = new();
+        _havingSkills = new();
 
         foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
         {
@@ -118,6 +122,9 @@ public class Equipment
                 case EquipmentEffectType.Stat:
                     UpdateStat(equipmentEffect.ApplyType, equipmentEffect.Stat, equipmentEffect.Value * sign);
                     break;
+                case EquipmentEffectType.Skill:
+                    UpdateSkill(equipmentEffect.SkillData, equipmentEffect.SkillLevel, type);
+                    break;
             }
         }
     }
@@ -138,6 +145,24 @@ public class Equipment
             case EffectApplyType.Percent:
                 _condition[statType].UpdateEquipmentValue(_condition[statType].BaseValue * value * 0.01f);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 스킬 업데이트
+    /// </summary>
+    /// <param name="skillData"></param>
+    /// <param name="skillLevel"></param>
+    /// <param name="type"></param>
+    private void UpdateSkill(SkillData skillData, int skillLevel, EquipmentApplyType type)
+    {
+        if (type == EquipmentApplyType.Equip)
+        {
+            _havingSkills.Add(skillData.Id, skillLevel);
+        }
+        else
+        {
+            _havingSkills.Remove(skillData.Id);
         }
     }
     #endregion
