@@ -14,7 +14,7 @@ public class MagnetItem : MonoBehaviour
 
         //  자석 : 필드의 젬들을 처리
         ActivateMagnet(player);
-
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 2);
         //  자석 아이템 제거
         if (destroyDelay <= 0f) Destroy(gameObject);
         else Destroy(gameObject, destroyDelay);
