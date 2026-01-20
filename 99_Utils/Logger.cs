@@ -6,7 +6,6 @@ using UnityEngine;
 /// </summary>
 public static class Logger
 {
-#if UNITY_EDITOR
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     [System.Diagnostics.DebuggerStepThrough]
     public static void Log(
@@ -16,8 +15,10 @@ public static class Logger
         [CallerLineNumber] int lineNumber = 0
         )
     {
+#if UNITY_EDITOR
         string className = System.IO.Path.GetFileNameWithoutExtension(filePath);
         Debug.Log($"[{className}.{memberName}:{lineNumber}] {message}");
+#endif
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
@@ -29,8 +30,10 @@ public static class Logger
         [CallerLineNumber] int lineNumber = 0
         )
     {
+#if UNITY_EDITOR
         string className = System.IO.Path.GetFileNameWithoutExtension(filePath);
         Debug.LogWarning($"[{className}.{memberName}:{lineNumber}] {message}");
+#endif
     }
 
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
@@ -42,8 +45,10 @@ public static class Logger
         [CallerLineNumber] int lineNumber = 0
         )
     {
+#if UNITY_EDITOR
         string className = System.IO.Path.GetFileNameWithoutExtension(filePath);
         Debug.LogError($"[{className}.{memberName}:{lineNumber}] {message}");
-    }
 #endif
+    }
 }
+
