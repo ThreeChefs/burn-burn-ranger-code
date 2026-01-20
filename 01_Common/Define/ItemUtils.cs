@@ -189,6 +189,7 @@ public static class ItemUtils
             EquipmentType.Armor => WalletType.UpgradeMaterial_Armor,
             EquipmentType.Belt => WalletType.UpgradeMaterial_Belt,
             EquipmentType.Shoes => WalletType.UpgradeMaterial_Shoes,
+            _ => throw new System.NotImplementedException(),
         };
     }
     #endregion
