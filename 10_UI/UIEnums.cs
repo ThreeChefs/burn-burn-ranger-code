@@ -9,6 +9,7 @@ public enum UIName
     UI_StagePause,
     UI_WarnningSign,
     UI_JoyStick,
+    UI_FortuneBox,
 
     // Outside of Stage
     UI_Home,

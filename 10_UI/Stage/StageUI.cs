@@ -20,6 +20,7 @@ public class StageUI : BaseUI
         UIManager.Instance.LoadUI(UIName.UI_StageProgressBar);
         UIManager.Instance.LoadUI(UIName.UI_StagePause, false);
         UIManager.Instance.LoadUI(UIName.UI_SkillSelect, false);
+        UIManager.Instance.LoadUI(UIName.UI_FortuneBox, false);
     }
 
     private void Update()

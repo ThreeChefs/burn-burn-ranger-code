@@ -13,6 +13,7 @@ public class FortuneBoxUI : PopupUI
     [SerializeField] FortuneBoxButton _pickButton;
     [SerializeField] FortuneBoxButton _skipButton;
     [SerializeField] TextMeshProUGUI _buttonText;
+    [SerializeField] Button _backButton;
 
 
     [Title("Focus 연출")]
@@ -63,6 +64,9 @@ public class FortuneBoxUI : PopupUI
     {
         base.AwakeInternal();
         _intervalWait = new WaitForSecondsRealtime(_stepInterval);
+        
+        _backButton.onClick.AddListener(CloseUI);
+
     }
 
     List<int> _pickSlotIdx = new List<int>();
@@ -71,6 +75,15 @@ public class FortuneBoxUI : PopupUI
     [Button("테스트")]
     public void Init(WaveClearRewardType type)
     {
+        // 초기화
+        _backButton.gameObject.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
+        _pickButton.gameObject.SetActive(false);
+
+        _pickSlotIdx.Clear();
+
+
+        // 상자 타입 지정
         _type = type;
 
         if (type == WaveClearRewardType.Fortune_Skill_Random)
@@ -79,9 +92,10 @@ public class FortuneBoxUI : PopupUI
                 , (int)WaveClearRewardType.Fortune_Skill_5 + 1);
         }
 
+
+
         // todo 올릴 수 있는게 뽑을 수 있는 갯수보다 적을 때 처리 필요
 
-        _pickSlotIdx.Clear();
         List<SkillSelectDto> rollList = null;
 
         int pickNum = Define.Random.Next(0, _maxSlotcount);
@@ -251,7 +265,7 @@ public class FortuneBoxUI : PopupUI
         yield return PlayFocus(GroupFocusRoutine(_diagonalOrder, 3));
 
         _pickButton.gameObject.SetActive(true);
-        _pickButton.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(
+        _pickButton.transform.DOScale(1, 0.5f).SetUpdate(true).SetEase(Ease.OutBounce).OnComplete(
             () =>
             {
                 _pickButton.SetInteractable(true);
@@ -262,7 +276,7 @@ public class FortuneBoxUI : PopupUI
 
     public void OnClickPickButton()
     {
-        _pickButton.transform.DOScale(0f, 0.2f).SetEase(Ease.InCirc);
+        _pickButton.transform.DOScale(0f, 0.2f).SetUpdate(true).SetEase(Ease.InCirc);
 
 
         // 뽑기 진행
@@ -331,7 +345,7 @@ public class FortuneBoxUI : PopupUI
         yield return _skipWaitTime;
 
         _skipButton.gameObject.SetActive(true);
-        _skipButton.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce).OnComplete(
+        _skipButton.transform.DOScale(1, 0.5f).SetUpdate(true).SetEase(Ease.OutBounce).OnComplete(
             () =>
             {
                 _skipButton.SetInteractable(true);
@@ -341,7 +355,7 @@ public class FortuneBoxUI : PopupUI
 
     public void OnClickSkipButton()
     {
-        _skipButton.transform.DOScale(0f, 0.2f).SetEase(Ease.InCirc);
+        _skipButton.transform.DOScale(0f, 0.2f).SetUpdate(true).SetEase(Ease.InCirc);
 
         // 스킵하고 결과 바로 보여주기
         if(_nowFocusRoutine  != null) StopCoroutine(_nowFocusRoutine);
@@ -349,13 +363,35 @@ public class FortuneBoxUI : PopupUI
         for (int i = 0; i < _pickSlotIdx.Count; i++)
         {
             int idx = _pickSlotIdx[i];
-            if ((uint)idx >= (uint)slots.Length) continue;
+            if (idx >= slots.Length) continue;
 
             slots[idx].SetFocus(true);
         }
+
+        ShowBackButton();
     }
 
+    
+    public void ShowBackButton()
+    {
+        _backButton.gameObject.SetActive(true);
+    }
 
+    // 창 닫힐 때 스킬 주기
+    public override Tween CloseUIInternal()
+    {
+        for (int i = 0; i < _pickSlotIdx.Count; i++)
+        {
+            int idx = _pickSlotIdx[i];
+            if (idx >= slots.Length) continue;
+
+            // 스킬 주기
+            StageManager.Instance.SkillSystem.TrySelectSkill(slots[idx].Skill.Id);
+        }
+
+
+        return base.CloseUIInternal();
+    }
 
 
     #region FocusRoutine
@@ -435,6 +471,7 @@ public class FortuneBoxUI : PopupUI
             }
         }
 
+        ShowBackButton();
         _nowFocusRoutine = null;
     }
 

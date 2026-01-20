@@ -48,6 +48,7 @@ public class FortuneBoxSlot : BaseSlot
 
     public void SetSlot(SkillSelectDto dto)
     {
+        _skill = dto;
         _iconImg.sprite = dto.Icon;
     }
 
