@@ -43,6 +43,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 액티브 스킬 컨테이너
     [field: SerializeField] public Transform SkillContainer { get; private set; }
 
+    // 조이스틱
+    private JoyStickInput _joyStick;
+
     // 캐싱
     public PlayerCondition Condition { get; private set; }
     private PlayerStat _health;
@@ -134,6 +137,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region Move
     private void Move()
     {
+        if (Application.isMobilePlatform)
+        {
+            _inputVector = _joyStick.Direction;
+        }
         Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
         if (nextVec.x != 0)
         {

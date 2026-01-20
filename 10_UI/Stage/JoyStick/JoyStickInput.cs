@@ -22,6 +22,8 @@ public class JoyStickInput : MonoBehaviour
     private Vector2 _inputStartPos;
     private float _radiusOffset;
 
+    public Vector2 Direction { get; private set; }
+
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
@@ -66,30 +68,48 @@ public class JoyStickInput : MonoBehaviour
     private void StartInput(Vector2 touchScreenPos)
     {
         _inputActive = true;
+        _inputStartPos = touchScreenPos;
+
+        // 동적 조이스틱
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _rectTransform,
+            touchScreenPos,
+            _camera,
+            out Vector2 localPos);
+
+        _joyStickBase.localPosition = localPos;
+        _joyStickKnob.localPosition = Vector2.zero;
     }
 
     private void UpdateInput(Vector2 touchScreenPos)
     {
-        if (_inputActive)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _rectTransform,
-                _inputStartPos,
-                _camera,
-                out Vector2 canvasPos);
+        if (!_inputActive) return;
 
-            Vector2 inputVector = touchScreenPos - canvasPos;
-            Vector2 localInputVector = inputVector / _canvas.scaleFactor;
 
-            Vector2 clampedOffset = Vector2.ClampMagnitude(localInputVector, _radiusOffset);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _rectTransform,
+            touchScreenPos,
+            _camera,
+            out Vector2 currentLocalPos);
 
-            _joyStickKnob.localPosition = clampedOffset;
-        }
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _rectTransform,
+            _inputStartPos,
+            _camera,
+            out Vector2 startLocalPos);
+
+        Vector2 delta = currentLocalPos - startLocalPos;
+        Vector2 clamped = Vector2.ClampMagnitude(delta, _radiusOffset);
+
+        _joyStickKnob.localPosition = clamped;
+
+        Direction = clamped / _radiusOffset;
     }
 
     private void EndInput()
     {
         _inputActive = false;
+        Direction = Vector2.zero;
         _joyStickKnob.localPosition = Vector2.zero;
     }
 
