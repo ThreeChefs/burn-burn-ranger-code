@@ -1,6 +1,7 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class JoyStickInput : BaseUI
+public class JoyStickInput : BaseUI, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [Header("조이스틱 이미지")]
     [SerializeField] private RectTransform _outerCircle;
@@ -9,72 +10,54 @@ public class JoyStickInput : BaseUI
 
     // 컴포넌트
     private RectTransform _rectTransform;
-    private Camera _camera;
 
     // 인풋 관리
     private bool _inputActive;
-    private Vector2 _inputStartPos;
     private float _radiusOffset;
 
-    private Vector2 _defaultPos;
+    private Vector2 _defaultLocalPos;
 
     public Vector2 Direction { get; private set; }
 
     private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
-        _radiusOffset = (_outerCircle.rect.width / 2);
-        _defaultPos = transform.position;
     }
 
     private void Start()
     {
-        _camera = Camera.main;
+        _radiusOffset = _outerCircle.rect.width * 0.5f;
+        _defaultLocalPos = _outerCircle.localPosition;
         //if (!Application.isMobilePlatform)
         //{
         //    gameObject.SetActive(false);
         //}
     }
 
-    private void Update()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        HandleInput();
+        StartInput(eventData.position);
     }
 
-    private void HandleInput()
+    public void OnDrag(PointerEventData eventData)
     {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            Vector2 touchScreenPos = touch.position;
+        UpdateInput(eventData.position);
+    }
 
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    StartInput(touchScreenPos);
-                    break;
-                case TouchPhase.Moved:
-                case TouchPhase.Stationary:
-                    UpdateInput(touchScreenPos);
-                    break;
-                case TouchPhase.Ended:
-                case TouchPhase.Canceled:
-                    EndInput();
-                    break;
-            }
-        }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        EndInput();
     }
 
     private void StartInput(Vector2 touchScreenPos)
     {
         _inputActive = true;
-        _inputStartPos = touchScreenPos;
 
         // 동적 조이스틱
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _rectTransform,
             touchScreenPos,
-            _camera,
+            null,
             out Vector2 localPos);
 
         _outerCircle.localPosition = localPos;
@@ -85,24 +68,15 @@ public class JoyStickInput : BaseUI
     {
         if (!_inputActive) return;
 
-
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _rectTransform,
+            _outerCircle,
             touchScreenPos,
-            _camera,
-            out Vector2 currentLocalPos);
+            null,
+            out Vector2 localPos);
 
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            _rectTransform,
-            _inputStartPos,
-            _camera,
-            out Vector2 startLocalPos);
-
-        Vector2 delta = currentLocalPos - startLocalPos;
-        Vector2 clamped = Vector2.ClampMagnitude(delta, _radiusOffset);
+        Vector2 clamped = Vector2.ClampMagnitude(localPos, _radiusOffset);
 
         _innerCircle.localPosition = clamped;
-
         Direction = clamped / _radiusOffset;
     }
 
@@ -110,7 +84,8 @@ public class JoyStickInput : BaseUI
     {
         _inputActive = false;
         Direction = Vector2.zero;
-        _innerCircle.localPosition = _defaultPos;
+        _outerCircle.localPosition = _defaultLocalPos;
+        _innerCircle.localPosition = Vector2.zero;
     }
 
     #region 에디터 전용
