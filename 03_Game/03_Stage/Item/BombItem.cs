@@ -13,6 +13,7 @@ public class BombItem : MonoBehaviour
 
         MonsterManager.Instance.KillAll();
 
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 0);
 
         // 2) 폭탄 아이템 제거
         Destroy(gameObject);

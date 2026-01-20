@@ -10,7 +10,7 @@ public class GoldItem : MonoBehaviour
             return;
 
         player.AddGold(goldAmount);
-
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 2);
 
         Destroy(gameObject);
     }

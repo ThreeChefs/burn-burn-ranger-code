@@ -58,8 +58,6 @@ public class ItemDetailUI : BaseUI
         _levelUpButton.onClick.AddListener(ClickLevelUpButton);
         _allLevelUpButton.onClick.AddListener(AllClickLevelUpButton);
 
-        // 아이템 이벤트 구독
-
         foreach (ItemEffectUI effectUI in _effectDetails)
         {
             effectUI.gameObject.SetActive(false);
@@ -72,8 +70,6 @@ public class ItemDetailUI : BaseUI
         _unequipButton.onClick.RemoveAllListeners();
         _levelUpButton.onClick.RemoveAllListeners();
         _allLevelUpButton.onClick.RemoveAllListeners();
-
-        // 아이템 이벤트 구독 해제
     }
     #endregion
 

@@ -22,6 +22,7 @@ public class ActiveSkill : BaseSkill
     private Coroutine _coroutine;
     protected WaitForSeconds projectileSpawnInterval;
 
+    public float DamageMultiplier { get; protected set; } = 1f;
 
     public override void Init(SkillData data)
     {
