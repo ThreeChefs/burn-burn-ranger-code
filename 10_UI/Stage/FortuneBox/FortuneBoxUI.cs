@@ -64,13 +64,14 @@ public class FortuneBoxUI : PopupUI
     {
         base.AwakeInternal();
         _intervalWait = new WaitForSecondsRealtime(_stepInterval);
-        
+
         _backButton.onClick.AddListener(CloseUI);
 
     }
 
-    List<int> _pickSlotIdx = new List<int>();
 
+    List<int> _pickSlotIdx = new List<int>();
+    List<int> _orderSlotIdx = new List<int>();
 
     [Button("테스트")]
     public void Init(WaveClearRewardType type)
@@ -80,8 +81,8 @@ public class FortuneBoxUI : PopupUI
         _skipButton.gameObject.SetActive(false);
         _pickButton.gameObject.SetActive(false);
 
+        _orderSlotIdx.Clear();
         _pickSlotIdx.Clear();
-
 
         // 상자 타입 지정
         _type = type;
@@ -123,26 +124,37 @@ public class FortuneBoxUI : PopupUI
                 break;
         }
 
-        for (int i = 0; i < pickCount; i++)
+
+        for (int i = 0; i < _maxSlotcount; i++)
         {
-            int slotIndex = targetOrder[idx];   // 실제 슬롯 번호
-            _pickSlotIdx.Add(slotIndex);
+            int slotIndex = targetOrder[idx];
+            _orderSlotIdx.Add(slotIndex);
             --idx;
             if (idx < 0) idx = 15;
         }
 
+        for (int i = 0; i < pickCount; i++)
+        {
+            _pickSlotIdx.Add(_orderSlotIdx[i]);
+        }
+
+
+
+        for (int i = 0; i < _pickSlotIdx.Count; i++)
+        {
+            Debug.Log("뽑을거야 : " + _pickSlotIdx[i] + ", " + rollList[i].Name);
+        }
 
         if (rollList == null || rollList.Count == 0) return;
 
-        idx = _pickSlotIdx[0];
 
         for (int i = 0; i < _maxSlotcount; i++)
         {
-            slots[i].SetSlot(rollList[i]); // rollList는 16개 채워서 리턴하니까
+            slots[_orderSlotIdx[i]].SetSlot(rollList[i]);
         }
 
         // 테스트
-        OpenUIInternal();
+        //OpenUIInternal();
     }
 
 
@@ -355,10 +367,10 @@ public class FortuneBoxUI : PopupUI
 
     public void OnClickSkipButton()
     {
-        _skipButton.transform.DOScale(0f, 0.2f).SetUpdate(true).SetEase(Ease.InCirc);
+        _skipButton.transform.DOScale(0f, 0.2f).SetUpdate(true).SetEase(Ease.InCirc).OnComplete(ShowBackButton);
 
         // 스킵하고 결과 바로 보여주기
-        if(_nowFocusRoutine  != null) StopCoroutine(_nowFocusRoutine);
+        if (_nowFocusRoutine != null) StopCoroutine(_nowFocusRoutine);
 
         for (int i = 0; i < _pickSlotIdx.Count; i++)
         {
@@ -368,12 +380,13 @@ public class FortuneBoxUI : PopupUI
             slots[idx].SetFocus(true);
         }
 
-        ShowBackButton();
     }
 
-    
+
     public void ShowBackButton()
     {
+        _pickButton.gameObject.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
         _backButton.gameObject.SetActive(true);
     }
 
@@ -387,6 +400,11 @@ public class FortuneBoxUI : PopupUI
 
             // 스킬 주기
             StageManager.Instance.SkillSystem.TrySelectSkill(slots[idx].Skill.Id);
+        }
+
+        for (int i = 0; i < _maxSlotcount; i++)
+        {
+            slots[i].SetFocus(false);
         }
 
 

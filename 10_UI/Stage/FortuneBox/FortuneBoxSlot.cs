@@ -35,6 +35,7 @@ public class FortuneBoxSlot : BaseSlot
 
         foreach (Image f in focusImgs)
         {
+            f.DOKill();
             Color start = f.color;
             start.a = 1;
             Color end = f.color;
