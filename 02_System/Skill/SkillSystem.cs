@@ -49,8 +49,6 @@ public class SkillSystem
         _ownedSkills.Clear();
         _combinationRequirementMap.Clear();
 
-        // todo: 기본 스킬 주기
-        // ex. 쿠나이
         // skill id, level 
         Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
         int maxKey = defaultSkills.Keys.Max();
@@ -328,22 +326,6 @@ public class SkillSystem
         _maxedSkillIds.ForEach(id => selectedSkillId.Remove(id));
 
         AddRandomSkillDto(skillSelectDtos, selectedSkillId.ToList(), count);
-
-        //// 테스트용
-        //skillSelectDtos.Clear();
-        //SkillData testSkillData = _skillDataCache[30];
-        //BaseSkill baseSkill = _ownedSkills[30];
-        //for (int i = 0; i < count; i++)
-        //{
-        //    skillSelectDtos.Add(new SkillSelectDto(
-        //        testSkillData.Id,
-        //        baseSkill.CurLevel,
-        //        testSkillData.name,
-        //        testSkillData.Description,
-        //        testSkillData.Icon,
-        //        testSkillData.Type,
-        //        null));
-        //}
 
         return skillSelectDtos;
     }
