@@ -14,6 +14,16 @@ public class ItemDatabase : SoDatabase
         return null;
     }
 
+    public ItemData FindFirstByName(string name)
+    {
+        foreach (ItemData item in List)
+        {
+            if (item.DisplayName.Equals(name)) return item;
+        }
+
+        return null;
+    }
+
 #if UNITY_EDITOR
     private void Reset()
     {

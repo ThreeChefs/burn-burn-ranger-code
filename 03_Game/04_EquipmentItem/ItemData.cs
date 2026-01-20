@@ -76,6 +76,8 @@ public class EquipmentEffectData
     [field: Header("스킬")]
     [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
     [field: SerializeField] public SkillData SkillData { get; private set; }
+    [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
+    [field: SerializeField] public int SkillLevel { get; private set; }
 
     [field: Header("조건부 버프")]
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]

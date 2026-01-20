@@ -112,6 +112,8 @@ public class PlayerProjectile : BaseProjectile
 
                 if (passCount <= 0)
                 {
+                    moveDir = Vector2.zero;
+
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();

@@ -17,25 +17,20 @@ public class Equipment
     // 이벤트
     public event Action OnEquipmentChanged;
 
+    private readonly Dictionary<int, int> _havingSkills;
+    public IReadOnlyDictionary<int, int> HavingSkills => _havingSkills;
+
     public Equipment(PlayerCondition condition)
     {
         // 캐싱
         _condition = condition;
 
         _equipments = new();
+        _havingSkills = new();
 
         foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
         {
             _equipments[type] = null;
-        }
-    }
-
-    public void Init()
-    {
-        // todo: 장비 데이터 저장 / 로드
-        foreach (ItemInstance item in _equipments.Values)
-        {
-            ApplyEquipmentValue(item, EquipmentApplyType.Equip);
         }
     }
 
@@ -120,10 +115,15 @@ public class Equipment
         // 장비 등급에 따른 수치 계산
         foreach (var equipmentEffect in item.ItemData.Equipments)
         {
+            if (equipmentEffect.UnlockClass > item.ItemClass) return;
+
             switch (equipmentEffect.EffectType)
             {
                 case EquipmentEffectType.Stat:
                     UpdateStat(equipmentEffect.ApplyType, equipmentEffect.Stat, equipmentEffect.Value * sign);
+                    break;
+                case EquipmentEffectType.Skill:
+                    UpdateSkill(equipmentEffect.SkillData, equipmentEffect.SkillLevel, type);
                     break;
             }
         }
@@ -145,6 +145,24 @@ public class Equipment
             case EffectApplyType.Percent:
                 _condition[statType].UpdateEquipmentValue(_condition[statType].BaseValue * value * 0.01f);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// 스킬 업데이트
+    /// </summary>
+    /// <param name="skillData"></param>
+    /// <param name="skillLevel"></param>
+    /// <param name="type"></param>
+    private void UpdateSkill(SkillData skillData, int skillLevel, EquipmentApplyType type)
+    {
+        if (type == EquipmentApplyType.Equip)
+        {
+            _havingSkills.Add(skillData.Id, skillLevel);
+        }
+        else
+        {
+            _havingSkills.Remove(skillData.Id);
         }
     }
     #endregion

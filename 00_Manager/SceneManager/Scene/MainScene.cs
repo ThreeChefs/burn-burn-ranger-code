@@ -21,7 +21,7 @@ public class MainScene : BaseScene
         SoundManager.Instance.PlayBgm(BgmName.Main, volume: 0.6f);
     }
 
-    private void OnDestroy()
+    private void OnDisable()
     {
         SoundManager.Instance.StopBgm();
         SoundManager.Instance.StopAllSfx();
