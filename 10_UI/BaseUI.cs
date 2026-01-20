@@ -19,8 +19,9 @@ public abstract class BaseUI : MonoBehaviour
     public bool IsSubCanvas => _isSubCanvas;
 
     public event Action<BaseUI> OnOpenAction;
-    public event Action<BaseUI> OnCloseAction;
     public event Action<BaseUI> OnDestroyAction;
+    public event Action<BaseUI> OnClosedAction;
+
 
     private void Awake()
     {
@@ -44,21 +45,21 @@ public abstract class BaseUI : MonoBehaviour
 
     public void CloseUI()
     {
-        // todo 뿅하고 꺼진다던가
-        OnCloseAction?.Invoke(this);
-
         Tween closeTween = CloseUIInternal();
 
         if (closeTween != null)
         {
-            CloseUIInternal().OnComplete(() =>
+            closeTween.OnComplete(() =>
             {
                 this.gameObject.SetActive(false);
+                OnClosedAction?.Invoke(this);
             });
+            
             return;
         }
 
         this.gameObject.SetActive(false);
+        OnClosedAction?.Invoke(this);
     }
 
     private void OnDestroy()
