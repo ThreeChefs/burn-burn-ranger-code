@@ -27,7 +27,6 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
     private void Start()
     {
         Inventory.Init();
-        Equipment.Init();
     }
 
     private void OnDestroy()

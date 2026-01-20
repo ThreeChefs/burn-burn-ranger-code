@@ -30,15 +30,6 @@ public class Equipment
         }
     }
 
-    public void Init()
-    {
-        // todo: 장비 데이터 저장 / 로드
-        foreach (ItemInstance item in _equipments.Values)
-        {
-            ApplyEquipmentValue(item, EquipmentApplyType.Equip);
-        }
-    }
-
     public void OnDestroy()
     {
         OnEquipmentChanged = null;
