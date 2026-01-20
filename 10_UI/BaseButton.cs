@@ -1,5 +1,4 @@
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +14,12 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         _button = GetComponent<Button>();
         _button.onClick.AddListener(OnClick);
     }
+
+    public void SetInteractable(bool interactable)
+    {
+        _button.interactable = interactable;
+    }
+
 
     protected virtual void OnClick()
     {
@@ -41,7 +46,7 @@ public class BaseButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
         this.transform.DOScale(1.0f, 0.1f).SetEase(Ease.OutBack).SetUpdate(true);
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         DOTween.Kill(this.transform);
     }
