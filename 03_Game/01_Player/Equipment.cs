@@ -120,6 +120,8 @@ public class Equipment
         // 장비 등급에 따른 수치 계산
         foreach (var equipmentEffect in item.ItemData.Equipments)
         {
+            if (equipmentEffect.UnlockClass > item.ItemClass) return;
+
             switch (equipmentEffect.EffectType)
             {
                 case EquipmentEffectType.Stat:

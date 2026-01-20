@@ -18,6 +18,7 @@ public class ItemEffectUI : MonoBehaviour
         _skillColorOutline.effectColor = ItemUtils.GetHighlightColor(equipmentData.UnlockClass);
         _skillLock.gameObject.SetActive(isLock);
         _skillDescription.text = equipmentData.Description;
+        _skillDescription.color = isLock ? Color.gray : Color.white;
         _skillDescription.transform.parent.gameObject.SetActive(true);
     }
 
