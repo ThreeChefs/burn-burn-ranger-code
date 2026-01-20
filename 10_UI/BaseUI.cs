@@ -1,9 +1,7 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class BaseUI : MonoBehaviour
 {
@@ -12,7 +10,8 @@ public abstract class BaseUI : MonoBehaviour
 
     [ShowIf("_isSubCanvas")]
     [BoxGroup("BaseUI")]
-    [HideLabel][EnumToggleButtons]
+    [HideLabel]
+    [EnumToggleButtons]
     [SerializeField] private UISubCanvasOrder _subUIOrder;
     public UISubCanvasOrder SubUIOrder => _subUIOrder;
 
@@ -27,7 +26,7 @@ public abstract class BaseUI : MonoBehaviour
     {
         AwakeInternal();
     }
-    
+
     protected virtual void AwakeInternal()
     {
 
@@ -37,10 +36,9 @@ public abstract class BaseUI : MonoBehaviour
     public void OpenUI()
     {
         this.gameObject.SetActive(true);
-        
-        Logger.Log($"{this.gameObject.name} Open" );
+
         OnOpenAction?.Invoke(this);
-        
+
         OpenUIInternal();
     }
 
@@ -59,7 +57,7 @@ public abstract class BaseUI : MonoBehaviour
             });
             return;
         }
-        
+
         this.gameObject.SetActive(false);
     }
 

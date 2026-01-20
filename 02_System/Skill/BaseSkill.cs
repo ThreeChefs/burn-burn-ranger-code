@@ -32,8 +32,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
             skillValues.Add(entry.SkillValueType, entry.Values);
         }
 
-        Logger.Log($"스킬 획득: {SkillData.DisplayName}");
-
         LevelUp();
     }
     #endregion
@@ -66,7 +64,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
                 break;
         }
 
-        Logger.Log($"스킬 레벨업: {SkillData.DisplayName} / 레벨: {CurLevel} {(IsMaxLevel ? " - 최대 레벨" : "")}");
         OnLevelUp?.Invoke();
     }
 }

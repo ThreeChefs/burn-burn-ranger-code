@@ -163,7 +163,6 @@ public class EquipmentUI : BaseUI
             {
                 slot = _equipmentSlots[pair.Key];
                 slot.SetSlot(pair.Value);
-                Logger.Log($"{pair.Value.ItemData.EquipmentType} 타입 장비 장착");
             }
         }
     }

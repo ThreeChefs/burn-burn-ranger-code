@@ -13,7 +13,6 @@ public class SkillSystem
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
-    public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
     private readonly List<int> _maxedSkillIds = new();
     private int _activeSkillCount;
@@ -21,6 +20,12 @@ public class SkillSystem
 
     private bool _canSelectSkill;
     private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+
+    // public readonly colliections
+    public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
+    public IReadOnlyDictionary<int, int> CombinationRequirementMap => _combinationRequirementMap;
+    public IReadOnlyList<int> MaxedSkillIds => _maxedSkillIds;
+    public IReadOnlyDictionary<int, SkillData> SkillDataCache => _skillDataCache;
 
     #region 초기화
     public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
@@ -49,8 +54,6 @@ public class SkillSystem
         _ownedSkills.Clear();
         _combinationRequirementMap.Clear();
 
-        // todo: 기본 스킬 주기
-        // ex. 쿠나이
         // skill id, level 
         Dictionary<int, int> defaultSkills = PlayerManager.Instance.Inventory.RequiredSkills;
         int maxKey = defaultSkills.Keys.Max();
@@ -75,7 +78,6 @@ public class SkillSystem
     {
         if (!_skillDataCache.TryGetValue(id, out SkillData data))
         {
-            Logger.LogWarning($"얻을 수 없는 스킬 데이터: {id}");
             return false;
         }
 
@@ -98,7 +100,6 @@ public class SkillSystem
 
         if (baseSkill == null)
         {
-            Logger.Log("base skill 생성 실패");
             return false;
         }
 
@@ -177,7 +178,6 @@ public class SkillSystem
                 if (skill.CurLevel == Define.SkillMaxLevel)
                 {
                     _maxedSkillIds.Add(id);                         // 만렙 처리
-                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].DisplayName}");
                     ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
                 }
                 break;
@@ -190,7 +190,6 @@ public class SkillSystem
                 else if (skill.CurLevel == Define.SkillMaxLevel)
                 {
                     _maxedSkillIds.Add(id);                         // 만렙 처리
-                    Logger.Log($"스킬 잠금(사유: 최대 레벨): {_skillDataCache[id].DisplayName}");
                 }
                 break;
             case SkillType.Combination:
@@ -247,7 +246,6 @@ public class SkillSystem
         HashSet<int> selectedSkillId = new();
         List<SkillSelectDto> skillSelectDtos = new();
 
-        // todo: 체력 회복 or 돈 -> UI에 어떻게 표현할지 논의 필요
         if (!_canSelectSkill) return null;
 
         // 조합 스킬 있는지 확인
@@ -333,22 +331,6 @@ public class SkillSystem
         _maxedSkillIds.ForEach(id => selectedSkillId.Remove(id));
 
         AddRandomSkillDto(skillSelectDtos, selectedSkillId.ToList(), count);
-
-        //// 테스트용
-        //skillSelectDtos.Clear();
-        //SkillData testSkillData = _skillDataCache[30];
-        //BaseSkill baseSkill = _ownedSkills[30];
-        //for (int i = 0; i < count; i++)
-        //{
-        //    skillSelectDtos.Add(new SkillSelectDto(
-        //        testSkillData.Id,
-        //        baseSkill.CurLevel,
-        //        testSkillData.name,
-        //        testSkillData.Description,
-        //        testSkillData.Icon,
-        //        testSkillData.Type,
-        //        null));
-        //}
 
         return skillSelectDtos;
     }

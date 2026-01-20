@@ -43,7 +43,7 @@ public class GrowthUI : BaseUI
             for (int j = 0; j < entries[i].GrowthInfos.Count; ++j)
             {
                 GrowthSlot newSlot = Instantiate(_slotOrigin);
-                newSlot.transform.SetParent(_content);
+                newSlot.transform.SetParent(_content, false);
 
                 SlotInfo slotInfo = new SlotInfo
                 {

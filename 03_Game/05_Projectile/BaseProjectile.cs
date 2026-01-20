@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -57,7 +56,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         if (vfxs != null)
         {
-            _trail = vfxs.GetComponentInChildren<TrailRenderer>();
+            _trail = GetComponentInChildren<TrailRenderer>();
         }
     }
 
@@ -102,6 +101,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (_trail != null)
         {
+            _trail.Clear();
             _trail.enabled = true;
         }
     }
@@ -156,7 +156,6 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (visualData == null)
         {
-            Logger.Log($"{data.name}에서 자율적으로 sfx 사용");
             useCustomSfx = true;
             return;
         }
@@ -326,7 +325,6 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected void EnterAreaPhase()
     {
-        Logger.Log("장판모드 들어옴");
         phase = ProjectilePhase.Area;
         speedMultiplier = data.AoEData.IsMoving ? 1f : 0f;
         tickTimer = 0f;
@@ -350,7 +348,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         while (true)
         {
-            SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
+            PlaySfxOnce();
             yield return _sfxDuration;
         }
     }
@@ -368,20 +366,6 @@ public class BaseProjectile : PoolObject, IAttackable
             var newGo = new GameObject("Model");
             newGo.transform.SetParent(transform);
             newGo.AddComponent<SpriteRenderer>();
-            BoxCollider2D collider2D = newGo.AddComponent<BoxCollider2D>();
-            collider2D.isTrigger = true;
-        }
-        else
-        {
-            if (model.TryGetComponent<Collider2D>(out var collider2D))
-            {
-                collider2D.isTrigger = true;
-            }
-            else
-            {
-                collider2D = model.AddComponent<BoxCollider2D>();
-                collider2D.isTrigger = true;
-            }
         }
 
         // 비주얼

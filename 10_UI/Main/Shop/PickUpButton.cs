@@ -40,7 +40,7 @@ public class PickUpButton : BaseButton
     {
         if (_pickUpSystem == null)
         {
-            Logger.Log("Pick Up System 초기화 안됨");
+            return;
         }
 
         BoxWallet wallet = _boxWallets[_boxWalletIndex];

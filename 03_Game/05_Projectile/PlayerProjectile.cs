@@ -213,11 +213,6 @@ public class PlayerProjectile : BaseProjectile
 
         tickTimer = 0f;
 
-        if (sfxIndex >= 0 && !useCustomSfx && sfxCoroutine == null)
-        {
-            sfxCoroutine = StartCoroutine(PlaySfx());
-        }
-
         //Logger.Log("장판 켜짐");
         Collider2D[] targets = CheckTargetsAndHit();
 
@@ -235,6 +230,12 @@ public class PlayerProjectile : BaseProjectile
         if (data.AoEData.IsInstant)
         {
             gameObject.SetActive(false);
+            return;
+        }
+
+        if (sfxIndex >= 0 && !useCustomSfx && sfxCoroutine == null)
+        {
+            sfxCoroutine = StartCoroutine(PlaySfx());
         }
     }
 

@@ -1,9 +1,50 @@
+using System;
 using UnityEngine;
 
 public class UIControlButton : BaseButton
 {
-    [SerializeField] private UIName[] _showUIs;
-    [SerializeField] private UIName[] _closeUIs;
+    [SerializeField] private string[] _showUIKeys;
+    [SerializeField] private string[] _closeKeys;
+
+    private UIName[] _showUIs;
+    private UIName[] _closeUIs;
+
+    protected override void Awake()
+    {
+        base.Awake();
+
+        _showUIs = new UIName[_showUIKeys.Length];
+
+        for (int i = 0; i < _showUIKeys.Length; i++)
+        {
+            if (!Enum.TryParse(_showUIKeys[i], out UIName ui))
+            {
+                Debug.LogError(
+                    $"[UIControlButton] Invalid UIName key: {_showUIKeys[i]}",
+                    this
+                );
+                continue;
+            }
+
+            _showUIs[i] = ui;
+        }
+
+        _closeUIs = new UIName[_closeKeys.Length];
+
+        for (int i = 0; i < _closeKeys.Length; i++)
+        {
+            if (!Enum.TryParse(_closeKeys[i], out UIName ui))
+            {
+                Debug.LogError(
+                    $"[UIControlButton] Invalid UIName key: {_closeKeys[i]}",
+                    this
+                );
+                continue;
+            }
+
+            _closeUIs[i] = ui;
+        }
+    }
 
     protected override void OnClick()
     {

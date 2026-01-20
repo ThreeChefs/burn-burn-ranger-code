@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class SkillData : ScriptableObject
     [field: Tooltip("스킬 이름")]
     [field: SerializeField] public string DisplayName { get; protected set; }
     [field: Tooltip("스킬 설명")]
+    [field: MultiLineProperty]
     [field: SerializeField] public string[] Descriptions { get; protected set; }
     [field: Tooltip("스킬 이미지")]
     [field: SerializeField] public Sprite Icon { get; protected set; }

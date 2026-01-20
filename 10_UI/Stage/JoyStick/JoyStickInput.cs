@@ -1,104 +1,96 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(RectTransform))]
-[RequireComponent(typeof(Canvas))]
-[RequireComponent(typeof(CanvasScaler))]
-[RequireComponent(typeof(GraphicRaycaster))]
-public class JoyStickInput : MonoBehaviour
+public class JoyStickInput : BaseUI, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [Header("조이스틱 이미지")]
-    [SerializeField] private RectTransform _joyStickBase;
-    [SerializeField] private RectTransform _joyStickKnob;
+    [SerializeField] private RectTransform _outerCircle;
+    [SerializeField] private RectTransform _innerCircle;
     [SerializeField] private float _radiusMargin;
 
     // 컴포넌트
-    private Canvas _canvas;
     private RectTransform _rectTransform;
-    private Camera _camera;
 
     // 인풋 관리
     private bool _inputActive;
-    private Vector2 _inputStartPos;
     private float _radiusOffset;
+
+    private Vector2 _defaultLocalPos;
+
+    public Vector2 Direction { get; private set; }
 
     private void Awake()
     {
-        _canvas = GetComponent<Canvas>();
         _rectTransform = GetComponent<RectTransform>();
-        _radiusOffset = (_joyStickBase.rect.width / 2);
     }
 
     private void Start()
     {
-        _camera = Camera.main;
+        _radiusOffset = _outerCircle.rect.width * 0.5f;
+        _defaultLocalPos = _outerCircle.localPosition;
+        gameObject.SetActive(Define.EnableMobileUI);
     }
 
-    private void Update()
+    public void OnPointerDown(PointerEventData eventData)
     {
-        HandleInput();
+        StartInput(eventData.position);
     }
 
-    private void HandleInput()
+    public void OnDrag(PointerEventData eventData)
     {
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.GetTouch(0);
-            Vector2 touchScreenPos = touch.position;
+        UpdateInput(eventData.position);
+    }
 
-            switch (touch.phase)
-            {
-                case TouchPhase.Began:
-                    StartInput(touchScreenPos);
-                    break;
-                case TouchPhase.Moved:
-                case TouchPhase.Stationary:
-                    UpdateInput(touchScreenPos);
-                    break;
-                case TouchPhase.Ended:
-                case TouchPhase.Canceled:
-                    EndInput();
-                    break;
-            }
-        }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        EndInput();
     }
 
     private void StartInput(Vector2 touchScreenPos)
     {
         _inputActive = true;
+
+        // 동적 조이스틱
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _rectTransform,
+            touchScreenPos,
+            null,
+            out Vector2 localPos);
+
+        _outerCircle.localPosition = localPos;
+        _innerCircle.localPosition = Vector2.zero;
     }
 
     private void UpdateInput(Vector2 touchScreenPos)
     {
-        if (_inputActive)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _rectTransform,
-                _inputStartPos,
-                _camera,
-                out Vector2 canvasPos);
+        if (!_inputActive) return;
 
-            Vector2 inputVector = touchScreenPos - canvasPos;
-            Vector2 localInputVector = inputVector / _canvas.scaleFactor;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            _outerCircle,
+            touchScreenPos,
+            null,
+            out Vector2 localPos);
 
-            Vector2 clampedOffset = Vector2.ClampMagnitude(localInputVector, _radiusOffset);
+        Vector2 clamped = Vector2.ClampMagnitude(localPos, _radiusOffset);
 
-            _joyStickKnob.localPosition = clampedOffset;
-        }
+        _innerCircle.localPosition = clamped;
+        Direction = clamped / _radiusOffset;
     }
 
     private void EndInput()
     {
         _inputActive = false;
-        _joyStickKnob.localPosition = Vector2.zero;
+        Direction = Vector2.zero;
+        _outerCircle.localPosition = _defaultLocalPos;
+        _innerCircle.localPosition = Vector2.zero;
     }
 
     #region 에디터 전용
 #if UNITY_EDITOR
     private void Reset()
     {
-        _joyStickBase = transform.FindChild<RectTransform>("Image - JoyStickBase");
-        _joyStickKnob = transform.FindChild<RectTransform>("Image - JoyStickKnob");
+        _outerCircle = transform.FindChild<RectTransform>("Image - OuterCircle");
+        _innerCircle = transform.FindChild<RectTransform>("Image - InnerCircle");
     }
 #endif
     #endregion

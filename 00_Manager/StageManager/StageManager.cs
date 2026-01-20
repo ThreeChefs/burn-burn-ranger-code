@@ -64,7 +64,6 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         if (_stageDatas.Count <= stageIndex || stageIndex < 0)
         {
-            Logger.Log("스테이지 없음!");
             return false;
         }
 

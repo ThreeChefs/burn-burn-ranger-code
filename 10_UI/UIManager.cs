@@ -70,7 +70,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
             }
             else
             {
-                if(_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
+                if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
                 {
                     spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
                 }
@@ -81,12 +81,11 @@ public class UIManager : GlobalSingletonManager<UIManager>
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
             if (rect != null)
             {
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
                 rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.localPosition = Vector3.zero;
-                rect.sizeDelta = new Vector2(1080f, 1920f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
             }
 
 
@@ -120,7 +119,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         {
             BaseUI spawnedUI = Instantiate(ui);
 
-            if(spawnedUI.IsSubCanvas == false)
+            if (spawnedUI.IsSubCanvas == false)
             {
                 spawnedUI.transform.SetParent(_mainCanvas.transform, false);
             }
@@ -128,19 +127,18 @@ public class UIManager : GlobalSingletonManager<UIManager>
             {
                 if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
                 {
-                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
+                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform, false);
                 }
             }
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
             if (rect != null)
             {
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
                 rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.anchoredPosition = Vector2.zero;
-                rect.localPosition = Vector3.zero;
-                rect.sizeDelta = new Vector2(1080f, 1920f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
             }
 
             if (active == false)

@@ -23,6 +23,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 이미지
     [SerializeField] private Transform _moveDirectionArrow;
     [SerializeField] private float _rotateDuration = 0.75f;
+    private float _lastAngle;
 
     [SerializeField] private float _bloodParticleOffset = 1f;
     [SerializeField] private SpriteRenderer[] _renderers;
@@ -43,6 +44,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 액티브 스킬 컨테이너
     [field: SerializeField] public Transform SkillContainer { get; private set; }
 
+    // 조이스틱
+    private JoyStickInput _joyStick;
+
     // 캐싱
     public PlayerCondition Condition { get; private set; }
     private PlayerStat _health;
@@ -60,6 +64,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 움직임
     private PlayerStat _speed;
     private Vector2 _inputVector;
+
+    // tween
+    private Tween _arrowRotateTween;
 
     // 이벤트
     public event Action OnDieAction;
@@ -88,24 +95,24 @@ public class StagePlayer : MonoBehaviour, IDamageable
         statSliderUI.Init(_health);
 
         _moveDirectionArrow.gameObject.SetActive(false);
+
+        _joyStick = UIManager.Instance.LoadUI(UIName.UI_JoyStick) as JoyStickInput;
     }
 
     private void Update()
     {
-        _healTimer += Time.deltaTime;
-        if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
-        {
-            _health.Add(_health.MaxValue * _heal.MaxValue);
-            _healTimer = 0f;
-        }
-
-        float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
-        _moveDirectionArrow.DORotate(new Vector3(0, 0, angle), _rotateDuration);
+        HandleHeal();
+        UpdateArrow();
     }
 
     private void FixedUpdate()
     {
         Move();
+    }
+
+    private void OnDisable()
+    {
+        _arrowRotateTween?.Kill();
     }
 
     private void OnDestroy()
@@ -122,9 +129,49 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
+    private void HandleHeal()
+    {
+        _healTimer += Time.deltaTime;
+        if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
+        {
+            _health.Add(_health.MaxValue * _heal.MaxValue);
+            _healTimer = 0f;
+        }
+    }
+
+    private void UpdateArrow()
+    {
+        if (_inputVector.sqrMagnitude < 0.001f)
+        {
+            _moveDirectionArrow.gameObject.SetActive(false);
+            _arrowRotateTween?.Kill();
+            _arrowRotateTween = null;
+            return;
+        }
+
+        _moveDirectionArrow.gameObject.SetActive(true);
+
+        float angle = Mathf.Atan2(_inputVector.y, _inputVector.x) * Mathf.Rad2Deg;
+
+        // 각도 변화 없으면 갱신 안 함
+        if (Mathf.Abs(Mathf.DeltaAngle(_lastAngle, angle)) < 0.1f)
+            return;
+
+        _lastAngle = angle;
+
+        _arrowRotateTween?.Kill();
+        _arrowRotateTween = _moveDirectionArrow
+            .DORotate(new Vector3(0, 0, angle), _rotateDuration)
+            .SetEase(Ease.OutCubic);
+    }
+
     #region Move
     private void Move()
     {
+        if (Define.EnableMobileUI)
+        {
+            _inputVector = _joyStick.Direction;
+        }
         Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
         if (nextVec.x != 0)
         {
@@ -137,16 +184,13 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     public void OnMove(InputAction.CallbackContext context)
     {
-        if (context.phase == InputActionPhase.Performed)
-        {
-            _inputVector = context.ReadValue<Vector2>();
-            _moveDirectionArrow.gameObject.SetActive(true);
-        }
-        else if (context.phase == InputActionPhase.Canceled)
+        if (context.canceled)
         {
             _inputVector = Vector2.zero;
-            _moveDirectionArrow.gameObject.SetActive(false);
+            return;
         }
+
+        _inputVector = context.ReadValue<Vector2>();
     }
     #endregion
 
@@ -168,13 +212,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
             if (health.CurValue == 0)
             {
-                Logger.Log("플레이어 DIE");
                 OnDieAction?.Invoke();
             }
         }
         else
         {
-            Logger.Log("플레이어 DIE");
             OnDieAction?.Invoke();
         }
     }

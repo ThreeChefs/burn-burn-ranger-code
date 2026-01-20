@@ -12,12 +12,17 @@ public class HomeBottomButton : MonoBehaviour
     [SerializeField] private RectTransform _icon;
     [SerializeField] private GameObject _textGo;
 
-    [SerializeField] private UIName _targetUI;
+    private UIName _targetUI;
 
     private int _index;
     public event Action<int> OnClickButton;
 
     private Sequence _seq;
+
+    private void Awake()
+    {
+        Enum.TryParse("UI_" + name.Split("Button_Bottom_")[1], out _targetUI);
+    }
 
     private void OnEnable()
     {
@@ -76,12 +81,6 @@ public class HomeBottomButton : MonoBehaviour
         _backGround = transform.FindChild<Image>("Image - Bg");
         _icon = transform.FindChild<RectTransform>("Image - Icon");
         _textGo = transform.FindChild<TextMeshProUGUI>("Text (TMP)").gameObject;
-
-        string uiEnumValue = "UI_" + ((name.Split("Button_Bottom_").Length > 1) ? name.Split("Button_Bottom_")[1] : "");
-        if (!Enum.TryParse(uiEnumValue, out _targetUI))
-        {
-            Logger.LogWarning($"UIName 없음: {uiEnumValue}");
-        }
     }
 #endif
 }

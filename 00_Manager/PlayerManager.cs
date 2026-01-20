@@ -78,7 +78,6 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
                 Equipment.IsEquip(item)));
         }
 
-        Logger.Log($"아이템 {inventoryData.List[2].ItemClass} {inventoryData.List[2].IsEquipped} {inventoryData.List[2].Level}");
         return inventoryData;
     }
 

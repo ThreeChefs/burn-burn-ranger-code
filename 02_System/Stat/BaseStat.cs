@@ -34,14 +34,10 @@ public class BaseStat
     /// </summary>
     /// <param name="amount"></param>
     /// <returns></returns>
-    public virtual bool TryUse(float amount, bool debug = false)
+    public virtual bool TryUse(float amount)
     {
         if (CurValue < amount)
         {
-            if (debug)
-            {
-                Logger.Log($"{type} 부족");
-            }
             return false;
         }
 

@@ -17,7 +17,6 @@ public class QuantumBallActiveSkill : ActiveSkill
                 .Spawn(projectileIndex, this, target, transform.position)
                 .GetComponent<Transform>();
 
-            Logger.Log("대기");
             yield return projectileSpawnInterval;
 
             int count = (int)skillValues[SkillValueType.ProjectileCount][CurLevel - 1];

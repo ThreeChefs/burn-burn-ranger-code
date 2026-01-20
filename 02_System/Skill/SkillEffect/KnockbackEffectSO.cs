@@ -13,7 +13,6 @@ public class KnockbackEffectSO : BaseEffectSO
             if (force > 0)
             {
                 knockback.ApplyKnockback(context.attacker.position, force);
-                Logger.Log($"{force} 만큼 넉백");
             }
         }
     }
