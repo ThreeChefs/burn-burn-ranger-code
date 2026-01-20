@@ -13,7 +13,6 @@ public class SkillSystem
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
-    public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
     private readonly Dictionary<int, int> _combinationRequirementMap = new();
     private readonly List<int> _maxedSkillIds = new();
     private int _activeSkillCount;
@@ -21,6 +20,12 @@ public class SkillSystem
 
     private bool _canSelectSkill;
     private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+
+    // public readonly colliections
+    public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
+    public IReadOnlyDictionary<int, int> CombinationRequirementMap => _combinationRequirementMap;
+    public IReadOnlyList<int> MaxedSkillIds => _maxedSkillIds;
+    public IReadOnlyDictionary<int, SkillData> SkillDataCache => _skillDataCache;
 
     #region 초기화
     public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
