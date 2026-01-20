@@ -246,7 +246,9 @@ public class PlayerProjectile : BaseProjectile
     #region Hit Utils
     protected override float CalculateDamage()
     {
-        return attack.MaxValue * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1];
+        return attack.MaxValue
+            * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1]
+            * skill.DamageMultiplier;
     }
 
     private void OnValidHit(in HitContext context)
