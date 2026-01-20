@@ -56,13 +56,12 @@ public class SkillSystem
 
         // todo: 테스트용이니까 지우기
         Dictionary<int, int> testSkills = PlayerManager.Instance.Inventory.RequiredSkills;
-        for (int i = 0; i <= testSkills.Keys.Max(); i++)    // 스킬 아이디로 순회
+        foreach (var keyValuePair in testSkills)
         {
-            if (!testSkills.TryGetValue(i, out int level)) continue;
-            SkillData skill = _skillDataCache[i];
-            for (int j = 0; j < level; j++)
+            SkillData skill = _skillDataCache[keyValuePair.Key];
+            for (int j = 0; j < keyValuePair.Value; j++)
             {
-                TrySelectSkill(i);
+                TrySelectSkill(skill.Id);
             }
         }
 
