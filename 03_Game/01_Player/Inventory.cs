@@ -18,10 +18,7 @@ public class Inventory
 
     // todo: 장비 아이템은 따로 관리
     // 현재는 테스트용으로 열기 -> private set으로 닫아두기
-    public Dictionary<int, int> RequiredSkills = new()
-    {
-        { 30, 1 }
-    };
+    public Dictionary<int, int> RequiredSkills = new();
 
     public void Init()
     {

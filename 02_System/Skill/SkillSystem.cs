@@ -68,14 +68,12 @@ public class SkillSystem
 
         // skill id, level 
         IReadOnlyDictionary<int, int> defaultSkills = PlayerManager.Instance.Equipment.HavingSkills;
-        int maxKey = defaultSkills.Keys.Max();
-        for (int i = 0; i <= maxKey; i++)    // 스킬 아이디로 순회
+        foreach (KeyValuePair<int, int> keyValuePair in defaultSkills)
         {
-            if (!defaultSkills.TryGetValue(i, out int level)) continue;
-            SkillData skill = _skillDataCache[i];
-            for (int j = 0; j < level; j++)
+            SkillData skill = _skillDataCache[keyValuePair.Key];
+            for (int j = 0; j < keyValuePair.Value; j++)
             {
-                TrySelectSkill(i);
+                TrySelectSkill(skill.Id);
             }
         }
     }
