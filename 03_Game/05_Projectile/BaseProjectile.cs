@@ -57,7 +57,7 @@ public class BaseProjectile : PoolObject, IAttackable
     {
         if (vfxs != null)
         {
-            _trail = vfxs.GetComponentInChildren<TrailRenderer>();
+            _trail = GetComponentInChildren<TrailRenderer>();
         }
     }
 
@@ -102,6 +102,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
         if (_trail != null)
         {
+            _trail.Clear();
             _trail.enabled = true;
         }
     }
