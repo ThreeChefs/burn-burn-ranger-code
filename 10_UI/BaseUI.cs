@@ -38,7 +38,6 @@ public abstract class BaseUI : MonoBehaviour
     {
         this.gameObject.SetActive(true);
         
-        Logger.Log($"{this.gameObject.name} Open" );
         OnOpenAction?.Invoke(this);
         
         OpenUIInternal();

@@ -346,8 +346,6 @@ public class StageWaveController
             }
             else
             {
-                Logger.Log("스테이지 클리어");
-
                 if (_nowWave != null)
                 {
                     _saveExp += _nowWave.WaveClearExp;
