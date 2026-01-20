@@ -108,6 +108,7 @@ public class ItemDetailUI : BaseUI
             if (i < itemData.Equipments.Length)
             {
                 EquipmentEffectData equipmentData = itemData.Equipments[i];
+                if (equipmentData.UnlockClass == ItemClass.None) continue;
                 _effectDetails[i].SetData(equipmentData, equipmentData.UnlockClass > instance.ItemClass);
             }
             else
