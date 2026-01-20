@@ -59,6 +59,11 @@ public class ItemDetailUI : BaseUI
         _allLevelUpButton.onClick.AddListener(AllClickLevelUpButton);
 
         // 아이템 이벤트 구독
+
+        foreach (ItemEffectUI effectUI in _effectDetails)
+        {
+            effectUI.gameObject.SetActive(false);
+        }
     }
 
     private void OnDisable()
@@ -103,18 +108,19 @@ public class ItemDetailUI : BaseUI
         _statIcon.sprite = ItemUtils.GetStatType(itemData.EquipmentType) == StatType.Attack ? _attackIcon : _healthIcon;
         _itemDescription.text = itemData.Description;
 
-        for (int i = 0; i < MaxEffectCount; i++)
+        for (int uiIndex = 0, dataIndex = 0;
+            uiIndex < MaxEffectCount && dataIndex < itemData.Equipments.Length;
+            uiIndex++, dataIndex++)
         {
-            if (i < itemData.Equipments.Length)
+            if (itemData.Equipments[dataIndex].UnlockClass == ItemClass.None)
             {
-                EquipmentEffectData equipmentData = itemData.Equipments[i];
-                if (equipmentData.UnlockClass == ItemClass.None) continue;
-                _effectDetails[i].SetData(equipmentData, equipmentData.UnlockClass > instance.ItemClass);
+                dataIndex++;
+                if (dataIndex >= itemData.Equipments.Length) return;
             }
-            else
-            {
-                _effectDetails[i].gameObject.SetActive(false);
-            }
+
+            _effectDetails[uiIndex].SetData(
+                itemData.Equipments[dataIndex],
+                itemData.Equipments[dataIndex].UnlockClass > instance.ItemClass);
         }
 
         UpdateLevelValue();
