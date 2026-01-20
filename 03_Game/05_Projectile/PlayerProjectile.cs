@@ -98,22 +98,28 @@ public class PlayerProjectile : BaseProjectile
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-
-                HitContext context = GetHitContext(collision);
-                OnValidHit(in context);
-
+                HitContext context;
                 // 관통 무한
                 if (passCount == Define.InfinitePass)
                 {
+                    context = GetHitContext(collision);
+                    OnValidHit(in context);
+
                     return;
                 }
 
                 passCount--;
+                if (passCount < 0)
+                {
+                    gameObject.SetActive(false);
+                    return;
+                }
+
+                context = GetHitContext(collision);
+                OnValidHit(in context);
 
                 if (passCount <= 0)
                 {
-                    moveDir = Vector2.zero;
-
                     if (data.HasAreaPhase)  // 장판 존재
                     {
                         UpdateAreaPhase();
