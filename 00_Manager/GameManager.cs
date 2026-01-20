@@ -30,6 +30,9 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     protected override void Init()
     {
+        // 타겟 프레임 설정
+        Application.targetFrameRate = 60;
+
         Scene = new();
         StageDatabase = _stageDatabase.GetDatabase<StageData>();
         Data = new DataManager();
