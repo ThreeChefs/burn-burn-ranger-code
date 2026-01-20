@@ -30,12 +30,9 @@ public class ItemDetailUI : BaseUI
     private Outline _itemIconOutline;
 
     [Header("Skill Info")]
-    [SerializeField] private RectTransform _skillInfoParent;
-    [SerializeField] private GameObject[] _skillDetails;
-    private Image[] _skillColors;
-    private Outline[] _skillColorOutlines;
-    private TextMeshProUGUI[] _skillDescriptions;
-    private const int MaxSkillCount = 5;
+    [SerializeField] private RectTransform _effectInfoParent;
+    [SerializeField] private ItemEffectUI[] _effectDetails;
+    private const int MaxEffectCount = 5;
 
     [Header("Wallet")]
     [SerializeField] private TextMeshProUGUI _goldText;
@@ -81,22 +78,6 @@ public class ItemDetailUI : BaseUI
         base.AwakeInternal();
 
         _itemIconOutline = _itemIconContainer.GetComponent<Outline>();
-
-        ResetList();
-    }
-
-    private void ResetList()
-    {
-        _skillColors = new Image[MaxSkillCount];
-        _skillColorOutlines = new Outline[MaxSkillCount];
-        _skillDescriptions = new TextMeshProUGUI[MaxSkillCount];
-
-        for (int i = 0; i < MaxSkillCount; i++)
-        {
-            _skillColors[i] = _skillDetails[i].GetComponentInChildren<Image>();
-            _skillColorOutlines[i] = _skillDetails[i].GetComponentInChildren<Outline>();
-            _skillDescriptions[i] = _skillDetails[i].GetComponentInChildren<TextMeshProUGUI>();
-        }
     }
     #endregion
 
@@ -122,20 +103,16 @@ public class ItemDetailUI : BaseUI
         _statIcon.sprite = ItemUtils.GetStatType(itemData.EquipmentType) == StatType.Attack ? _attackIcon : _healthIcon;
         _itemDescription.text = itemData.Description;
 
-        for (int i = 0; i < MaxSkillCount; i++)
+        for (int i = 0; i < MaxEffectCount; i++)
         {
             if (i < itemData.Equipments.Length)
             {
-                // todo: item class로 lock/unlock 표기하기
-                _skillColors[i].color = ItemUtils.GetClassColor((ItemClass)i + 1);
-                _skillColorOutlines[i].effectColor = ItemUtils.GetHighlightColor((ItemClass)i + 1);
-                _skillDescriptions[i].text = itemData.Equipments[i].Description;
-                _skillDescriptions[i].transform.parent.gameObject.SetActive(true);
+                EquipmentEffectData equipmentData = itemData.Equipments[i];
+                _effectDetails[i].SetData(equipmentData, equipmentData.UnlockClass < instance.ItemClass);
             }
             else
             {
-                _skillColors[i].gameObject.SetActive(false);
-                _skillDescriptions[i].transform.parent.gameObject.SetActive(false);
+                _effectDetails[i].gameObject.SetActive(false);
             }
         }
 
@@ -211,11 +188,11 @@ public class ItemDetailUI : BaseUI
         _attackIcon = LoadIcon256("ItemIcon_Gear_Sword");
         _healthIcon = LoadIcon256("ItemIcon_Heart_Red");
 
-        _skillInfoParent = transform.FindChild<RectTransform>("SkillList");
-        _skillDetails = new GameObject[MaxSkillCount];
-        for (int i = 0; i < MaxSkillCount; i++)
+        _effectInfoParent = transform.FindChild<RectTransform>("SkillList");
+        _effectDetails = new ItemEffectUI[MaxEffectCount];
+        for (int i = 0; i < MaxEffectCount; i++)
         {
-            _skillDetails[i] = _skillInfoParent.GetChild(i).gameObject;
+            _effectDetails[i] = _effectInfoParent.GetChild(i).GetComponent<ItemEffectUI>();
         }
 
         _goldText = transform.FindChild<Transform>("Bar_Gold").FindChild<TextMeshProUGUI>("Text (TMP) - Value");
