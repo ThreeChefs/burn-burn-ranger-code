@@ -17,7 +17,7 @@ public class MeatItem : MonoBehaviour
             Logger.Log($"고기 냠냠 HP → {health.CurValue}/{health.MaxValue}");
         }
 
-
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 2);
 
         Destroy(gameObject);
     }

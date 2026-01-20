@@ -8,13 +8,15 @@ public enum SfxName
     Sfx_Projectile,
 
     Test,
+    // Item
+    Sfx_Item,
 }
 
 public enum BgmName
 {
     Main,
     TestBgm,
-    
+
 }
 
 
@@ -32,4 +34,7 @@ public enum AudioClipIndex
 
     // In Stage
     Sfx_Projectile,
+
+    // Item
+    Sfx_Item,
 }

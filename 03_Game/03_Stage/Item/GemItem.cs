@@ -31,7 +31,9 @@ public class GemItem : MonoBehaviour
     {
         if (!other.TryGetComponent<StagePlayer>(out var player))
             return;
+
         player.StageLevel.AddExp(itemData.expValue);
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 1);
         Destroy(gameObject);
     }
 }

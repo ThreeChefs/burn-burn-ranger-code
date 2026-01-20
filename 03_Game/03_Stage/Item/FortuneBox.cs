@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class FortuneBox : PoolObject
 {
@@ -40,6 +40,7 @@ public class FortuneBox : PoolObject
             ShowFortuneBoxUI();
             gameObject.SetActive(false);
         }
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Item, idx: 2);
 
     }
 
