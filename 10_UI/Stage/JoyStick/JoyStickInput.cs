@@ -1,19 +1,13 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-[RequireComponent(typeof(RectTransform))]
-[RequireComponent(typeof(Canvas))]
-[RequireComponent(typeof(CanvasScaler))]
-[RequireComponent(typeof(GraphicRaycaster))]
-public class JoyStickInput : MonoBehaviour
+public class JoyStickInput : BaseUI
 {
     [Header("조이스틱 이미지")]
-    [SerializeField] private RectTransform _joyStickBase;
-    [SerializeField] private RectTransform _joyStickKnob;
+    [SerializeField] private RectTransform _outerCircle;
+    [SerializeField] private RectTransform _innerCircle;
     [SerializeField] private float _radiusMargin;
 
     // 컴포넌트
-    private Canvas _canvas;
     private RectTransform _rectTransform;
     private Camera _camera;
 
@@ -22,18 +16,24 @@ public class JoyStickInput : MonoBehaviour
     private Vector2 _inputStartPos;
     private float _radiusOffset;
 
+    private Vector2 _defaultPos;
+
     public Vector2 Direction { get; private set; }
 
     private void Awake()
     {
-        _canvas = GetComponent<Canvas>();
         _rectTransform = GetComponent<RectTransform>();
-        _radiusOffset = (_joyStickBase.rect.width / 2);
+        _radiusOffset = (_outerCircle.rect.width / 2);
+        _defaultPos = transform.position;
     }
 
     private void Start()
     {
         _camera = Camera.main;
+        //if (!Application.isMobilePlatform)
+        //{
+        //    gameObject.SetActive(false);
+        //}
     }
 
     private void Update()
@@ -77,8 +77,8 @@ public class JoyStickInput : MonoBehaviour
             _camera,
             out Vector2 localPos);
 
-        _joyStickBase.localPosition = localPos;
-        _joyStickKnob.localPosition = Vector2.zero;
+        _outerCircle.localPosition = localPos;
+        _innerCircle.localPosition = Vector2.zero;
     }
 
     private void UpdateInput(Vector2 touchScreenPos)
@@ -101,7 +101,7 @@ public class JoyStickInput : MonoBehaviour
         Vector2 delta = currentLocalPos - startLocalPos;
         Vector2 clamped = Vector2.ClampMagnitude(delta, _radiusOffset);
 
-        _joyStickKnob.localPosition = clamped;
+        _innerCircle.localPosition = clamped;
 
         Direction = clamped / _radiusOffset;
     }
@@ -110,15 +110,15 @@ public class JoyStickInput : MonoBehaviour
     {
         _inputActive = false;
         Direction = Vector2.zero;
-        _joyStickKnob.localPosition = Vector2.zero;
+        _innerCircle.localPosition = _defaultPos;
     }
 
     #region 에디터 전용
 #if UNITY_EDITOR
     private void Reset()
     {
-        _joyStickBase = transform.FindChild<RectTransform>("Image - JoyStickBase");
-        _joyStickKnob = transform.FindChild<RectTransform>("Image - JoyStickKnob");
+        _outerCircle = transform.FindChild<RectTransform>("Image - OuterCircle");
+        _innerCircle = transform.FindChild<RectTransform>("Image - InnerCircle");
     }
 #endif
     #endregion

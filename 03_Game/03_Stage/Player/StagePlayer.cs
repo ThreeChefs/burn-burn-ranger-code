@@ -91,6 +91,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         statSliderUI.Init(_health);
 
         _moveDirectionArrow.gameObject.SetActive(false);
+
+        _joyStick = UIManager.Instance.LoadUI(UIName.UI_JoyStick) as JoyStickInput;
     }
 
     private void Update()

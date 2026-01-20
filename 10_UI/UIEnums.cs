@@ -8,6 +8,7 @@ public enum UIName
     UI_Defeat,
     UI_StagePause,
     UI_WarnningSign,
+    UI_JoyStick,
 
     // Outside of Stage
     UI_Home,
