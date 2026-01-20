@@ -1,4 +1,3 @@
-using Sirenix.OdinInspector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,6 +33,8 @@ public class StageManager : SceneSingletonManager<StageManager>
     public int KillCount => _killCount;
 
 
+    // 스테이지 이벤트
+    private readonly EvenetQueue _eventQueue = new EvenetQueue();
 
 
     // 액션
@@ -87,7 +88,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         _player.OnDieAction += GameOver;
 
         // 플레이어 이벤트 연결
-        _player.StageLevel.OnLevelChanged += SpawnSkillSelectUI;
+        _player.StageLevel.OnLevelChanged += ShowSkillSelectUI;
         UIManager.Instance.LoadUI(UIName.UI_Stage);
 
         // 스킬 시스템 생성
@@ -121,7 +122,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         // 테스트용
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            SpawnSkillSelectUI(_player.StageLevel.Level);
+            ShowSkillSelectUI(_player.StageLevel.Level);
         }
         if (_isPlaying == false) return;
         _waveController?.Update();
@@ -135,11 +136,47 @@ public class StageManager : SceneSingletonManager<StageManager>
         AddKillCountAction?.Invoke(_killCount);
     }
 
-    void SpawnSkillSelectUI(int level)
+    // 스킬선택 UI
+    void ShowSkillSelectUI(int level)
     {
-        PauseGame();
-        UIManager.Instance.ShowUI(UIName.UI_SkillSelect);
+        _eventQueue.Enqueue(done =>
+        {
+            PauseGame();
+
+            BaseUI ui = UIManager.Instance.ShowUI(UIName.UI_SkillSelect);
+
+            void OnClosed(BaseUI closed)
+            {
+                ui.OnClosedAction -= OnClosed;
+                done();
+            }
+
+            ui.OnClosedAction += OnClosed;
+        });
     }
+
+    // 행운열차 UI
+    public void ShowFortuneBoxUI(WaveClearRewardType reward)
+    {
+        _eventQueue.Enqueue(done =>
+        {
+            PauseGame();
+
+            FortuneBoxUI ui = (FortuneBoxUI)UIManager.Instance.ShowUI(UIName.UI_FortuneBox);
+            ui.Init(reward);
+            
+            ui.OnClosedAction += OnClosed;
+
+            void OnClosed(BaseUI closed)
+            {
+                ui.OnClosedAction -= OnClosed;
+                ResumeGame();
+                done();
+            }
+
+        });
+    }
+
 
     public void PauseGame()
     {
@@ -211,7 +248,6 @@ public class StageManager : SceneSingletonManager<StageManager>
                 exp = _waveController.SaveExp,
             };
 
-            // todo : GameOver 했을 때에도 모아둔 보상을 까서 전달해야함
             resultUI.Init(resultInfo, null);
         }
 
