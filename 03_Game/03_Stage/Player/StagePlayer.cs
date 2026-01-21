@@ -1,5 +1,7 @@
 ﻿using DG.Tweening;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -52,6 +54,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private PlayerStat _health;
     private PlayerStat _heal;
 
+    // 장비 효과
+    private List<EquipmentEffectInstance> _effects;
+    public IReadOnlyList<EquipmentEffectInstance> Effects => _effects;
+
     // 타이머
     private float _healTimer;
 
@@ -78,6 +84,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         StageLevel = new(1, 0f);
         GoldValue = 0;
         _defaultRadius = _gemCollector.radius;
+        _effects = new();
     }
 
     private void Start()
@@ -97,6 +104,14 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _moveDirectionArrow.gameObject.SetActive(false);
 
         _joyStick = UIManager.Instance.LoadUI(UIName.UI_JoyStick) as JoyStickInput;
+
+        // 스킬 효과 초기화
+        foreach (BaseEquipmentEffectSO effectSO in PlayerManager.Instance.Equipment.EffectSOs)
+        {
+            Logger.Log($"스킬 효과 생성: {effectSO.name}");
+            EquipmentEffectInstance instance = effectSO.CreateInstance();
+            _effects.Add(instance);
+        }
     }
 
     private void Update()
@@ -204,6 +219,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
+    #region 전투 관리
     public void TakeDamage(float value)
     {
         PlayerStat health = Condition[StatType.Health];
@@ -212,14 +228,40 @@ public class StagePlayer : MonoBehaviour, IDamageable
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
             if (health.CurValue == 0)
             {
-                OnDieAction?.Invoke();
+                Die();
             }
         }
         else
         {
-            OnDieAction?.Invoke();
+            Die();
         }
     }
+
+    private void Die()
+    {
+        foreach (var effect in _effects.OfType<IReviveEffect>())
+        {
+            BaseEffectContext context = new() { Reason = TriggerReason.Hpzero };
+
+            if (!effect.CanTrigger(context))
+            {
+                continue;
+            }
+
+            Logger.Log("부활!!!!!");
+            ReviveData data = effect.GetReviveData();
+            Revive(data);
+            return;
+        }
+        OnDieAction?.Invoke();
+    }
+
+    private void Revive(ReviveData data)
+    {
+        _health.Add(_health.MaxValue * data.hpRatio);
+        // todo: 무적 만들기
+    }
+    #endregion
 
     #region 레벨
     public void AddExp(float exp)
