@@ -14,8 +14,16 @@ public class PickUpButton : BaseButton
     [SerializeField] private Image _moneyIcon;
     [SerializeField] private TextMeshProUGUI _requiredValue;
 
+    private Image _image;
+
     private PickUpSystem _pickUpSystem;
     private readonly List<ItemInstance> _items = new();
+
+    protected override void Awake()
+    {
+        base.Awake();
+        _image = GetComponent<Image>();
+    }
 
     private void Start()
     {
@@ -78,6 +86,18 @@ public class PickUpButton : BaseButton
 
     private void SetPickButton(int index)
     {
+        int value = _boxWallets[index].RequiredValue;
+        if (value > PlayerManager.Instance.Wallet[_boxWallets[index].WalletType].Value)
+        {
+            _image.color = Color.gray;
+            _button.enabled = false;
+        }
+        else
+        {
+            _image.color = Color.white;
+            _button.enabled = true;
+        }
+
         _moneyIcon.sprite = _boxWallets[index].MoneyIcon;
         _requiredValue.text = _boxWallets[index].RequiredValue.ToString();
     }
