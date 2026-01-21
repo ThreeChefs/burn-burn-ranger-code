@@ -12,6 +12,8 @@ public class SpriteSorting : MonoBehaviour
         sprites = GetComponentsInChildren<SpriteRenderer>(true);
 
 
+        if (_sprSortingLayer == SpriteSortingLayer.Unspecified) return; // 따로 설정하지 않기 (기존 프리팹에 설정되어있는대로 쓰기
+
         string layerName = GetLayerName(_sprSortingLayer);
         int layerId = SortingLayer.NameToID(layerName);     // 레이어 ID는 0,1,2.. 가 아니어서 레이어 이름을 가져와서 아이디를 넣어줘야함!
 
