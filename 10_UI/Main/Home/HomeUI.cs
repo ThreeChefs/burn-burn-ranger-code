@@ -25,6 +25,7 @@ public class HomeUI : BaseUI
         _stageSelectUI.OnSelectStageEvent += SetStageSelectButtonImg;
 
         int lastStageIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
+        lastStageIndex = Mathf.Clamp(lastStageIndex, 0, lastStageIndex);
         if (0 <= lastStageIndex && lastStageIndex < GameManager.Instance.StageDatabase.Count)
         {
             _stageName.text = GameManager.Instance.StageDatabase[lastStageIndex].StageName;

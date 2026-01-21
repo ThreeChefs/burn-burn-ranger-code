@@ -61,7 +61,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     bool SetStageData()
     {
         NowStageNum = GameManager.Instance.StageProgress.LastSelectedStageNum;
-        int stageIndex = NowStageNum - 1;
+        int stageIndex = Mathf.Clamp(NowStageNum - 1, 0, NowStageNum - 1);
 
         if (_stageDatas.Count <= stageIndex || stageIndex < 0)
         {
@@ -223,6 +223,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         // 스테이지 진행 정보 저장
         GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum + 1, (int)PlayTime);
+        GameManager.Instance.SaveData();
     }
 
     public void GameOver()
@@ -253,6 +254,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
         // 스테이지 진행 정보 저장
         GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum, (int)PlayTime);
+        GameManager.Instance.SaveData();
     }
 
 
