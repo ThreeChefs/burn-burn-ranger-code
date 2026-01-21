@@ -10,10 +10,9 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
     [Header("Settings")]
     [SerializeField] private float thinkInterval = 0.1f; // 보스 패턴 진입 딜레이시간 
     [SerializeField] private bool CollectPatternBase = true;
-    [Header("Gimmicks")]
-    [SerializeField] private BossDiePattern firePattern;
-    [SerializeField, Range(0f, 1f)] private float phase50HpRatio = 0.5f;
-    private bool _phase50Trigger;
+
+
+
 
     public event Action<BossPatternBase> OnPatternStarted;
     public event Action<BossPatternBase> OnPatternFinished;
@@ -51,8 +50,6 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
         _patterns.RemoveAll(p => p == null);
 
 
-        if (firePattern == null)
-            firePattern = GetComponentInChildren<BossDiePattern>(true);
 
 
         _patterns.RemoveAll(p => p is BossDiePattern);
@@ -63,8 +60,7 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
             for (int i = 0; i < _patterns.Count; i++)
                 _patterns[i].Bind(boss);
 
-            if (firePattern != null)
-                firePattern.Bind(boss);
+
         }
 
 
@@ -75,17 +71,7 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
         if (boss == null || boss.IsDead) return;
 
 
-        if (!_phase50Trigger && firePattern != null && boss.HpRatio <= phase50HpRatio)
-        {
-            _phase50Trigger = true;
 
-
-            CancelCurrent(invokeFinished: true);
-
-
-            Play(firePattern);
-            return;
-        }
 
 
         if (IsRunning) return;
