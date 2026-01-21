@@ -279,7 +279,7 @@ public class SkillSystem
                     description,
                     skillData.Icon,
                     skillData.Type,
-                    null));
+                    new Sprite[0]));
             }
         }
 
@@ -354,12 +354,21 @@ public class SkillSystem
             _skillDataCache.TryGetValue(id, out SkillData skillData);
             _ownedSkills.TryGetValue(id, out BaseSkill skill);
 
-            // 조합 스킬 아이콘 가져오기
-            Sprite[] icons = new Sprite[skillData.CombinationIds.Length];
-            for (int i = 0; i < skillData.CombinationIds.Length; i++)
+            // 조합 스킬 아이콘 가져오기 
+            // 패시브 스킬에서만 조합스킬이 되는 액티브 스킬 아이콘이 보임
+            List<Sprite> icons = new();
+            foreach (int combinationId in skillData.CombinationIds)
             {
-                _skillDataCache.TryGetValue(i, out SkillData combinationSkill);
-                icons[i] = combinationSkill.Icon;
+                if (!_skillDataCache.ContainsKey(combinationId)) continue;
+                int[] materialIds = _skillDataCache[combinationId].CombinationIds;      // 재료 아이디
+                foreach (int materialId in materialIds)
+                {
+                    _skillDataCache.TryGetValue(materialId, out SkillData materialData);
+                    if (materialData.Type == SkillType.Active)
+                    {
+                        icons.Add(materialData.Icon);
+                    }
+                }
             }
 
             int curLevel;
@@ -398,7 +407,7 @@ public class SkillSystem
                 description,
                 skillData.Icon,
                 skillData.Type,
-                icons));
+                skillData.Type == SkillType.Passive ? icons.ToArray() : new Sprite[0]));
         });
     }
 }
