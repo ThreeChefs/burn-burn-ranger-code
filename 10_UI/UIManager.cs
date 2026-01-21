@@ -72,7 +72,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
             {
                 if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
                 {
-                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
+                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform, false);
                 }
             }
 
