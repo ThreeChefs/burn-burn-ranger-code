@@ -41,7 +41,7 @@ public class LightingParticle : ParticlePoolObject
         Vector3 targetPos = transform.position;
 
         Camera camera = Camera.main;
-        float startY = camera.transform.position.y + camera.orthographicSize;
+        float startY = camera.transform.position.y + camera.orthographicSize * 2;
 
         transform.position = new Vector2(targetPos.x, startY);
 
