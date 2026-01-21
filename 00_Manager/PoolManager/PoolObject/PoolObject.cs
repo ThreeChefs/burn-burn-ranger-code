@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 /// <summary>
@@ -36,7 +36,7 @@ public class PoolObject : MonoBehaviour
     {
         OnDisableInternal();
         OnDisableAction?.Invoke(this);
-        this.transform.localScale = Vector3.one;   
+        this.transform.localScale = Vector3.one;
     }
 
     protected virtual void OnDisableInternal()
