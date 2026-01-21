@@ -81,6 +81,9 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlaySfx(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
     {
+        if (SfxLimiter.CanPlay(sfxName, idx) == false) return;
+
+
         if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
             PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
@@ -89,11 +92,15 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, AudioSource aSource = null)
     {
-        if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
+        if(SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
-            PlayInternal(SoundType.Sfx, clip, -1, aSource, volume, false, pitch);
-        }
+            int idx = clip.GetRandomClipIdx();
+            
+            if (SfxLimiter.CanPlay(sfxName, idx) == false) return;
 
+            PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
+
+        }
     }
 
     public void PlayBgm(BgmName bgmName, int idx = 0, float volume = 1.0f, bool loop = true, float pitch = 1.0f, AudioSource aSource = null)
@@ -106,12 +113,12 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
 
     // Play 통합
-    private void PlayInternal(SoundType type, AudioClipGroupData group, int clipIndex, AudioSource audioSource, float volume, bool loop, float pitch)
+    private void PlayInternal(SoundType type, AudioClipGroupData group, int idx, AudioSource audioSource, float volume, bool loop, float pitch)
     {
         if (group == null)
             return;
 
-        AudioClip clip = clipIndex < 0 ? group.GetRandomClip() : group.GetClip(clipIndex);
+        AudioClip clip = group.GetClip(idx);
         AudioSource target = audioSource != null ? 
             audioSource : (type == SoundType.Sfx ? GetSFXAudioSource() : _bgmAudioSource);
 
