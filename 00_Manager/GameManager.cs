@@ -40,6 +40,12 @@ public class GameManager : GlobalSingletonManager<GameManager>
         PickUpSystem = new(_itemBoxDatabase);
     }
 
+
+    private void Start()
+    {
+        LoadData();
+    }
+
     private void OnApplicationQuit()
     {
         // Data.Save();
@@ -52,13 +58,14 @@ public class GameManager : GlobalSingletonManager<GameManager>
     [Button("저장")]
     public void SaveData()
     {
-
+        Data.Save(PlayerManager.Instance.Condition, PlayerManager.Instance, StageProgress, GrowthProgress);
     }
 
 
     [Button("불러오기")]
     public void LoadData()
     {
+        Data.Load(PlayerManager.Instance.Condition, PlayerManager.Instance, StageProgress, GrowthProgress);
     }
 
 
