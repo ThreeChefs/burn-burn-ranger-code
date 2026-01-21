@@ -30,6 +30,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         rb = GetComponent<Rigidbody2D>();
         spriter = GetComponentInChildren<SpriteRenderer>(true);
         bossController = GetComponent<BossController>();
+
     }
     protected override void OnEnableInternal()
     {
@@ -154,6 +155,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         }
         DamageText damageText = CommonPoolManager.Instance.Spawn<DamageText>(CommonPoolIndex.DamageText, transform.position);
         damageText?.Init(value);
+        CommonPoolManager.Instance.Spawn<PoolObject>(CommonPoolIndex.Particle_Hit, transform.position);
     }
 
 
@@ -225,4 +227,6 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         _isKnockback = false;
         _knockbackCoroutine = null;
     }
+
+
 }

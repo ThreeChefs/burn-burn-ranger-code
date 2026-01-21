@@ -9,7 +9,8 @@ public enum CommonPoolIndex
     FortuneBox,
     Particle_Explosion,
     Particle_Blood,
-    Particle_Lighting
+    Particle_Lighting,
+    Particle_Hit,
 }
 
 public enum MonsterPoolIndex
