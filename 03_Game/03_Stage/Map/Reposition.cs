@@ -11,6 +11,14 @@ public class Reposition : MonoBehaviour
     private Transform _player;
     private float _threshold;
 
+    private const string SortingLayer = "BackGround";
+
+    private void Awake()
+    {
+        TilemapRenderer render = GetComponent<TilemapRenderer>();
+        render.sortingLayerName = SortingLayer;
+    }
+
     private void Start()
     {
         _player = PlayerManager.Instance.StagePlayer.transform;
