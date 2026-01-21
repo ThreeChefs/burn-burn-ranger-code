@@ -61,7 +61,7 @@ public class StageManager : SceneSingletonManager<StageManager>
     bool SetStageData()
     {
         NowStageNum = GameManager.Instance.StageProgress.LastSelectedStageNum;
-        int stageIndex = NowStageNum - 1;
+        int stageIndex = Mathf.Clamp(NowStageNum - 1, 0, NowStageNum - 1);
 
         if (_stageDatas.Count <= stageIndex || stageIndex < 0)
         {
