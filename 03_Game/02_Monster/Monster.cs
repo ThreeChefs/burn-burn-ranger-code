@@ -43,7 +43,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
 
     }
-    private void OnDisable()
+    protected override void OnDisableInternal()
     {
 
         if (_hitCooldownCoroutine != null)
