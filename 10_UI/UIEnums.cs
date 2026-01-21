@@ -41,3 +41,13 @@ public enum UISubCanvasOrder
     TopMost = 300,
     PopupTopMost = 400
 }
+
+public enum BottomBarMenuType
+{
+    Shop,
+    Equipment,
+    Home,
+    Challenge,
+    Growth,
+
+}
