@@ -259,7 +259,7 @@ public class PlayerProjectile : BaseProjectile
 
     private void OnValidHit(in HitContext context)
     {
-        foreach (BaseEffectSO effect in data.HitEffects)
+        foreach (BaseSkillEffectSO effect in data.HitEffects)
         {
             effect.Apply(in context);
         }

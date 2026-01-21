@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New KnockbackSkillEffect", menuName = "SO/Skill/Effect/Knockback")]
-public class KnockbackEffectSO : BaseEffectSO
+public class KnockbackEffectSO : BaseSkillEffectSO
 {
     public override void Apply(in HitContext context)
     {

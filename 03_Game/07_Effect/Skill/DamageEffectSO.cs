@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New DamageSkillEffect", menuName = "SO/Skill/Effect/Damage")]
-public class DamageEffectSO : BaseEffectSO
+public class DamageEffectSO : BaseSkillEffectSO
 {
     public override void Apply(in HitContext context)
     {
