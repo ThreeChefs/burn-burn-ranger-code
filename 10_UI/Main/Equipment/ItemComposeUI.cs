@@ -198,14 +198,23 @@ public class ItemComposeUI : BaseUI
 
     private void UpdateInventoryUI()
     {
+        // 아이템 슬롯이 인벤토리 슬롯보다 적을 경우
         for (int i = _inventorySlots.Count; i < _inventory.Items.Count; i++)
         {
             AddItemSlot(i);
         }
 
-        for (int i = 0; i < _inventory.Items.Count; i++)
+        // 아이템 슬롯에 인벤토리 아이템 적용
+        int itemIndex;
+        for (itemIndex = 0; itemIndex < _inventory.Items.Count; itemIndex++)
         {
-            _inventorySlots[i].SetSlot(_inventory.Items[i]);
+            _inventorySlots[itemIndex].SetSlot(_inventory.Items[itemIndex]);
+        }
+
+        // 아이템 슬롯이 인벤토리 슬롯보다 많을 경우
+        for (; itemIndex < _inventorySlots.Count; itemIndex++)
+        {
+            _inventorySlots[itemIndex].gameObject.SetActive(false);
         }
     }
 
