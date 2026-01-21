@@ -16,7 +16,8 @@ public class Reposition : MonoBehaviour
     private void Awake()
     {
         TilemapRenderer render = GetComponent<TilemapRenderer>();
-        render.sortingLayerName = SortingLayer;
+        // todo: 나중에 키기
+        //render.sortingLayerName = SortingLayer;
     }
 
     private void Start()
