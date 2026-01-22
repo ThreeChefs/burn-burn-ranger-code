@@ -7,6 +7,7 @@ public class KillStatus
     private readonly Dictionary<(MonsterType, int), int> _intervalCount = new();
 
     private IReadOnlyList<EquipmentEffectInstance> _effects;
+    private BuffSystem _buffSystem;
 
     public void Init()
     {
@@ -14,6 +15,7 @@ public class KillStatus
         _intervalCount.Clear();
 
         _effects = PlayerManager.Instance.StagePlayer.Effects;
+        _buffSystem = PlayerManager.Instance.StagePlayer.BuffSystem;
     }
 
     public void OnMonsterKilled(MonsterType type)
@@ -28,12 +30,15 @@ public class KillStatus
 
         foreach (IThresholdEffect effect in _effects.OfType<IThresholdEffect>())
         {
-            if (!effect.TryConsume(context))
+            if (!effect.TryConsume(context, out List<BaseBuff> buffs))
             {
                 continue;
             }
 
-
+            foreach (BaseBuff buff in buffs)
+            {
+                _buffSystem.Add(buff);
+            }
         }
     }
 
