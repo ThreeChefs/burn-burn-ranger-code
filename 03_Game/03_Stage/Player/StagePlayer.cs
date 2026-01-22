@@ -119,7 +119,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
             _effects.Add(instance);
         }
 
-        BuffSystem = new(this);
+        BuffSystem = new(Condition);
 
         KillStatus = new();
         KillStatus.Init();

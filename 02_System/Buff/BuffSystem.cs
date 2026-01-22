@@ -7,11 +7,11 @@ using System.Linq;
 public class BuffSystem
 {
     private readonly List<BuffInstance> _active = new();
-    private readonly StagePlayer _player;
+    private readonly PlayerCondition _condition;
 
-    public BuffSystem(StagePlayer player)
+    public BuffSystem(PlayerCondition condition)
     {
-        _player = player;
+        _condition = condition;
     }
 
     public void Add(BuffInstanceKey key, BaseBuff buff)
@@ -26,7 +26,7 @@ public class BuffSystem
 
         BuffInstance instance = new(key, buff);
         _active.Add(instance);
-        buff.OnApply(_player);
+        buff.OnApply(_condition);
     }
 
     public void Update(float dt)
@@ -34,7 +34,7 @@ public class BuffSystem
         for (int i = 0; i < _active.Count; i++)
         {
             var instance = _active[i];
-            instance.Source.OnUpdate(_player, dt);
+            instance.Source.OnUpdate(_condition, dt);
             instance.Tick(dt);
 
             if (instance.IsExpired)
@@ -46,7 +46,7 @@ public class BuffSystem
 
     private void Remove(BuffInstance instance)
     {
-        instance.Source.OnRemove(_player);
+        instance.Source.OnRemove(_condition);
         _active.Remove(instance);
     }
 

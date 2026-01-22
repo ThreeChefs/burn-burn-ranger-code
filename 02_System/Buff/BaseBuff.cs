@@ -9,7 +9,7 @@ public abstract class BaseBuff
         StackPolicy = policy;
     }
 
-    public virtual void OnApply(StagePlayer player) { }
-    public virtual void OnRemove(StagePlayer player) { }
-    public virtual void OnUpdate(StagePlayer player, float dt) { }
+    public virtual void OnApply(PlayerCondition condition) { }
+    public virtual void OnRemove(PlayerCondition condition) { }
+    public virtual void OnUpdate(PlayerCondition condition, float dt) { }
 }

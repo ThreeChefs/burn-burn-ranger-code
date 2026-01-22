@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 public readonly struct BuffInstanceKey : IEquatable<BuffInstanceKey>
 {

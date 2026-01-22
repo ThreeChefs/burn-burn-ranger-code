@@ -10,9 +10,9 @@ public class HealBuff : BaseBuff
         HealPerSecond = healPerSecond;
     }
 
-    public override void OnUpdate(StagePlayer player, float dt)
+    public override void OnUpdate(PlayerCondition condition, float dt)
     {
         float healAmount = HealPerSecond * dt;
-        PlayerManager.Instance.Condition[StatType.Health].Add(healAmount);
+        condition[StatType.Health].Add(healAmount);
     }
 }

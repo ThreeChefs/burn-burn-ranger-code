@@ -43,7 +43,7 @@ public class KillHealThresholdEffectSO : BaseEquipmentEffectSO
 
                 for (int n = 0; n < triggerCount; n++)
                 {
-                    PlayerManager.Instance.StagePlayer.BuffSystem.Add(Key, new HealBuff(_duration, _healPerSecond));
+                    context.Base.BuffSystem.Add(Key, new HealBuff(_duration, _healPerSecond));
                     register = true;
                 }
             }
