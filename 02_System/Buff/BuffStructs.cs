@@ -25,14 +25,14 @@ public readonly struct BuffInstanceKey : IEquatable<BuffInstanceKey>
 public struct HpRatioCondition
 {
     [field: SerializeField] public HpCompareType CompareType { get; private set; }
-    [field: SerializeField] public float Value { get; private set; }
+    [field: SerializeField][field: Range(0, 1)] public float Ratio { get; private set; }
 
     public bool Evaluate(float hpRatio)
     {
         return CompareType switch
         {
-            HpCompareType.LessOrEqual => hpRatio <= Value,
-            HpCompareType.GreaterOrEqual => hpRatio >= Value,
+            HpCompareType.LessOrEqual => hpRatio <= Ratio,
+            HpCompareType.GreaterOrEqual => hpRatio >= Ratio,
             _ => false
         };
     }
