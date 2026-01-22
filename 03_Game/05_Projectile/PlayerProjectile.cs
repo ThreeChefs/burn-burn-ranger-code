@@ -241,10 +241,7 @@ public class PlayerProjectile : BaseProjectile
             return;
         }
 
-        if (sfxIndex >= 0 && !useCustomSfx && sfxCoroutine == null)
-        {
-            sfxCoroutine = StartCoroutine(PlaySfx());
-        }
+        PlaySfxOfAoEType();
     }
 
     #endregion
