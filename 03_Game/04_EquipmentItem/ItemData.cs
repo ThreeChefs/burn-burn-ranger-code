@@ -60,30 +60,44 @@ public class ItemData : ScriptableObject
 [System.Serializable]
 public class EquipmentEffectData
 {
-    [field: Header("공통")]
+    [field: BoxGroup("공통")]
     [field: SerializeField] public ItemClass UnlockClass { get; private set; }
+    [field: BoxGroup("공통")]
+    [field: EnumToggleButtons]
     [field: SerializeField] public EquipmentEffectType EffectType { get; private set; }
+    [field: BoxGroup("공통")]
+    [field: MultiLineProperty]
     [field: SerializeField] public string Description { get; private set; }
 
-    [field: Header("스텟")]
+    [field: BoxGroup("스텟")]
     [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
+    [field: EnumToggleButtons]
     [field: SerializeField] public EffectApplyType ApplyType { get; private set; }
     [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
+    [field: HorizontalGroup("스텟/", width: 0.8f)]
+    [field: HideLabel]
     [field: SerializeField] public StatType Stat { get; private set; }
     [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
+    [field: HorizontalGroup("스텟/", width: 0.2f)]
+    [field: HideLabel]
     [field: SerializeField] public int Value { get; private set; }
 
-    [field: Header("스킬")]
+    [field: BoxGroup("스킬 데이터 | 레벨")]
     [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
+    [field: HorizontalGroup("스킬 데이터 | 레벨/", width: 0.8f)]
     [field: SerializeField] public SkillData SkillData { get; private set; }
     [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
+    [field: HorizontalGroup("스킬 데이터 | 레벨/", width: 0.2f)]
+    [field: HideLabel]
     [field: SerializeField] public int SkillLevel { get; private set; }
 
-    [field: Header("조건부 버프")]
+    [field: BoxGroup("조건부 버프")]
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public EffectTriggerType TriggerType { get; private set; }
+    [field: BoxGroup("조건부 버프")]
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public EffectTargetType TargetType { get; private set; }
+    [field: BoxGroup("조건부 버프")]
     [field: Tooltip("스킬 효과 SO")]
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public BaseEquipmentEffectSO EffectSO { get; private set; }

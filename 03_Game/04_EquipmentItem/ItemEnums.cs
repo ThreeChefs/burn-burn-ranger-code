@@ -31,6 +31,7 @@ public enum EquipmentType
 // 장비 효과
 public enum EquipmentEffectType
 {
+    None,
     Stat,           // 스탯 변경
     Buff,           // 버프 부여
     Skill,          // 스킬 부여
