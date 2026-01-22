@@ -46,7 +46,7 @@ public class HealEffectSO : BaseEquipmentEffectSO
                 }
             }
 
-            return buffs.Count > 0;
+            return buffs != null && buffs.Count > 0;
         }
     }
 }

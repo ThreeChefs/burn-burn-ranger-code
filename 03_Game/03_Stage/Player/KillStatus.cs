@@ -35,6 +35,8 @@ public class KillStatus
                 continue;
             }
 
+            if (buffs == null) return;
+
             foreach (BaseBuff buff in buffs)
             {
                 _buffSystem.Add(buff);
