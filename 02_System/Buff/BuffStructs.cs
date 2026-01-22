@@ -20,3 +20,20 @@ public readonly struct BuffInstanceKey : IEquatable<BuffInstanceKey>
         return Value == other.Value;
     }
 }
+
+[Serializable]
+public struct HpRatioCondition
+{
+    [field: SerializeField] public HpCompareType CompareType { get; private set; }
+    [field: SerializeField] public float Value { get; private set; }
+
+    public bool Evaluate(float hpRatio)
+    {
+        return CompareType switch
+        {
+            HpCompareType.LessOrEqual => hpRatio <= Value,
+            HpCompareType.GreaterOrEqual => hpRatio >= Value,
+            _ => false
+        };
+    }
+}
