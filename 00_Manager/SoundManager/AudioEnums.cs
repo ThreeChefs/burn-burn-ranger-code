@@ -4,8 +4,12 @@ public enum SfxName
     // UI
     Sfx_Click,
 
+
     // In Stage
     Sfx_Projectile,
+
+    // In Stage / UI
+    Sfx_FortuneBox,
 
     Test,
     // Item

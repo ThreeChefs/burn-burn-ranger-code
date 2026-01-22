@@ -380,6 +380,7 @@ public class FortuneBoxUI : PopupUI
             slots[idx].SetFocus(true);
         }
 
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 1);
     }
 
 
@@ -441,6 +442,7 @@ public class FortuneBoxUI : PopupUI
 
                 int slotIndex = order[j];
 
+                SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
                 slots[slotIndex].SetFocusFade();
 
                 yield return _intervalWait;
@@ -476,11 +478,15 @@ public class FortuneBoxUI : PopupUI
 
                 if (_pickSlotIdx[targetCount] == slotIndex)
                 {
+                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 1);
                     slots[slotIndex].SetFocus(true);
                     targetCount--;
                 }
                 else
+                {
+                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
                     slots[slotIndex].SetFocusFade();
+                }
 
 
 
@@ -512,6 +518,7 @@ public class FortuneBoxUI : PopupUI
                 for (int k = 0; k < group.Length; k++)
                 {
                     int idx = group[k];
+                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
                     slots[idx].SetFocusFade();
                 }
 
