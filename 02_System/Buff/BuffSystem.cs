@@ -31,7 +31,6 @@ public class BuffSystem
         }
 
         BuffInstance instance = new(key, buff);
-        Logger.Log($"버프 생성: {instance.Source}");
         _active.Add(instance);
         instance.Activate(_condition);
     }

@@ -40,6 +40,7 @@ public sealed class BuffInstance
     {
         if (IsActive) return;
         IsActive = true;
+        Logger.Log($"버프 활성화: {Source}");
         Source.OnApply(condition);
     }
 
@@ -51,6 +52,7 @@ public sealed class BuffInstance
     {
         if (!IsActive) return;
         IsActive = false;
+        Logger.Log($"버프 비활성화: {Source}");
         Source.OnRemove(condition);
     }
 
