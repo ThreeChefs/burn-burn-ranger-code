@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 /// <summary>
 /// 버프 시스템
@@ -16,7 +15,14 @@ public class BuffSystem
 
     public void Add(BuffInstanceKey key, BaseBuff buff)
     {
-        var existing = _active.FirstOrDefault(b => b.Key.Equals(key));
+        BuffInstance existing = null;
+        for (int i = 0; i < _active.Count; i++)
+        {
+            if (_active[i].Key.Equals(key))
+            {
+                existing = _active[i];
+            }
+        }
 
         if (existing != null)
         {
