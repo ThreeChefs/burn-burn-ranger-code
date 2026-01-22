@@ -24,11 +24,6 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         Equipment = new(Condition);
     }
 
-    private void Start()
-    {
-        Inventory.Init();
-    }
-
     private void OnDestroy()
     {
         Condition?.OnDestroy();
@@ -61,6 +56,8 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
                 Equipment.Equip(item);
             }
         }
+
+        Inventory.Init();
     }
 
     public InventorySaveData SaveData()
