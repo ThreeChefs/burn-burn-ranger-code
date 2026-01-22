@@ -16,11 +16,4 @@ public class ProjectileVisualData : ScriptableObject
     [field: SerializeField] public bool UseParticlePool { get; private set; }
     [field: ShowIf(nameof(UseParticlePool))]
     [field: SerializeField] public CommonPoolIndex PoolIndex { get; private set; }
-
-#if UNITY_EDITOR
-    private void Reset()
-    {
-        SfxInterval = 1.5f;
-    }
-#endif
 }
