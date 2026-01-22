@@ -71,7 +71,7 @@ public class StageSelectUI : PopupUI
 
     void ShowButton(bool playable)
     {
-        if (playable)
+        if (playable || GameManager.Instance.IsTest)
         {
             _selectButton.transform.DOScale(1, 0.2f).SetUpdate(true).OnComplete(() => { _selectButton.interactable = true; });
 
