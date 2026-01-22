@@ -12,7 +12,7 @@ public class HpConditionStatBuff : BaseBuff, IHpRatioReactiveBuff
         _modifier = modifier;
         _value = _modifier.StatModifierType == StatModifierType.Flat
             ? _modifier.Value
-            : PlayerManager.Instance.Condition[_modifier.StatType].BaseValue * _modifier.Value;
+            : PlayerManager.Instance.Condition[_modifier.StatType].BaseValue * _modifier.Value * 0.01f;
     }
 
     /// <summary>
