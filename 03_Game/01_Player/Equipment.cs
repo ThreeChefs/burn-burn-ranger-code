@@ -167,7 +167,7 @@ public class Equipment
     {
         if (type == EquipmentApplyType.Equip)
         {
-            _havingSkills.Add(skillData.Id, skillLevel);
+            _havingSkills[skillData.Id] = skillLevel;
         }
         else
         {
