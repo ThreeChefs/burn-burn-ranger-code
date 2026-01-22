@@ -1,8 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-
-using System.Reflection;
 using Sirenix.OdinInspector;
 
 
@@ -14,8 +11,7 @@ using UnityEditorInternal;
 [CreateAssetMenu(fileName = "AudioClipGroup", menuName = "SO/AudioClip Group")]
 public class AudioClipGroupData : ScriptableObject
 {
-
-
+    [LabelText("사운드 | 볼륨 | 재생중첩제한")]
     public List<AudioClipEntry> tables;
 
     public int GetRandomClipIdx()
@@ -49,13 +45,18 @@ public class AudioClipGroupData : ScriptableObject
 public class AudioClipEntry
 {
 
-    [HorizontalGroup("AudioClip", width: 0.6f)][HideLabel]
+    [HorizontalGroup("AudioClip", width: 0.3f)][HideLabel]
     [SerializeField] AudioClip _clip;
     public AudioClip Clip => _clip;
 
     [HorizontalGroup("AudioClip", width: 0.2f)][HideLabel]
     [SerializeField] float _volume = 1.0f;
     public float Volume => _volume;
+
+    [HorizontalGroup("AudioClip", width: 0.2f)]
+    [HideLabel]
+    [SerializeField] float _limitInterval = 0.1f;
+    public float LimitInterval => _limitInterval;
 
 
     [HorizontalGroup("AudioClip", width: 0.1f)]

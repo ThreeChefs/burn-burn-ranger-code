@@ -81,11 +81,10 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void PlaySfx(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
     {
-        if (SfxLimiter.CanPlay(sfxName, idx) == false) return;
-
-
         if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
+            if (SfxLimiter.CanPlay(sfxName, idx, clip.GetClip().LimitInterval) == false) return;
+
             PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
         }
     }
@@ -95,8 +94,8 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         if(SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
             int idx = clip.GetRandomClipIdx();
-            
-            if (SfxLimiter.CanPlay(sfxName, idx) == false) return;
+
+            if (SfxLimiter.CanPlay(sfxName, idx, clip.GetClip(idx).LimitInterval) == false) return;
 
             PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
 
