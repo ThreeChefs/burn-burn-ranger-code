@@ -248,7 +248,7 @@ public class StageWaveController
             {
                 _readyWarnningSign = false;
 
-                WarnningSignUI warnning = (WarnningSignUI)UIManager.Instance.ShowUI(UIName.UI_WarnningSign);
+                WarningSignUI warnning = (WarningSignUI)UIManager.Instance.ShowUI(UIName.UI_WarnningSign);
                 switch (targetWave.WaveType)
                 {
                     case WaveType.Super:
