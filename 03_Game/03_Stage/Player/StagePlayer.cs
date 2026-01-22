@@ -176,6 +176,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
         {
             _health.Add(_health.MaxValue * _heal.MaxValue);
+            BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
             _healTimer = 0f;
         }
     }
@@ -248,11 +249,13 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 전투 관리
     public void TakeDamage(float value)
     {
-        PlayerStat health = Condition[StatType.Health];
-        if (health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
+        if (_health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
-            if (health.CurValue == 0)
+
+            BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
+
+            if (_health.CurValue == 0)
             {
                 Die();
             }
