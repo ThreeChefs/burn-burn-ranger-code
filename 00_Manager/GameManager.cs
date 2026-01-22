@@ -89,5 +89,14 @@ public class GameManager : GlobalSingletonManager<GameManager>
         _growthDatabase = AssetLoader.FindAndLoadByName<GrowthDatabase>("GrowthDatabase");
         _itemDatabase = AssetLoader.FindAndLoadByName<ItemDatabase>("ItemDatabase");
     }
+
+    #region 테스트 버튼
+    [Button("아이템 받기")]
+    private void GetItem(int id, ItemClass itemClass)
+    {
+        ItemData data = _itemDatabase.FindById(id);
+        PlayerManager.Instance.Inventory.Add(new ItemInstance(itemClass, data));
+    }
+    #endregion
 #endif
 }
