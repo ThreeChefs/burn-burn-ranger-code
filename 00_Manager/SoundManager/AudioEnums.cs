@@ -8,6 +8,8 @@ public enum SfxName
 
     // In Stage
     Sfx_Projectile,
+    Sfx_Projectile_Brick,
+    Sfx_Projectile_Dron,
 
     // In Stage / UI
     Sfx_FortuneBox,

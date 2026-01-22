@@ -36,6 +36,9 @@ public class DronActiveSkill : ActiveSkill
         {
             float angle = 360f / count * i;
 
+
+            SoundManager.Instance.PlaySfxRandom(SfxName.Sfx_Projectile_Dron);
+
             if (_type == DronType.A || _type == DronType.Destroyer)
             {
                 Vector3 dir = Quaternion.AngleAxis(angle, Vector3.forward) * Vector3.right;
