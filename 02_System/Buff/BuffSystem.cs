@@ -32,7 +32,7 @@ public class BuffSystem
 
     public void Update(float dt)
     {
-        for (int i = 0; i < _active.Count; i++)
+        for (int i = _active.Count - 1; i >= 0; i--)
         {
             var instance = _active[i];
             instance.Tick(dt);
@@ -63,11 +63,11 @@ public class BuffSystem
 
     public void OnPlayerHit()
     {
-        foreach (BuffInstance instance in _active)
+        for (int i = _active.Count - 1; i >= 0; i--)
         {
-            if (instance.ShouldRemoveOnHit())
+            if (_active[i].ShouldRemoveOnHit())
             {
-                Remove(instance);
+                Remove(_active[i]);
             }
         }
     }
