@@ -8,4 +8,6 @@ public enum BuffStackPolicy
 
 public enum BuffId
 {
+    None,
+    Heal
 }

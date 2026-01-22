@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+/// <summary>
+/// 버프 시스템
+/// </summary>
 public class BuffSystem
 {
     private readonly List<BuffInstance> _active = new();
@@ -21,21 +24,21 @@ public class BuffSystem
             return;
         }
 
-        var inst = new BuffInstance(buff);
-        _active.Add(inst);
+        BuffInstance instance = new(buff);
+        _active.Add(instance);
         buff.OnApply(_player);
     }
 
     public void Update(float dt)
     {
-        for (int i = _active.Count - 1; i >= 0; i--)
+        for (int i = 0; i < _active.Count; i++)
         {
-            var inst = _active[i];
-            inst.Source.OnUpdate(_player, dt);
-            inst.Tick(dt);
+            var instance = _active[i];
+            instance.Source.OnUpdate(_player, dt);
+            instance.Tick(dt);
 
-            if (inst.IsExpired)
-                Remove(inst);
+            if (instance.IsExpired)
+                Remove(instance);
         }
     }
 
@@ -44,6 +47,7 @@ public class BuffSystem
         inst.Source.OnRemove(_player);
         _active.Remove(inst);
     }
+
     private void ResolveStack(BuffInstance existing, BaseBuff incoming)
     {
         switch (incoming.StackPolicy)
