@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,18 +25,15 @@ public class HomeUI : BaseUI
         _stageSelectUI = (StageSelectUI)UIManager.Instance.LoadUI(UIName.UI_StageSelect, false);
         _stageSelectUI.OnSelectStageEvent += SetStageSelectButtonImg;
 
-        int lastStageIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
-        lastStageIndex = Mathf.Clamp(lastStageIndex, 0, lastStageIndex);
-        if (0 <= lastStageIndex && lastStageIndex < GameManager.Instance.StageDatabase.Count)
-        {
-            _stageName.text = GameManager.Instance.StageDatabase[lastStageIndex].StageName;
-            _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[lastStageIndex].StageIcon;
-        }
-        else if (GameManager.Instance.StageDatabase.Count <= lastStageIndex)
-        {
-            _stageName.text = GameManager.Instance.StageDatabase[GameManager.Instance.StageDatabase.Count - 1].StageName;
-            _stageSelectButtonImg.sprite = GameManager.Instance.StageDatabase[GameManager.Instance.StageDatabase.Count - 1].StageIcon;
-        }
+        List<StageData> stageData = GameManager.Instance.StageDatabase;
+        if (stageData == null || stageData.Count == 0)
+            return;
+
+        int requestedIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
+        int stageIndex = Mathf.Clamp(requestedIndex, 0, stageData.Count - 1);
+
+        _stageName.text = $"{stageIndex + 1}. {stageData[stageIndex].StageName}";
+        _stageSelectButtonImg.sprite = stageData[stageIndex].StageIcon;
 
     }
 
