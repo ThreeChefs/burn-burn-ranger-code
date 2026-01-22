@@ -14,9 +14,9 @@ public class BuffSystem
         _player = player;
     }
 
-    public void Add(BaseBuff buff)
+    public void Add(BuffInstanceKey key, BaseBuff buff)
     {
-        var existing = _active.FirstOrDefault(b => b.Source.Id == buff.Id);
+        var existing = _active.FirstOrDefault(b => b.Key.Equals(key));
 
         if (existing != null)
         {
@@ -24,7 +24,7 @@ public class BuffSystem
             return;
         }
 
-        BuffInstance instance = new(buff);
+        BuffInstance instance = new(key, buff);
         _active.Add(instance);
         buff.OnApply(_player);
     }
@@ -38,14 +38,16 @@ public class BuffSystem
             instance.Tick(dt);
 
             if (instance.IsExpired)
+            {
                 Remove(instance);
+            }
         }
     }
 
-    private void Remove(BuffInstance inst)
+    private void Remove(BuffInstance instance)
     {
-        inst.Source.OnRemove(_player);
-        _active.Remove(inst);
+        instance.Source.OnRemove(_player);
+        _active.Remove(instance);
     }
 
     private void ResolveStack(BuffInstance existing, BaseBuff incoming)
@@ -55,16 +57,13 @@ public class BuffSystem
             case BuffStackPolicy.Refresh:
                 existing.Refresh();
                 break;
-
             case BuffStackPolicy.Stack:
                 existing.StackTime(incoming.BaseDuration);
                 break;
-
             case BuffStackPolicy.Replace:
                 Remove(existing);
-                Add(incoming);
+                Add(existing.Key, incoming);
                 break;
-
             case BuffStackPolicy.Ignore:
                 break;
         }

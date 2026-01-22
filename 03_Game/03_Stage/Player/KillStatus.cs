@@ -24,23 +24,21 @@ public class KillStatus
 
         KillEffectContext context = new()
         {
-            Base = new BaseEffectContext() { Reason = TriggerReason.MonsterKilled },
+            Base = new BaseEffectContext()
+            {
+                Reason = TriggerReason.MonsterKilled,
+                BuffSystem = _buffSystem
+            },
             KillStatus = this
         };
 
         foreach (IThresholdEffect effect in _effects.OfType<IThresholdEffect>())
         {
-            if (!effect.TryConsume(context, out List<BaseBuff> buffs))
+            if (!effect.TryConsume(context))
             {
                 continue;
             }
-
-            if (buffs == null) return;
-
-            foreach (BaseBuff buff in buffs)
-            {
-                _buffSystem.Add(buff);
-            }
+            Logger.Log($"버프 적용: {effect}");
         }
     }
 

@@ -108,7 +108,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
         _joyStick = UIManager.Instance.LoadUI(UIName.UI_JoyStick) as JoyStickInput;
 
-        // 스킬 효과 초기화
+        // effectSO에서 런타임 동안 생성되는 readonly struct buffInstanceKey 값 초기화
+        BuffInstanceKey.ResetGenerator();
+
+        // 장비 effect data 가져와서 effect instance 생성하기
         foreach (BaseEquipmentEffectSO effectSO in PlayerManager.Instance.Equipment.EffectSOs)
         {
             Logger.Log($"스킬 효과 생성: {effectSO.name}");
@@ -250,7 +253,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         foreach (var effect in _effects.OfType<IReviveEffect>())
         {
-            BaseEffectContext context = new() { Reason = TriggerReason.Hpzero };
+            BaseEffectContext context = new()
+            {
+                Reason = TriggerReason.Hpzero,
+                BuffSystem = BuffSystem
+            };
 
             if (!effect.CanTrigger(context))
             {

@@ -6,8 +6,8 @@ public enum BuffStackPolicy
     Ignore      // 이미 있으면 무시
 }
 
-public enum BuffId
+public enum HpCompareType
 {
-    None,
-    Heal
+    LessOrEqual,   // 이하
+    GreaterOrEqual // 이상
 }

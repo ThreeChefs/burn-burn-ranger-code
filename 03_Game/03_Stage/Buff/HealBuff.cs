@@ -5,7 +5,7 @@ public class HealBuff : BaseBuff
     public HealBuff(
         float baseDuration,
         float healPerSecond,
-        BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(BuffId.Heal, baseDuration, policy)
+        BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(baseDuration, policy)
     {
         HealPerSecond = healPerSecond;
     }

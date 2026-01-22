@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "HealEffectSO", menuName = "SO/Effect/Heal")]
@@ -29,9 +28,9 @@ public class HealEffectSO : BaseEquipmentEffectSO
             _healPerSecond = source.HealPerSecond;
         }
 
-        public bool TryConsume(in KillEffectContext context, out List<BaseBuff> buffs)
+        public bool TryConsume(in KillEffectContext context)
         {
-            buffs = null;
+            bool register = false;
 
             for (int i = 0; i < _conditions.Length; i++)
             {
@@ -39,14 +38,14 @@ public class HealEffectSO : BaseEquipmentEffectSO
 
                 if (triggerCount == 0) continue;
 
-                buffs ??= new();
                 for (int n = 0; n < triggerCount; n++)
                 {
-                    buffs.Add(new HealBuff(_duration, _healPerSecond));
+                    PlayerManager.Instance.StagePlayer.BuffSystem.Add(Key, new HealBuff(_duration, _healPerSecond));
+                    register = true;
                 }
             }
 
-            return buffs != null && buffs.Count > 0;
+            return register;
         }
     }
 }

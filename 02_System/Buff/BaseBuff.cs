@@ -1,12 +1,10 @@
 public abstract class BaseBuff
 {
-    public BuffId Id { get; }
     public float BaseDuration { get; protected set; }
     public BuffStackPolicy StackPolicy { get; protected set; }
 
-    protected BaseBuff(BuffId id, float baseDuration, BuffStackPolicy policy)
+    protected BaseBuff(float baseDuration, BuffStackPolicy policy)
     {
-        Id = id;
         BaseDuration = baseDuration;
         StackPolicy = policy;
     }
