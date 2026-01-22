@@ -146,6 +146,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         StageLevel.OnDestroy();
         Condition[StatType.DropItemRange].OnMaxValueChanged -= OnUpdateColliderSize;
+        Condition.ResetBuff();
     }
     #endregion
 

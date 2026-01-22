@@ -46,11 +46,16 @@ public class PlayerStat : BaseStat
     /// <param name="value"></param>
     public void UpdateBuffValue(float value)
     {
-        BuffValue = value;
+        BuffValue += value;
         CurValue = Mathf.Min(CurValue + BuffValue, MaxValue);
         Logger.Log($"현재 {type} 값: {CurValue}");
 
         OnCurValueChanged?.Invoke(CurValue);
         OnMaxValueChanged?.Invoke(MaxValue);
+    }
+
+    public void ResetBuffValue()
+    {
+        BuffValue = 0;
     }
 }
