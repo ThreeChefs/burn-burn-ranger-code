@@ -18,6 +18,12 @@ public enum StatType
     ProjectileSpeed,            // 탄환 속도
 }
 
+public enum StatModifierType
+{
+    Flat,       // 고정 수치 증가  
+    Percent,    // 퍼센테이지 증가
+}
+
 public static class StatTypeText
 {
     /// <summary>
