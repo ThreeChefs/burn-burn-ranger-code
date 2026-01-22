@@ -33,7 +33,7 @@ public enum UIName
     WorldUI_Hp
 }
 
-public enum UISubCanvasOrder
+public enum UICanvasOrder
 {
     Background = 0,
     Default = 100,

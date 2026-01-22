@@ -11,7 +11,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     Dictionary<UIName, BaseUI> _nowLoadedUiDict = new Dictionary<UIName, BaseUI>();
 
     [SerializeField] private SafeAreaCanvas _originCanvasPrefab;
-    Dictionary<UISubCanvasOrder, SafeAreaCanvas> _canvasDict;
+    Dictionary<UICanvasOrder, SafeAreaCanvas> _canvasDict;
 
 
     protected override void Init()
@@ -35,9 +35,9 @@ public class UIManager : GlobalSingletonManager<UIManager>
         //_mainCanvas = Instantiate(_originCanvasPrefab);
         //_mainCanvas.name = "MainCanvas";
 
-        _canvasDict = new Dictionary<UISubCanvasOrder, SafeAreaCanvas>();
+        _canvasDict = new Dictionary<UICanvasOrder, SafeAreaCanvas>();
 
-        foreach (UISubCanvasOrder e in Enum.GetValues(typeof(UISubCanvasOrder)))
+        foreach (UICanvasOrder e in Enum.GetValues(typeof(UICanvasOrder)))
         {
             SafeAreaCanvas newSubCanvas = Instantiate(_originCanvasPrefab);
             newSubCanvas.SetSortingOrder((int)e);

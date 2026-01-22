@@ -8,8 +8,8 @@ public abstract class BaseUI : MonoBehaviour
     [BoxGroup("BaseUI")]
     [HideLabel]
     [EnumToggleButtons]
-    [SerializeField] private UISubCanvasOrder _subUIOrder;
-    public UISubCanvasOrder UIOrder => _subUIOrder;
+    [SerializeField] private UICanvasOrder _subUIOrder;
+    public UICanvasOrder UIOrder => _subUIOrder;
 
 
     public event Action<BaseUI> OnOpenAction;
