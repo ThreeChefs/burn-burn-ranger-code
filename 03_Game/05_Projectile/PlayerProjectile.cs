@@ -71,13 +71,13 @@ public class PlayerProjectile : BaseProjectile
         if (IsHitTarget(layer))
         {
             HandleHit(collision);
-            PlaySfxOnce();
+            PlaySfxOfHitType();
         }
 
         if (IsReflectTarget(layer))
         {
             HandleReflection(collision);
-            PlaySfxOnce();
+            PlaySfxOfHitType();
         }
     }
     #endregion

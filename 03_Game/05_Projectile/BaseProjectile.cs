@@ -104,6 +104,22 @@ public class BaseProjectile : PoolObject, IAttackable
             _trail.Clear();
             _trail.enabled = true;
         }
+
+        if (data != null && data.VisualData != null)
+        {
+            switch (data.VisualData.SfxType)
+            {
+                case ProjectileSfxType.SpawnOnce:
+                    PlaySfxOnce();
+                    break;
+                case ProjectileSfxType.SpawnLoop:
+                    if (sfxCoroutine == null)
+                    {
+                        sfxCoroutine = StartCoroutine(PlaySfx());
+                    }
+                    break;
+            }
+        }
     }
 
     protected override void OnDisableInternal()
@@ -350,6 +366,14 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             PlaySfxOnce();
             yield return sfxDuration;
+        }
+    }
+
+    protected void PlaySfxOfHitType()
+    {
+        if (data.VisualData != null && data.VisualData.SfxType == ProjectileSfxType.Hit)
+        {
+            PlaySfxOnce();
         }
     }
     #endregion

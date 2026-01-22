@@ -30,6 +30,15 @@ public enum AoEShape
     Box         // 사각형 폭발
 }
 
+public enum ProjectileSfxType
+{
+    Hit,
+    Explode,
+    SpawnOnce,
+    SpawnLoop,
+    AoE,
+}
+
 public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
 {
     // 스킬
