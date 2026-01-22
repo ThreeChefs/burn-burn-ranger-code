@@ -9,9 +9,14 @@ public class StatBuff : BaseBuff
         BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(baseDuration, policy)
     {
         _modifier = statModifier;
+        float statValue = PlayerManager.Instance.Condition[_modifier.StatType].BaseValue;
+        if (statValue == 0)
+        {
+            statValue = 1;
+        }
         _value = _modifier.StatModifierType == StatModifierType.Flat
             ? _modifier.Value
-            : PlayerManager.Instance.Condition[_modifier.StatType].BaseValue * _modifier.Value * 0.01f;
+            : statValue * _modifier.Value * 0.01f;
     }
 
     public override void OnApply(PlayerCondition condition)
