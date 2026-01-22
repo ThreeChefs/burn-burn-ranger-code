@@ -42,7 +42,7 @@ public class KillStatus
         }
     }
 
-    public void AddKill(MonsterType type)
+    private void AddKill(MonsterType type)
     {
         _kills.TryGetValue(type, out int cur);
         _kills[type] = cur + 1;

@@ -31,7 +31,7 @@ public class HealEffectSO : BaseEquipmentEffectSO
 
         public bool TryConsume(in KillEffectContext context, out List<BaseBuff> buffs)
         {
-            buffs = new();
+            buffs = null;
 
             for (int i = 0; i < _conditions.Length; i++)
             {
@@ -39,6 +39,7 @@ public class HealEffectSO : BaseEquipmentEffectSO
 
                 if (triggerCount == 0) continue;
 
+                buffs ??= new();
                 for (int n = 0; n < triggerCount; n++)
                 {
                     buffs.Add(new HealBuff(_duration, _healPerSecond));
