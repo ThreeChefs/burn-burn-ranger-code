@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using TMPro;
@@ -7,6 +8,7 @@ using UnityEngine.UI;
 public class StageSelectUI : PopupUI
 {
     [Title("Stage Info")]
+    [SerializeField] private RectTransform _stageLabel;
     [SerializeField] private TextMeshProUGUI _stageNumText;
 
     [Title("Buttons")]
@@ -28,6 +30,8 @@ public class StageSelectUI : PopupUI
         _backButton.onClick.AddListener(OnClickBackButton);
 
         _stageSelectPanel.OnSnapAction += SetStageInfo;
+        _stageSelectPanel.OnDragStartAction += HideButton;
+
     }
 
     public override void OpenUIInternal()
@@ -40,6 +44,7 @@ public class StageSelectUI : PopupUI
 
     public void SetStageInfo(int stageNum)
     {
+        ShowButton(stageNum < GameManager.Instance.StageProgress.ClearStageNum);
         _nowSelectedStageIndex  = stageNum;
         _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName;
     }
@@ -55,4 +60,26 @@ public class StageSelectUI : PopupUI
     {
         gameObject.SetActive(false);
     }
+
+    void HideButton()
+    {
+        _selectButton.interactable = false;
+
+        _selectButton.transform.DOScale(0, 0.2f).SetUpdate(true);
+        _stageLabel.DOScale(0, 0.2f).SetUpdate(true);
+    }
+
+    void ShowButton(bool playable)
+    {
+        if (playable)
+        {
+            _selectButton.transform.DOScale(1, 0.2f).SetUpdate(true).OnComplete(() => { _selectButton.interactable = true; });
+
+        }
+        
+        
+        _stageLabel.DOScale(1, 0.2f).SetUpdate(true);
+    }
+
+
 }
