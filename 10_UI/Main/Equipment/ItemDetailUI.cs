@@ -88,7 +88,8 @@ public class ItemDetailUI : BaseUI
     /// <param name="instance"></param>
     public void SetItem(ItemInstance instance)
     {
-        if (_curItem != null && _curItem.Equals(instance)) return;
+        if (instance == null) return;
+
         _curItem = instance;
 
         ItemClass itemClass = _curItem.ItemClass;
