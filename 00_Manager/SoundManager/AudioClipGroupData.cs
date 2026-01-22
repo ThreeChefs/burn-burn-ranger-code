@@ -27,12 +27,12 @@ public class AudioClipGroupData : ScriptableObject
         return num;
     }
 
-    public AudioClip GetClip(int idx = 0)
+    public AudioClipEntry GetClip(int idx = 0)
     {
         if (tables.Count <= idx)
             return null;
 
-        return tables[idx].Clip;
+        return tables[idx];
     }
 
     [PropertyOrder(-100)]

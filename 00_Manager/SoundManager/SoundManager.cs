@@ -118,7 +118,9 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         if (group == null)
             return;
 
-        AudioClip clip = group.GetClip(idx);
+        AudioClip clip = group.GetClip(idx).Clip;
+        float clipVolume = group.GetClip(idx).Volume;
+
         AudioSource target = audioSource != null ? 
             audioSource : (type == SoundType.Sfx ? GetSFXAudioSource() : _bgmAudioSource);
 
@@ -127,7 +129,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         if (clip != null)
         {
             target.Stop();
-            target.volume = volume;
+            target.volume = volume * clipVolume;
             target.clip = clip;
             target.loop = loop;
             target.pitch = pitch;
