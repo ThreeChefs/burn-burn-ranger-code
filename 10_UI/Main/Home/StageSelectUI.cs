@@ -46,7 +46,7 @@ public class StageSelectUI : PopupUI
     {
         ShowButton(stageIdx < GameManager.Instance.StageProgress.ClearStageNum);
         _nowSelectedStageIndex  = stageIdx;
-        _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName;
+        _stageNumText.text = $"{stageIdx+1}. {GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName}";
     }
     
     void OnClickSelectButton()
