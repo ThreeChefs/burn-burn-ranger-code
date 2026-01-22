@@ -84,12 +84,9 @@ public class EquipmentEffectData
     [field: SerializeField] public EffectTriggerType TriggerType { get; private set; }
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public EffectTargetType TargetType { get; private set; }
+    [field: Tooltip("스킬 효과 SO")]
     [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
-    [field: SerializeField] public BuffType BuffType { get; private set; }
-    [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
-    [field: SerializeField] public float Duration { get; private set; }
-    [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
-    [field: SerializeField] public int RequiredTriggerCount { get; private set; }
+    [field: SerializeField] public BaseEquipmentEffectSO EffectSO { get; private set; }
 
     public EquipmentEffectData()
     {

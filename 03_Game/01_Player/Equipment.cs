@@ -17,8 +17,13 @@ public class Equipment
     // 이벤트
     public event Action OnEquipmentChanged;
 
+    // 스킬
     private readonly Dictionary<int, int> _havingSkills;
     public IReadOnlyDictionary<int, int> HavingSkills => _havingSkills;
+
+    // 효과
+    private readonly List<BaseEquipmentEffectSO> _effectSOs;
+    public IReadOnlyList<BaseEquipmentEffectSO> EffectSOs => _effectSOs;
 
     public Equipment(PlayerCondition condition)
     {
@@ -27,6 +32,7 @@ public class Equipment
 
         _equipments = new();
         _havingSkills = new();
+        _effectSOs = new();
 
         foreach (EquipmentType type in Enum.GetValues(typeof(EquipmentType)))
         {
@@ -125,6 +131,9 @@ public class Equipment
                 case EquipmentEffectType.Skill:
                     UpdateSkill(equipmentEffect.SkillData, equipmentEffect.SkillLevel, type);
                     break;
+                case EquipmentEffectType.Buff:
+                    UpdateBuff(equipmentEffect.EffectSO, type);
+                    break;
             }
         }
     }
@@ -163,6 +172,25 @@ public class Equipment
         else
         {
             _havingSkills.Remove(skillData.Id);
+        }
+    }
+
+    /// <summary>
+    /// 버프 효과 so 업데이트
+    /// </summary>
+    /// <param name="effectSO"></param>
+    /// <param name="type"></param>
+    private void UpdateBuff(BaseEquipmentEffectSO effectSO, EquipmentApplyType type)
+    {
+        if (effectSO == null) return;
+
+        if (type == EquipmentApplyType.Equip)
+        {
+            _effectSOs.Add(effectSO);
+        }
+        else
+        {
+            _effectSOs.Remove(effectSO);
         }
     }
     #endregion

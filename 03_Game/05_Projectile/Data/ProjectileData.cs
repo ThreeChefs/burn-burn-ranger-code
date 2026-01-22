@@ -22,7 +22,7 @@ public class ProjectileData : PoolObjectData
     [field: SerializeField] public LayerMask TargetLayerMask { get; private set; }
     [field: Tooltip("넉백")]
     [field: SerializeField] public float KnockBack { get; private set; }
-    [field: SerializeField] public List<BaseEffectSO> HitEffects { get; private set; }
+    [field: SerializeField] public List<BaseSkillEffectSO> HitEffects { get; private set; }
 
     [field: Header("비주얼")]
     [field: Tooltip("비주얼 (2D)")]
@@ -83,5 +83,5 @@ public class AoEData
     [field: SerializeField] public LayerMask AoETargetLayer { get; private set; }
     [field: HideIf(nameof(IsInstant))]
     [field: SerializeField] public ProjectileDataIndex Index { get; private set; }
-    [field: SerializeField] public List<BaseEffectSO> AreaEffects { get; private set; }
+    [field: SerializeField] public List<BaseSkillEffectSO> AreaEffects { get; private set; }
 }
