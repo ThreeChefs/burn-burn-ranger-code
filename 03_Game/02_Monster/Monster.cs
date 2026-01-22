@@ -18,7 +18,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     private bool _canHit = true;
     public event Action<Monster> onDieAction;
     private BossController bossController;
-
+    [SerializeField] protected bool allowFlip = true;
     [Header("Knockback")]
     [SerializeField] private float knockbackDuration = 0.1f;
     [SerializeField] private bool Knockbackable = true;
@@ -100,7 +100,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
     private void LateUpdate()
     {
-
+        if (!allowFlip) return;
         if (target == null) return;
         spriter.flipX = target.transform.position.x < rb.position.x;
     }
@@ -109,10 +109,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            Die();
-        }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
