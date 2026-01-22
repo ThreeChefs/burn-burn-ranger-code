@@ -51,7 +51,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
 
     private void OnApplicationQuit()
     {
-        // Data.Save();
+        SaveData();
     }
 
 
