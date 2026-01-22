@@ -338,7 +338,7 @@ public class BaseProjectile : PoolObject, IAttackable
     #region 사운드
     protected void PlaySfxOnce()
     {
-        if (sfxIndex >= 0 && !useCustomSfx && SfxLimiter.CanPlay(sfxName, sfxIndex))
+        if (sfxIndex >= 0 && !useCustomSfx)
         {
             SoundManager.Instance.PlaySfx(sfxName, idx: sfxIndex);
         }
