@@ -13,7 +13,7 @@ public class HealEffectSO : BaseEquipmentEffectSO
 
     public override EquipmentEffectInstance CreateInstance()
     {
-        throw new System.NotImplementedException();
+        return new Instance(this);
     }
 
     private class Instance : EquipmentEffectInstance, IThresholdEffect
