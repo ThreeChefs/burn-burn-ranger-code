@@ -1,35 +1,31 @@
 using UnityEngine;
 
-[ExecuteAlways]
 public class IgnoreSafeArea : MonoBehaviour
 {
     RectTransform _rt;
-    Canvas _rootCanvas;
+    Canvas _canvas;
 
     void Awake()
     {
         _rt = GetComponent<RectTransform>();
-        _rootCanvas = GetComponentInParent<Canvas>();
+        _canvas = GetComponentInParent<Canvas>();
         Apply();
     }
 
-    void OnRectTransformDimensionsChange()
-    {
-        Apply();
-    
-    }
-    
+    void OnEnable() => Apply();
+
+    void OnRectTransformDimensionsChange() => Apply();
 
     void Apply()
     {
         if (_rt == null) return;
-        if (_rootCanvas == null) _rootCanvas = GetComponentInParent<Canvas>();
-        if (_rootCanvas == null) return;
+        if (_canvas == null) _canvas = GetComponentInParent<Canvas>();
+        if (_canvas == null) return;
 
-        RectTransform canvasRect = _rootCanvas.GetComponent<RectTransform>();
-        if (canvasRect == null) return;
+        RectTransform rootRect = _canvas.rootCanvas.GetComponent<RectTransform>();
+        if (rootRect == null) return;
 
-        Vector2 size = canvasRect.rect.size;
+        Vector2 size = rootRect.rect.size;
 
         _rt.anchorMin = new Vector2(0.5f, 0.5f);
         _rt.anchorMax = new Vector2(0.5f, 0.5f);
