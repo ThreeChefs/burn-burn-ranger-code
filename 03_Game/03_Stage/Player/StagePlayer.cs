@@ -252,7 +252,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (_health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
-
+            BuffSystem.OnPlayerHit();
             BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
 
             if (_health.CurValue == 0)
