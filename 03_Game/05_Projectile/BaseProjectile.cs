@@ -105,21 +105,7 @@ public class BaseProjectile : PoolObject, IAttackable
             _trail.enabled = true;
         }
 
-        if (data != null && data.VisualData != null)
-        {
-            switch (data.VisualData.SfxType)
-            {
-                case ProjectileSfxType.SpawnOnce:
-                    PlaySfxOnce();
-                    break;
-                case ProjectileSfxType.SpawnLoop:
-                    if (sfxCoroutine == null)
-                    {
-                        sfxCoroutine = StartCoroutine(PlaySfx());
-                    }
-                    break;
-            }
-        }
+        PlaySfxOfSpawnType();
     }
 
     protected override void OnDisableInternal()
@@ -374,6 +360,25 @@ public class BaseProjectile : PoolObject, IAttackable
         if (data.VisualData != null && data.VisualData.SfxType == ProjectileSfxType.Hit)
         {
             PlaySfxOnce();
+        }
+    }
+
+    protected void PlaySfxOfSpawnType()
+    {
+        if (data != null && data.VisualData != null)
+        {
+            switch (data.VisualData.SfxType)
+            {
+                case ProjectileSfxType.SpawnOnce:
+                    PlaySfxOnce();
+                    break;
+                case ProjectileSfxType.SpawnLoop:
+                    if (sfxCoroutine == null)
+                    {
+                        sfxCoroutine = StartCoroutine(PlaySfx());
+                    }
+                    break;
+            }
         }
     }
     #endregion
