@@ -6,17 +6,11 @@ using UnityEngine;
 public abstract class BaseUI : MonoBehaviour
 {
     [BoxGroup("BaseUI")]
-    [SerializeField] bool _isSubCanvas = false;
-
-    [ShowIf("_isSubCanvas")]
-    [BoxGroup("BaseUI")]
     [HideLabel]
     [EnumToggleButtons]
-    [SerializeField] private UISubCanvasOrder _subUIOrder;
-    public UISubCanvasOrder SubUIOrder => _subUIOrder;
+    [SerializeField] private UICanvasOrder _subUIOrder;
+    public UICanvasOrder UIOrder => _subUIOrder;
 
-
-    public bool IsSubCanvas => _isSubCanvas;
 
     public event Action<BaseUI> OnOpenAction;
     public event Action<BaseUI> OnDestroyAction;

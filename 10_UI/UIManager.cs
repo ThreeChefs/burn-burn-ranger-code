@@ -10,10 +10,8 @@ public class UIManager : GlobalSingletonManager<UIManager>
     Dictionary<UIName, BaseUI> _originUiDict = new Dictionary<UIName, BaseUI>();
     Dictionary<UIName, BaseUI> _nowLoadedUiDict = new Dictionary<UIName, BaseUI>();
 
-
-    [SerializeField] private Canvas _originCanvasPrefab;
-    Canvas _mainCanvas;
-    Dictionary<UISubCanvasOrder, Canvas> _subCanvasDict;
+    [SerializeField] private SafeAreaCanvas _originCanvasPrefab;
+    Dictionary<UICanvasOrder, SafeAreaCanvas> _canvasDict;
 
 
     protected override void Init()
@@ -34,18 +32,18 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        _mainCanvas = Instantiate(_originCanvasPrefab);
-        _mainCanvas.name = "MainCanvas";
+        //_mainCanvas = Instantiate(_originCanvasPrefab);
+        //_mainCanvas.name = "MainCanvas";
 
-        _subCanvasDict = new Dictionary<UISubCanvasOrder, Canvas>();
+        _canvasDict = new Dictionary<UICanvasOrder, SafeAreaCanvas>();
 
-        foreach (UISubCanvasOrder e in Enum.GetValues(typeof(UISubCanvasOrder)))
+        foreach (UICanvasOrder e in Enum.GetValues(typeof(UICanvasOrder)))
         {
-            Canvas newSubCanvas = Instantiate(_originCanvasPrefab);
-            newSubCanvas.sortingOrder = (int)e;
+            SafeAreaCanvas newSubCanvas = Instantiate(_originCanvasPrefab);
+            newSubCanvas.SetSortingOrder((int)e);
             newSubCanvas.name = e + "Canvas";
 
-            _subCanvasDict.Add(e, newSubCanvas);
+            _canvasDict.Add(e, newSubCanvas);
         }
 
 
@@ -64,17 +62,12 @@ public class UIManager : GlobalSingletonManager<UIManager>
         {
             BaseUI spawnedUI = Instantiate(ui);
 
-            if (spawnedUI.IsSubCanvas == false)
+
+            if (_canvasDict.ContainsKey(spawnedUI.UIOrder))
             {
-                spawnedUI.transform.SetParent(_mainCanvas.transform, false);
+                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].SafeArea, false);
             }
-            else
-            {
-                if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
-                {
-                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform);
-                }
-            }
+
 
             spawnedUI.OpenUI();
 
@@ -118,17 +111,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
         if (ui != null)
         {
             BaseUI spawnedUI = Instantiate(ui);
-
-            if (spawnedUI.IsSubCanvas == false)
+            
+            if (_canvasDict.ContainsKey(spawnedUI.UIOrder))
             {
-                spawnedUI.transform.SetParent(_mainCanvas.transform, false);
-            }
-            else
-            {
-                if (_subCanvasDict.ContainsKey(spawnedUI.SubUIOrder))
-                {
-                    spawnedUI.transform.SetParent(_subCanvasDict[spawnedUI.SubUIOrder].transform, false);
-                }
+                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].SafeArea, false);
             }
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
