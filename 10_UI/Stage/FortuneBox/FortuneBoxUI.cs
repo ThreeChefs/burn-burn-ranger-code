@@ -237,6 +237,8 @@ public class FortuneBoxUI : PopupUI
     {
         base.OpenUIInternal();
 
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 2);
+
         _pickButton.SetInteractable(false);
         _pickButton.gameObject.SetActive(false);
         _pickButton.gameObject.transform.localScale = Vector3.zero;
