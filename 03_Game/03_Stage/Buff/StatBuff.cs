@@ -10,7 +10,7 @@ public class StatBuff : BaseBuff
         BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(baseDuration, endCondition, policy)
     {
         _modifier = statModifier;
-        float statValue = PlayerManager.Instance.Condition[_modifier.StatType].BaseValue;
+        float statValue = PlayerManager.Instance.Condition[_modifier.StatType].MaxValue;
         if (statValue == 0)
         {
             statValue = 1;

@@ -11,7 +11,7 @@ public class HpConditionStatBuff : BaseBuff, IHpRatioReactiveBuff
     {
         _condition = condition;
         _modifier = modifier;
-        float statValue = PlayerManager.Instance.Condition[_modifier.StatType].BaseValue;
+        float statValue = PlayerManager.Instance.Condition[_modifier.StatType].MaxValue;
         if (statValue == 0)
         {
             statValue = 1;
