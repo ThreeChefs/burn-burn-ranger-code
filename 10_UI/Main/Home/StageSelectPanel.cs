@@ -23,7 +23,7 @@ public class StageSelectPanel : SwipeScrollPanel
             if (img != null)
             {
                 img.sprite = GameManager.Instance.StageDatabase[i].StageIcon;
-                if (i < GameManager.Instance.StageProgress.ClearStageNum)
+                if (i <= GameManager.Instance.StageProgress.ClearStageNum)
                     img.material = null;
                 _imgList.Add(img);
             }

@@ -42,10 +42,10 @@ public class StageSelectUI : PopupUI
         SetStageInfo(_nowSelectedStageIndex);
     }
 
-    public void SetStageInfo(int stageNum)
+    public void SetStageInfo(int stageIdx)
     {
-        ShowButton(stageNum < GameManager.Instance.StageProgress.ClearStageNum);
-        _nowSelectedStageIndex  = stageNum;
+        ShowButton(stageIdx < GameManager.Instance.StageProgress.ClearStageNum);
+        _nowSelectedStageIndex  = stageIdx;
         _stageNumText.text = GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName;
     }
     
