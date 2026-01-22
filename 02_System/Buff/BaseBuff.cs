@@ -11,5 +11,5 @@ public abstract class BaseBuff
 
     public virtual void OnApply(PlayerCondition condition) { }
     public virtual void OnRemove(PlayerCondition condition) { }
-    public virtual void OnUpdate(PlayerCondition condition, float dt) { }
+    public virtual void OnUpdate(float dt) { }
 }

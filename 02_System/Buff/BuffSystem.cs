@@ -25,8 +25,9 @@ public class BuffSystem
         }
 
         BuffInstance instance = new(key, buff);
+        Logger.Log($"버프 생성: {instance.Source}");
         _active.Add(instance);
-        buff.OnApply(_condition);
+        instance.Activate(_condition);
     }
 
     public void Update(float dt)
@@ -34,8 +35,7 @@ public class BuffSystem
         for (int i = 0; i < _active.Count; i++)
         {
             var instance = _active[i];
-            instance.Source.OnUpdate(_condition, dt);
-            instance.Tick(dt);
+            instance.Tick(_condition, dt);
 
             if (instance.IsExpired)
             {
@@ -44,9 +44,26 @@ public class BuffSystem
         }
     }
 
+    public void OnHpChanged(float hpRatio)
+    {
+        foreach (BuffInstance instance in _active)
+        {
+            bool active = ((IHpRatioReactiveBuff)instance.Source).ShouldBeActive(hpRatio);
+
+            if (active)
+            {
+                instance.Activate(_condition);
+            }
+            else
+            {
+                instance.Deactive(_condition);
+            }
+        }
+    }
+
     private void Remove(BuffInstance instance)
     {
-        instance.Source.OnRemove(_condition);
+        instance.Deactive(_condition);
         _active.Remove(instance);
     }
 

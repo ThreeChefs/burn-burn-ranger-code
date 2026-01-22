@@ -3,6 +3,7 @@ public sealed class BuffInstance
     public BuffInstanceKey Key { get; }
     public BaseBuff Source { get; }
     public float RemainingTime { get; private set; }
+    public bool IsActive { get; private set; }
 
     public BuffInstance(BuffInstanceKey key, BaseBuff source)
     {
@@ -21,9 +22,25 @@ public sealed class BuffInstance
         RemainingTime += time;
     }
 
-    public void Tick(float dt)
+    public void Tick(PlayerCondition condition, float dt)
     {
+        if (!IsActive) return;
+
         RemainingTime -= dt;
+    }
+
+    public void Activate(PlayerCondition condition)
+    {
+        if (IsActive) return;
+        IsActive = true;
+        Source.OnApply(condition);
+    }
+
+    public void Deactive(PlayerCondition condition)
+    {
+        if (!IsActive) return;
+        IsActive = false;
+        Source.OnRemove(condition);
     }
 
     public bool IsExpired => RemainingTime <= 0f;
