@@ -383,6 +383,16 @@ public class BaseProjectile : PoolObject, IAttackable
             }
         }
     }
+
+    protected void PlaySfxOfAoEType()
+    {
+        if (data.VisualData != null
+            && data.VisualData.SfxType == ProjectileSfxType.AoE
+            && sfxCoroutine == null)
+        {
+            sfxCoroutine = StartCoroutine(PlaySfx());
+        }
+    }
     #endregion
 
 #if UNITY_EDITOR
