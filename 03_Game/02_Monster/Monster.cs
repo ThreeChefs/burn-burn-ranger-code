@@ -161,6 +161,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
         DropItem();
         onDieAction?.Invoke(this);
+        PlayerManager.Instance.StagePlayer.KillStatus.OnMonsterKilled(monsterdata.monsterType);
         // Destroy(gameObject);
     }
 
