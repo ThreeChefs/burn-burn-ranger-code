@@ -48,9 +48,9 @@ public class BuffSystem
     {
         foreach (BuffInstance instance in _active)
         {
-            bool active = ((IHpRatioReactiveBuff)instance.Source).ShouldBeActive(hpRatio);
+            if (instance.Source is not IHpRatioReactiveBuff reactive) { continue; }
 
-            if (active)
+            if (reactive.ShouldBeActive(hpRatio))
             {
                 instance.Activate(_condition);
             }
