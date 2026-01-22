@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New ProjectileVisualData", menuName = "SO/Projectile/Visual Data")]
@@ -11,6 +12,7 @@ public class ProjectileVisualData : ScriptableObject
 
     [field: Header("Vfx")]
     [field: SerializeField] public bool UseParticlePool { get; private set; }
+    [field: ShowIf(nameof(UseParticlePool))]
     [field: SerializeField] public CommonPoolIndex PoolIndex { get; private set; }
 
 #if UNITY_EDITOR

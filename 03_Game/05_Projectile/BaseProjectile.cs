@@ -42,7 +42,7 @@ public class BaseProjectile : PoolObject, IAttackable
     protected SfxName sfxName;
     protected int sfxIndex;
     protected Coroutine sfxCoroutine;
-    private WaitForSeconds _sfxDuration;
+    protected WaitForSeconds sfxDuration;
 
     // 카메라
     protected Camera cam;
@@ -163,7 +163,7 @@ public class BaseProjectile : PoolObject, IAttackable
         sfxName = SfxName.Sfx_Projectile;
         sfxIndex = visualData.SfxIndex;
 
-        _sfxDuration = new WaitForSeconds(visualData.SfxInterval);
+        sfxDuration = new WaitForSeconds(visualData.SfxInterval);
     }
 
     public virtual void Spawn(Vector2 spawnPos, Transform target)
@@ -349,7 +349,7 @@ public class BaseProjectile : PoolObject, IAttackable
         while (true)
         {
             PlaySfxOnce();
-            yield return _sfxDuration;
+            yield return sfxDuration;
         }
     }
     #endregion
