@@ -1,10 +1,9 @@
 using Sirenix.OdinInspector;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class WarnningSignUI : PopupUI
+public class WarningSignUI : PopupUI
 {
     [Title("WarnningSign Settings")]
     [SerializeField] TextMeshProUGUI _signText;
@@ -27,6 +26,8 @@ public class WarnningSignUI : PopupUI
 
         if (_coroutine != null) StopCoroutine(_coroutine);
         _coroutine = StartCoroutine(DelayHide());
+
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_Warning);
     }
 
 
