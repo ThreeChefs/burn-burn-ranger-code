@@ -58,6 +58,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private List<EquipmentEffectInstance> _effects;
     public IReadOnlyList<EquipmentEffectInstance> Effects => _effects;
 
+    public KillStatus KillStatus { get; private set; }
+    public BuffSystem BuffSystem { get; private set; }
+
     // 타이머
     private float _healTimer;
 
@@ -112,12 +115,18 @@ public class StagePlayer : MonoBehaviour, IDamageable
             EquipmentEffectInstance instance = effectSO.CreateInstance();
             _effects.Add(instance);
         }
+
+        KillStatus = new();
+        KillStatus.Init();
+
+        BuffSystem = new(this);
     }
 
     private void Update()
     {
         HandleHeal();
         UpdateArrow();
+        BuffSystem.Update(Time.deltaTime);
     }
 
     private void FixedUpdate()
