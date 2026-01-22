@@ -104,8 +104,6 @@ public class BaseProjectile : PoolObject, IAttackable
             _trail.Clear();
             _trail.enabled = true;
         }
-
-        PlaySfxOfSpawnType();
     }
 
     protected override void OnDisableInternal()
@@ -177,6 +175,8 @@ public class BaseProjectile : PoolObject, IAttackable
         moveDir = (movePos - transform.position).normalized;
         float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        PlaySfxOfSpawnType();
     }
 
     public virtual void Spawn(Vector2 spawnPos, Vector2 dir)
@@ -186,6 +186,8 @@ public class BaseProjectile : PoolObject, IAttackable
         moveDir = dir;
         float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        PlaySfxOfSpawnType();
     }
     #endregion
 
@@ -365,7 +367,7 @@ public class BaseProjectile : PoolObject, IAttackable
 
     protected void PlaySfxOfSpawnType()
     {
-        if (data != null && data.VisualData != null)
+        if (data.VisualData != null)
         {
             switch (data.VisualData.SfxType)
             {

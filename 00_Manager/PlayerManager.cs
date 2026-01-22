@@ -56,8 +56,6 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
                 Equipment.Equip(item);
             }
         }
-
-        Inventory.Init();
     }
 
     public InventorySaveData SaveData()

@@ -69,6 +69,7 @@ public class GameManager : GlobalSingletonManager<GameManager>
     public void LoadData()
     {
         Data.Load(PlayerManager.Instance.Condition, PlayerManager.Instance, StageProgress, GrowthProgress);
+        PlayerManager.Instance.Inventory.Init();
     }
 
 
