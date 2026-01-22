@@ -1,7 +1,10 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "HealEffectSO", menuName = "SO/Effect/Heal")]
-public class HealEffectSO : BaseEquipmentEffectSO
+/// <summary>
+/// 몬스터 n 마리 처치 시 heal 효과
+/// </summary>
+[CreateAssetMenu(fileName = "KillHealThresholdEffectSO", menuName = "SO/Effect/Kill Heal")]
+public class KillHealThresholdEffectSO : BaseEquipmentEffectSO
 {
     [field: InspectorName("몬스터 조건")]
     [field: SerializeField] public KillIntervalCondition[] KillIntervalConditions;
@@ -21,7 +24,7 @@ public class HealEffectSO : BaseEquipmentEffectSO
         private readonly float _duration;
         private readonly float _healPerSecond;
 
-        public Instance(HealEffectSO source) : base(source)
+        public Instance(KillHealThresholdEffectSO source) : base(source)
         {
             _conditions = source.KillIntervalConditions;
             _duration = source.Duration;
