@@ -139,12 +139,7 @@ public class FortuneBoxUI : PopupUI
         }
 
 
-
-        for (int i = 0; i < _pickSlotIdx.Count; i++)
-        {
-            Debug.Log("뽑을거야 : " + _pickSlotIdx[i] + ", " + rollList[i].Name);
-        }
-
+        
         if (rollList == null || rollList.Count == 0) return;
 
 
@@ -215,6 +210,9 @@ public class FortuneBoxUI : PopupUI
             }
         }
 
+        // todo : 더 이상 뽑을게 없을 때 예외처리 필요
+        if (rollableSkill.Count == 0) return targetSkill;
+        
         // 뽑기 가능한 애들 중 섞기
         rollableSkill.Shuffle();
         int rollableIndex = 0;
@@ -236,6 +234,8 @@ public class FortuneBoxUI : PopupUI
     public override void OpenUIInternal()
     {
         base.OpenUIInternal();
+
+        SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 2);
 
         _pickButton.SetInteractable(false);
         _pickButton.gameObject.SetActive(false);
@@ -518,7 +518,6 @@ public class FortuneBoxUI : PopupUI
                 for (int k = 0; k < group.Length; k++)
                 {
                     int idx = group[k];
-                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
                     slots[idx].SetFocusFade();
                 }
 
