@@ -12,9 +12,7 @@ public class IgnoreSafeArea : MonoBehaviour
         Apply();
     }
 
-    void OnEnable() => Apply();
-
-    void OnRectTransformDimensionsChange() => Apply();
+    
 
     void Apply()
     {
