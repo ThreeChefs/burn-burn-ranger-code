@@ -18,13 +18,13 @@ public class AudioClipGroupData : ScriptableObject
 
     public List<AudioClipEntry> tables;
 
-    public AudioClip GetRandomClip()
+    public int GetRandomClipIdx()
     {
         if (tables.Count == 0)
-            return null;
+            return 0;
 
-        int num = Random.Range(0, tables.Count);
-        return tables[num].Clip;
+        int num = Define.Random.Next(0, tables.Count);
+        return num;
     }
 
     public AudioClip GetClip(int idx = 0)
