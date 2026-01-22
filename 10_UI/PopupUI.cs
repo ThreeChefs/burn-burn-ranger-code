@@ -1,10 +1,14 @@
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PopupUI : BaseUI
 {
     [Title("Popup UI Settings")]
+    [SerializeField] bool _useDim;
+    [ShowIf("_useDim")][SerializeField] Image _dim; 
+    [SerializeField] Transform _popup;
     [SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
     [SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
 
@@ -17,7 +21,17 @@ public class PopupUI : BaseUI
     public override void OpenUIInternal()
     {
         // 자식 찾아서 애니메이션 주기
-        Transform transform = this.transform.GetChild(0);
+        //Transform transform = this.transform.GetChild(0);
+
+        if (_useDim && _dim != null)
+        {
+            Color start = Color.white;
+            start.a = 0f;
+            _dim.color = start;
+
+            _dim.DOColor(Color.white, popupDuration).SetUpdate(true);
+        }
+       
 
 
         switch (_openType)
@@ -27,26 +41,26 @@ public class PopupUI : BaseUI
                 break;
 
             case PopupUIOpenType.Default:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    transform.localScale = Vector3.zero;
-                    transform.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    _popup.localScale = Vector3.zero;
+                    _popup.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Horizontal:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    transform.localScale = new Vector3(0, 1, 1);
-                    transform.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    _popup.localScale = new Vector3(0, 1, 1);
+                    _popup.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Vertical:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    transform.localScale = new Vector3(1, 0, 1);
-                    transform.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    _popup.localScale = new Vector3(1, 0, 1);
+                    _popup.DOScale(1f, popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
         }
@@ -56,30 +70,36 @@ public class PopupUI : BaseUI
     public override Tween CloseUIInternal()
     {
         // 자식 찾아서 애니메이션 주기
-        Transform transform = this.transform.GetChild(0);
+        //Transform transform = this.transform.GetChild(0);
 
+        if (_useDim && _dim != null)
+        {
+            Color end = Color.white;
+            end.a = 0f;
+            _dim.DOColor(end, popupDuration).SetUpdate(true);
 
+        }
 
         switch (_closeType)
         {
             case PopupUIOpenType.Default:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    return transform.DOScale(0f, popupDuration).SetEase(Ease.InQuad).SetUpdate(true);
+                    return _popup.DOScale(0f, popupDuration).SetEase(Ease.InQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Horizontal:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    return transform.DOScale(new Vector3(0, 1, 1), popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    return _popup.DOScale(new Vector3(0, 1, 1), popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Vertical:
-                if (transform != null)
+                if (_popup != null)
                 {
-                    return transform.DOScale(new Vector3(1, 0, 1), popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    return _popup.DOScale(new Vector3(1, 0, 1), popupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
         }

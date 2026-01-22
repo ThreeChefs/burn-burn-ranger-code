@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class StageSelectPanel : SwipeScrollPanel
 {
+    List<Image> _imgList = new List<Image>();
+
+    protected List<Image> contentsImgList => _imgList;
+
     protected override void Awake()
     {
         base.Awake();
@@ -19,9 +23,14 @@ public class StageSelectPanel : SwipeScrollPanel
             if (img != null)
             {
                 img.sprite = GameManager.Instance.StageDatabase[i].StageIcon;
+                if (i < GameManager.Instance.StageProgress.ClearStageNum)
+                    img.material = null;
+                _imgList.Add(img);
             }
-            
+
             _contents.Add(rect);
         }
+
     }
+
 }
