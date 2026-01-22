@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class BottomBarUI : BaseUI
@@ -10,6 +11,8 @@ public class BottomBarUI : BaseUI
 
     private const int OriginWidth = 200;
     private const int TargetWidth = 280;
+
+    public event Action<BottomBarMenuType> OnClickMenuAction;
 
     protected override void AwakeInternal()
     {
@@ -47,6 +50,7 @@ public class BottomBarUI : BaseUI
     private void SelectButton(int index)
     {
         SoundManager.Instance.PlaySfx(SfxName.Sfx_Click);
+        OnClickMenuAction?.Invoke((BottomBarMenuType)index);
 
         if (_index == index) return;
 
@@ -84,3 +88,4 @@ public class BottomBarUI : BaseUI
     }
 #endif
 }
+
