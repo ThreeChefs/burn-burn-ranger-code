@@ -4,6 +4,7 @@ using UnityEngine;
 public class ActiveSkillData : SkillData
 {
     [field: Header("액티브 스킬 정보")]
+    [field: SerializeField] public bool IsWeaponSkill { get; private set; }
     [field: Tooltip("쿨타임")]
     [field: SerializeField] public float Cooldown { get; private set; }
     [field: Tooltip("탄환 소환 간격")]

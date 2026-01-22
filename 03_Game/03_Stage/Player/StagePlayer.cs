@@ -108,18 +108,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
         _joyStick = UIManager.Instance.LoadUI(UIName.UI_JoyStick) as JoyStickInput;
 
-        // 스킬 효과 초기화
-        foreach (BaseEquipmentEffectSO effectSO in PlayerManager.Instance.Equipment.EffectSOs)
-        {
-            Logger.Log($"스킬 효과 생성: {effectSO.name}");
-            EquipmentEffectInstance instance = effectSO.CreateInstance();
-            _effects.Add(instance);
-        }
-
-        BuffSystem = new(this);
-
-        KillStatus = new();
-        KillStatus.Init();
+        InitEquipmentEffects();
     }
 
     private void Update()
@@ -143,8 +132,36 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         StageLevel.OnDestroy();
         Condition[StatType.DropItemRange].OnMaxValueChanged -= OnUpdateColliderSize;
+        Condition.ResetBuff();
     }
     #endregion
+
+    /// <summary>
+    /// 장비 아이템으로 인해 초기화 해야 하는 부분
+    /// </summary>
+    private void InitEquipmentEffects()
+    {
+        BuffSystem = new(Condition);
+
+        // effectSO에서 런타임 동안 생성되는 readonly struct buffInstanceKey 값 초기화
+        BuffInstanceKey.ResetGenerator();
+
+        // 장비 effect data 가져와서 effect instance 생성하기
+        foreach (BaseEquipmentEffectSO effectSO in PlayerManager.Instance.Equipment.EffectSOs)
+        {
+            Logger.Log($"스킬 효과 생성: {effectSO.name}");
+            EquipmentEffectInstance instance = effectSO.CreateInstance();
+            _effects.Add(instance);
+        }
+
+        foreach (EquipmentEffectInstance instance in _effects)
+        {
+            instance.OnStageStart(BuffSystem);
+        }
+
+        KillStatus = new();
+        KillStatus.Init();
+    }
 
     #region Collider 관리
     private void OnUpdateColliderSize(float radius)
@@ -159,6 +176,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
         if (_heal.MaxValue != 0 && _healTimer > Define.HealTime)
         {
             _health.Add(_health.MaxValue * _heal.MaxValue);
+            BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
             _healTimer = 0f;
         }
     }
@@ -231,11 +249,13 @@ public class StagePlayer : MonoBehaviour, IDamageable
     #region 전투 관리
     public void TakeDamage(float value)
     {
-        PlayerStat health = Condition[StatType.Health];
-        if (health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
+        if (_health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
             CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
-            if (health.CurValue == 0)
+            BuffSystem.OnPlayerHit();
+            BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
+
+            if (_health.CurValue == 0)
             {
                 Die();
             }
@@ -250,7 +270,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         foreach (var effect in _effects.OfType<IReviveEffect>())
         {
-            BaseEffectContext context = new() { Reason = TriggerReason.Hpzero };
+            BaseEffectContext context = new()
+            {
+                Reason = TriggerReason.Hpzero,
+                BuffSystem = BuffSystem
+            };
 
             if (!effect.CanTrigger(context))
             {

@@ -51,15 +51,15 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     {
         if (CurLevel >= Define.SkillMaxLevel) return;
 
-        CurLevel++;
-
         switch (SkillData.Type)
         {
             case SkillType.Active:
             case SkillType.Passive:
+                CurLevel = Math.Min(CurLevel + 1, Define.SkillMaxLevel);
                 IsMaxLevel = CurLevel == Define.SkillMaxLevel;
                 break;
             case SkillType.Combination:
+                CurLevel = Math.Min(CurLevel + 1, 1);
                 IsMaxLevel = CurLevel == 1;
                 break;
         }

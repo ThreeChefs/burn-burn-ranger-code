@@ -6,8 +6,16 @@ public enum BuffStackPolicy
     Ignore      // 이미 있으면 무시
 }
 
-public enum BuffId
+[System.Flags]
+public enum BuffEndCondition
 {
-    None,
-    Heal
+    None = 0,
+    Time = 1 << 0,
+    BreakOnHit = 1 << 1,
+}
+
+public enum HpCompareType
+{
+    LessOrEqual,   // 이하
+    GreaterOrEqual // 이상
 }

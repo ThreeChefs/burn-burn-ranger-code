@@ -20,6 +20,7 @@ public class SkillSystem
 
     private bool _canSelectSkill;
     private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+    private int _minCombinationId = int.MaxValue;
 
     // public readonly colliections
     public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
@@ -42,15 +43,33 @@ public class SkillSystem
         // 딕셔너리 초기화
         _skillDataCache.Clear();
         _maxedSkillIds.Clear();
-        _skillDatabase.GetDatabase<SkillData>()
-            .ForEach(skillData =>
+        List<SkillData> skillDatabase = _skillDatabase.GetDatabase<SkillData>();
+
+        foreach (SkillData skillData in skillDatabase)
+        {
+            if (skillData is ActiveSkillData activeSkillData)
             {
-                if (_skillDataCache.ContainsKey(skillData.Id))
+                // 무기 스킬 중 장비하고 있지 않을 경우 스킵
+                if (activeSkillData.IsWeaponSkill
+                && !PlayerManager.Instance.Equipment.HavingSkills.ContainsKey(activeSkillData.Id))
                 {
-                    Logger.LogWarning("키 중복");
+                    Logger.Log($"장비 안한 무기 스킬: {activeSkillData.Id}");
+                    continue;
                 }
-                _skillDataCache[skillData.Id] = skillData;
-            });
+            }
+
+            if (_skillDataCache.ContainsKey(skillData.Id))
+            {
+                Logger.LogWarning("키 중복");
+            }
+            _skillDataCache[skillData.Id] = skillData;
+
+            if (skillData.Type == SkillType.Combination)
+            {
+                _minCombinationId = Mathf.Min(_minCombinationId, skillData.Id);
+            }
+        }
+
         _ownedSkills.Clear();
         _combinationRequirementMap.Clear();
 
@@ -298,6 +317,7 @@ public class SkillSystem
         {
             foreach (int id in _ownedSkills.Keys)
             {
+                if (id >= _minCombinationId) continue;
                 selectedSkillId.Add(id);
             }
         }
@@ -363,7 +383,7 @@ public class SkillSystem
                 int[] materialIds = _skillDataCache[combinationId].CombinationIds;      // 재료 아이디
                 foreach (int materialId in materialIds)
                 {
-                    _skillDataCache.TryGetValue(materialId, out SkillData materialData);
+                    if (!_skillDataCache.TryGetValue(materialId, out SkillData materialData)) continue;
                     if (materialData.Type == SkillType.Active)
                     {
                         icons.Add(materialData.Icon);

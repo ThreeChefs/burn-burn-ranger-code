@@ -1,6 +1,7 @@
 public struct BaseEffectContext
 {
     public TriggerReason Reason;
+    public BuffSystem BuffSystem;
 }
 
 public struct KillEffectContext

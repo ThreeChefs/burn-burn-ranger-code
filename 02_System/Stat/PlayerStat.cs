@@ -34,7 +34,7 @@ public class PlayerStat : BaseStat
     {
         EquipmentValue += value;
 
-        CurValue = Mathf.Min(CurValue, MaxValue);
+        CurValue = Mathf.Min(CurValue + EquipmentValue, MaxValue);
 
         OnCurValueChanged?.Invoke(CurValue);
         OnMaxValueChanged?.Invoke(MaxValue);
@@ -46,11 +46,16 @@ public class PlayerStat : BaseStat
     /// <param name="value"></param>
     public void UpdateBuffValue(float value)
     {
-        BuffValue = value;
-        CurValue = Mathf.Min(CurValue + BuffValue, MaxValue);
+        BuffValue += value;
+        CurValue = Mathf.Min(CurValue + EquipmentValue + BuffValue, MaxValue);
         Logger.Log($"현재 {type} 값: {CurValue}");
 
         OnCurValueChanged?.Invoke(CurValue);
         OnMaxValueChanged?.Invoke(MaxValue);
+    }
+
+    public void ResetBuffValue()
+    {
+        BuffValue = 0;
     }
 }

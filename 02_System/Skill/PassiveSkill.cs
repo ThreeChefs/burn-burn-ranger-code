@@ -11,8 +11,6 @@ public class PassiveSkill : BaseSkill
     protected override void OnDestroy()
     {
         base.OnDestroy();
-        PlayerManager.Instance.Condition[_passiveSkillData.StatType]
-            .UpdateBuffValue(0);
     }
 
     /// <summary>
@@ -24,6 +22,6 @@ public class PassiveSkill : BaseSkill
         base.LevelUp();
 
         PlayerStat stat = PlayerManager.Instance.Condition[_passiveSkillData.StatType];
-        stat.UpdateBuffValue((stat.BaseValue == 0 ? 1 : stat.BaseValue) * skillValues[SkillValueType.StatBuff][0] * CurLevel);
+        stat.UpdateBuffValue((stat.BaseValue == 0 ? 1 : stat.BaseValue) * skillValues[SkillValueType.StatBuff][0]);
     }
 }

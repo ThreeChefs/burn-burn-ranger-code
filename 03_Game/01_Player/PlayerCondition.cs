@@ -75,6 +75,18 @@ public class PlayerCondition
     }
 
     /// <summary>
+    /// [public] 스텟의 버프값 리셋할 때 사용
+    /// </summary>
+    public void ResetBuff()
+    {
+        Logger.Log("버프값 리셋");
+        foreach (PlayerStat stat in _statDict.Values)
+        {
+            stat.ResetBuffValue();
+        }
+    }
+
+    /// <summary>
     /// [public] Player가 파괴될 때 수행
     /// </summary>
     public void OnDestroy()
