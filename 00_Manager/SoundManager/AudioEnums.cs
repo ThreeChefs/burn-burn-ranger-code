@@ -20,6 +20,7 @@ public enum BgmName
 {
     Main,
     TestBgm,
+    Stage,
 
 }
 
