@@ -35,7 +35,7 @@ public class BuffSystem
         for (int i = 0; i < _active.Count; i++)
         {
             var instance = _active[i];
-            instance.Tick(_condition, dt);
+            instance.Tick(dt);
 
             if (instance.IsExpired)
             {
@@ -57,6 +57,17 @@ public class BuffSystem
             else
             {
                 instance.Deactive(_condition);
+            }
+        }
+    }
+
+    public void OnPlayerHit()
+    {
+        foreach (BuffInstance instance in _active)
+        {
+            if (instance.ShouldRemoveOnHit())
+            {
+                Remove(instance);
             }
         }
     }

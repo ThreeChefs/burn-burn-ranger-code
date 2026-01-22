@@ -42,11 +42,10 @@ public class KillThresholdEffectSO : BaseEquipmentEffectSO
 
                 for (int n = 0; n < triggerCount; n++)
                 {
-                    context.Base.BuffSystem.Add(Key, new StatBuff(_duration, _modifier));
+                    context.Base.BuffSystem.Add(Key, new StatBuff(_duration, _modifier, endCondition));
                     register = true;
                 }
             }
-
             return register;
         }
     }

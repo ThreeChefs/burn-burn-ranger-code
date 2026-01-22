@@ -6,7 +6,8 @@ public class StatBuff : BaseBuff
     public StatBuff(
         float baseDuration,
         StatModifier statModifier,
-        BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(baseDuration, policy)
+        BuffEndCondition endCondition,
+        BuffStackPolicy policy = BuffStackPolicy.Refresh) : base(baseDuration, endCondition, policy)
     {
         _modifier = statModifier;
         float statValue = PlayerManager.Instance.Condition[_modifier.StatType].BaseValue;

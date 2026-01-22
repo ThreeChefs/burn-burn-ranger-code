@@ -31,7 +31,7 @@ public class HpConditionStatEffectSO : BaseEquipmentEffectSO
             if (_registered) return;
             _registered = true;
 
-            system.Add(Key, new HpConditionStatBuff(_condition, _modifier));
+            system.Add(Key, new HpConditionStatBuff(_condition, _modifier, endCondition));
         }
     }
 }

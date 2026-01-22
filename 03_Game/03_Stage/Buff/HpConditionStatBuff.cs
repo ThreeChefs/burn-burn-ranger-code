@@ -6,7 +6,8 @@ public class HpConditionStatBuff : BaseBuff, IHpRatioReactiveBuff
 
     public HpConditionStatBuff(
         HpRatioCondition condition,
-        StatModifier modifier) : base(float.PositiveInfinity, BuffStackPolicy.Ignore)
+        StatModifier modifier,
+        BuffEndCondition endCondition) : base(float.PositiveInfinity, endCondition, BuffStackPolicy.Ignore)
     {
         _condition = condition;
         _modifier = modifier;
