@@ -3,6 +3,7 @@ public enum SfxName
 {
     // UI
     Sfx_Click,
+    Sfx_Warning,
 
 
     // In Stage
