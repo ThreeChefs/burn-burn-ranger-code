@@ -171,10 +171,13 @@ public class BaseProjectile : PoolObject, IAttackable
         transform.position = spawnPos;
         this.target = target;
 
-        movePos = target.position;
-        moveDir = (movePos - transform.position).normalized;
-        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        if (target != null)
+        {
+            movePos = target.position;
+            moveDir = (movePos - transform.position).normalized;
+            float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0f, 0f, angle);
+        }
 
         PlaySfxOfSpawnType();
     }
@@ -381,6 +384,16 @@ public class BaseProjectile : PoolObject, IAttackable
                     }
                     break;
             }
+        }
+    }
+
+    protected void PlaySfxOfAoEType()
+    {
+        if (data.VisualData != null
+            && data.VisualData.SfxType == ProjectileSfxType.AoE
+            && sfxCoroutine == null)
+        {
+            sfxCoroutine = StartCoroutine(PlaySfx());
         }
     }
     #endregion
