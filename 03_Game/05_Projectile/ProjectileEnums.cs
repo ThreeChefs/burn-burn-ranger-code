@@ -37,6 +37,8 @@ public enum ProjectileSfxType
     SpawnOnce,
     SpawnLoop,
     AoE,
+
+    None = 100,
 }
 
 public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기

@@ -125,6 +125,7 @@ public class PlayerProjectile : BaseProjectile
                         UpdateAreaPhase();
                     }
 
+                    PlaySfxOfExplodeType();
                     gameObject.SetActive(false);
                 }
                 break;

@@ -368,6 +368,14 @@ public class BaseProjectile : PoolObject, IAttackable
         }
     }
 
+    protected void PlaySfxOfExplodeType()
+    {
+        if (data.VisualData != null && data.VisualData.SfxType == ProjectileSfxType.Explode)
+        {
+            PlaySfxOnce();
+        }
+    }
+
     protected void PlaySfxOfSpawnType()
     {
         if (data.VisualData != null)
