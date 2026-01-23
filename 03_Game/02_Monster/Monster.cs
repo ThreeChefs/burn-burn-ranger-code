@@ -85,7 +85,8 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     }
     protected virtual void FixedUpdate()
     {
-
+        if (_isKnockback)
+            return;
         if (bossController != null && bossController.patternLocked)
         {
             rb.velocity = Vector2.zero;
@@ -208,6 +209,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
     public void ApplyKnockback(Vector2 position, float force)
     {
+        Debug.Log($"Knockback called! force={force} pos={position}", this);
         if (rb == null)
         {
             return;
