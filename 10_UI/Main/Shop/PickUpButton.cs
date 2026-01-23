@@ -35,21 +35,8 @@ public class PickUpButton : BaseButton
         SetPickButton(0);
     }
 
-    private void OnEnable()
+    private void OnDestroy()
     {
-        if (PlayerManager.Instance == null) return;
-        foreach (BoxWallet wallet in _boxWallets)
-        {
-            PlayerManager.Instance.Wallet[wallet.WalletType].OnValueChanged += CheckWallet;
-        }
-        SetPickButton(0);
-    }
-
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-
-        _button.onClick.RemoveAllListeners();
         foreach (BoxWallet wallet in _boxWallets)
         {
             PlayerManager.Instance.Wallet[wallet.WalletType].OnValueChanged -= CheckWallet;
@@ -87,12 +74,9 @@ public class PickUpButton : BaseButton
         {
             BoxWallet wallet = _boxWallets[i];
 
-            if (value > wallet.RequiredValue)
-            {
-                _boxWalletIndex = i;
-                SetPickButton(_boxWalletIndex);
-                return;
-            }
+            // todo: 상위 재화 있으면 나머지는 disable되게 설정해두기
+            _boxWalletIndex = i;
+            SetPickButton(_boxWalletIndex);
         }
     }
 
