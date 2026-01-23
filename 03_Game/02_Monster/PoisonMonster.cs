@@ -19,4 +19,5 @@ public class PoisonMonster : Monster
         Instantiate(poisonAreaPrefab, transform.position, Quaternion.identity);
     }
 
+
 }
