@@ -15,6 +15,8 @@ public class MainScene : BaseScene
 
         UIManager.Instance.LoadUI(UIName.UI_Home);
 
+        UIManager.Instance.LoadUI(UIName.UI_Settings, false);
+
         UIManager.Instance.LoadUI(UIName.UI_Equipment, false);
         UIManager.Instance.LoadUI(UIName.UI_ItemDetail, false);
         UIManager.Instance.LoadUI(UIName.UI_ItemCompose, false);
@@ -26,7 +28,7 @@ public class MainScene : BaseScene
 
         UIManager.Instance.LoadUI(UIName.UI_InGameLoading, false);
 
-        SoundManager.Instance.PlayBgm(BgmName.Main, volume: 0.6f);
+        SoundManager.Instance.PlayBgm(BgmName.Main);
 
     }
 

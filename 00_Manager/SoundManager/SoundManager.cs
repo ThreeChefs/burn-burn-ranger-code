@@ -28,6 +28,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     Dictionary<SfxName, AudioClipGroupData> SFXTable = new Dictionary<SfxName, AudioClipGroupData>();
     Dictionary<BgmName, AudioClipGroupData> BgmTable = new Dictionary<BgmName, AudioClipGroupData>();
 
+
     AudioSource _bgmAudioSource;
     private List<AudioSource> _sfxAudioSources;
 
@@ -79,17 +80,17 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         }
     }
 
-    public void PlaySfx(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
+    public void PlaySfx(SfxName sfxName, float pitch = 1.0f, int idx = 0, AudioSource aSource = null)
     {
         if (SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
             if (SfxLimiter.CanPlay(sfxName, idx, clip.GetClip().LimitInterval) == false) return;
 
-            PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
+            PlayInternal(SoundType.Sfx, clip, idx, aSource, false, pitch);
         }
     }
 
-    public void PlaySfxRandom(SfxName sfxName, float volume = 1.0f, float pitch = 1.0f, AudioSource aSource = null)
+    public void PlaySfxRandom(SfxName sfxName, float pitch = 1.0f, AudioSource aSource = null)
     {
         if(SFXTable.TryGetValue(sfxName, out AudioClipGroupData clip))
         {
@@ -97,22 +98,22 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
             if (SfxLimiter.CanPlay(sfxName, idx, clip.GetClip(idx).LimitInterval) == false) return;
 
-            PlayInternal(SoundType.Sfx, clip, idx, aSource, volume, false, pitch);
+            PlayInternal(SoundType.Sfx, clip, idx, aSource, false, pitch);
 
         }
     }
 
-    public void PlayBgm(BgmName bgmName, int idx = 0, float volume = 1.0f, bool loop = true, float pitch = 1.0f, AudioSource aSource = null)
+    public void PlayBgm(BgmName bgmName, int idx = 0, bool loop = true, float pitch = 1.0f, AudioSource aSource = null)
     {
         if (BgmTable.TryGetValue(bgmName, out AudioClipGroupData clip))
         {
-            PlayInternal(SoundType.Bgm, clip, idx, aSource, volume, loop, pitch);
+            PlayInternal(SoundType.Bgm, clip, idx, aSource, loop, pitch);
         }
     }
 
 
     // Play 통합
-    private void PlayInternal(SoundType type, AudioClipGroupData group, int idx, AudioSource audioSource, float volume, bool loop, float pitch)
+    private void PlayInternal(SoundType type, AudioClipGroupData group, int idx, AudioSource audioSource, bool loop, float pitch)
     {
         if (group == null)
             return;
@@ -127,8 +128,11 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
         if (clip != null)
         {
+
+            _sourceClipVolumes[target] = clipVolume;
+
             target.Stop();
-            target.volume = volume * clipVolume;
+            target.volume = baseVolume * clipVolume;
             target.clip = clip;
             target.loop = loop;
             target.pitch = pitch;
@@ -200,6 +204,8 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     #region VolumeSettings
 
+    private Dictionary<AudioSource, float> _sourceClipVolumes = new(); // 재생중인 오디오 소스의 볼륨 
+
     void SetBgmVolume()
     {
         _bgmAudioSource.volume = GetVolume(BgmVolume, 1.0f);
@@ -222,12 +228,14 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         _masterVolume = Mathf.Clamp(volume, 0, 1.0f);
         PlayerPrefs.SetFloat(_masterVolumeName, MasterVolume);
         SetBgmVolume();
+        RefreshVolumes();
     }
 
     public void SetSfxVolume(float volume)
     {
         _sfxVolume = Mathf.Clamp(volume, 0, 1.0f);
         PlayerPrefs.SetFloat(_sfxVolumeName, MasterVolume);
+        RefreshVolumes();
     }
 
     public void SetBgmVolume(float volume)
@@ -235,6 +243,29 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
         _bgmVolume = Mathf.Clamp(volume, 0, 1.0f);
         PlayerPrefs.SetFloat(_bgmVolumeName, MasterVolume);
         SetBgmVolume();
+        RefreshVolumes();
+    }
+
+    private void RefreshVolumes()
+    {
+        if (_bgmAudioSource != null)
+        {
+            float clipVol = 1f;
+            _sourceClipVolumes.TryGetValue(_bgmAudioSource, out clipVol);
+            _bgmAudioSource.volume = _masterVolume * _bgmVolume * clipVol;
+        }
+
+        if (_sfxAudioSources != null)
+        {
+            foreach (AudioSource s in _sfxAudioSources)
+            {
+                if (s == null) continue;
+
+                float clipVol = 1f;
+                _sourceClipVolumes.TryGetValue(s, out clipVol);
+                s.volume = _masterVolume * _sfxVolume * clipVol;
+            }
+        }
     }
 
     #endregion
