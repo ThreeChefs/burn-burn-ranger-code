@@ -137,6 +137,10 @@ public class ItemComposeUI : BaseUI
         // 아이템 삭제 & 주기
         for (int i = 0; i < _materialInstanaces.Length; i++)
         {
+            if (PlayerManager.Instance.Equipment.IsEquip(_materialInstanaces[i]))
+            {
+                PlayerManager.Instance.Equipment.Unequip(_materialInstanaces[i]);
+            }
             _inventory.Remove(_materialInstanaces[i]);
         }
         _inventory.Add(_resultInstance);
@@ -225,6 +229,7 @@ public class ItemComposeUI : BaseUI
             && TryGetNextMaterialItem(ref itemIndex, out item))
         {
             _inventorySlots[slotIndex].SetSlot(item);
+            _inventorySlots[slotIndex].gameObject.SetActive(true);
             slotIndex++;
         }
 
@@ -232,6 +237,12 @@ public class ItemComposeUI : BaseUI
         for (int i = slotIndex; i < _inventorySlots.Count; i++)
         {
             _inventorySlots[i].gameObject.SetActive(false);
+        }
+
+        // 재료 아이템에 연결되어 있는 슬롯일 경우 비활성화
+        foreach (MaterialItemSlot slot in _materialSlots)
+        {
+            slot.Target?.gameObject.SetActive(false);
         }
     }
 
