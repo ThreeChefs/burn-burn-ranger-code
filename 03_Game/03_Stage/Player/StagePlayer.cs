@@ -1,8 +1,8 @@
 ﻿using DG.Tweening;
+using Sirenix.OdinInspector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,21 +14,25 @@ using UnityEngine.InputSystem;
 public class StagePlayer : MonoBehaviour, IDamageable
 {
     #region 필드
-    [Header("컴포넌트")]
+    [Title("Collider")]
     // 아이템 범위 
     [SerializeField] private CircleCollider2D _gemCollector;
     private float _defaultRadius;
 
+    [Title("UI")]
     // hp바
     [SerializeField] private Transform _hpBarPivot;
 
+    [Title("Sprs")]
     // 이미지
     [SerializeField] private Transform _moveDirectionArrow;
     [SerializeField] private float _rotateDuration = 0.75f;
     private float _lastAngle;
 
     [SerializeField] private float _bloodParticleOffset = 1f;
-    [SerializeField] private SpriteRenderer[] _renderers;
+    [SerializeField] private SpriteRenderer[] _sprs;
+    [SerializeField] private Color _hitColor = Color.red;
+    [SerializeField] private float _flashDuration = 0.4f;
     private bool _isLeft;
     protected bool IsLeft
     {
@@ -42,7 +46,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
             }
         }
     }
+    private Color[] _originColors;
 
+    [field: Title("Skill")]
     // 액티브 스킬 컨테이너
     [field: SerializeField] public Transform SkillContainer { get; private set; }
 
@@ -76,6 +82,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
 
     // tween
     private Tween _arrowRotateTween;
+    private Sequence _hitFlashSequence;
 
     // 이벤트
     public event Action OnDieAction;
@@ -88,6 +95,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
         GoldValue = 0;
         _defaultRadius = _gemCollector.radius;
         _effects = new();
+
+        _originColors = new Color[_sprs.Length];
+        for (int i = 0; i < _originColors.Length; i++)
+        {
+            _originColors[i] = _sprs[i].color;
+        }
     }
 
     private void Start()
@@ -126,6 +139,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     private void OnDisable()
     {
         _arrowRotateTween?.Kill();
+        _hitFlashSequence?.Kill();
     }
 
     private void OnDestroy()
@@ -236,12 +250,34 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     #endregion
 
-    #region sprite 관리
+    #region 시각 연출 관리
     private void Flip()
     {
-        foreach (SpriteRenderer renderer in _renderers)
+        foreach (SpriteRenderer renderer in _sprs)
         {
             renderer.flipX = IsLeft;
+        }
+    }
+
+    private void HitVfx()
+    {
+        CommonPoolManager.Instance.Spawn(
+            CommonPoolIndex.Particle_Blood,
+            transform.position + Vector3.up * _bloodParticleOffset);
+
+        _hitFlashSequence?.Kill();
+        _hitFlashSequence = DOTween.Sequence();
+
+        for (int i = 0; i < _sprs.Length; i++)
+        {
+            _hitFlashSequence.Join(_sprs[i].DOColor(_hitColor, _flashDuration));
+        }
+
+        _hitFlashSequence.AppendInterval(_flashDuration);
+
+        for (int i = 0; i < _sprs.Length; i++)
+        {
+            _hitFlashSequence.Join(_sprs[i].DOColor(_originColors[i], _flashDuration));
         }
     }
     #endregion
@@ -251,7 +287,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         if (_health.TryUse(value * (1 - Condition[StatType.DamageReduction].MaxValue)))
         {
-            CommonPoolManager.Instance.Spawn(CommonPoolIndex.Particle_Blood, transform.position + Vector3.up * _bloodParticleOffset);
+            HitVfx();
             BuffSystem.OnPlayerHit();
             BuffSystem.OnHpChanged(_health.CurValue / _health.MaxValue);
 
@@ -346,12 +382,12 @@ public class StagePlayer : MonoBehaviour, IDamageable
         _gemCollector = transform.FindChild<CircleCollider2D>("GemCollector");
         if (!_gemCollector.TryGetComponent<GemCollector>(out var gemCollector))
         {
-            _gemCollector.AddComponent<GemCollector>();
+            _gemCollector.gameObject.AddComponent<GemCollector>();
         }
         _gemCollector.radius = 0.5f;
         _hpBarPivot = transform.FindChild<Transform>("HpBarPivot");
         _moveDirectionArrow = transform.FindChild<Transform>("MoveDirectionArrow");
-        _renderers = transform.FindChild<Transform>("Model").GetComponentsInChildren<SpriteRenderer>();
+        _sprs = transform.FindChild<Transform>("Model").GetComponentsInChildren<SpriteRenderer>();
         SkillContainer = transform.FindChild<Transform>("SkillContainer");
     }
 #endif
