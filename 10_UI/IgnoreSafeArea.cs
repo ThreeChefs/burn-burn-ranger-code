@@ -12,24 +12,20 @@ public class IgnoreSafeArea : MonoBehaviour
         Apply();
     }
 
-    
+
 
     void Apply()
     {
         if (_rt == null) return;
-        if (_canvas == null) _canvas = GetComponentInParent<Canvas>();
         if (_canvas == null) return;
 
-        RectTransform rootRect = _canvas.rootCanvas.GetComponent<RectTransform>();
-        if (rootRect == null) return;
-
-        Vector2 size = rootRect.rect.size;
-
-        _rt.anchorMin = new Vector2(0.5f, 0.5f);
-        _rt.anchorMax = new Vector2(0.5f, 0.5f);
+        _rt.anchorMin = Vector2.zero;
+        _rt.anchorMax = Vector2.one;
         _rt.pivot = new Vector2(0.5f, 0.5f);
 
         _rt.anchoredPosition = Vector2.zero;
-        _rt.sizeDelta = size;
+        _rt.sizeDelta = Vector2.zero;
+        _rt.offsetMin = Vector2.zero;
+        _rt.offsetMax = Vector2.zero;
     }
 }
