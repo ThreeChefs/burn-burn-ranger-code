@@ -317,18 +317,26 @@ public class SkillSystem
         {
             foreach (int id in _ownedSkills.Keys)
             {
-                if (id >= _minCombinationId) continue;
+                if (id >= _minCombinationId) continue;      // 조합 스킬일 경우 제외 (위에서 처리)
                 selectedSkillId.Add(id);
             }
         }
         // 2. 스킬 전부 획득하지 않았을 경우
-        // 1) 액티브 스킬만 전부 뽑았을 때
+        // 1) 액티브 스킬을 전부 뽑았을 때
         else if (_activeSkillCount == Define.ActiveSkillMaxCount && _passiveSkillCount != Define.PassiveSkillMaxCount)
         {
             foreach (SkillData data in _skillDataCache.Values)
             {
+                // 패시브일 경우 그냥 뽑기
                 if (data.Type == SkillType.Passive)
                 {
+                    selectedSkillId.Add(data.Id);
+                }
+                // 액티브일 경우 보유한 스킬 중 최대 레벨이 아닌 걸 뽑기
+                else if (data.Type == SkillType.Active)
+                {
+                    if (!_ownedSkills.TryGetValue(data.Id, out BaseSkill skill) ||
+                        skill.CurLevel == Define.SkillMaxLevel) continue;
                     selectedSkillId.Add(data.Id);
                 }
             }
@@ -338,8 +346,16 @@ public class SkillSystem
         {
             foreach (SkillData data in _skillDataCache.Values)
             {
+                // 액티브일 경우 그냥 뽑기
                 if (data.Type == SkillType.Active)
                 {
+                    selectedSkillId.Add(data.Id);
+                }
+                // 패시브일 경우 보유한 스킬 중 최대 레벨이 아닌 걸 뽑기
+                else if (data.Type == SkillType.Passive)
+                {
+                    if (!_ownedSkills.TryGetValue(data.Id, out BaseSkill skill) ||
+                        skill.CurLevel == Define.SkillMaxLevel) continue;
                     selectedSkillId.Add(data.Id);
                 }
             }
