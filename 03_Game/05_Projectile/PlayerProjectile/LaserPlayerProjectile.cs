@@ -1,6 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LaserPlayerProjectile : PlayerProjectile
@@ -10,6 +8,7 @@ public class LaserPlayerProjectile : PlayerProjectile
 
     public override void Spawn(Vector2 spawnPos, Vector2 dir)
     {
+        PlaySfxOfSpawnType();
 
         this.transform.position = spawnPos + dir;
 
