@@ -35,8 +35,20 @@ public class PickUpButton : BaseButton
         SetPickButton(0);
     }
 
-    private void OnDestroy()
+    private void OnEnable()
     {
+        if (PlayerManager.Instance == null) return;
+        foreach (BoxWallet wallet in _boxWallets)
+        {
+            PlayerManager.Instance.Wallet[wallet.WalletType].OnValueChanged += CheckWallet;
+        }
+        SetPickButton(0);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
+
         _button.onClick.RemoveAllListeners();
         foreach (BoxWallet wallet in _boxWallets)
         {
@@ -75,7 +87,7 @@ public class PickUpButton : BaseButton
         {
             BoxWallet wallet = _boxWallets[i];
 
-            if (wallet.RequiredValue > value)
+            if (value > wallet.RequiredValue)
             {
                 _boxWalletIndex = i;
                 SetPickButton(_boxWalletIndex);
