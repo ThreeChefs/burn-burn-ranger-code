@@ -125,6 +125,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
             audioSource : (type == SoundType.Sfx ? GetSFXAudioSource() : _bgmAudioSource);
 
         float baseVolume = type == SoundType.Sfx ? _sfxVolume : _bgmVolume;
+        baseVolume = baseVolume * _masterVolume;
 
         if (clip != null)
         {
