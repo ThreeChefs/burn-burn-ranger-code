@@ -115,15 +115,15 @@ public class StageManager : SceneSingletonManager<StageManager>
     private void Update()
     {
 
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            GameManager.Instance.Scene.ReLoadSceneAsync();
-        }
-        // 테스트용
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            ShowSkillSelectUI(_player.StageLevel.Level);
-        }
+        //if (Input.GetKeyDown(KeyCode.R))
+        //{
+        //    GameManager.Instance.Scene.ReLoadSceneAsync();
+        //}
+        //// 테스트용
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    ShowSkillSelectUI(_player.StageLevel.Level);
+        //}
         if (_isPlaying == false) return;
         _waveController?.Update();
     }
