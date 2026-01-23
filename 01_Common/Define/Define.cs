@@ -54,7 +54,7 @@ public static class Define
     public static Color TargetColor = new(1f, 0.64705884f, 0.19607845f);
     public static float OriginScale = 1f;
     public static float TargetScale = 1.4f;
-    public static float Duration = 1f;
+    public static float Duration = 0.5f;
 
     // 모바일 확인
     /// <summary>
