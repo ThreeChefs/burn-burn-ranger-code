@@ -124,6 +124,8 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickComposeButton()
     {
+        if (!CheckCompose()) return;
+
         // 아이템 삭제 & 주기
         for (int i = 0; i < _materialInstanaces.Length; i++)
         {
@@ -182,7 +184,7 @@ public class ItemComposeUI : BaseUI
     /// <returns></returns>
     private bool CheckCompose()
     {
-        return RequiringCount >= Count;
+        return RequiringCount <= Count;
     }
     #endregion
 
