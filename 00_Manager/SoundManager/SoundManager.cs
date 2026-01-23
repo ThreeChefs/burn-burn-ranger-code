@@ -106,7 +106,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     {
         if (BgmTable.TryGetValue(bgmName, out AudioClipGroupData clip))
         {
-            PlayInternal(SoundType.Bgm, clip, idx, aSource, volume, false, pitch);
+            PlayInternal(SoundType.Bgm, clip, idx, aSource, volume, loop, pitch);
         }
     }
 
