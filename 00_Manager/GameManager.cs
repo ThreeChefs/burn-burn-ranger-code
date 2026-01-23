@@ -5,8 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : GlobalSingletonManager<GameManager>
 {
+    [Header("Test")]
     [SerializeField] bool _isTest;
     public bool IsTest=> _isTest;       // 테스트 플래그 확인해서 이곳저곳에서 사용
+    [field:SerializeField] public float TestTimeScale { get; private set; } = 1.0f;
+
 
     // 각종 매니저들
     public SceneController Scene { get; private set; }

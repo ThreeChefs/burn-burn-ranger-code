@@ -46,7 +46,6 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     protected override void Awake()
     {
-        Time.timeScale = 1;
         base.Awake();
         Init();
     }
@@ -83,6 +82,11 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     private void Start()
     {
+        // 타임스케일 설정
+
+        Time.timeScale = GameManager.Instance.IsTest ? GameManager.Instance.TestTimeScale : 1f;
+
+
         // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
         _player.OnDieAction += GameOver;
@@ -185,7 +189,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public void ResumeGame()
     {
-        Time.timeScale = 1;
+        Time.timeScale = GameManager.Instance.IsTest ? GameManager.Instance.TestTimeScale : 1f;
     }
 
     void GameStart()
