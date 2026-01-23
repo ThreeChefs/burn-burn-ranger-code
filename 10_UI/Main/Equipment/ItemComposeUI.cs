@@ -40,6 +40,7 @@ public class ItemComposeUI : BaseUI
     private void Start()
     {
         _inventory = PlayerManager.Instance.Inventory;
+        _inventory.OnInventoryChanged += UpdateInventoryUI;
 
         Init();
     }
@@ -62,6 +63,8 @@ public class ItemComposeUI : BaseUI
 
         if (_inventory != null)
         {
+            _inventory.OnInventoryChanged -= UpdateInventoryUI;
+            _inventory.OnInventoryChanged += UpdateInventoryUI;
             UpdateInventoryUI();
         }
     }
@@ -71,11 +74,21 @@ public class ItemComposeUI : BaseUI
         // 합성 버튼
         _composeButton.onClick.RemoveAllListeners();
 
+        if (_inventory != null)
+        {
+            _inventory.OnInventoryChanged -= UpdateInventoryUI;
+        }
+
         // 인벤토리 슬롯
         foreach (ComposeItemSlot item in _inventorySlots)
         {
             item.OnClickSlot -= OnClickInventorySlotButton;
         }
+    }
+
+    private void OnDestroy()
+    {
+        _inventory.OnInventoryChanged -= UpdateInventoryUI;
     }
     #endregion
 
@@ -184,7 +197,9 @@ public class ItemComposeUI : BaseUI
     /// <returns></returns>
     private bool CheckCompose()
     {
-        return RequiringCount <= Count;
+        // 재료 아이템의 개수가 필요한 개수 이상일 때 && 재료 아이템 다음 등급이 레전드리 이하일 때
+        return RequiringCount <= Count
+            && _materialInstanaces[0].ItemClass + 1 <= ItemClass.Legendary;
     }
     #endregion
 
@@ -195,6 +210,7 @@ public class ItemComposeUI : BaseUI
     private void OnClickOriginMaterialButton()
     {
         ResetMaterialSlots();
+        UpdateInventoryUI();
     }
     #endregion
 
@@ -207,17 +223,37 @@ public class ItemComposeUI : BaseUI
         }
 
         // 아이템 슬롯에 인벤토리 아이템 적용
-        int itemIndex;
-        for (itemIndex = 0; itemIndex < _inventory.Items.Count; itemIndex++)
+        ItemInstance item = null;
+        int itemIndex = 0;
+        int slotIndex = 0;
+        while (slotIndex < _inventorySlots.Count
+            && TryGetNextMaterialItem(ref itemIndex, out item))
         {
-            _inventorySlots[itemIndex].SetSlot(_inventory.Items[itemIndex]);
+            _inventorySlots[slotIndex].SetSlot(item);
+            slotIndex++;
         }
 
         // 아이템 슬롯이 인벤토리 슬롯보다 많을 경우
-        for (; itemIndex < _inventorySlots.Count; itemIndex++)
+        for (int i = slotIndex; i < _inventorySlots.Count; i++)
         {
-            _inventorySlots[itemIndex].gameObject.SetActive(false);
+            _inventorySlots[i].gameObject.SetActive(false);
         }
+    }
+
+    private bool TryGetNextMaterialItem(ref int index, out ItemInstance item)
+    {
+        while (index < _inventory.Items.Count)
+        {
+            item = _inventory.Items[index];
+            index++;
+
+            if (item.ItemClass >= ItemClass.Legendary) continue;
+
+            return true;
+        }
+
+        item = null;
+        return false;
     }
 
     private void AddItemSlot(int index)
