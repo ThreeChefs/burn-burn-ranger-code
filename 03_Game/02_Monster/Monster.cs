@@ -25,6 +25,8 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     private bool _isKnockback;
     private Coroutine _knockbackCoroutine;
     private Coroutine _hitCooldownCoroutine;
+    [SerializeField] private float flipLeftThreshold = -0.5f;
+    [SerializeField] private float flipRightThreshold = 0.5f;
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -102,7 +104,13 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     {
         if (!allowFlip) return;
         if (target == null) return;
-        spriter.flipX = target.transform.position.x < rb.position.x;
+        float diffX = target.transform.position.x - spriter.transform.position.x;
+
+        if (!spriter.flipX && diffX < flipLeftThreshold)
+            spriter.flipX = true;
+        else if (spriter.flipX && diffX > flipRightThreshold)
+            spriter.flipX = false;
+
     }
 
 
