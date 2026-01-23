@@ -185,6 +185,10 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
     public void BombDie()
     {
+        if (bossController != null)
+        {
+            return;
+        }
         Die();
     }
 
