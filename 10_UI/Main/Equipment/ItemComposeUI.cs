@@ -85,11 +85,6 @@ public class ItemComposeUI : BaseUI
             item.OnClickSlot -= OnClickInventorySlotButton;
         }
     }
-
-    private void OnDestroy()
-    {
-        _inventory.OnInventoryChanged -= UpdateInventoryUI;
-    }
     #endregion
 
     #region 초기화

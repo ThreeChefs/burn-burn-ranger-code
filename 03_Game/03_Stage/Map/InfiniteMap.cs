@@ -7,23 +7,19 @@ using UnityEngine.Tilemaps;
 public class InfiniteMap : MonoBehaviour
 {
     [Header("맵")]
+    [SerializeField] private Tilemap _tilemapPrefab;
     [SerializeField] private Tilemap[] _tilemaps;
-    [SerializeField] private Tilemap _defaultTilemapPrefab;
 
     private void Start()
     {
-        // todo: 추후 스테이지 매니저에서 맵 불러올 때 처리
-        if (_tilemaps[0] == null)
-        {
-            Init(_defaultTilemapPrefab);
-        }
+        SpawnTilemap(_tilemapPrefab);
     }
 
     /// <summary>
-    /// [public] 타일맵 배치
+    /// 타일맵 배치
     /// </summary>
     /// <param name="tilemap"></param>
-    public void Init(Tilemap tilemap)
+    private void SpawnTilemap(Tilemap tilemap)
     {
         for (int i = 0; i < Define.TilemapCount; i++)
         {
@@ -40,7 +36,7 @@ public class InfiniteMap : MonoBehaviour
     private void Reset()
     {
         _tilemaps = new Tilemap[4];
-        _defaultTilemapPrefab = AssetLoader.FindAndLoadByName("Tilemap_Default").GetComponent<Tilemap>();
+        _tilemapPrefab = AssetLoader.FindAndLoadByName("Tilemap_Default").GetComponent<Tilemap>();
     }
 #endif
 }
