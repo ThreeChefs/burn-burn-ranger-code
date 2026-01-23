@@ -49,7 +49,6 @@ public class PickUpButton : BaseButton
     {
         base.OnDisable();
 
-        _button.onClick.RemoveAllListeners();
         foreach (BoxWallet wallet in _boxWallets)
         {
             PlayerManager.Instance.Wallet[wallet.WalletType].OnValueChanged -= CheckWallet;
