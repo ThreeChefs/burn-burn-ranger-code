@@ -268,6 +268,7 @@ public class ItemComposeUI : BaseUI
         itemSlot.transform.SetParent(_inventoryUI, false);
         _inventorySlots.Add(itemSlot);
         itemSlot.SetSlot(_inventory.Items[index]);
+        itemSlot.OnClickSlot += OnClickInventorySlotButton;
     }
 
 #if UNITY_EDITOR
