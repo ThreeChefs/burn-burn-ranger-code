@@ -349,7 +349,6 @@ public class PlayerProjectile : BaseProjectile
         if (_aoePivot == null)
         {
             _aoePivot = new GameObject("AoEPivot").transform;
-            Transform model = transform.FindChild<Transform>("Model");
             _aoePivot.SetParent(model.transform);
             _aoePivot.localPosition = Vector3.zero;
         }
