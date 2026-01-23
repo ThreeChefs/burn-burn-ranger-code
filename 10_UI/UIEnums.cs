@@ -16,6 +16,8 @@ public enum UIName
     UI_HomeBottomMenu,
     UI_HomeTopBar,
 
+    UI_Settings,
+
     UI_Shop,
     UI_Equipment,
     UI_ItemDetail,
