@@ -6,7 +6,7 @@ public class SaveData
     public PlayerProgressSave playerProgress = new PlayerProgressSave();
 
     public InventorySaveData inventory = new InventorySaveData();
-
+    public WalletSaveData wallet = new WalletSaveData();
     public StageProgressSaveInfo stageProgress = new StageProgressSaveInfo();
     public GrowthProgressSaveInfo growthProgress = new GrowthProgressSaveInfo();
 }
