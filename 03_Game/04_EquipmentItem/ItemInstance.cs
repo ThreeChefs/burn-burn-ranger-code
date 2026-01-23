@@ -84,8 +84,17 @@ public class ItemInstance
     /// <returns></returns>
     private bool CheckWallet()
     {
-        return PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(GetUpgradeGold())
-            && PlayerManager.Instance.Wallet[ItemUtils.GetRequiringScrollType(ItemData.EquipmentType)].TryUse(GetUpgradeScroll());
+        Wallet gold = PlayerManager.Instance.Wallet[WalletType.Gold];
+        Wallet scroll = PlayerManager.Instance.Wallet[ItemUtils.GetRequiringScrollType(ItemData.EquipmentType)];
+
+        int requiredGold = GetUpgradeGold();
+        int requiredScroll = GetUpgradeScroll();
+
+        if (gold.Value >= requiredGold && scroll.Value >= requiredScroll)
+        {
+            return gold.TryUse(requiredGold) && scroll.TryUse(requiredScroll);
+        }
+        return false;
     }
 
     private void CheckEquip()
