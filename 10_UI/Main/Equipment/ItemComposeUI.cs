@@ -50,12 +50,6 @@ public class ItemComposeUI : BaseUI
         // 합성 버튼
         _composeButton.onClick.AddListener(OnClickComposeButton);
 
-        // 인벤토리 슬롯
-        foreach (ComposeItemSlot item in _inventorySlots)
-        {
-            item.OnClickSlot += OnClickInventorySlotButton;
-        }
-
         // 합성 재료 슬롯
         _materialSlots[0].OnClickSlot += OnClickOriginMaterialButton;
 
@@ -78,12 +72,6 @@ public class ItemComposeUI : BaseUI
         {
             _inventory.OnInventoryChanged -= UpdateInventoryUI;
         }
-
-        // 인벤토리 슬롯
-        foreach (ComposeItemSlot item in _inventorySlots)
-        {
-            item.OnClickSlot -= OnClickInventorySlotButton;
-        }
     }
     #endregion
 
@@ -96,11 +84,6 @@ public class ItemComposeUI : BaseUI
     private void Init()
     {
         UpdateInventoryUI();
-
-        foreach (ComposeItemSlot item in _inventorySlots)
-        {
-            item.OnClickSlot += OnClickInventorySlotButton;
-        }
     }
 
     private void ResetMaterialSlots()
