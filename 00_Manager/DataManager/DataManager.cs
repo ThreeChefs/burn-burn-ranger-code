@@ -20,7 +20,7 @@ public class DataManager
     public void Save(PlayerCondition condition, PlayerManager player, StageProgress stage, GrowthProgress growth)
     {
         saveData.playerProgress = condition.ExportProgress();
-        saveData.inventory = player.SaveData();
+        saveData.inventory = player.SaveInventoryData();
         saveData.stageProgress = stage.ExportProgress();
         saveData.growthProgress = growth.ExportGrowthProgress();
         Directory.CreateDirectory(Path.GetDirectoryName(savePath));
@@ -41,7 +41,7 @@ public class DataManager
             string json = File.ReadAllText(savePath);
             var loaded = JsonConvert.DeserializeObject<SaveData>(json, JsonSettings) ?? new SaveData();
             condition.ImportProgress(loaded.playerProgress);
-            player.LoadData(loaded.inventory ?? new InventorySaveData());
+            player.LoadInventoryData(loaded.inventory ?? new InventorySaveData());
             stage.ImportStageProgress(loaded.stageProgress ?? new StageProgressSaveInfo());
             var gp = loaded.growthProgress ?? new GrowthProgressSaveInfo();
             growth.ImportGrowthPogress(gp);

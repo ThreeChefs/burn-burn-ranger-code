@@ -16,14 +16,10 @@ public class PlayerWallet
     {
         _wallets = new();
 
-        // todo: 플레이어 초기화 시 저장된 값 불러오기
         foreach (WalletType wallet in Enum.GetValues(typeof(WalletType)))
         {
             _wallets.Add(wallet, new Wallet(0, wallet));
         }
-
-        _wallets[WalletType.Gold].Add(100);
-        _wallets[WalletType.Energy].Add(5);
     }
 
     /// <summary>

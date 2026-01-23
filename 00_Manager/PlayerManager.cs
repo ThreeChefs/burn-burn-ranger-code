@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerManager : GlobalSingletonManager<PlayerManager>
@@ -41,11 +42,12 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         return StagePlayer;
     }
 
+    #region 데이터 저장
     /// <summary>
     /// [public] 데이터 로드하기
     /// </summary>
     /// <param name="data"></param>
-    public void LoadData(InventorySaveData inventoryData)
+    public void LoadInventoryData(InventorySaveData inventoryData)
     {
         foreach (ItemSaveData itemData in inventoryData.List)
         {
@@ -58,7 +60,7 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
         }
     }
 
-    public InventorySaveData SaveData()
+    public InventorySaveData SaveInventoryData()
     {
         InventorySaveData inventoryData = new();
 
@@ -74,6 +76,31 @@ public class PlayerManager : GlobalSingletonManager<PlayerManager>
 
         return inventoryData;
     }
+
+    public void LoadWalletData(WalletSaveData walletData)
+    {
+        for (int i = 0; i < walletData.WalletTypes.Count; i++)
+        {
+            WalletType type = walletData.WalletTypes[i];
+            int value = walletData.Values[i];
+
+            Wallet[type].Add(value);
+        }
+    }
+
+    public WalletSaveData SaveWalletData()
+    {
+        WalletSaveData walletData = new();
+
+        foreach (WalletType type in Enum.GetValues(typeof(WalletType)))
+        {
+            walletData.WalletTypes.Add(type);
+            walletData.Values.Add(Wallet[type].Value);
+        }
+
+        return walletData;
+    }
+    #endregion
 
     #region 에디터 전용
 #if UNITY_EDITOR
