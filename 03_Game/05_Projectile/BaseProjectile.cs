@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -9,7 +10,9 @@ public class BaseProjectile : PoolObject, IAttackable
 {
     #region 필드
     [Header("비주얼")]
+    [SerializeField] protected Transform model;
     [SerializeField] protected Transform vfxs;
+    [SerializeField] private bool _useScaleTween;
 
     protected ProjectileData data;
 
@@ -49,6 +52,9 @@ public class BaseProjectile : PoolObject, IAttackable
 
     // vfx
     private TrailRenderer _trail;
+    private Sequence _scaleSeq;
+    private float _scaleTime = 0.4f;
+
     #endregion
 
     #region Unity API
@@ -104,6 +110,16 @@ public class BaseProjectile : PoolObject, IAttackable
             _trail.Clear();
             _trail.enabled = true;
         }
+
+
+        if (data != null && _useScaleTween)
+        {
+            model.localScale = Vector2.zero;
+            _scaleSeq = DOTween.Sequence()
+                .Append(model.DOScale(1f, _scaleTime))
+                .AppendInterval(data.AliveTime - _scaleTime * 2f)
+                .Append(model.DOScale(0f, _scaleTime));
+        }
     }
 
     protected override void OnDisableInternal()
@@ -125,6 +141,11 @@ public class BaseProjectile : PoolObject, IAttackable
         {
             _trail.Clear();
             _trail.enabled = false;
+        }
+
+        if (_useScaleTween)
+        {
+            _scaleSeq.Kill();
         }
     }
 
@@ -412,12 +433,12 @@ public class BaseProjectile : PoolObject, IAttackable
         var rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 0f;
 
-        var model = transform.FindChild<Transform>("Model");
+        model = transform.FindChild<Transform>("Model");
         if (model == null)
         {
-            var newGo = new GameObject("Model");
-            newGo.transform.SetParent(transform);
-            newGo.AddComponent<SpriteRenderer>();
+            model = new GameObject("Model").transform;
+            model.SetParent(transform);
+            model.gameObject.AddComponent<SpriteRenderer>();
         }
 
         // 비주얼
