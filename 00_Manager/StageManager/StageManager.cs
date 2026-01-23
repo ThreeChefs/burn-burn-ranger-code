@@ -46,7 +46,6 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     protected override void Awake()
     {
-        Time.timeScale = 1;
         base.Awake();
         Init();
     }
@@ -83,6 +82,11 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     private void Start()
     {
+        // 타임스케일 설정
+
+        Time.timeScale = GameManager.Instance.IsTest ? GameManager.Instance.TestTimeScale : 1f;
+
+
         // 플레이어 생성
         _player = PlayerManager.Instance.SpawnPlayer();
         _player.OnDieAction += GameOver;
@@ -185,7 +189,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
     public void ResumeGame()
     {
-        Time.timeScale = 1;
+        Time.timeScale = GameManager.Instance.IsTest ? GameManager.Instance.TestTimeScale : 1f;
     }
 
     void GameStart()
@@ -222,7 +226,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum, (int)PlayTime, true);
         GameManager.Instance.SaveData();
     }
 
@@ -253,7 +257,7 @@ public class StageManager : SceneSingletonManager<StageManager>
         }
 
         // 스테이지 진행 정보 저장
-        GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum - 1, (int)PlayTime);
+        GameManager.Instance.StageProgress.SaveStagePrgressNum(NowStageNum - 1, (int)PlayTime, false);
         GameManager.Instance.SaveData();
     }
 
