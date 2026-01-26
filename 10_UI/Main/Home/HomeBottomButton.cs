@@ -12,6 +12,8 @@ public class HomeBottomButton : MonoBehaviour
     [SerializeField] private RectTransform _icon;
     [SerializeField] private GameObject _textGo;
 
+    private RectTransform _rect;
+
     private UIName _targetUI;
 
     private int _index;
@@ -21,6 +23,7 @@ public class HomeBottomButton : MonoBehaviour
 
     private void Awake()
     {
+        _rect = transform as RectTransform;
         Enum.TryParse("UI_" + name.Split("Button_Bottom_")[1], out _targetUI);
     }
 
@@ -67,11 +70,15 @@ public class HomeBottomButton : MonoBehaviour
             .OnStart(() => _textGo.SetActive(showText));
     }
 
+    public void SetWidth(float width)
+    {
+        _rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+    }
+
     public void MoveTo(float targetX)
     {
-        RectTransform rect = (RectTransform)transform;
-        rect.DOKill();
-        rect.DOAnchorPosX(targetX, Define.Duration);
+        _rect.DOKill();
+        _rect.DOAnchorPosX(targetX, Define.Duration);
     }
 
 #if UNITY_EDITOR
