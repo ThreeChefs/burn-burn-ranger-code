@@ -2,14 +2,34 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public abstract class BaseUI : MonoBehaviour
 {
     [BoxGroup("BaseUI")]
-    [HideLabel]
+
+    [BoxGroup("BaseUI/캔버스 설정")]
+    [SerializeField] bool _isSelfCanvas = false;
+    public bool IsSelfCanvas => _isSelfCanvas;
+
+    [BoxGroup("BaseUI/캔버스 설정")]
+    [ShowIf("_isSelfCanvas")]
+    [SerializeField]
+    [Range(0f, 1f)]
+    private float _matchSize = 0f;
+    public float MatchSirenSize => _matchSize;
+
+
+
+    [BoxGroup("BaseUI/UI 순서")]
     [EnumToggleButtons]
     [SerializeField] private UICanvasOrder _subUIOrder;
     public UICanvasOrder UIOrder => _subUIOrder;
+
+    [BoxGroup("BaseUI/UI 순서")]
+    [Range(0, 99)]
+    [SerializeField]
+    private int _customOrder = 0;
 
 
     public event Action<BaseUI> OnOpenAction;
@@ -17,8 +37,45 @@ public abstract class BaseUI : MonoBehaviour
     public event Action<BaseUI> OnClosedAction;
 
 
+    Canvas _canvas;
+    CanvasScaler _scaler;
+
     private void Awake()
     {
+        _canvas = GetComponent<Canvas>();
+
+        if (IsSelfCanvas)
+        {
+            if (_canvas == null)
+            {
+                _canvas = this.gameObject.AddComponent<Canvas>();
+            }
+
+            _canvas.sortingOrder = (int)_subUIOrder;
+
+
+            _scaler = GetComponent<CanvasScaler>();
+            if (_scaler == null)
+            {
+                _scaler = this.gameObject.AddComponent<CanvasScaler>();
+            }
+
+            _scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            _scaler.referenceResolution = new Vector2(1080f, 1920f);
+            _scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            _scaler.matchWidthOrHeight = 0f;
+        }
+        else
+        {
+            _canvas = GetComponentInParent<Canvas>();
+        }
+
+        if (_customOrder > 0)
+        {
+            _canvas.overrideSorting = true;
+            _canvas.sortingOrder = (int)_subUIOrder + _customOrder;
+        }
+
         AwakeInternal();
     }
 
@@ -27,7 +84,6 @@ public abstract class BaseUI : MonoBehaviour
 
     }
 
-    // todo 애니메이션 넣게 되면 UI 이벤트 안되게 처리도 필요
     public void OpenUI()
     {
         this.gameObject.SetActive(true);
@@ -48,7 +104,7 @@ public abstract class BaseUI : MonoBehaviour
                 this.gameObject.SetActive(false);
                 OnClosedAction?.Invoke(this);
             });
-            
+
             return;
         }
 
