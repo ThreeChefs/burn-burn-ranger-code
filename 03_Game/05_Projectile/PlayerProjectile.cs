@@ -11,6 +11,7 @@ public class PlayerProjectile : BaseProjectile
 
     // 캐싱
     protected Transform player;
+    protected DamageStatus dfs;
     protected ActiveSkill skill;
 
     // 스텟
@@ -59,6 +60,7 @@ public class PlayerProjectile : BaseProjectile
 
         // 스텟 캐싱
         player = PlayerManager.Instance.StagePlayer.transform;
+        dfs = PlayerManager.Instance.StagePlayer.DamageStatus;
         PlayerCondition condition = PlayerManager.Instance.Condition;
         projectileSpeed = condition[StatType.ProjectileSpeed];
         projectileRange = condition[StatType.ProjecttileRange];
@@ -228,7 +230,7 @@ public class PlayerProjectile : BaseProjectile
         foreach (Collider2D target in targets)
         {
             HitContext context = GetHitContext(target, _aoePivot.position);
-            data.AoEData.AreaEffects.ForEach(effect => effect.Apply(in context));
+            OnValidAoE(context);
         }
 
         if (data.VisualData != null && data.VisualData.UseParticlePool)
@@ -259,6 +261,22 @@ public class PlayerProjectile : BaseProjectile
     {
         foreach (BaseSkillEffectSO effect in data.HitEffects)
         {
+            if (effect is DamageEffectSO)
+            {
+                dfs.Add(skill.Data.Id, context.damage);
+            }
+            effect.Apply(in context);
+        }
+    }
+
+    private void OnValidAoE(in HitContext context)
+    {
+        foreach (BaseSkillEffectSO effect in data.AoEData.AreaEffects)
+        {
+            if (effect is DamageEffectSO)
+            {
+                dfs.Add(skill.Data.Id, context.damage);
+            }
             effect.Apply(in context);
         }
     }

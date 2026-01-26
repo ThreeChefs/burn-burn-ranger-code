@@ -63,9 +63,11 @@ public class StagePlayer : MonoBehaviour, IDamageable
     // 장비 효과
     private List<EquipmentEffectInstance> _effects;
     public IReadOnlyList<EquipmentEffectInstance> Effects => _effects;
-
-    public KillStatus KillStatus { get; private set; }
     public BuffSystem BuffSystem { get; private set; }
+
+    // 기록
+    public KillStatus KillStatus { get; private set; }
+    public DamageStatus DamageStatus { get; private set; }
 
     // 타이머
     private float _healTimer;
@@ -101,6 +103,8 @@ public class StagePlayer : MonoBehaviour, IDamageable
         {
             _originColors[i] = _sprs[i].color;
         }
+
+        DamageStatus = new();
     }
 
     private void Start()
