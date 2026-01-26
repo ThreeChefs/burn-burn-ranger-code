@@ -106,6 +106,57 @@ public class Inventory
 
         return newItem;
     }
+
+    public List<ItemInstance> ComposeAll()
+    {
+        List<ItemInstance> tempItems = new();
+        List<ItemInstance> results = new();
+
+        int id = -1;
+        ItemClass itemClass = ItemClass.None;
+
+        int count = 0;
+
+        for (int i = _items.Count - 1; i >= 0;)
+        {
+            if (_items[i].ItemData.Id != id || _items[i].ItemClass != itemClass)
+            {
+                tempItems.Clear();
+                count = 0;
+            }
+
+            tempItems.Add(_items[i]);
+            count++;
+
+            if (count == ItemUtils.ComposeRequiringCount &&
+                tempItems.Count == ItemUtils.ComposeRequiringCount)
+            {
+                ItemInstance newItem = Compose(tempItems.ToArray());
+                if (newItem != null)
+                {
+                    results.Add(newItem);
+                    tempItems.Clear();
+                    count = 0;
+                    continue;
+                }
+            }
+
+            id = _items[i].ItemData.Id;
+            itemClass = _items[i].ItemClass;
+            i--;
+        }
+
+        // results에서 재료 아이템으로 사용된 애 있으면 빼기
+        for (int i = results.Count - 1; i >= 0; i--)
+        {
+            if (_items.Contains(results[i])) continue;
+            results.Remove(results[i]);
+        }
+
+        return results;
+    }
+    #endregion
+
     // todo: Comparer 정렬으로 변경
     #region 정렬
     public void SortByClass()

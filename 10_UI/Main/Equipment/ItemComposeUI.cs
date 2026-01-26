@@ -42,6 +42,7 @@ public class ItemComposeUI : BaseUI
 
         // 합성 버튼
         _composeButton.onClick.AddListener(OnClickComposeButton);
+        _allComposeButton.onClick.AddListener(OnClickAllComposeButton);
 
         // 합성 재료 슬롯
         for (int i = 0; i < _materialSlots.Length; i++)
@@ -81,6 +82,7 @@ public class ItemComposeUI : BaseUI
     {
         // 합성 버튼
         _composeButton.onClick.RemoveAllListeners();
+        _allComposeButton.onClick.RemoveAllListeners();
 
         // 합성 재료 슬롯
         for (int i = 0; i < _materialSlots.Length; i++)
@@ -142,6 +144,13 @@ public class ItemComposeUI : BaseUI
         _inventory.Compose(_materialInstanaces);
         // todo: 합성 결과 보여주기
 
+        ResetMaterialSlots();   // 슬롯 정보 리셋
+        UpdateInventoryUI();    // 인벤토리 ui 리셋
+    }
+
+    private void OnClickAllComposeButton()
+    {
+        _inventory.ComposeAll();
         ResetMaterialSlots();   // 슬롯 정보 리셋
         UpdateInventoryUI();    // 인벤토리 ui 리셋
     }
