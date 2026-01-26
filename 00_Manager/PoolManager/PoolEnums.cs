@@ -13,6 +13,12 @@ public enum CommonPoolIndex
     Particle_Hit,
 }
 
+public enum GemPoolIndex
+{
+    BlueGem,
+    GreenGem,
+    PurpleGem,
+}
 public enum MonsterPoolIndex
 {
     Normal_0 = 0,

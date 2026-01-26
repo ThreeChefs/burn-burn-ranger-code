@@ -9,6 +9,8 @@ public class GuardianActiveSkill : ActiveSkill
 
     private Animator _animator;
 
+    private float RadiusMultiplier => _radiusMultiplier * PlayerManager.Instance.Condition[StatType.ProjecttileRange].MaxValue;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -34,7 +36,8 @@ public class GuardianActiveSkill : ActiveSkill
         float rad = 360f / _count * _index * Mathf.Deg2Rad;
         _index = (_index + 1) % _count;
 
-        Vector2 pos = standardPos + new Vector2(Mathf.Cos(rad) * _radiusMultiplier, Mathf.Sin(rad) * _radiusMultiplier);
+        Vector2 pos = standardPos +
+            new Vector2(Mathf.Cos(rad) * RadiusMultiplier, Mathf.Sin(rad) * RadiusMultiplier);
         return pos;
     }
 
