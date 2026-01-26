@@ -10,9 +10,9 @@ public enum MonsterType
 
 public enum DropItemType
 {
-    GreenGEM,
-    BlueGEM,
-    YellowGEM
+    GreenGem,
+    BlueGem,
+    PurpleGem,
 }
 
 [CreateAssetMenu(fileName = "MonsterTypeData", menuName = "SO/Monster/Monster Type", order = 1)]

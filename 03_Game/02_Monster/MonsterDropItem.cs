@@ -24,13 +24,11 @@ public class MonsterDropItem : MonoBehaviour
 
         Instance = this;
 
-        // Inspector에서 등록한 List를
-        // Dictionary로 변환 (빠른 조회용)
+
         _prefabMap = new Dictionary<DropItemType, GameObject>();
 
         foreach (var p in dropPrefabs)
         {
-            // 같은 타입이 여러 번 들어오면 마지막 값으로 덮어씀
             _prefabMap[p.DropType] = p.prefab;
         }
     }
@@ -38,14 +36,38 @@ public class MonsterDropItem : MonoBehaviour
 
     public void Spawn(DropItemType type, Vector3 position)
     {
-        // 해당 타입의 프리팹이 등록되어 있는지 확인
-        if (!_prefabMap.TryGetValue(type, out var prefab))
+        if (TrySpawnGem(type, position))
+            return;
+        if (!_prefabMap.TryGetValue(type, out var prefab) || prefab == null)
         {
             Debug.LogError($"Drop prefab not found: {type}");
             return;
         }
 
-        // 프리팹을 지정 위치에 생성
         Instantiate(prefab, position, Quaternion.identity);
     }
+
+    private bool TrySpawnGem(DropItemType type, Vector3 position)
+    {
+        // 여기 DropItemType 이름은 너 프로젝트에 맞춰 바꿔줘!
+        // (예: DropItemType.BlueGem 이런 식으로 존재해야 함)
+
+        switch (type)
+        {
+            case DropItemType.BlueGem:
+                GemManager.Instance.SpawnGem(GemPoolIndex.BlueGem, position);
+                return true;
+
+            case DropItemType.GreenGem:
+                GemManager.Instance.SpawnGem(GemPoolIndex.GreenGem, position);
+                return true;
+
+            case DropItemType.PurpleGem:
+                GemManager.Instance.SpawnGem(GemPoolIndex.PurpleGem, position);
+                return true;
+        }
+
+        return false;
+    }
 }
+
