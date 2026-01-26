@@ -179,10 +179,6 @@ public class SkillSystem
                 GameObject.Destroy(_ownedSkills[combinationId].gameObject);
                 _ownedSkills.Remove(combinationId);
             }
-            else if (_skillDataCache[combinationId].Type == SkillType.Passive)
-            {
-                _passiveSkillCount--;
-            }
         }
 
         return GetActiveSkill(id);
