@@ -32,7 +32,7 @@ public class HomeUI : BaseUI
         int requestedIndex = GameManager.Instance.StageProgress.LastSelectedStageNum - 1;
         int stageIndex = Mathf.Clamp(requestedIndex, 0, stageData.Count - 1);
 
-        _stageName.text = $"{stageIndex + 1}. {stageData[stageIndex].StageName}";
+        _stageName.text = stageData[stageIndex].StageName;
         _stageSelectButtonImg.sprite = stageData[stageIndex].StageIcon;
 
     }
