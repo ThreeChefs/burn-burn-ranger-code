@@ -25,13 +25,12 @@ public class ItemComposeUI : BaseUI
         get { return _count; }
         set
         {
-            _count = Mathf.Clamp(value, 0, RequiringCount);
+            _count = Mathf.Clamp(value, 0, ItemUtils.ComposeRequiringCount);
 
             _allComposeButton.gameObject.SetActive(_count == 0);
             _composeButton.gameObject.SetActive(_count > 0);
         }
     }
-    private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
     #region Unity API
     private void Start()
@@ -101,7 +100,7 @@ public class ItemComposeUI : BaseUI
     #region 초기화
     protected override void AwakeInternal()
     {
-        _materialInstanaces = new ItemInstance[RequiringCount];
+        _materialInstanaces = new ItemInstance[ItemUtils.ComposeRequiringCount];
     }
 
     private void Init()
@@ -162,7 +161,7 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickInventorySlotButton(ComposeItemSlot slot, ItemInstance item)
     {
-        if (Count < RequiringCount)
+        if (Count < ItemUtils.ComposeRequiringCount)
         {
             AddMaterialItem(slot, item);
         }
@@ -203,7 +202,7 @@ public class ItemComposeUI : BaseUI
     private bool CheckCompose()
     {
         // 재료 아이템의 개수가 필요한 개수 이상일 때 && 재료 아이템 다음 등급이 레전드리 이하일 때
-        return RequiringCount <= Count
+        return ItemUtils.ComposeRequiringCount <= Count
             && _materialInstanaces[0].ItemClass + 1 <= ItemClass.Legendary;
     }
     #endregion

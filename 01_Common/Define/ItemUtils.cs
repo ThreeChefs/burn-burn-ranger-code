@@ -5,6 +5,10 @@ public static class ItemUtils
     // 그 외 색상
     public static readonly Color LockColor = new(0.8f, 0.8f, 0.8f);
 
+    // todo: 아이템 등급에 따라 요구 결과 다르게 하기
+    public static readonly int ComposeRequiringCount = 3;
+
+
     #region 아이템 등급 - 색상
     public static readonly Color ColorNormal = new(0.75f, 0.75f, 0.75f); // 회색
     public static readonly Color ColorRare = new(0.30f, 0.69f, 0.31f); // 녹색
