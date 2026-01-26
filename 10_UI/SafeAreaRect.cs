@@ -1,11 +1,8 @@
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class SafeAreaCanvas : MonoBehaviour
+public class SafeAreaRect : MonoBehaviour
 {
-    [SerializeField] private RectTransform _panel;
-    Canvas _canvas;
+    private RectTransform _panel;
 
     public RectTransform SafeArea => _panel;
 
@@ -16,19 +13,10 @@ public class SafeAreaCanvas : MonoBehaviour
 
     void Awake()
     {
-        _canvas = GetComponent<Canvas>();
-    }
-
-    private void Start()
-    {
-
+        _panel = GetComponent<RectTransform>();
         ApplySafeArea();
     }
 
-    public void SetSortingOrder(int sortingOrder)
-    {
-        _canvas.sortingOrder = sortingOrder;
-    }
 
 
     void ApplySafeArea()
