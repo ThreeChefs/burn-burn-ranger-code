@@ -22,6 +22,10 @@ public class SkillSystem
     private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
     private int _minCombinationId = int.MaxValue;
 
+    private bool _hasWeapon;
+    private int _defaultSkillId = 30;
+    private SkillData _defaultSkillData;
+
     // public readonly colliections
     public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
     public IReadOnlyDictionary<int, int> CombinationRequirementMap => _combinationRequirementMap;
@@ -47,15 +51,20 @@ public class SkillSystem
 
         foreach (SkillData skillData in skillDatabase)
         {
-            if (skillData is ActiveSkillData activeSkillData)
+            if (skillData.Id == _defaultSkillId)
             {
-                // 무기 스킬 중 장비하고 있지 않을 경우 스킵
-                if (activeSkillData.IsWeaponSkill
-                && !PlayerManager.Instance.Equipment.HavingSkills.ContainsKey(activeSkillData.Id))
+                _defaultSkillData = skillData;
+            }
+
+            if (skillData is ActiveSkillData activeSkillData && activeSkillData.IsWeaponSkill)
+            {
+                // 무기 스킬 빼기 (디폴트는 제외)
+                if (!PlayerManager.Instance.Equipment.HavingSkills.ContainsKey(activeSkillData.Id))
                 {
                     Logger.Log($"장비 안한 무기 스킬: {activeSkillData.Id}");
                     continue;
                 }
+                _hasWeapon = true;
             }
 
             if (_skillDataCache.ContainsKey(skillData.Id))
@@ -93,6 +102,14 @@ public class SkillSystem
             {
                 TrySelectSkill(skill.Id);
             }
+        }
+
+        // 무기 안 가지고 있으면 디폴트 주기
+        if (!_hasWeapon)
+        {
+            Logger.Log("기본 무기 사용");
+            _skillDataCache.Add(_defaultSkillId, _defaultSkillData);
+            TrySelectSkill(_defaultSkillId);
         }
     }
     #endregion

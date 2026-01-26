@@ -25,16 +25,12 @@ public class ItemComposeUI : BaseUI
         get { return _count; }
         set
         {
-            _count = Mathf.Min(value, RequiringCount);
+            _count = Mathf.Clamp(value, 0, ItemUtils.ComposeRequiringCount);
 
-            if (_count > 0)
-            {
-                _allComposeButton.gameObject.SetActive(_count == 0);
-                _composeButton.gameObject.SetActive(_count > 0);
-            }
+            _allComposeButton.gameObject.SetActive(_count == 0);
+            _composeButton.gameObject.SetActive(_count > 0);
         }
     }
-    private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
 
     #region Unity API
     private void Start()
@@ -43,16 +39,27 @@ public class ItemComposeUI : BaseUI
         _inventory.OnInventoryChanged += UpdateInventoryUI;
 
         Init();
+
+        // 합성 버튼
+        _composeButton.onClick.AddListener(OnClickComposeButton);
+        _allComposeButton.onClick.AddListener(OnClickAllComposeButton);
+
+        // 합성 재료 슬롯
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            if (i == 0)
+            {
+                _materialSlots[i].OnClickSlot += OnClickOriginMaterialButton;
+            }
+            else
+            {
+                _materialSlots[i].OnClickSlot += OnClickMaterialButton;
+            }
+        }
     }
 
     private void OnEnable()
     {
-        // 합성 버튼
-        _composeButton.onClick.AddListener(OnClickComposeButton);
-
-        // 합성 재료 슬롯
-        _materialSlots[0].OnClickSlot += OnClickOriginMaterialButton;
-
         ResetMaterialSlots();
 
         if (_inventory != null)
@@ -65,12 +72,29 @@ public class ItemComposeUI : BaseUI
 
     private void OnDisable()
     {
-        // 합성 버튼
-        _composeButton.onClick.RemoveAllListeners();
-
         if (_inventory != null)
         {
             _inventory.OnInventoryChanged -= UpdateInventoryUI;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // 합성 버튼
+        _composeButton.onClick.RemoveAllListeners();
+        _allComposeButton.onClick.RemoveAllListeners();
+
+        // 합성 재료 슬롯
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            if (i == 0)
+            {
+                _materialSlots[i].OnClickSlot -= OnClickOriginMaterialButton;
+            }
+            else
+            {
+                _materialSlots[i].OnClickSlot -= OnClickMaterialButton;
+            }
         }
     }
     #endregion
@@ -78,7 +102,7 @@ public class ItemComposeUI : BaseUI
     #region 초기화
     protected override void AwakeInternal()
     {
-        _materialInstanaces = new ItemInstance[RequiringCount];
+        _materialInstanaces = new ItemInstance[ItemUtils.ComposeRequiringCount];
     }
 
     private void Init()
@@ -117,17 +141,16 @@ public class ItemComposeUI : BaseUI
     {
         if (!CheckCompose()) return;
 
-        // 아이템 삭제 & 주기
-        for (int i = 0; i < _materialInstanaces.Length; i++)
-        {
-            if (PlayerManager.Instance.Equipment.IsEquip(_materialInstanaces[i]))
-            {
-                PlayerManager.Instance.Equipment.Unequip(_materialInstanaces[i]);
-            }
-            _inventory.Remove(_materialInstanaces[i]);
-        }
-        _inventory.Add(_resultInstance);
+        _inventory.Compose(_materialInstanaces);
+        // todo: 합성 결과 보여주기
 
+        ResetMaterialSlots();   // 슬롯 정보 리셋
+        UpdateInventoryUI();    // 인벤토리 ui 리셋
+    }
+
+    private void OnClickAllComposeButton()
+    {
+        _inventory.ComposeAll();
         ResetMaterialSlots();   // 슬롯 정보 리셋
         UpdateInventoryUI();    // 인벤토리 ui 리셋
     }
@@ -139,7 +162,7 @@ public class ItemComposeUI : BaseUI
     /// </summary>
     private void OnClickInventorySlotButton(ComposeItemSlot slot, ItemInstance item)
     {
-        if (Count < RequiringCount)
+        if (Count < ItemUtils.ComposeRequiringCount)
         {
             AddMaterialItem(slot, item);
         }
@@ -180,7 +203,7 @@ public class ItemComposeUI : BaseUI
     private bool CheckCompose()
     {
         // 재료 아이템의 개수가 필요한 개수 이상일 때 && 재료 아이템 다음 등급이 레전드리 이하일 때
-        return RequiringCount <= Count
+        return ItemUtils.ComposeRequiringCount <= Count
             && _materialInstanaces[0].ItemClass + 1 <= ItemClass.Legendary;
     }
     #endregion
@@ -193,6 +216,11 @@ public class ItemComposeUI : BaseUI
     {
         ResetMaterialSlots();
         UpdateInventoryUI();
+    }
+
+    private void OnClickMaterialButton()
+    {
+        Count--;
     }
     #endregion
 
