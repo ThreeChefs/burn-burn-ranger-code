@@ -21,6 +21,8 @@ public class SafeAreaRect : MonoBehaviour
 
     void ApplySafeArea()
     {
+        if (_panel == null) return;
+
         Rect safeArea = Screen.safeArea;
 
         if (safeArea != _lastSafeArea)
