@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -44,6 +45,10 @@ public class ItemDetailUI : BaseUI
     [SerializeField] private Button _unequipButton;
     [SerializeField] private Button _levelUpButton;
     [SerializeField] private Button _allLevelUpButton;
+
+    [Header("Scrolls")]
+    [SerializeField] private Image _scrollIcon;
+    [SerializeField] private Sprite[] _scrollSprites;
 
     // 캐싱
     private ItemInstance _curItem;
@@ -120,6 +125,8 @@ public class ItemDetailUI : BaseUI
                 itemData.Equipments[dataIndex].UnlockClass > instance.ItemClass);
         }
 
+        _scrollIcon.sprite = _scrollSprites[(int)itemData.EquipmentType];
+
         UpdateLevelValue();
         UpdateEquipButton();
     }
@@ -169,9 +176,9 @@ public class ItemDetailUI : BaseUI
         _itemLevel.text = $"레벨: {_curItem.Level}/{ItemUtils.GetClassMaxLevel(_curItem.ItemClass)}";
         _statValue.text = _curItem.GetStatAndValue().Item2.ToString();
 
-        _goldText.text = $"{_curItem.GetUpgradeGold()}/{Gold.Value}";
+        _goldText.text = $"{Gold.Value}/{_curItem.GetUpgradeGold()}";
         WalletType walletType = ItemUtils.GetRequiringScrollType(_curItem.ItemData.EquipmentType);
-        _scrollText.text = $"{_curItem.GetUpgradeScroll()}/{PlayerManager.Instance.Wallet[walletType].Value}";
+        _scrollText.text = $"{PlayerManager.Instance.Wallet[walletType].Value}/{_curItem.GetUpgradeScroll()}";
     }
     #endregion
 
@@ -206,6 +213,15 @@ public class ItemDetailUI : BaseUI
         _unequipButton = transform.FindChild<Button>("Button - Unequip");
         _levelUpButton = transform.FindChild<Button>("Button - LevelUp");
         _allLevelUpButton = transform.FindChild<Button>("Button - AllLevelUp");
+
+        _scrollIcon = transform.FindChild<Transform>("Bar_Scroll").FindChild<Image>("Image - Icon");
+        _scrollSprites = new Sprite[Enum.GetValues(typeof(EquipmentType)).Length];
+        string fileName = "spr_upgrade_material_";
+        foreach (EquipmentType equipmentType in Enum.GetValues(typeof(EquipmentType)))
+        {
+            string typeName = equipmentType.ToString().ToLower();
+            _scrollSprites[(int)equipmentType] = LoadUpgradeMaterialIcon(fileName + typeName);
+        }
     }
 
     private const string ICON_256_PATH = "Assets/10_Artworks/99_External/Layer Lab/GUI Pro-SuperCasual/ResourcesData/Sprites/Components/Icon_ItemIcons/256/";
@@ -213,6 +229,13 @@ public class ItemDetailUI : BaseUI
     private Sprite LoadIcon256(string fileName)
     {
         return AssetDatabase.LoadAssetAtPath<Sprite>(ICON_256_PATH + fileName + ".png");
+    }
+
+    private const string UPGRADE_MATERIAL_ICON_PATH = "Assets/10_Artworks/00_Sprite/10_UI/Icon/UpgradeMaterial/";
+
+    private Sprite LoadUpgradeMaterialIcon(string fileName)
+    {
+        return AssetDatabase.LoadAssetAtPath<Sprite>(UPGRADE_MATERIAL_ICON_PATH + fileName + ".png");
     }
 #endif
 }
