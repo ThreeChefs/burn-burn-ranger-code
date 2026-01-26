@@ -6,7 +6,7 @@ using UnityEngine;
 /// 공용으로 사용하는 투사체
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
-public class BaseProjectile : PoolObject, IAttackable
+public class BaseProjectile : PoolObject, IAttackable, IDamageable
 {
     #region 필드
     [Header("비주얼")]
@@ -251,6 +251,14 @@ public class BaseProjectile : PoolObject, IAttackable
     protected virtual float CalculateDamage()
     {
         return attack.MaxValue;
+    }
+    #endregion
+
+    #region 피격
+    public void TakeDamage(float value)
+    {
+        gameObject.SetActive(false);
+        Logger.Log("투사체 제거");
     }
     #endregion
 
