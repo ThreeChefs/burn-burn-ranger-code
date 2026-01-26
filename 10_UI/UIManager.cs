@@ -13,6 +13,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     [SerializeField] private SafeAreaCanvas _originCanvasPrefab;
     Dictionary<UICanvasOrder, SafeAreaCanvas> _canvasDict;
 
+    GameObject _canvasRoot;
 
     protected override void Init()
     {
@@ -32,8 +33,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //_mainCanvas = Instantiate(_originCanvasPrefab);
-        //_mainCanvas.name = "MainCanvas";
+
+        _canvasRoot = new GameObject();
+        _canvasRoot.name = "CanvasRoot";
+        _canvasRoot.transform.position = Vector3.zero;
 
         _canvasDict = new Dictionary<UICanvasOrder, SafeAreaCanvas>();
 
@@ -44,9 +47,11 @@ public class UIManager : GlobalSingletonManager<UIManager>
             newSubCanvas.name = e + "Canvas";
 
             _canvasDict.Add(e, newSubCanvas);
+
+            newSubCanvas.transform.SetParent(_canvasRoot.transform, false);
         }
 
-
+        
 
     }
 
@@ -149,7 +154,6 @@ public class UIManager : GlobalSingletonManager<UIManager>
         BaseUI ui = GetNowSpawnedUI(uiName);
         if (ui != null)
         {
-            // todo 가장 아래로 내리기
             ui.gameObject.SetActive(true);
             ui.OpenUI();
             ui.transform.SetAsLastSibling();
@@ -196,6 +200,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     protected override void OnSceneUnloaded(Scene scene)
     {
+        _canvasRoot = null;
         _nowLoadedUiDict.Clear();
     }
 }
