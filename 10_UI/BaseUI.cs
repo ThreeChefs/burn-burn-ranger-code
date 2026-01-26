@@ -2,22 +2,11 @@ using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public abstract class BaseUI : MonoBehaviour
 {
     [BoxGroup("BaseUI")]
-
-    [BoxGroup("BaseUI/캔버스 설정")]
-    [SerializeField] bool _isSelfCanvas = false;
-    public bool IsSelfCanvas => _isSelfCanvas;
-
-    [BoxGroup("BaseUI/캔버스 설정")]
-    [ShowIf("_isSelfCanvas")]
-    [SerializeField]
-    [Range(0f, 1f)]
-    private float _matchSize = 0f;
-    public float MatchSirenSize => _matchSize;
 
 
 
@@ -36,39 +25,11 @@ public abstract class BaseUI : MonoBehaviour
     public event Action<BaseUI> OnDestroyAction;
     public event Action<BaseUI> OnClosedAction;
 
-
     Canvas _canvas;
-    CanvasScaler _scaler;
 
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
-
-        if (IsSelfCanvas)
-        {
-            if (_canvas == null)
-            {
-                _canvas = this.gameObject.AddComponent<Canvas>();
-            }
-
-            _canvas.sortingOrder = (int)_subUIOrder;
-
-
-            _scaler = GetComponent<CanvasScaler>();
-            if (_scaler == null)
-            {
-                _scaler = this.gameObject.AddComponent<CanvasScaler>();
-            }
-
-            _scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            _scaler.referenceResolution = new Vector2(1080f, 1920f);
-            _scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            _scaler.matchWidthOrHeight = 0f;
-        }
-        else
-        {
-            _canvas = GetComponentInParent<Canvas>();
-        }
 
         if (_customOrder > 0)
         {
