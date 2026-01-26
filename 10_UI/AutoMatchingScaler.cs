@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(CanvasScaler))]
-public class AutoMatchWidthHeight : MonoBehaviour
+public class AutoMatchingScaler : MonoBehaviour
 {
     private CanvasScaler _scaler;
     private float _baseRatio;       // 1080/1920
