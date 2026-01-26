@@ -25,13 +25,10 @@ public class ItemComposeUI : BaseUI
         get { return _count; }
         set
         {
-            _count = Mathf.Min(value, RequiringCount);
+            _count = Mathf.Clamp(value, 0, RequiringCount);
 
-            if (_count > 0)
-            {
-                _allComposeButton.gameObject.SetActive(_count == 0);
-                _composeButton.gameObject.SetActive(_count > 0);
-            }
+            _allComposeButton.gameObject.SetActive(_count == 0);
+            _composeButton.gameObject.SetActive(_count > 0);
         }
     }
     private const int RequiringCount = 3;       // todo: 아이템 등급에 따라 요구 결과 다르게 하기
@@ -43,16 +40,26 @@ public class ItemComposeUI : BaseUI
         _inventory.OnInventoryChanged += UpdateInventoryUI;
 
         Init();
-    }
 
-    private void OnEnable()
-    {
         // 합성 버튼
         _composeButton.onClick.AddListener(OnClickComposeButton);
 
         // 합성 재료 슬롯
-        _materialSlots[0].OnClickSlot += OnClickOriginMaterialButton;
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            if (i == 0)
+            {
+                _materialSlots[i].OnClickSlot += OnClickOriginMaterialButton;
+            }
+            else
+            {
+                _materialSlots[i].OnClickSlot += OnClickMaterialButton;
+            }
+        }
+    }
 
+    private void OnEnable()
+    {
         ResetMaterialSlots();
 
         if (_inventory != null)
@@ -65,12 +72,28 @@ public class ItemComposeUI : BaseUI
 
     private void OnDisable()
     {
-        // 합성 버튼
-        _composeButton.onClick.RemoveAllListeners();
-
         if (_inventory != null)
         {
             _inventory.OnInventoryChanged -= UpdateInventoryUI;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        // 합성 버튼
+        _composeButton.onClick.RemoveAllListeners();
+
+        // 합성 재료 슬롯
+        for (int i = 0; i < _materialSlots.Length; i++)
+        {
+            if (i == 0)
+            {
+                _materialSlots[i].OnClickSlot -= OnClickOriginMaterialButton;
+            }
+            else
+            {
+                _materialSlots[i].OnClickSlot -= OnClickMaterialButton;
+            }
         }
     }
     #endregion
@@ -193,6 +216,11 @@ public class ItemComposeUI : BaseUI
     {
         ResetMaterialSlots();
         UpdateInventoryUI();
+    }
+
+    private void OnClickMaterialButton()
+    {
+        Count--;
     }
     #endregion
 
