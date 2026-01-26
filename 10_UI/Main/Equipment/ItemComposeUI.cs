@@ -139,16 +139,8 @@ public class ItemComposeUI : BaseUI
     {
         if (!CheckCompose()) return;
 
-        // 아이템 삭제 & 주기
-        for (int i = 0; i < _materialInstanaces.Length; i++)
-        {
-            if (PlayerManager.Instance.Equipment.IsEquip(_materialInstanaces[i]))
-            {
-                PlayerManager.Instance.Equipment.Unequip(_materialInstanaces[i]);
-            }
-            _inventory.Remove(_materialInstanaces[i]);
-        }
-        _inventory.Add(_resultInstance);
+        _inventory.Compose(_materialInstanaces);
+        // todo: 합성 결과 보여주기
 
         ResetMaterialSlots();   // 슬롯 정보 리셋
         UpdateInventoryUI();    // 인벤토리 ui 리셋
