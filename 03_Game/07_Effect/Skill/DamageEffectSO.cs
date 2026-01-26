@@ -7,9 +7,9 @@ public class DamageEffectSO : BaseSkillEffectSO
     {
         if (context.directTarget == null) return;
 
-        if (context.directTarget.TryGetComponent(out IDamageable damageable))
+        if (context.directTarget.TryGetComponent(out Monster monster))
         {
-            damageable.TakeDamage(context.damage);
+            monster.TakeDamage(context.damage);
         }
     }
 }
