@@ -400,7 +400,7 @@ public class FortuneBoxUI : PopupUI
             if (idx >= slots.Length) continue;
 
             // 스킬 주기
-            StageManager.Instance.SkillSystem.TrySelectSkill(slots[idx].Skill.Id);
+            StageManager.Instance.SkillSystem.TryAcquireSkill(slots[idx].Skill.Id);
         }
 
         for (int i = 0; i < _maxSlotcount; i++)

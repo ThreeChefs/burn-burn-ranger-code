@@ -9,7 +9,7 @@ public class SkillSelectUI : PopupUI
     
     void OnEnable()
     {
-        List<SkillSelectDto> skills = StageManager.Instance.SkillSystem.ShowSelectableSkills(Define.SelectableSkillMaxCount);
+        List<SkillSelectDto> skills = StageManager.Instance.SkillSystem.GetSelectableSkills(Define.SelectableSkillMaxCount);
         SetSkillData(skills);
     }
     

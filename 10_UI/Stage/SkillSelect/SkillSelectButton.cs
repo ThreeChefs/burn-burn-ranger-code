@@ -75,7 +75,7 @@ public class SkillSelectButton : BaseButton
     protected override void OnClick()
     {
         // Select Skill
-        StageManager.Instance.SkillSystem.TrySelectSkill(_nowSkillData.Id);
+        StageManager.Instance.SkillSystem.TryAcquireSkill(_nowSkillData.Id);
         StageManager.Instance.ResumeGame();
         UIManager.Instance.CloseUI(UIName.UI_SkillSelect);
     }
