@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class DimmedUI : BaseUI
 {
@@ -11,22 +12,38 @@ public class DimmedUI : BaseUI
     {
         _canvasGroup = GetComponent<CanvasGroup>();
     }
-    public void SetSiblingOrder(PopupUI target)
+
+    public void SetDimmed(PopupUI target)
     {
         if (target == null) return;
 
-        Transform targetParent = target.transform.parent;
-        if (targetParent == null) return;
+        if (calledUI.Count <= 0)
+        {
+            FadeInDim();
+        }
 
-        transform.SetParent(targetParent, false);
-        transform.SetSiblingIndex(target.transform.GetSiblingIndex());
+        SetSiblingOrder(target);
 
         calledUI.Push(target);
         target.OnCloseAction += CloseUI;
     }
 
+    void SetSiblingOrder(PopupUI target)
+    {
+        if(target == null)  return;
 
-    public override void OpenUIInternal()
+        Transform targetParent = target.transform.parent;
+        if (targetParent == null) return;
+
+        transform.SetParent(targetParent, false);
+
+        Debug.Log("누구 " + target.gameObject.name + ", " + target.transform.GetSiblingIndex());
+        transform.SetSiblingIndex(target.transform.GetSiblingIndex());
+    }
+
+    
+
+    void FadeInDim()
     {
         _canvasGroup.alpha = 0;
         _canvasGroup.DOFade(1f, PopupUI.PopupDuration).SetUpdate(true);
@@ -34,22 +51,27 @@ public class DimmedUI : BaseUI
 
     public void CloseUI(BaseUI target)
     {
-        Debug.Log("닫힌다!!");
         // target 상관 없이 어차피 쌓이는 대로 close가 불리는 구조
-        if( calledUI.Peek() == target)  // 그래도 확인은하자..?
+        if (calledUI.Peek() == target)  // 그래도 확인은하자..?
         {
-            calledUI.Pop();
             target.OnCloseAction -= CloseUI;
+
+            PopupUI prevPopup = (PopupUI)calledUI.Pop();
+            if (prevPopup != null && calledUI.Count>0)
+            {
+                Debug.Log("누구 " + prevPopup.gameObject.name + ", " + prevPopup.transform.GetSiblingIndex());
+                SetSiblingOrder((PopupUI)calledUI.Peek());
+            }
         }
 
-        if(calledUI.Count == 0)
+        if (calledUI.Count == 0)
         {
             _canvasGroup.alpha = 1;
             _canvasGroup.DOFade(0f, PopupUI.PopupDuration).SetUpdate(true).OnComplete(CloseUI);
         }
     }
 
-    
+
 
 
 }

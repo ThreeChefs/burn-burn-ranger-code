@@ -29,7 +29,7 @@ public class PopupUI : BaseUI
             DimmedUI dim = (DimmedUI)UIManager.Instance.ShowUI(UIName.UI_Dimmed);
             if (dim != null)
             {
-                dim.SetSiblingOrder(this);
+                dim.SetDimmed(this);
             }
         }
        
