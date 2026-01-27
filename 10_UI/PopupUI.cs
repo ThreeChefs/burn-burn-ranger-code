@@ -5,13 +5,10 @@ using UnityEngine.UI;
 
 public class PopupUI : BaseUI
 {
-    [Title("Popup UI Settings")]
-    [SerializeField] bool _useDim;
-    //[ShowIf("_useDim")][SerializeField] Image _dim; 
-
-    [SerializeField] Transform _popup;
-    [SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
-    [SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
+    [BoxGroup("Popup UI Settings")][SerializeField] Transform _popup;
+    [BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
+    [BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
+    [BoxGroup("Popup UI Settings")][SerializeField] bool _useDim;
 
     static public float PopupDuration = 0.25f;
 
