@@ -156,9 +156,9 @@ public class UIManager : GlobalSingletonManager<UIManager>
         BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
+            ui.transform.SetAsLastSibling();
             ui.gameObject.SetActive(true);
             ui.OpenUI();
-            ui.transform.SetAsLastSibling();
             return ui;
         }
 
