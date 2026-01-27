@@ -1,3 +1,5 @@
+using System;
+
 public enum SkillType
 {
     Active,
@@ -12,4 +14,12 @@ public enum SkillValueType
     ProjectileCount,    // (액티브) 탄환 개수
     Scale,              // (액티브) 크기
     ProjectileSpeed,    // (액티브) 탄환 속도
+}
+
+[Flags]
+public enum SkillState : byte
+{
+    None = 0,
+    CanDraw = 1 << 0,
+    CombinationReady = 1 << 1,
 }

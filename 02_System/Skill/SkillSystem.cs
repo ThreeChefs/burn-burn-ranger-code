@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -8,23 +9,30 @@ using UnityEngine;
 public class SkillSystem
 {
     private readonly SoDatabase _skillDatabase;
-    private readonly Dictionary<int, SkillData> _skillDataCache = new();
     private readonly StagePlayer _player;
 
     // 스킬 상태 관리
     private readonly Dictionary<int, BaseSkill> _ownedSkills = new();
-    private readonly Dictionary<int, int> _combinationRequirementMap = new();
-    private readonly List<int> _maxedSkillIds = new();
-    private int _activeSkillCount;
-    private int _passiveSkillCount;
+    private SkillData[] _skillTable;
+    private SkillState[] _skillStates;
 
     private bool _canSelectSkill;
-    private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
-    private int _minCombinationId = int.MaxValue;
 
     private bool _hasWeapon;
     private int _defaultSkillId = 30;
     private SkillData _defaultSkillData;
+
+    // 스킬 조건
+    private int _activeSkillCount;
+    private int _passiveSkillCount;
+    private bool _activeSkillCountRegister;
+    private bool _passiveSkillCountRegister;
+
+    private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+
+    private readonly Dictionary<int, int> _combinationRequirementMap = new();
+    private readonly List<int> _maxedSkillIds = new();
+    private readonly Dictionary<int, SkillData> _skillDataCache = new();
 
     // public readonly colliections
     public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
@@ -44,13 +52,23 @@ public class SkillSystem
 
     private void Init()
     {
-        // 딕셔너리 초기화
-        _skillDataCache.Clear();
-        _maxedSkillIds.Clear();
         List<SkillData> skillDatabase = _skillDatabase.GetDatabase<SkillData>();
+
+        // Dictionay 초기화
+        _ownedSkills.Clear();
+
+        // Array 초기화 - skill id를 index로 사용
+        int maxId = 0;
+        foreach (SkillData skillData in skillDatabase)
+        {
+            maxId = Math.Max(maxId, skillData.Id);
+        }
+        _skillTable = new SkillData[maxId + 1];
+        _skillStates = new SkillState[maxId + 1];
 
         foreach (SkillData skillData in skillDatabase)
         {
+            // 디폴트 스킬
             if (skillData.Id == _defaultSkillId)
             {
                 _defaultSkillData = skillData;
@@ -67,29 +85,10 @@ public class SkillSystem
                 _hasWeapon = true;
             }
 
-            if (_skillDataCache.ContainsKey(skillData.Id))
+            _skillTable[skillData.Id] = skillData;
+            if (skillData.Type != SkillType.Combination)
             {
-                Logger.LogWarning("키 중복");
-            }
-            _skillDataCache[skillData.Id] = skillData;
-
-            if (skillData.Type == SkillType.Combination)
-            {
-                _minCombinationId = Mathf.Min(_minCombinationId, skillData.Id);
-            }
-        }
-
-        _ownedSkills.Clear();
-        _combinationRequirementMap.Clear();
-
-        // todo: 테스트용이니까 지우기
-        Dictionary<int, int> testSkills = PlayerManager.Instance.Inventory.RequiredSkills;
-        foreach (var keyValuePair in testSkills)
-        {
-            SkillData skill = _skillDataCache[keyValuePair.Key];
-            for (int j = 0; j < keyValuePair.Value; j++)
-            {
-                TrySelectSkill(skill.Id);
+                _skillStates[skillData.Id] |= SkillState.CanDraw;
             }
         }
 
@@ -97,7 +96,7 @@ public class SkillSystem
         IReadOnlyDictionary<int, int> defaultSkills = PlayerManager.Instance.Equipment.HavingSkills;
         foreach (KeyValuePair<int, int> keyValuePair in defaultSkills)
         {
-            SkillData skill = _skillDataCache[keyValuePair.Key];
+            SkillData skill = _skillTable[keyValuePair.Key];
             for (int j = 0; j < keyValuePair.Value; j++)
             {
                 TrySelectSkill(skill.Id);
@@ -108,7 +107,8 @@ public class SkillSystem
         if (!_hasWeapon)
         {
             Logger.Log("기본 무기 사용");
-            _skillDataCache.Add(_defaultSkillId, _defaultSkillData);
+            _skillTable[_defaultSkillId] = _defaultSkillData;
+            _skillStates[_defaultSkillId] |= SkillState.CanDraw;
             TrySelectSkill(_defaultSkillId);
         }
     }
@@ -121,11 +121,6 @@ public class SkillSystem
     /// <param name="id"></param>
     public bool TrySelectSkill(int id)
     {
-        if (!_skillDataCache.TryGetValue(id, out SkillData data))
-        {
-            return false;
-        }
-
         // 이미 스킬이 있는 경우 레벨업
         if (_ownedSkills.TryGetValue(id, out var skill))
         {
@@ -133,6 +128,9 @@ public class SkillSystem
             UpdateSkillSelectCondition(id);
             return true;
         }
+
+        SkillData data = _skillTable[id];
+        if (data == null) { return false; }
 
         // 없는 경우 스킬 획득
         BaseSkill baseSkill = (data.Type) switch
@@ -143,10 +141,7 @@ public class SkillSystem
             _ => null
         };
 
-        if (baseSkill == null)
-        {
-            return false;
-        }
+        if (baseSkill == null) { return false; }
 
         // 스킬 획득 후 초기화
         _ownedSkills.Add(id, baseSkill);
@@ -163,7 +158,7 @@ public class SkillSystem
     private ActiveSkill GetActiveSkill(int id)
     {
         _activeSkillCount++;
-        ActiveSkillData data = _skillDataCache[id] as ActiveSkillData;
+        ActiveSkillData data = _skillTable[id] as ActiveSkillData;
         ActiveSkill activeSkill = GameObject.Instantiate(data.ActiveSkillPrefab);
         activeSkill.transform.SetParent(PlayerManager.Instance.StagePlayer.SkillContainer);
         activeSkill.transform.localPosition = Vector3.zero;
@@ -187,12 +182,12 @@ public class SkillSystem
     /// <returns></returns>
     private ActiveSkill GetCombinationSkill(int id)
     {
-        foreach (int combinationId in _skillDataCache[id].CombinationIds)
+        foreach (int combinationId in _skillTable[id].CombinationIds)
         {
-            if (_skillDataCache[combinationId].Type == SkillType.Active)
+            // 액티브 스킬일 경우 삭제
+            if (_skillTable[combinationId].Type == SkillType.Active)
             {
                 _activeSkillCount--;
-                // 액티브 스킬일 경우 삭제
                 GameObject.Destroy(_ownedSkills[combinationId].gameObject);
                 _ownedSkills.Remove(combinationId);
             }
@@ -210,34 +205,34 @@ public class SkillSystem
     private void UpdateSkillSelectCondition(int id)
     {
         BaseSkill skill = _ownedSkills[id];
-        SkillData data = _skillDataCache[id];
+        SkillData data = _skillTable[id];
+
+        // 만렙일 경우 
+        if (skill.CurLevel == Define.SkillMaxLevel)
+        {
+            _skillStates[id] = SkillState.None;
+        }
 
         switch (data.Type)
         {
             case SkillType.Active:
-                // 액티브 스킬일 경우 최대 레벨일 때 잠금 해제
-                if (skill.CurLevel == Define.SkillMaxLevel)
+                ApplyCombinationSkillCondition(data.CombinationIds); // 조합 스킬 조건 확인
+                if (_activeSkillCount == Define.ActiveSkillMaxCount && !_activeSkillCountRegister)
                 {
-                    _maxedSkillIds.Add(id);                         // 만렙 처리
-                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
+                    UpdateMaxCountCondition(SkillType.Active);
+                    _activeSkillCountRegister = true;
                 }
                 break;
             case SkillType.Passive:
-                // 패시브 스킬일 경우 1레벨일 때 잠금 해제
-                if (skill.CurLevel == 1)
+                ApplyCombinationSkillCondition(data.CombinationIds); // 조합 스킬 조건 확인
+                if (_passiveSkillCount == Define.ActiveSkillMaxCount && !_passiveSkillCountRegister)
                 {
-                    ApplyCombinationSkillDict(data.CombinationIds); // 조합 스킬 조건 확인
-                }
-                else if (skill.CurLevel == Define.SkillMaxLevel)
-                {
-                    _maxedSkillIds.Add(id);                         // 만렙 처리
+                    UpdateMaxCountCondition(SkillType.Passive);
+                    _passiveSkillCountRegister = true;
                 }
                 break;
             case SkillType.Combination:
-                if (_combinationRequirementMap.ContainsKey(id))
-                {
-                    _combinationRequirementMap.Remove(id);
-                }
+                _skillStates[id] = SkillState.None;
                 break;
         }
 
@@ -245,23 +240,56 @@ public class SkillSystem
     }
 
     /// <summary>
-    /// 스킬 조합 조건 딕셔너리에 정보 저장
+    /// type의 스킬 개수가 최대일 경우 소유하고 있지 않은 스킬 획득 잠금
+    /// </summary>
+    /// <param name="type"></param>
+    private void UpdateMaxCountCondition(SkillType type)
+    {
+        for (int id = 0; id < _skillTable.Length; id++)
+        {
+            // 1. 스킬이 없음
+            // 2. 해당 스킬 타입 없음
+            // 3. 소유한 스킬
+            if (_skillTable[id] == null ||
+                _skillTable[id].Type != type ||
+                _ownedSkills.ContainsKey(id))
+            {
+                continue;
+            }
+
+            _skillStates[id] = SkillState.None;
+        }
+    }
+
+    /// <summary>
+    /// 조합 스킬의 아이디를 받고 조건 확인
     /// </summary>
     /// <param name="combinationIds"></param>
-    private void ApplyCombinationSkillDict(int[] combinationIds)
+    private void ApplyCombinationSkillCondition(int[] combinationIds)
     {
-        if (combinationIds == null || combinationIds.Length == 0) return;
-
         foreach (int combinationId in combinationIds)
         {
-            if (_combinationRequirementMap.ContainsKey(combinationId))
+            if (combinationId >= _skillTable.Length) continue;
+
+            int[] requiredSkillIds = _skillTable[combinationId].CombinationIds;
+            bool unlockSkill = true;
+
+            foreach (int id in requiredSkillIds)
             {
-                _combinationRequirementMap[combinationId]++;
-                Logger.Log($"조합 스킬 해금: {_skillDataCache[combinationId]?.DisplayName}");
+                // 스킬 해금 불가 조건
+                // 1. 스킬 미소유
+                // 2. active 스킬인데 최대 레벨이 아닐 경우
+                if (!_ownedSkills.TryGetValue(id, out BaseSkill skill) ||
+                    skill.SkillData.Type == SkillType.Active && skill.CurLevel != Define.SkillMaxLevel)
+                {
+                    unlockSkill = false;
+                    break;
+                }
             }
-            else
+
+            if (unlockSkill)
             {
-                _combinationRequirementMap.Add(combinationId, 1);
+                _skillStates[combinationId] |= SkillState.CombinationReady;
             }
         }
     }
@@ -284,109 +312,32 @@ public class SkillSystem
 
     public List<SkillSelectDto> ShowSelectableSkills(int count)
     {
-        HashSet<int> selectedSkillId = new();
-        List<SkillSelectDto> skillSelectDtos = new();
-
         if (!_canSelectSkill) return null;
 
-        // 조합 스킬 있는지 확인
-        foreach (KeyValuePair<int, int> combinationSkillTerm in _combinationRequirementMap)
+        List<int> selectedSkillId = new();
+        List<SkillSelectDto> skillSelectDtos = new(count);
+
+        for (int id = _skillStates.Length - 1; id >= 0; id--)
         {
-            if (combinationSkillTerm.Value == 2)
+            // 조합 스킬
+            if ((_skillStates[id] & SkillState.CombinationReady) != 0)
             {
-                SkillData skillData = _skillDataCache[combinationSkillTerm.Key];
-                string description;
-                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
-                {
-                    description = "설명 쓰세요!!!!!!!!!!!!!";
-                }
-                else
-                {
-                    description = skillData.Descriptions[0];
-                }
+                SkillData skillData = _skillTable[id];
+                GetLevelAndDescription(skillData, null, out int curLevel, out string description);
                 skillSelectDtos.Add(new SkillSelectDto(
                     skillData.Id,
-                    0,
+                    curLevel,
                     skillData.DisplayName,
                     description,
                     skillData.Icon,
                     skillData.Type,
                     new Sprite[0]));
             }
-        }
-
-        if (skillSelectDtos.Count == count)
-        {
-            return skillSelectDtos;
-        }
-        else if (skillSelectDtos.Count > count)
-        {
-            return skillSelectDtos.Random(count);
-        }
-
-        // 1. 스킬 슬롯 전부 찼을 경우
-        // 소유한 스킬 중에 선택할 수 있는 스킬 획득
-        if (_activeSkillCount + _passiveSkillCount == TotalMaxSkillCount)
-        {
-            foreach (int id in _ownedSkills.Keys)
+            else if ((_skillStates[id] & SkillState.CanDraw) != 0)
             {
-                if (id >= _minCombinationId) continue;      // 조합 스킬일 경우 제외 (위에서 처리)
                 selectedSkillId.Add(id);
             }
         }
-        // 2. 스킬 전부 획득하지 않았을 경우
-        // 1) 액티브 스킬을 전부 뽑았을 때
-        else if (_activeSkillCount == Define.ActiveSkillMaxCount && _passiveSkillCount != Define.PassiveSkillMaxCount)
-        {
-            foreach (SkillData data in _skillDataCache.Values)
-            {
-                // 패시브일 경우 그냥 뽑기
-                if (data.Type == SkillType.Passive)
-                {
-                    selectedSkillId.Add(data.Id);
-                }
-                // 액티브일 경우 보유한 스킬 중 최대 레벨이 아닌 걸 뽑기
-                else if (data.Type == SkillType.Active)
-                {
-                    if (!_ownedSkills.TryGetValue(data.Id, out BaseSkill skill) ||
-                        skill.CurLevel == Define.SkillMaxLevel) continue;
-                    selectedSkillId.Add(data.Id);
-                }
-            }
-        }
-        // 2) 패시브 스킬만 전부 뽑았을 때
-        else if (_activeSkillCount != Define.ActiveSkillMaxCount && _passiveSkillCount == Define.PassiveSkillMaxCount)
-        {
-            foreach (SkillData data in _skillDataCache.Values)
-            {
-                // 액티브일 경우 그냥 뽑기
-                if (data.Type == SkillType.Active)
-                {
-                    selectedSkillId.Add(data.Id);
-                }
-                // 패시브일 경우 보유한 스킬 중 최대 레벨이 아닌 걸 뽑기
-                else if (data.Type == SkillType.Passive)
-                {
-                    if (!_ownedSkills.TryGetValue(data.Id, out BaseSkill skill) ||
-                        skill.CurLevel == Define.SkillMaxLevel) continue;
-                    selectedSkillId.Add(data.Id);
-                }
-            }
-        }
-        // 3) 전부 다 안 뽑았을 때
-        else
-        {
-            foreach (SkillData data in _skillDataCache.Values)
-            {
-                if (data.Type != SkillType.Combination)
-                {
-                    selectedSkillId.Add(data.Id);
-                }
-            }
-        }
-
-        // 만렙 스킬인 경우 제거
-        _maxedSkillIds.ForEach(id => selectedSkillId.Remove(id));
 
         AddRandomSkillDto(skillSelectDtos, selectedSkillId.ToList(), count);
 
@@ -400,7 +351,7 @@ public class SkillSystem
         list.Random(pickCount).ForEach(id =>
         {
             // 뽑아야하는 스킬 정보 가져오기
-            _skillDataCache.TryGetValue(id, out SkillData skillData);
+            SkillData skillData = _skillTable[id];
             _ownedSkills.TryGetValue(id, out BaseSkill skill);
 
             // 조합 스킬 아이콘 가져오기 
@@ -408,11 +359,12 @@ public class SkillSystem
             List<Sprite> icons = new();
             foreach (int combinationId in skillData.CombinationIds)
             {
-                if (!_skillDataCache.ContainsKey(combinationId)) continue;
-                int[] materialIds = _skillDataCache[combinationId].CombinationIds;      // 재료 아이디
+                if (combinationId >= _skillTable.Length || _skillTable[combinationId] == null) continue;
+                int[] materialIds = _skillTable[combinationId].CombinationIds;      // 재료 아이디
                 foreach (int materialId in materialIds)
                 {
-                    if (!_skillDataCache.TryGetValue(materialId, out SkillData materialData)) continue;
+                    SkillData materialData = _skillTable[materialId];
+                    if (materialData == null) continue;
                     if (materialData.Type == SkillType.Active)
                     {
                         icons.Add(materialData.Icon);
@@ -420,33 +372,7 @@ public class SkillSystem
                 }
             }
 
-            int curLevel;
-            string description;
-
-            if (skill == null)
-            {
-                curLevel = 0;
-                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
-                {
-                    description = "설명 쓰세요!!!!!!!!!!!!!";
-                }
-                else
-                {
-                    description = skillData.Descriptions[0];
-                }
-            }
-            else
-            {
-                curLevel = skill.CurLevel;
-                if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
-                {
-                    description = "설명 쓰세요!!!!!!!!!!!!!";
-                }
-                else
-                {
-                    description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
-                }
-            }
+            GetLevelAndDescription(skillData, skill, out int curLevel, out string description);
 
             // dto 만들기
             skillSelectDtos.Add(new SkillSelectDto(
@@ -458,5 +384,37 @@ public class SkillSystem
                 skillData.Type,
                 skillData.Type == SkillType.Passive ? icons.ToArray() : new Sprite[0]));
         });
+    }
+
+    private static void GetLevelAndDescription(
+        SkillData skillData,
+        BaseSkill skill,
+        out int curLevel,
+        out string description)
+    {
+        if (skill == null)
+        {
+            curLevel = 0;
+            if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+            {
+                description = "설명 쓰세요!!!!!!!!!!!!!";
+            }
+            else
+            {
+                description = skillData.Descriptions[0];
+            }
+        }
+        else
+        {
+            curLevel = skill.CurLevel;
+            if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+            {
+                description = "설명 쓰세요!!!!!!!!!!!!!";
+            }
+            else
+            {
+                description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
+            }
+        }
     }
 }
