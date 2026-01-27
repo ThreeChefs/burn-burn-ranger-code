@@ -104,6 +104,9 @@ public class StageManager : SceneSingletonManager<StageManager>
             camera.ConnectPlayer();
         }
 
+        // 상시 젬 스포너 세팅
+        GetComponent<ContinuousGemSpawner>()?.StartSpawn(_player);
+
         // 게임 시작
         SetStageData();
         StartCoroutine(StartRoutine());
