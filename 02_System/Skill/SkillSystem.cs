@@ -362,27 +362,21 @@ public class SkillSystem
         out int curLevel,
         out string description)
     {
-        if (skill == null)
+        if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
         {
             curLevel = 0;
-            if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
-            {
-                description = "설명 쓰세요!!!!!!!!!!!!!";
-            }
-            else
-            {
-                description = skillData.Descriptions[0];
-            }
+            description = "설명 쓰세요!!!!!!!!!!!!!";
         }
         else
         {
-            curLevel = skill.CurLevel;
-            if (skillData.Descriptions == null || skillData.Descriptions.Length == 0)
+            if (skill == null)
             {
-                description = "설명 쓰세요!!!!!!!!!!!!!";
+                curLevel = 0;
+                description = skillData.Descriptions[0];
             }
             else
             {
+                curLevel = skill.CurLevel;
                 description = skillData.Descriptions[skillData.Type == SkillType.Active ? skill.CurLevel : 0];
             }
         }
