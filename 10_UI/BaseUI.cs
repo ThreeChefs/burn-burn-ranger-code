@@ -23,6 +23,8 @@ public abstract class BaseUI : MonoBehaviour
 
     public event Action<BaseUI> OnOpenAction;
     public event Action<BaseUI> OnDestroyAction;
+
+    public event Action<BaseUI> OnCloseAction;
     public event Action<BaseUI> OnClosedAction;
 
     Canvas _canvas;
@@ -56,7 +58,9 @@ public abstract class BaseUI : MonoBehaviour
 
     public void CloseUI()
     {
+
         Tween closeTween = CloseUIInternal();
+        OnCloseAction?.Invoke(this);
 
         if (closeTween != null)
         {

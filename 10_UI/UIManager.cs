@@ -50,7 +50,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
             newCanvas.transform.SetParent(_canvasRoot.transform, false);
         }
 
-        
+
+        // 항상 스폰해둘 UI
+        Debug.Log("asdasd");
+        LoadUI(UIName.UI_Dimmed, false);
 
     }
 
@@ -150,7 +153,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     public BaseUI ShowUI(UIName uiName)
     {
-        BaseUI ui = GetNowSpawnedUI(uiName);
+        BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
             ui.gameObject.SetActive(true);
@@ -167,7 +170,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     /// </summary>
     public BaseUI CloseUI(UIName uiName)
     {
-        BaseUI ui = GetNowSpawnedUI(uiName);
+        BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
             ui.CloseUI();
@@ -187,7 +190,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         return null;
     }
 
-    public BaseUI GetNowSpawnedUI(UIName uiName)
+    public BaseUI GetLoadedUI(UIName uiName)
     {
         if (_nowLoadedUiDict.ContainsKey(uiName))
             return _nowLoadedUiDict[uiName];

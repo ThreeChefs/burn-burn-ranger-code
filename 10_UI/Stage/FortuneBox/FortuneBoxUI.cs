@@ -272,7 +272,7 @@ public class FortuneBoxUI : PopupUI
 
     IEnumerator ReadyRoutine()
     {
-        yield return new WaitForSecondsRealtime(popupDuration);
+        yield return new WaitForSecondsRealtime(PopupDuration);
 
         yield return PlayFocus(GroupFocusRoutine(_diagonalOrder, 3));
 
