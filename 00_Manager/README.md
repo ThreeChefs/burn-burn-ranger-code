@@ -9,8 +9,11 @@
 
 - DataManager
 - [PoolManager](https://github.com/ThreeChefs/burn-burn-chef/blob/main/Assets/01_Scripts/00_Manager/PoolManager/README.md)
+    - MonsterManager
+    - ProjectileManager
+    - [GemManager]()
 - SceneManager
 - SoundManager
 - StageManager
 - SingletonManager
-- GemManager
+
