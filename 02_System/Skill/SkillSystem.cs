@@ -14,8 +14,6 @@ public class SkillSystem
     private SkillData[] _skillTable;
     private SkillState[] _skillStates;
 
-    private bool _canSelectSkill;
-
     private bool _hasWeapon;
     private int _defaultSkillId = 30;
     private SkillData _defaultSkillData;
@@ -32,7 +30,6 @@ public class SkillSystem
     public SkillSystem(SoDatabase skillDatabase, StagePlayer player)
     {
         _player = player;
-        _canSelectSkill = true;
 
         // Collection 초기화
         _ownedSkills.Clear();
@@ -231,8 +228,6 @@ public class SkillSystem
                 _skillStates[id] &= ~SkillState.CombinationReady;
                 break;
         }
-
-        LockSelectionSkill();
     }
 
     /// <summary>
@@ -289,30 +284,12 @@ public class SkillSystem
             }
         }
     }
-
-    /// <summary>
-    /// 스킬을 전부 획득하고 최대 레벨일 경우 선택 불가능 처리
-    /// </summary>
-    private void LockSelectionSkill()
-    {
-        if (_activeSkillCount + _passiveSkillCount < TotalMaxSkillCount) return;
-        foreach (BaseSkill ownedSkill in _ownedSkills.Values)
-        {
-            if (!ownedSkill.IsMaxLevel)
-            {
-                return;
-            }
-        }
-        _canSelectSkill = false;
-    }
     #endregion
 
     public List<SkillSelectDto> GetSelectableSkills(int count)
     {
-        if (!_canSelectSkill) return null;
-
         List<int> selectedSkillId = new();
-        List<SkillSelectDto> skillSelectDtos = new(count);
+        List<SkillSelectDto> skillSelectDtos = new();
 
         for (int id = _skillStates.Length - 1; id >= 0; id--)
         {
