@@ -1,7 +1,6 @@
 using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class DimmedUI : BaseUI
 {
@@ -27,6 +26,7 @@ public class DimmedUI : BaseUI
         calledUI.Push(target);
         target.OnCloseAction += CloseUI;
     }
+
 
     void SetSiblingOrder(PopupUI target)
     {
