@@ -13,3 +13,4 @@
 - SoundManager
 - StageManager
 - SingletonManager
+- GemManager
