@@ -178,5 +178,20 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         }
     }
 
+    public void OnDestroyMonster(PoolObject poolObject)
+    {
+        Monster monster = poolObject as Monster;
+
+        if (deactivatedMonsters.Contains(monster) == true)
+        {
+            deactivatedMonsters.Remove(monster);
+        }
+
+        if (activatedMonsters.Contains(monster) == true)
+        {
+            activatedMonsters.Remove(monster);
+        }
+    }
+
 
 }
