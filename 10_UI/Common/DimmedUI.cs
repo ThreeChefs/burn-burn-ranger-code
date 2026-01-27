@@ -37,7 +37,6 @@ public class DimmedUI : BaseUI
 
         transform.SetParent(targetParent, false);
 
-        Debug.Log("누구 " + target.gameObject.name + ", " + target.transform.GetSiblingIndex());
         transform.SetSiblingIndex(target.transform.GetSiblingIndex());
     }
 
@@ -59,7 +58,6 @@ public class DimmedUI : BaseUI
             PopupUI prevPopup = (PopupUI)calledUI.Pop();
             if (prevPopup != null && calledUI.Count>0)
             {
-                Debug.Log("누구 " + prevPopup.gameObject.name + ", " + prevPopup.transform.GetSiblingIndex());
                 SetSiblingOrder((PopupUI)calledUI.Peek());
             }
         }
