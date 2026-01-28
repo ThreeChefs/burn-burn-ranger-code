@@ -1,4 +1,4 @@
-
+﻿
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +11,10 @@ public class SettingsUI : PopupUI
     [SerializeField] Slider _bgm;
 
 
-    private void Awake()
+    protected override void AwakeInternal()
     {
+        base.AwakeInternal();
+
         _master.value = SoundManager.Instance.MasterVolume;
         _sfx.value = SoundManager.Instance.SfxVolume;
         _bgm.value = SoundManager.Instance.BgmVolume;

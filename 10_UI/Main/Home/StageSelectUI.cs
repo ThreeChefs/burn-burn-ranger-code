@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using TMPro;
@@ -24,8 +24,10 @@ public class StageSelectUI : PopupUI
 
     private int _nowSelectedStageIndex = 1;
 
-    private void Awake()
+    protected override void AwakeInternal()
     {
+        base.AwakeInternal();
+
         _selectButton.onClick.AddListener(OnClickSelectButton);
         _backButton.onClick.AddListener(OnClickBackButton);
 
@@ -42,13 +44,14 @@ public class StageSelectUI : PopupUI
         SetStageInfo(_nowSelectedStageIndex);
     }
 
+
     public void SetStageInfo(int stageIdx)
     {
         ShowButton(stageIdx <= GameManager.Instance.StageProgress.ClearStageNum);
-        _nowSelectedStageIndex  = stageIdx;
-        _stageNumText.text = $"{stageIdx+1}. {GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName}";
+        _nowSelectedStageIndex = stageIdx;
+        _stageNumText.text = $"{stageIdx + 1}. {GameManager.Instance.StageDatabase[_nowSelectedStageIndex].StageName}";
     }
-    
+
     void OnClickSelectButton()
     {
         GameManager.Instance.StageProgress.SaveLastSelectedStage(_nowSelectedStageIndex + 1);
@@ -58,7 +61,7 @@ public class StageSelectUI : PopupUI
 
     void OnClickBackButton()
     {
-        gameObject.SetActive(false);
+        CloseUI();
     }
 
     void HideButton()
@@ -76,8 +79,8 @@ public class StageSelectUI : PopupUI
             _selectButton.transform.DOScale(1, 0.2f).SetUpdate(true).OnComplete(() => { _selectButton.interactable = true; });
 
         }
-        
-        
+
+
         _stageLabel.DOScale(1, 0.2f).SetUpdate(true);
     }
 
