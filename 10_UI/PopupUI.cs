@@ -43,7 +43,6 @@ public class PopupUI : BaseUI
 
         if (_popupElements != null && _popupElements.Length > 0)
         {
-            Debug.Log("여기는 들어옴");
             _popupElements?.ForEach(e => e.Open(PopupDuration));
             DOVirtual.DelayedCall(PopupDuration,
                 () => { _canvasGroup.interactable = true; })
