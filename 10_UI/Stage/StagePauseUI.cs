@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +18,10 @@ public class StagePauseUI : PopupUI
     private Vector2 _homeOriginPos;
     private Vector2 _settingOriginPos;      // todo : Tween 만 하는 스크립트를 추가하기
 
-    private void Awake()
+    protected override void AwakeInternal()
     {
+        base.AwakeInternal();
+
         UIManager.Instance.LoadUI(UIName.UI_Settings,false); // 이 UI에서 추가로 쓸거니까
 
         _backButton.onClick.AddListener(OnClickBackButton);
