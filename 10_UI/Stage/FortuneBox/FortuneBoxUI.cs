@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +26,7 @@ public class FortuneBoxUI : PopupUI
     WaitForSecondsRealtime _skipWaitTime = new WaitForSecondsRealtime(1.5f);
 
 
-    static int _maxSlotcount = 16;
+    static int _maxSlotcount = Define.FortuneBoxSkillSlotCount;
 
 
     #region 연출 슬롯 순서
@@ -87,6 +87,7 @@ public class FortuneBoxUI : PopupUI
         // 상자 타입 지정
         _type = type;
 
+        // 랜덤이면 1, 3, 5 중 하나 지정
         if (type == WaveClearRewardType.Fortune_Skill_Random)
         {
             _type = (WaveClearRewardType)Define.Random.Next((int)WaveClearRewardType.Fortune_Skill_1
@@ -94,10 +95,7 @@ public class FortuneBoxUI : PopupUI
         }
 
 
-
-        // todo 올릴 수 있는게 뽑을 수 있는 갯수보다 적을 때 처리 필요
-
-        List<SkillSelectDto> rollList = null;
+        List<SkillSelectDto> slotList = null;
 
         int pickNum = Define.Random.Next(0, _maxSlotcount);
         int idx = pickNum;
@@ -112,45 +110,45 @@ public class FortuneBoxUI : PopupUI
         {
             case WaveClearRewardType.Fortune_Skill_1:
                 actualCount = 1;
-                rollList = system.GetRolledSkills(actualCount, out actualCount);
+                slotList = system.GetRolledSkills(actualCount, out actualCount);
                 break;
 
             case WaveClearRewardType.Fortune_Skill_3:
                 actualCount = 3;
-                rollList = system.GetRolledSkills(actualCount, out actualCount);
+                slotList = system.GetRolledSkills(actualCount, out actualCount);
+                targetOrder = _spiralOrder;
                 break;
             case WaveClearRewardType.Fortune_Skill_5:
                 actualCount = 5;
-                rollList = system.GetRolledSkills(actualCount, out actualCount);
+                slotList = system.GetRolledSkills(actualCount, out actualCount);
+                targetOrder = _zigzagOrder;
                 break;
         }
 
-
-        for (int i = 0; i < _maxSlotcount; i++)
+        if (slotList == null || slotList.Count == 0)
         {
-            int slotIndex = targetOrder[idx];
-            _orderSlotIdx.Add(slotIndex);
-            --idx;
-            if (idx < 0) idx = 15;
+            // 음식 뽑기로 세팅
+            return;
         }
 
-        for (int i = 0; i < actualCount; i++)
-        {
-            _pickSlotIdx.Add(_orderSlotIdx[i]);
-        }
-
-
-        
-        if (rollList == null || rollList.Count == 0) return;
+        //Debug.Log(type + " : " + actualCount);
+        //for(int i = 0; i < slotList.Count;++i)
+        //{
+        //    Debug.Log(i + ": " + slotList[i].Name);
+        //}
 
 
         for (int i = 0; i < _maxSlotcount; i++)
         {
-            slots[_orderSlotIdx[i]].SetSlot(rollList[i]);
+            int slotIndex = targetOrder[i];
+            slots[slotIndex].SetSlot(slotList[i]);
         }
 
-        // 테스트
-        //OpenUIInternal();
+        for (int i = actualCount - 1; i >= 0; i--)
+        {
+            _pickSlotIdx.Add(targetOrder[i]);
+        }
+
     }
 
 
@@ -320,18 +318,18 @@ public class FortuneBoxUI : PopupUI
     {
         for (int i = 0; i < _pickSlotIdx.Count; i++)
         {
-            int idx = _pickSlotIdx[i];
-            if (idx >= slots.Length) continue;
+            int slotIndex = _pickSlotIdx[i];
+            FortuneBoxSlot slot = slots[slotIndex];
 
-            // 스킬 주기
-            StageManager.Instance.SkillSystem.TryAcquireSkill(slots[idx].Skill.Id);
+            if (slot.Skill == null) continue;
+
+            StageManager.Instance.SkillSystem.TryAcquireSkill(slot.Skill.Id);
         }
 
         for (int i = 0; i < _maxSlotcount; i++)
         {
             slots[i].SetFocus(false);
         }
-
 
         return base.CloseUIInternal();
     }
@@ -378,45 +376,26 @@ public class FortuneBoxUI : PopupUI
 
     IEnumerator ToTargetIndexRoutine(int[] order)
     {
-        int count = slots.Length;
-        int round = 1;
-
-        if (_pickSlotIdx.Count > 1)
-        {
-            int firstPos = System.Array.IndexOf(order, _pickSlotIdx[0]);    // 번호 찾아서 하기!! 중복 없으니까 괜찮
-            int lastPos = System.Array.IndexOf(order, _pickSlotIdx[_pickSlotIdx.Count - 1]);
-
-            if (firstPos >= 0 && lastPos >= 0 && lastPos > firstPos)
-                round = 2;
-        }
-
-        int targetCount = _pickSlotIdx.Count - 1;
-
+        int targetIdx = _pickSlotIdx.Count - 1;
         WaitForSecondsRealtime wait = new WaitForSecondsRealtime(_stepInterval * 2f);
 
-        for (int i = 0; i < round; i++)
+        for (int j = 0; j < order.Length && targetIdx >= 0; j++)
         {
-            for (int j = 0; j < order.Length; j++)
+            int slotIndex = order[j];
+
+            if (_pickSlotIdx[targetIdx] == slotIndex)
             {
-                int slotIndex = order[j];
-
-                if (_pickSlotIdx[targetCount] == slotIndex)
-                {
-                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 1);
-                    slots[slotIndex].SetFocus(true);
-                    targetCount--;
-                }
-                else
-                {
-                    SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
-                    slots[slotIndex].SetFocusFade();
-                }
-
-
-
-                if (targetCount < 0) break;
-                yield return wait;
+                SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 1);
+                slots[slotIndex].SetFocus(true);
+                targetIdx--;
             }
+            else
+            {
+                SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
+                slots[slotIndex].SetFocusFade();
+            }
+
+            yield return wait;
         }
 
         ShowBackButton();
