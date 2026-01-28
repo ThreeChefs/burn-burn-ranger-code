@@ -60,21 +60,21 @@ public class PopupUIElement : MonoBehaviour
             case PopupUIOpenType.Default:
                 if (_rect != null)
                 {
-                    return _rect.DOScale(0f, _duration).SetEase(Ease.InQuad).SetUpdate(true);
+                    _rect.DOScale(0f, _duration).SetEase(Ease.InQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Horizontal:
                 if (_rect != null)
                 {
-                    return _rect.DOScale(new Vector3(0, 1, 1), _duration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    _rect.DOScale(new Vector3(0, 1, 1), _duration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
 
             case PopupUIOpenType.Vertical:
                 if (_rect != null)
                 {
-                    return _rect.DOScale(new Vector3(1, 0, 1), _duration).SetEase(Ease.OutQuad).SetUpdate(true);
+                    _rect.DOScale(new Vector3(1, 0, 1), _duration).SetEase(Ease.OutQuad).SetUpdate(true);
                 }
                 break;
         }
