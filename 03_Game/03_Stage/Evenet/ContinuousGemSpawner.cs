@@ -12,7 +12,7 @@ public class ContinuousGemSpawner : MonoBehaviour
 
 
     public void StartSpawn(StagePlayer player)
-    {
+    { 
         _player = player;
 
         FirstSpawn();
