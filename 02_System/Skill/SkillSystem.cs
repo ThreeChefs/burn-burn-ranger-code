@@ -20,8 +20,6 @@ public class SkillSystem
     // 스킬 조건
     private int _activeSkillCount;
     private int _passiveSkillCount;
-    private bool _activeCountLocked;
-    private bool _passiveCountLocked;
 
     // public readonly colliections
     public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
@@ -203,19 +201,11 @@ public class SkillSystem
         {
             case SkillType.Active:
                 EvaluateCombinationSkills(data.CombinationSkills);
-                if (_activeSkillCount == Define.ActiveSkillMaxCount && !_activeCountLocked)
-                {
-                    LockUnownedSkillsByMaxCount(SkillType.Active);
-                    _activeCountLocked = true;
-                }
+                LockUnownedSkillsByMaxCount(SkillType.Active, _activeSkillCount == Define.ActiveSkillMaxCount);
                 break;
             case SkillType.Passive:
                 EvaluateCombinationSkills(data.CombinationSkills);
-                if (_passiveSkillCount == Define.PassiveSkillMaxCount && !_passiveCountLocked)
-                {
-                    LockUnownedSkillsByMaxCount(SkillType.Passive);
-                    _passiveCountLocked = true;
-                }
+                LockUnownedSkillsByMaxCount(SkillType.Passive, _passiveSkillCount == Define.PassiveSkillMaxCount);
                 break;
             case SkillType.Combination:
                 _skillStates[data.RuntimeIndex] &= ~SkillState.CombinationReady;
@@ -224,24 +214,31 @@ public class SkillSystem
     }
 
     /// <summary>
-    /// type의 스킬 개수가 최대일 경우 소유하고 있지 않은 스킬 획득 잠금
+    /// 조건에 따라 type의 스킬 획득 조절
     /// </summary>
     /// <param name="type"></param>
-    private void LockUnownedSkillsByMaxCount(SkillType type)
+    private void LockUnownedSkillsByMaxCount(SkillType type, bool isLock)
     {
         for (int index = 0; index < _skillTable.Length; index++)
         {
-            // 1. 스킬이 없음
-            // 2. 해당 스킬 타입 아님
-            // 3. 소유한 스킬
-            if (_skillTable[index] == null ||
-                _skillTable[index].Type != type ||
+            // 1. 해당 스킬 타입 아님
+            // 2. 소유한 스킬
+            if (_skillTable[index].Type != type ||
                 _ownedSkills.ContainsKey(index))
             {
                 continue;
             }
-            _skillStates[index] &= ~SkillState.CanDraw;
-            _skillStates[index] |= SkillState.LockedByCount;
+
+            if (isLock)
+            {
+                _skillStates[index] &= ~SkillState.CanDraw;
+                _skillStates[index] |= SkillState.LockedByCount;
+            }
+            else
+            {
+                _skillStates[index] |= SkillState.CanDraw;
+                _skillStates[index] &= ~SkillState.LockedByCount;
+            }
         }
     }
 
@@ -279,6 +276,7 @@ public class SkillSystem
     }
     #endregion
 
+    #region UI 전달
     public List<SkillSelectDto> GetSelectableSkills(int count)
     {
         List<SkillData> selectedSkills = new();
@@ -286,12 +284,15 @@ public class SkillSystem
 
         for (int id = _skillStates.Length - 1; id >= 0; id--)
         {
+            SkillState state = _skillStates[id];
+            if ((state & SkillState.LockedByMax) != 0) { continue; }
+
             // 조합 스킬
-            if ((_skillStates[id] & SkillState.CombinationReady) != 0)
+            if ((state & SkillState.CombinationReady) != 0)
             {
                 skillSelectDtos.Add(GetSkillSelectDto(_skillTable[id], null));
             }
-            else if ((_skillStates[id] & SkillState.CanDraw) != 0)
+            else if ((state & SkillState.CanDraw) != 0)
             {
                 selectedSkills.Add(_skillTable[id]);
             }
@@ -450,4 +451,5 @@ public class SkillSystem
             }
         }
     }
+    #endregion
 }
