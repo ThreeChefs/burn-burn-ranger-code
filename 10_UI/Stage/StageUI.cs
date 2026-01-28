@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,10 +17,15 @@ public class StageUI : BaseUI
         
         _pauseButton.onClick.AddListener(OnClickPauseButton);
 
-        UIManager.Instance.LoadUI(UIName.UI_StageProgressBar);
+        StageProgressBarUI progressBar = (StageProgressBarUI)UIManager.Instance.LoadUI(UIName.UI_StageProgressBar);
         UIManager.Instance.LoadUI(UIName.UI_StagePause, false);
-        UIManager.Instance.LoadUI(UIName.UI_SkillSelect, false);
+        SkillSelectUI skillSelectUI = (SkillSelectUI)UIManager.Instance.LoadUI(UIName.UI_SkillSelect, false);
         UIManager.Instance.LoadUI(UIName.UI_FortuneBox, false);
+
+
+        skillSelectUI.OnCloseAction += progressBar.NextExp;
+
+
     }
 
     private void Update()
