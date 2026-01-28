@@ -1,4 +1,4 @@
-public enum UIName
+﻿public enum UIName
 {
     // In Stage
     UI_Stage,
@@ -10,6 +10,7 @@ public enum UIName
     UI_WarnningSign,
     UI_JoyStick,
     UI_FortuneBox,
+    UI_SkillDamageData,
 
     // Outside of Stage
     UI_Home,
