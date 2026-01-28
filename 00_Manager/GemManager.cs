@@ -70,7 +70,7 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
             }
         }
     }
-    public GemItem SpawnGem(GemPoolIndex type, Vector3 position)
+    public GemItem SpawnGem(GemPoolIndex type, Vector3 position, int dropCount)
     {
         return SpawnObject<GemItem>(type, position);
     }
