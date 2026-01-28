@@ -18,8 +18,8 @@ public class Equipment
     public event Action OnEquipmentChanged;
 
     // 스킬
-    private readonly Dictionary<int, int> _havingSkills;
-    public IReadOnlyDictionary<int, int> HavingSkills => _havingSkills;
+    private readonly Dictionary<SkillData, int> _havingSkills;
+    public IReadOnlyDictionary<SkillData, int> HavingSkills => _havingSkills;
 
     // 효과
     private readonly List<BaseEquipmentEffectSO> _effectSOs;
@@ -167,11 +167,11 @@ public class Equipment
     {
         if (type == EquipmentApplyType.Equip)
         {
-            _havingSkills[skillData.Id] = skillLevel;
+            _havingSkills[skillData] = skillLevel;
         }
         else
         {
-            _havingSkills.Remove(skillData.Id);
+            _havingSkills.Remove(skillData);
         }
     }
 

@@ -8,7 +8,15 @@ public class SkillDatabase : SoDatabase
     private void Reset()
     {
         var skills = AssetLoader.FindAndLoadAllByType<SkillData>();
-        skills.Sort((a, b) => a.Id.CompareTo(b.Id));
+        skills.Sort((a, b) =>
+        {
+            int compare = a.Type.CompareTo(b.Type);
+            if (compare != 0)
+            {
+                return compare;
+            }
+            return a.name.CompareTo(b.name);
+        });
         skills.ForEach(skill => List.Add(skill));
     }
 
@@ -30,7 +38,15 @@ public class SkillDatabase : SoDatabase
     {
         var skills = GetDatabase<SkillData>();
         List.Clear();
-        skills.Sort((a, b) => a.Id.CompareTo(b.Id));
+        skills.Sort((a, b) =>
+        {
+            int compare = a.Type.CompareTo(b.Type);
+            if (compare != 0)
+            {
+                return compare;
+            }
+            return a.name.CompareTo(b.name);
+        });
         skills.ForEach(skill => List.Add(skill));
     }
 #endif

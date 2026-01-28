@@ -274,7 +274,7 @@ public class PlayerProjectile : BaseProjectile
         {
             if (effect is DamageEffectSO)
             {
-                dfs.Add(skill.Data.Id, context.damage);
+                dfs.Add(skill.Data.RuntimeIndex, context.damage);
             }
             effect.Apply(in context);
         }
@@ -286,7 +286,7 @@ public class PlayerProjectile : BaseProjectile
         {
             if (effect is DamageEffectSO)
             {
-                dfs.Add(skill.Data.Id, context.damage);
+                dfs.Add(skill.Data.RuntimeIndex, context.damage);
             }
             effect.Apply(in context);
         }
