@@ -74,6 +74,7 @@ public class SkillSelectButton : BaseButton
     
     protected override void OnClick()
     {
+        base.OnClick();
         // Select Skill
         StageManager.Instance.SkillSystem.TryAcquireSkill(_nowSkillData.Id);
         StageManager.Instance.ResumeGame();
@@ -83,12 +84,6 @@ public class SkillSelectButton : BaseButton
     public override void OnPointerEnter(PointerEventData eventData)
     {
         base.OnPointerEnter(eventData);
-        if(transform.parent != null)
-        {
-            if (transform.parent.childCount <= 1)
-                return;
-            transform.SetSiblingIndex(transform.parent.childCount - 1);
-        }
     }
 
 }

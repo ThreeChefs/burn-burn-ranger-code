@@ -32,7 +32,10 @@ public enum UIName
     UI_InGameLoading,
 
     // World UI
-    WorldUI_Hp
+    WorldUI_Hp,
+
+    // Common
+    UI_Dimmed
 }
 
 public enum UICanvasOrder

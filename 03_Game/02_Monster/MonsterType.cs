@@ -23,7 +23,7 @@ public class MonsterTypeData : StatData
 
 
     [Header("Drop")]
-    public DropItemType dropItemType;
+    public GemPoolIndex gemPoolIndex;
     public int dropCount = 1;
 
     private void Reset()

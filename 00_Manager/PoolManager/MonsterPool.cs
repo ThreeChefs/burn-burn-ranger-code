@@ -7,20 +7,11 @@ public class MonsterPool : BasePool
 
     protected override PoolObject CreateGameObject()
     {
-        PoolObject newGameObject = Instantiate(originPrefab);
-        newGameObject.gameObject.SetActive(false);
-        
-        newGameObject.gameObject.name = nowPoolSize.ToString();
-        nowPoolSize++;
-        
-        deactivatedObjectsPool.Add(newGameObject);
-        
-        // PoolObject 가 Disable 될 때 
-        newGameObject.OnDisableAction += OnDeactivatePoolObject;
 
+        PoolObject newGameObject = base.CreateGameObject();
 
         // 몬스터 세팅
-        Monster monster = newGameObject.GetComponent<Monster>();
+        Monster monster = (Monster)newGameObject;
         if(monster != null)
         {
             MonsterPoolObjectData monsterData = poolObjectData as MonsterPoolObjectData;

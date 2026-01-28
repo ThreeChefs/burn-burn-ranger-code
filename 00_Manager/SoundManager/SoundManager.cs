@@ -159,6 +159,8 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
 
     public void StopBgm()
     {
+        if (_bgmAudioSource == null) return;
+
         _bgmAudioSource?.Stop();
     }
 
@@ -166,6 +168,7 @@ public class SoundManager : GlobalSingletonManager<SoundManager>
     {
         foreach (AudioSource aSource in _sfxAudioSources)
         {
+            if(aSource == null) continue;
             aSource.Stop();
         }
     }

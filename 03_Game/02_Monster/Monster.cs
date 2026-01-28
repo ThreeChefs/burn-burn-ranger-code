@@ -173,14 +173,9 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
         PlayerManager.Instance.StagePlayer.KillStatus.OnMonsterKilled(monsterdata.monsterType);
         // Destroy(gameObject);
     }
-
-
     protected virtual void DropItem()
     {
-        for (int i = 0; i < monsterdata.dropCount; i++)
-        {
-            MonsterDropItem.Instance.Spawn(monsterdata.dropItemType, transform.position);
-        }
+        GemManager.Instance.SpawnGem(monsterdata.gemPoolIndex, transform.position, monsterdata.dropCount);
     }
 
     public void BombDie()
