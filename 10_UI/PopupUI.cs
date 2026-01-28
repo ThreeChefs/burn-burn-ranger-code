@@ -1,20 +1,29 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEngine;
-using UnityEngine.UI;
 
+[RequireComponent(typeof(CanvasGroup))]
 public class PopupUI : BaseUI
 {
-    [BoxGroup("Popup UI Settings")][SerializeField] Transform _popup;
-    [BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
-    [BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
-    [BoxGroup("Popup UI Settings")][SerializeField] bool _useDim;
-
     static public float PopupDuration = 0.25f;
+
+    [BoxGroup("Popup UI Settings")][SerializeField] bool _useDim;
+    [ReadOnly, SerializeField][BoxGroup("Popup UI Settings")] CanvasGroup _canvasGroup;
+
+    PopupUIElement[] _popupElements;
+
+    //[BoxGroup("Popup UI Settings")][SerializeField] Transform _popup;
+    //[BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
+    //[BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
+
 
     protected override void AwakeInternal()
     {
+        _popupElements = transform.GetComponentsInChildren<PopupUIElement>(true);
+        _canvasGroup = GetComponent<CanvasGroup>();
     }
+
 
     public override void OpenUIInternal()
     {
@@ -29,37 +38,22 @@ public class PopupUI : BaseUI
                 dim.SetDimmed(this);
             }
         }
-       
-        switch (_openType)
+
+        _canvasGroup.interactable = false;
+
+        if (_popupElements != null && _popupElements.Length > 0)
         {
-            case PopupUIOpenType.None:
-
-                break;
-
-            case PopupUIOpenType.Default:
-                if (_popup != null)
-                {
-                    _popup.localScale = Vector3.zero;
-                    _popup.DOScale(1f, PopupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
-                }
-                break;
-
-            case PopupUIOpenType.Horizontal:
-                if (_popup != null)
-                {
-                    _popup.localScale = new Vector3(0, 1, 1);
-                    _popup.DOScale(1f, PopupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
-                }
-                break;
-
-            case PopupUIOpenType.Vertical:
-                if (_popup != null)
-                {
-                    _popup.localScale = new Vector3(1, 0, 1);
-                    _popup.DOScale(1f, PopupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
-                }
-                break;
+            Debug.Log("여기는 들어옴");
+            _popupElements?.ForEach(e => e.Open(PopupDuration));
+            DOVirtual.DelayedCall(PopupDuration,
+                () => { _canvasGroup.interactable = true; })
+                .SetUpdate(true);
         }
+        else
+        {
+            _canvasGroup.interactable = false;
+        }
+
 
     }
 
@@ -68,41 +62,31 @@ public class PopupUI : BaseUI
         // 자식 찾아서 애니메이션 주기
         //Transform transform = this.transform.GetChild(0);
 
-        switch (_closeType)
+        _canvasGroup.interactable = false;
+
+        if (_popupElements != null && _popupElements.Length > 0)
         {
-            case PopupUIOpenType.Default:
-                if (_popup != null)
-                {
-                    return _popup.DOScale(0f, PopupDuration).SetEase(Ease.InQuad).SetUpdate(true);
-                }
-                break;
-
-            case PopupUIOpenType.Horizontal:
-                if (_popup != null)
-                {
-                    return _popup.DOScale(new Vector3(0, 1, 1), PopupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
-                }
-                break;
-
-            case PopupUIOpenType.Vertical:
-                if (_popup != null)
-                {
-                    return _popup.DOScale(new Vector3(1, 0, 1), PopupDuration).SetEase(Ease.OutQuad).SetUpdate(true);
-                }
-                break;
+            _popupElements?.ForEach(e => e.Close(PopupDuration));
+            return DOVirtual.DelayedCall(PopupDuration, null).SetUpdate(true);
         }
 
-
+        // 팝업 애니메이션 요소 없으면 바로 꺼지기
         return null;
     }
 
-
+    private void OnValidate()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+    }
 }
 
 public enum PopupUIOpenType
 {
-    None,
-    Default,
-    Horizontal,
-    Vertical,
+    Default,    // 그냥 커지기
+    Horizontal, // 수평으로 커지기
+    Vertical,   // 수직으로 커지기
+    MoveRight,  // 화면밖에서 오른쪽으로 움직여서 나오기 / Close 할 때는 오른쪽 화면 밖으로 나가기
+    MoveLeft,   // 화면 밖에서 왼쪽으로 움직여서 나오기 / Close 할 때는 왼쪽 화면 밖으로 나가기
+    MoveTop,
+    MoveBottom,
 }
