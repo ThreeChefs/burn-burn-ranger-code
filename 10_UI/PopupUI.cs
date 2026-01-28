@@ -6,16 +6,13 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public class PopupUI : BaseUI
 {
-    static public float PopupDuration = 0.25f;
+    static public float DefaultPopupDuration = 0.25f;
 
     [BoxGroup("Popup UI Settings")][SerializeField] bool _useDim;
-    [ReadOnly, SerializeField][BoxGroup("Popup UI Settings")] CanvasGroup _canvasGroup;
+    [BoxGroup("Popup UI Settings")][ReadOnly, SerializeField] CanvasGroup _canvasGroup;
+    [BoxGroup("Popup UI Settings")][SerializeField] float _popupDurationRate = 1f;
 
     PopupUIElement[] _popupElements;
-
-    //[BoxGroup("Popup UI Settings")][SerializeField] Transform _popup;
-    //[BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _openType = PopupUIOpenType.Default;
-    //[BoxGroup("Popup UI Settings")][SerializeField] PopupUIOpenType _closeType = PopupUIOpenType.Default;
 
 
     protected override void AwakeInternal()
@@ -43,14 +40,15 @@ public class PopupUI : BaseUI
 
         if (_popupElements != null && _popupElements.Length > 0)
         {
-            _popupElements?.ForEach(e => e.Open(PopupDuration));
-            DOVirtual.DelayedCall(PopupDuration,
+            _popupElements.ForEach(e => e.Open(DefaultPopupDuration* _popupDurationRate));
+
+            DOVirtual.DelayedCall(DefaultPopupDuration* _popupDurationRate,
                 () => { _canvasGroup.interactable = true; })
                 .SetUpdate(true);
         }
         else
         {
-            _canvasGroup.interactable = false;
+            _canvasGroup.interactable = true;
         }
 
 
@@ -59,14 +57,13 @@ public class PopupUI : BaseUI
     public override Tween CloseUIInternal()
     {
         // 자식 찾아서 애니메이션 주기
-        //Transform transform = this.transform.GetChild(0);
 
         _canvasGroup.interactable = false;
 
         if (_popupElements != null && _popupElements.Length > 0)
         {
-            _popupElements?.ForEach(e => e.Close(PopupDuration));
-            return DOVirtual.DelayedCall(PopupDuration, null).SetUpdate(true);
+            _popupElements?.ForEach(e => e.Close(DefaultPopupDuration * _popupDurationRate));
+            return DOVirtual.DelayedCall(DefaultPopupDuration * _popupDurationRate, null).SetUpdate(true);
         }
 
         // 팝업 애니메이션 요소 없으면 바로 꺼지기

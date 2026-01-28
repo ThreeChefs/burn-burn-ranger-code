@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,7 +45,7 @@ public class DimmedUI : BaseUI
     void FadeInDim()
     {
         _canvasGroup.alpha = 0;
-        _canvasGroup.DOFade(1f, PopupUI.PopupDuration).SetUpdate(true);
+        _canvasGroup.DOFade(1f, PopupUI.DefaultPopupDuration).SetUpdate(true);
     }
 
     public void CloseUI(BaseUI target)
@@ -65,7 +65,7 @@ public class DimmedUI : BaseUI
         if (calledUI.Count == 0)
         {
             _canvasGroup.alpha = 1;
-            _canvasGroup.DOFade(0f, PopupUI.PopupDuration).SetUpdate(true).OnComplete(CloseUI);
+            _canvasGroup.DOFade(0f, PopupUI.DefaultPopupDuration).SetUpdate(true).OnComplete(CloseUI);
         }
     }
 
