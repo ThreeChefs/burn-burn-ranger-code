@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class ContinuousGemSpawner : MonoBehaviour
@@ -20,14 +19,14 @@ public class ContinuousGemSpawner : MonoBehaviour
         _spawnRoutine = StartCoroutine(SpawnRoutine());
     }
 
-    // Ã³À½ ÁÖº¯¿¡ ±ò·ÁÀÖ´Â ½ºÆù
-    // ÇÃ·¹ÀÌ¾î¶û °¡±îÀÌ¿¡ ÀÖÀ¸¸é ÀÌº¥Æ® ±¸µ¶, UI ½ºÆù Å¸ÀÌ¹Ö °ãÃÄ¼­ ¹®Á¦ ÀÖÀ½!
+    // ì²˜ìŒ ì£¼ë³€ì— ê¹”ë ¤ìˆëŠ” ìŠ¤í°
+    // í”Œë ˆì´ì–´ë‘ ê°€ê¹Œì´ì— ìˆìœ¼ë©´ ì´ë²¤íŠ¸ êµ¬ë…, UI ìŠ¤í° íƒ€ì´ë° ê²¹ì³ì„œ ë¬¸ì œ ìˆìŒ!
     public void FirstSpawn()
     {
         Camera cam = Camera.main;
         for (int i = 0; i < _firstSpawnCount; i++)
         {
-            float minRadius = 5f;   
+            float minRadius = 5f;
             float maxRadius = 8f;
 
             Vector2 dir = Random.insideUnitCircle.normalized;
@@ -35,15 +34,15 @@ public class ContinuousGemSpawner : MonoBehaviour
 
             Vector3 spawnPos = _player.transform.position + new Vector3(dir.x * distance, dir.y * distance, 0f);
 
-            GemManager.Instance.SpawnGem(GemPoolIndex.GreenGem, spawnPos);
+            GemManager.Instance.SpawnGem(GemPoolIndex.GreenGem, spawnPos, 1);
         }
     }
 
     IEnumerator SpawnRoutine()
     {
         Camera cam = Camera.main;
-        
-        // ·¹ÆÛ·±½º °ÔÀÓ ±âÁØ, ¿µ¿ª ¹Û¿¡ ½ºÆùÀÌ µÇ¾î¼­ ÀÌµ¿ÇØº¸¸é ½ºÆùµÈ ¾Ö°¡ ÀÖÀ½
+
+        // ë ˆí¼ëŸ°ìŠ¤ ê²Œì„ ê¸°ì¤€, ì˜ì—­ ë°–ì— ìŠ¤í°ì´ ë˜ì–´ì„œ ì´ë™í•´ë³´ë©´ ìŠ¤í°ëœ ì• ê°€ ìˆìŒ
         while (true)
         {
             float camHeight = cam.orthographicSize;
@@ -53,7 +52,7 @@ public class ContinuousGemSpawner : MonoBehaviour
 
             Vector2 dir = Random.insideUnitCircle.normalized;
 
-            float spawnX = (camWidth + outerPadding) * Mathf.Sign(dir.x);   // ¾ç¼ö, À½¼öÀÎÁö¸¸ Ã¼Å©ÇØ¼­
+            float spawnX = (camWidth + outerPadding) * Mathf.Sign(dir.x);   // ì–‘ìˆ˜, ìŒìˆ˜ì¸ì§€ë§Œ ì²´í¬í•´ì„œ
             float spawnY = Random.Range(-camHeight - outerPadding, camHeight + outerPadding);
 
             if (Mathf.Abs(dir.y) > Mathf.Abs(dir.x))
@@ -70,7 +69,7 @@ public class ContinuousGemSpawner : MonoBehaviour
         }
     }
 
-    
+
 
 
 
