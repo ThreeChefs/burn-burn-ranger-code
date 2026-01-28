@@ -20,8 +20,8 @@ public enum SkillValueType
 public enum SkillState : byte
 {
     None = 0,
-    CanDraw = 1 << 0,
-    CombinationReady = 1 << 1,
-    LockedByMax = 1 << 2,
-    LockedByCount = 1 << 3,
+    CanDraw = 1 << 0,               // 뽑기 가능
+    CombinationReady = 1 << 1,      // 조합 가능
+    LockedByMax = 1 << 2,           // 최대 레발 달성
+    LockedByCount = 1 << 3,         // 최대 개수 달성
 }
