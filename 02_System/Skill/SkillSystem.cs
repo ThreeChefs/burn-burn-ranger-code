@@ -302,8 +302,8 @@ public class SkillSystem
         return skillSelectDtos;
     }
 
-    // 5개 뽑을거야! 했는데 실제로 뽑을 수 있는건 5개보다 적을 때를 위해
-    public List<SkillSelectDto> GetRolledSkills(int count, out int actualCount)
+    // 5개 뽑을거야! 했는데 실제로 뽑을 수 있는건 5개보다 적을 때를 위해 actualCount 반환
+    public List<SkillSelectDto> GetRolledSkills(int count, out int actualCount) 
     {
         actualCount = count;
 
@@ -348,7 +348,7 @@ public class SkillSystem
         else if (rollableSkill.Count + targetSkill.Count < count)
         {
             // 뽑을 수 있는 스킬 횟수가 요청한 횟수보다 적을 때
-            actualCount = count;
+            actualCount = rollableSkill.Count + targetSkill.Count;
         }
 
 
