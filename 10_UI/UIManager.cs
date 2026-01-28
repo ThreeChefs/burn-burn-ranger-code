@@ -10,9 +10,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
     Dictionary<UIName, BaseUI> _originUiDict = new Dictionary<UIName, BaseUI>();
     Dictionary<UIName, BaseUI> _nowLoadedUiDict = new Dictionary<UIName, BaseUI>();
 
-    [SerializeField] private SafeAreaCanvas _originCanvasPrefab;
-    Dictionary<UICanvasOrder, SafeAreaCanvas> _canvasDict;
+    [SerializeField] private Canvas _originCanvasPrefab;
+    Dictionary<UICanvasOrder, Canvas> _canvasDict;
 
+    GameObject _canvasRoot;
 
     protected override void Init()
     {
@@ -27,26 +28,32 @@ public class UIManager : GlobalSingletonManager<UIManager>
                 _originUiDict[uiName] = _uiList[i];
             }
         }
-
     }
 
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //_mainCanvas = Instantiate(_originCanvasPrefab);
-        //_mainCanvas.name = "MainCanvas";
 
-        _canvasDict = new Dictionary<UICanvasOrder, SafeAreaCanvas>();
+        _canvasRoot = new GameObject();
+        _canvasRoot.name = "CanvasRoot";
+        _canvasRoot.transform.position = Vector3.zero;
+
+        _canvasDict = new Dictionary<UICanvasOrder, Canvas>();
 
         foreach (UICanvasOrder e in Enum.GetValues(typeof(UICanvasOrder)))
         {
-            SafeAreaCanvas newSubCanvas = Instantiate(_originCanvasPrefab);
-            newSubCanvas.SetSortingOrder((int)e);
-            newSubCanvas.name = e + "Canvas";
+            Canvas newCanvas = Instantiate(_originCanvasPrefab);
+            newCanvas.sortingOrder = ((int)e);
+            newCanvas.name = e + "Canvas";
 
-            _canvasDict.Add(e, newSubCanvas);
+            _canvasDict.Add(e, newCanvas);
+
+            newCanvas.transform.SetParent(_canvasRoot.transform, false);
         }
 
 
+        // 항상 스폰해둘 UI
+        Debug.Log("asdasd");
+        LoadUI(UIName.UI_Dimmed, false);
 
     }
 
@@ -65,7 +72,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
             if (_canvasDict.ContainsKey(spawnedUI.UIOrder))
             {
-                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].SafeArea, false);
+                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].transform, false);
             }
 
 
@@ -114,7 +121,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
             
             if (_canvasDict.ContainsKey(spawnedUI.UIOrder))
             {
-                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].SafeArea, false);
+                spawnedUI.transform.SetParent(_canvasDict[spawnedUI.UIOrder].transform, false);
             }
 
             RectTransform rect = spawnedUI.GetComponent<RectTransform>();
@@ -146,13 +153,12 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     public BaseUI ShowUI(UIName uiName)
     {
-        BaseUI ui = GetNowSpawnedUI(uiName);
+        BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
-            // todo 가장 아래로 내리기
+            ui.transform.SetAsLastSibling();
             ui.gameObject.SetActive(true);
             ui.OpenUI();
-            ui.transform.SetAsLastSibling();
             return ui;
         }
 
@@ -164,7 +170,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     /// </summary>
     public BaseUI CloseUI(UIName uiName)
     {
-        BaseUI ui = GetNowSpawnedUI(uiName);
+        BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
             ui.CloseUI();
@@ -184,7 +190,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         return null;
     }
 
-    public BaseUI GetNowSpawnedUI(UIName uiName)
+    public BaseUI GetLoadedUI(UIName uiName)
     {
         if (_nowLoadedUiDict.ContainsKey(uiName))
             return _nowLoadedUiDict[uiName];
@@ -196,6 +202,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     protected override void OnSceneUnloaded(Scene scene)
     {
+        _canvasRoot = null;
         _nowLoadedUiDict.Clear();
     }
 }

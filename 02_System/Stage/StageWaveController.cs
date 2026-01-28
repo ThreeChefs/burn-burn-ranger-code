@@ -2,7 +2,6 @@ using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 // 몬스터가 맵에 차 있어야하는 양이 있고 그거에 맞게 나오는 것도 좋을 것 같음
 
@@ -30,13 +29,13 @@ public class StageWaveController
 
 
     // 고정 값
-    static float _itemBoxSpawnStartTime = 20; // 스테이지 시작 후 20초 뒤부터 박스 스폰
-    static float _itemBoxSpawnInterval = 10; // 10초마다 박스 스폰
+    const float _itemBoxSpawnStartTime = 20; // 스테이지 시작 후 20초 뒤부터 박스 스폰
+    const float _itemBoxSpawnInterval = 10; // 10초마다 박스 스폰
     readonly string _bossWarnningSignText = "보스 접근 중!";     // warnningsign에 박아둘까
     readonly string _superWaveWarnningSignText = "몬스터가 몰려옵니다!";
 
-    static float _defaultOrthoSize = 12f;
-    static float _superWaveOrthoSize = 16f;
+    const float _defaultOrthoSize = 12f;
+    const float _superWaveOrthoSize = 16f;
 
 
     #region public 프로퍼티

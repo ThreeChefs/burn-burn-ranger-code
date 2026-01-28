@@ -3,22 +3,42 @@ using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 
+
 public abstract class BaseUI : MonoBehaviour
 {
     [BoxGroup("BaseUI")]
-    [HideLabel]
+
+
+
+    [BoxGroup("BaseUI/UI 순서")]
     [EnumToggleButtons]
     [SerializeField] private UICanvasOrder _subUIOrder;
     public UICanvasOrder UIOrder => _subUIOrder;
 
+    [BoxGroup("BaseUI/UI 순서")]
+    [Range(0, 99)]
+    [SerializeField]
+    private int _customOrder = 0;
+
 
     public event Action<BaseUI> OnOpenAction;
     public event Action<BaseUI> OnDestroyAction;
+
+    public event Action<BaseUI> OnCloseAction;
     public event Action<BaseUI> OnClosedAction;
 
+    Canvas _canvas;
 
     private void Awake()
     {
+        _canvas = GetComponent<Canvas>();
+
+        if (_customOrder > 0)
+        {
+            _canvas.overrideSorting = true;
+            _canvas.sortingOrder = (int)_subUIOrder + _customOrder;
+        }
+
         AwakeInternal();
     }
 
@@ -27,7 +47,6 @@ public abstract class BaseUI : MonoBehaviour
 
     }
 
-    // todo 애니메이션 넣게 되면 UI 이벤트 안되게 처리도 필요
     public void OpenUI()
     {
         this.gameObject.SetActive(true);
@@ -39,7 +58,9 @@ public abstract class BaseUI : MonoBehaviour
 
     public void CloseUI()
     {
+
         Tween closeTween = CloseUIInternal();
+        OnCloseAction?.Invoke(this);
 
         if (closeTween != null)
         {
@@ -48,7 +69,7 @@ public abstract class BaseUI : MonoBehaviour
                 this.gameObject.SetActive(false);
                 OnClosedAction?.Invoke(this);
             });
-            
+
             return;
         }
 

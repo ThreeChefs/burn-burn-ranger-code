@@ -11,6 +11,7 @@ public class PoolObject : MonoBehaviour
 {
     public event Action<PoolObject> OnEnableAction;
     public event Action<PoolObject> OnDisableAction;
+    public event Action<PoolObject> OnDestroyAction;
 
 
     /// <summary>
@@ -42,5 +43,15 @@ public class PoolObject : MonoBehaviour
     protected virtual void OnDisableInternal()
     {
 
+    }
+
+    private void OnDestroy()
+    {
+        OnDestroyInternal();
+        OnDestroyAction?.Invoke(this);
+    }
+
+    protected void OnDestroyInternal()
+    {
     }
 }

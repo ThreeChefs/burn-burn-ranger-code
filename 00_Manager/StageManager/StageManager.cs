@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class StageManager : SceneSingletonManager<StageManager>
 {
@@ -104,6 +105,9 @@ public class StageManager : SceneSingletonManager<StageManager>
             camera.ConnectPlayer();
         }
 
+        // 상시 젬 스포너 세팅
+        GetComponent<ContinuousGemSpawner>()?.StartSpawn(_player);
+
         // 게임 시작
         SetStageData();
         StartCoroutine(StartRoutine());
@@ -120,12 +124,12 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         if (GameManager.Instance.IsTest)
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            if (Keyboard.current.rKey.wasPressedThisFrame)
             {
                 GameManager.Instance.Scene.ReLoadSceneAsync();
             }
             // 테스트용
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Keyboard.current.qKey.wasPressedThisFrame)
             {
                 ShowSkillSelectUI(_player.StageLevel.Level);
             }

@@ -49,6 +49,7 @@ public class BasePool : MonoBehaviour
         
         // PoolObject 가 Disable 될 때 
         newGameObject.OnDisableAction += OnDeactivatePoolObject;
+        newGameObject.OnDestroyAction += OnDestroyPoolObject;
 
         return newGameObject;
     }
@@ -63,14 +64,14 @@ public class BasePool : MonoBehaviour
         {
             if (poolObject.gameObject.activeInHierarchy == false)
             {
-                OnActivateGameObject(poolObject);
+                ActivateGameObject(poolObject);
                 return poolObject;
             }
         }
         
         PoolObject newObject = CreateGameObject();
         newObject.gameObject.SetActive(true);
-        OnActivateGameObject(newObject);
+        ActivateGameObject(newObject);
         
         return newObject;
     }
@@ -102,10 +103,9 @@ public class BasePool : MonoBehaviour
         }
 
         OnDeactivateAction?.Invoke(poolObject);
-
     }
 
-    void OnActivateGameObject(PoolObject poolObject)
+    void ActivateGameObject(PoolObject poolObject)
     {
         poolObject.gameObject.SetActive(true);
         if (deactivatedObjectsPool.Contains(poolObject)==true)
@@ -123,19 +123,13 @@ public class BasePool : MonoBehaviour
 
     public void DeactivateAllPoolObjects()
     {
-        var activatedArray = activatedObjectsPool.ToArray();
+        PoolObject[] activatedArray = activatedObjectsPool.ToArray();
 
         for (int i = 0; i < activatedArray.Length; i++)
         {
             activatedArray[i].gameObject.SetActive(false);
         }
 
-        
-
-        //for (int i = activatedObjectsPool.Count - 1; i >= 0; i--)
-        //{
-        //    activatedObjectsPool[i].gameObject.SetActive(false);
-        //}
     }
 
     

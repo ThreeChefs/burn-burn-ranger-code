@@ -9,7 +9,7 @@ public abstract class BaseEquipmentEffectSO : ScriptableObject
 public abstract class EquipmentEffectInstance
 {
     public BuffInstanceKey Key { get; }
-    protected BuffEndCondition endCondition { get; }
+    protected BuffEndCondition endCondition;
     protected readonly BaseEquipmentEffectSO source;
 
     protected EquipmentEffectInstance(BaseEquipmentEffectSO source)

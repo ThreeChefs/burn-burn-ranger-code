@@ -4,13 +4,17 @@ using UnityEngine;
 public class BottomBarUI : BaseUI
 {
     [Header("버튼")]
+    [SerializeField] private RectTransform _parent;
     [SerializeField] private HomeBottomButton[] _buttons;
 
+    [Header("설정")]
+    [SerializeField] private int _startIndex = 2;
+    [SerializeField] private float _maxButtonWidth = 300f;
     private int _index;
-    private const int StartIndex = 2;
 
-    private const int OriginWidth = 200;
-    private const int TargetWidth = 280;
+    private float OriginWidth => Mathf.Min(_parent.rect.width * 1 / (_buttons.Length - 1 + Define.TargetScale), _maxButtonWidth);
+    private float TotalWidth => OriginWidth * (_buttons.Length - 1) + TargetWidth;
+    private float TargetWidth => OriginWidth * Define.TargetScale;
 
     public event Action<BottomBarMenuType> OnClickMenuAction;
 
@@ -28,7 +32,7 @@ public class BottomBarUI : BaseUI
             _buttons[i].OnClickButton += SelectButton;
         }
 
-        SelectButton(StartIndex);
+        SelectButton(_startIndex);
     }
 
     private void OnEnable()
@@ -51,6 +55,9 @@ public class BottomBarUI : BaseUI
     {
         SoundManager.Instance.PlaySfx(SfxName.Sfx_Click);
         OnClickMenuAction?.Invoke((BottomBarMenuType)index);
+
+        float center = _parent.rect.width * 0.5f;
+        float startPos = center - TotalWidth / 2;
 
         if (_index == index) return;
 
@@ -77,7 +84,8 @@ public class BottomBarUI : BaseUI
                 x += offset;
             }
 
-            _buttons[i].MoveTo(x + OriginWidth / 2);
+            _buttons[i].SetWidth(OriginWidth);
+            _buttons[i].MoveTo(x + startPos + OriginWidth / 2);
         }
     }
 

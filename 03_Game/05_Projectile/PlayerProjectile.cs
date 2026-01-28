@@ -17,6 +17,7 @@ public class PlayerProjectile : BaseProjectile
     // 스텟
     protected PlayerStat projectileSpeed;
     protected PlayerStat projectileRange;
+    protected PlayerStat fatalProability;
 
     // 타이머
     protected float tickIntervalTimer;
@@ -64,6 +65,7 @@ public class PlayerProjectile : BaseProjectile
         PlayerCondition condition = PlayerManager.Instance.Condition;
         projectileSpeed = condition[StatType.ProjectileSpeed];
         projectileRange = condition[StatType.ProjecttileRange];
+        fatalProability = condition[StatType.FatalProbability];
     }
 
     protected override void OnTriggerEnter2D(Collider2D collision)
@@ -252,9 +254,18 @@ public class PlayerProjectile : BaseProjectile
     #region Hit Utils
     protected override float CalculateDamage()
     {
+        float fatalMultiplier = 1f;
+        float rand = Random.Range(0f, 1f);
+        if (fatalProability.MaxValue * 0.01f > rand)
+        {
+            Logger.Log($"치명타! 확률: {rand} / {fatalProability.MaxValue * 0.01f}");
+            fatalMultiplier = 2f;
+        }
+
         return attack.MaxValue
             * skill.SkillValues[SkillValueType.AttackPower][skill.CurLevel - 1]
-            * skill.DamageMultiplier;
+            * skill.DamageMultiplier
+            * fatalMultiplier;
     }
 
     private void OnValidHit(in HitContext context)

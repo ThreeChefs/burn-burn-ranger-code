@@ -16,6 +16,7 @@ public enum StatType
     DamageReduction,            // 대미지 감소
     ProjectileAliveDuration,    // 효과 지속 = 공격 지속 시간
     ProjectileSpeed,            // 탄환 속도
+    FatalProbability,           // 치명타 확률
 }
 
 public enum StatModifierType

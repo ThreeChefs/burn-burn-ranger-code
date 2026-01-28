@@ -148,6 +148,10 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         return randomMonster != null ? randomMonster.transform : null;
     }
 
+    /// <summary>
+    /// 오브젝트가 OnEnable(Activate) 되었을 때 현재 살아있는 몬스터들 등록 관리
+    /// </summary>
+    /// <param name="poolObject"></param>
     public void OnActivateMonster(PoolObject poolObject)
     {
         Monster monster = poolObject as Monster;
@@ -170,6 +174,21 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
         if (deactivatedMonsters.Contains(monster) == false)
         {
             deactivatedMonsters.Add(monster);
+        }
+
+        if (activatedMonsters.Contains(monster) == true)
+        {
+            activatedMonsters.Remove(monster);
+        }
+    }
+
+    public void OnDestroyMonster(PoolObject poolObject)
+    {
+        Monster monster = poolObject as Monster;
+
+        if (deactivatedMonsters.Contains(monster) == true)
+        {
+            deactivatedMonsters.Remove(monster);
         }
 
         if (activatedMonsters.Contains(monster) == true)
