@@ -21,7 +21,8 @@ public class SkillSystem
     // 스킬 조건
     private int _activeSkillCount;
     private int _passiveSkillCount;
-    private int TotalMaxSkillCount => Define.ActiveSkillMaxCount + Define.PassiveSkillMaxCount;
+    private bool _activeCountLocked;
+    private bool _passiveCountLocked;
 
     // public readonly colliections
     public IReadOnlyDictionary<int, BaseSkill> OwnedSkills => _ownedSkills;
@@ -206,22 +207,25 @@ public class SkillSystem
         if (skill.CurLevel == Define.SkillMaxLevel)
         {
             _skillStates[id] &= ~SkillState.CanDraw;
+            _skillStates[id] |= SkillState.LockedByMax;
         }
 
         switch (data.Type)
         {
             case SkillType.Active:
                 EvaluateCombinationSkills(data.CombinationIds);
-                if (_activeSkillCount == Define.ActiveSkillMaxCount)
+                if (_activeSkillCount == Define.ActiveSkillMaxCount && !_activeCountLocked)
                 {
                     LockUnownedSkillsByMaxCount(SkillType.Active);
+                    _activeCountLocked = true;
                 }
                 break;
             case SkillType.Passive:
                 EvaluateCombinationSkills(data.CombinationIds);
-                if (_passiveSkillCount == Define.PassiveSkillMaxCount)
+                if (_passiveSkillCount == Define.PassiveSkillMaxCount && !_passiveCountLocked)
                 {
                     LockUnownedSkillsByMaxCount(SkillType.Passive);
+                    _passiveCountLocked = true;
                 }
                 break;
             case SkillType.Combination:
@@ -247,8 +251,8 @@ public class SkillSystem
             {
                 continue;
             }
-
             _skillStates[id] &= ~SkillState.CanDraw;
+            _skillStates[id] |= SkillState.LockedByCount;
         }
     }
 
@@ -271,7 +275,7 @@ public class SkillSystem
                 // 1. 스킬 미소유
                 // 2. active 스킬인데 최대 레벨이 아닐 경우
                 if (!_ownedSkills.TryGetValue(id, out BaseSkill skill) ||
-                    skill.SkillData.Type == SkillType.Active && skill.CurLevel != Define.SkillMaxLevel)
+                    skill.SkillData.Type == SkillType.Active && (_skillStates[id] & SkillState.LockedByMax) == 0)
                 {
                     unlockSkill = false;
                     break;

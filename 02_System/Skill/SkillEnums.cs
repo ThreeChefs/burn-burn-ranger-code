@@ -22,4 +22,6 @@ public enum SkillState : byte
     None = 0,
     CanDraw = 1 << 0,
     CombinationReady = 1 << 1,
+    LockedByMax = 1 << 2,
+    LockedByCount = 1 << 3,
 }

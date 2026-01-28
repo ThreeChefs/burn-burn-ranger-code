@@ -12,7 +12,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     // 스킬 데이터
     [field: SerializeField, ReadOnly] public SkillData SkillData { get; protected set; }
     [field: SerializeField] public int CurLevel { get; protected set; }
-    public bool IsMaxLevel { get; private set; }
 
     protected Dictionary<SkillValueType, float[]> skillValues = new();
     public IReadOnlyDictionary<SkillValueType, float[]> SkillValues => skillValues;
@@ -25,7 +24,6 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
     public virtual void Init(SkillData data)
     {
         SkillData = data;
-        IsMaxLevel = false;
 
         foreach (SkillLevelValueEntry entry in data.LevelValues)
         {
@@ -56,11 +54,9 @@ public abstract class BaseSkill : MonoBehaviour, IAttackable
             case SkillType.Active:
             case SkillType.Passive:
                 CurLevel = Math.Min(CurLevel + 1, Define.SkillMaxLevel);
-                IsMaxLevel = CurLevel == Define.SkillMaxLevel;
                 break;
             case SkillType.Combination:
                 CurLevel = Math.Min(CurLevel + 1, 1);
-                IsMaxLevel = CurLevel == 1;
                 break;
         }
 
