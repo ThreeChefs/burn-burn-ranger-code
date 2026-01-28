@@ -13,7 +13,7 @@ public class ContinuousGemSpawner : MonoBehaviour
 
 
     public void StartSpawn(StagePlayer player)
-    {
+    { 
         _player = player;
 
         FirstSpawn();
@@ -64,7 +64,7 @@ public class ContinuousGemSpawner : MonoBehaviour
 
             Vector3 spawnPos = _player.transform.position + new Vector3(spawnX, spawnY, 0f);
 
-            GemManager.Instance.SpawnGem(GemPoolIndex.GreenGem, spawnPos);
+            GemManager.Instance.SpawnGem(GemPoolIndex.GreenGem, spawnPos, 1);
 
             yield return _spawnWait;
         }
