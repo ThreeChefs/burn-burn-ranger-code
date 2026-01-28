@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -52,7 +52,6 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
 
         // 항상 스폰해둘 UI
-        Debug.Log("asdasd");
         LoadUI(UIName.UI_Dimmed, false);
 
     }
