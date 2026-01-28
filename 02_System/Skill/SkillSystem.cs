@@ -147,6 +147,7 @@ public class SkillSystem
     /// <summary>
     /// 액티브 스킬 획득
     /// </summary>
+    /// <param name="data"></param>
     /// <returns></returns>
     private ActiveSkill AcquireActiveSkill(SkillData data)
     {
@@ -171,7 +172,7 @@ public class SkillSystem
     /// <summary>
     /// 조합 스킬 획득
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="data"></param>
     /// <returns></returns>
     private ActiveSkill AcquireCombinationSkill(SkillData data)
     {
@@ -192,9 +193,9 @@ public class SkillSystem
 
     #region 스킬 획득 조건 관리
     /// <summary>
-    /// id번 스킬 획득 시 스킬 획득 조건을 갱신합니다.
+    /// 스킬 획득 시 스킬 획득 조건을 갱신
     /// </summary>
-    /// <param name="id"></param>
+    /// <param name="data"></param>
     private void UpdateSkillStatesOnAcquire(SkillData data)
     {
         switch (data.Type)
@@ -218,6 +219,7 @@ public class SkillSystem
     /// 조건에 따라 type의 스킬 획득 조절
     /// </summary>
     /// <param name="type"></param>
+    /// <param name="isLock"></param>
     private void LockUnownedSkillsByMaxCount(SkillType type, bool isLock)
     {
         for (int index = 0; index < _skillTable.Length; index++)
@@ -244,7 +246,7 @@ public class SkillSystem
     }
 
     /// <summary>
-    /// 조합 스킬의 아이디를 받고 조건 확인
+    /// 조합 스킬을 받고 조건 확인
     /// </summary>
     /// <param name="combinationSkills"></param>
     private void EvaluateCombinationSkills(SkillData[] combinationSkills)
@@ -382,6 +384,13 @@ public class SkillSystem
         return targetSkill;
     }
 
+    /// <summary>
+    /// skillSelectDtos의 길이가 count가 되도록 list에서 랜덤으로 데이터 뽑아서 넣어주기
+    /// skillSelectDtos에는 값이 들어있을 수 있음
+    /// </summary>
+    /// <param name="skillSelectDtos"></param>
+    /// <param name="list"></param>
+    /// <param name="count"></param>
     private void AppendRandomSkillDtos(List<SkillSelectDto> skillSelectDtos, List<SkillData> list, int count)
     {
         int pickCount = count - skillSelectDtos.Count;
@@ -393,6 +402,12 @@ public class SkillSystem
         });
     }
 
+    /// <summary>
+    /// dto 만들기
+    /// </summary>
+    /// <param name="skillData"></param>
+    /// <param name="skill"></param>
+    /// <returns></returns>
     private SkillSelectDto GetSkillSelectDto(SkillData skillData, BaseSkill skill)
     {
         GetLevelAndDescription(skillData, skill, out int curLevel, out string description);
