@@ -209,6 +209,7 @@ public class SkillSystem
                 break;
             case SkillType.Combination:
                 _skillStates[data.RuntimeIndex] &= ~SkillState.CombinationReady;
+                LockUnownedSkillsByMaxCount(SkillType.Active, _activeSkillCount == Define.ActiveSkillMaxCount);
                 break;
         }
     }
