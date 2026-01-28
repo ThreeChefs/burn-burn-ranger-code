@@ -58,11 +58,4 @@ public class SkillLevelPanel : MonoBehaviour
       
     }
 
-    // IEnumerator NextGradeRoutine()
-    // {
-    //     while (true)
-    //     {
-    //         yield return null;
-    //     }
-    // }
 }
