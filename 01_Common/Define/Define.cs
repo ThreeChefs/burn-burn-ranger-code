@@ -20,6 +20,8 @@ public static class Define
     public const int PassiveSkillMaxCount = 6;
     public const int SelectableSkillMaxCount = 3;
 
+    public const int FortuneBoxSkillSlotCount = 16;
+
     // 플레이어 맥스 레벨
     public const int PlayerMaxLevel = 100;
     public const int StageMaxLevel = 50;

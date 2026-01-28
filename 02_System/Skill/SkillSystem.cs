@@ -312,6 +312,86 @@ public class SkillSystem
         return skillSelectDtos;
     }
 
+    // 5개 뽑을거야! 했는데 실제로 뽑을 수 있는건 5개보다 적을 때를 위해
+    public List<SkillSelectDto> GetRolledSkills(int count, out int actualCount) 
+    {
+        actualCount = count;
+        
+        if (count <= 0) return null;
+
+        System.Random rnd = Define.Random;
+
+        // 뽑기 가능한 애들 담아둘 리스트
+        // ex) 쿠나이1렙, 드론 1렙이면 쿠나이 4개, 드론 4개 들어감
+        List<SkillSelectDto> rollableSkill = new();
+
+        // 16칸 짜리! 실제로 뽑을 애들이 앞에 있고, 그 뒤는 rollableSkill 에서 셔플 후 그릴 애들만.
+        int maxSlotCount = Define.FortuneBoxSkillSlotCount;
+        List<SkillSelectDto> targetSkill = new(maxSlotCount);
+
+
+        // 조합 스킬부터 넣기!!
+        for (int id = _skillStates.Length - 1; id >= 0; id--)
+        {
+            if ((_skillStates[id] & SkillState.CombinationReady) != 0)
+            {
+                targetSkill.Add(GetSkillSelectDto(_skillTable[id], null));
+            }
+        }
+
+        // ownedSkill 에서 레벨업 할 수 있는 횟수만큼 넣어두기
+        foreach(BaseSkill ownedSkill in _ownedSkills.Values)
+        {
+            for (int j = 0; j < Define.SkillMaxLevel - ownedSkill.CurLevel; ++j)
+            {
+                rollableSkill.Add(GetSkillSelectDto(ownedSkill.SkillData, ownedSkill));
+            }
+
+        }
+
+        if (rollableSkill.Count == 0 && targetSkill.Count ==0)   
+        {
+            // 더 뽑을 수 있는 스킬이 없는 상태라면 
+            actualCount = 0;
+            return null;    // 반환 받은 곳에서는 null 체크하고 고기, 골드 배치하기
+        }
+        else if(rollableSkill.Count + targetSkill.Count < count)
+        {
+            // 뽑을 수 있는 스킬 횟수가 요청한 횟수보다 적을 때
+            actualCount = count;
+        }
+
+
+        if(rollableSkill.Count <= 0)  
+        {
+            // 뽑을 수 있는 스킬 횟수는 0일 때
+            // 이미 들어있는 targetSkill 만 반복해서 16칸 채워서 넣어주기 
+            int index = 0;
+            while (targetSkill.Count < maxSlotCount)
+            {
+                targetSkill.Add(targetSkill[index]);
+                index++;
+                if (index >= targetSkill.Count) index = 0;
+            }
+        }
+        else
+        {
+            // 뽑을 수 있는 일반 스킬들 섞기
+            rollableSkill.Shuffle();
+            int rollableIndex = 0;
+
+            while (targetSkill.Count < maxSlotCount)
+            {
+                targetSkill.Add(rollableSkill[rollableIndex]);
+                rollableIndex++;
+                if (rollableIndex >= rollableSkill.Count) rollableIndex = 0;
+            }
+        }
+
+        return targetSkill;
+    }
+
+
     private void AppendRandomSkillDtos(List<SkillSelectDto> skillSelectDtos, List<int> list, int count)
     {
         int pickCount = count - skillSelectDtos.Count;

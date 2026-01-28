@@ -101,26 +101,27 @@ public class FortuneBoxUI : PopupUI
 
         int pickNum = Define.Random.Next(0, _maxSlotcount);
         int idx = pickNum;
-        int pickCount = 0;
 
         int[] targetOrder = _defaultOrder;
+
+        
+        SkillSystem system = StageManager.Instance.SkillSystem;
+        int actualCount = 0;
 
         switch (_type)
         {
             case WaveClearRewardType.Fortune_Skill_1:
-                rollList = SetRoll(1);
-                pickCount = 1;
+                actualCount = 1;
+                rollList = system.GetRolledSkills(actualCount, out actualCount);
                 break;
 
             case WaveClearRewardType.Fortune_Skill_3:
-                rollList = SetRoll(3);
-                pickCount = 3;
-                targetOrder = _spiralOrder;
+                actualCount = 3;
+                rollList = system.GetRolledSkills(actualCount, out actualCount);
                 break;
             case WaveClearRewardType.Fortune_Skill_5:
-                rollList = SetRoll(5);
-                pickCount = 5;
-                targetOrder = _zigzagOrder;
+                actualCount = 5;
+                rollList = system.GetRolledSkills(actualCount, out actualCount);
                 break;
         }
 
@@ -133,7 +134,7 @@ public class FortuneBoxUI : PopupUI
             if (idx < 0) idx = 15;
         }
 
-        for (int i = 0; i < pickCount; i++)
+        for (int i = 0; i < actualCount; i++)
         {
             _pickSlotIdx.Add(_orderSlotIdx[i]);
         }
@@ -150,83 +151,6 @@ public class FortuneBoxUI : PopupUI
 
         // 테스트
         //OpenUIInternal();
-    }
-
-
-    List<SkillSelectDto> SetRoll(int count)
-    {
-        if (count <= 0) return null;
-
-        SkillSystem system = StageManager.Instance.SkillSystem;
-        System.Random rnd = Define.Random;
-
-        List<SkillSelectDto> rollableSkill = new();
-        List<SkillSelectDto> targetSkill = new();
-
-        // 조합 스킬 먼저 넣기
-        foreach (KeyValuePair<int, int> combinationSkillTerm in system.CombinationRequirementMap)
-        {
-            if (combinationSkillTerm.Value == 2)
-            {
-                SkillData skillData = system.SkillDataCache[combinationSkillTerm.Key];
-
-
-                SkillSelectDto combiDto = new SkillSelectDto(
-                   skillData.Id,
-                   0,
-                   skillData.DisplayName,
-                   null,    // description 은 안넣을거임
-                   skillData.Icon,
-                   skillData.Type,
-                   null);
-
-                targetSkill.Add(combiDto);
-            }
-        }
-
-        foreach (BaseSkill _ownedSkill in system.OwnedSkills.Values)
-        {
-            // 현재 가지고 있는 스킬에서 맥스 찍은 건 빼기
-            for (int j = 0; j < system.MaxedSkillIds.Count; ++j)
-            {
-                if (system.MaxedSkillIds[j] == _ownedSkill.SkillData.Id)
-                    continue;
-            }
-
-
-            for (int j = 0; j < Define.SkillMaxLevel - _ownedSkill.CurLevel; ++j)
-            {
-                // 뽑을 수 있는 만큼 넣어놓기
-                SkillSelectDto combiDto = new SkillSelectDto(
-                      _ownedSkill.SkillData.Id,
-                      0,
-                      _ownedSkill.SkillData.DisplayName,
-                      null,
-                      _ownedSkill.SkillData.Icon,
-                      _ownedSkill.SkillData.Type,
-                      null);
-
-                rollableSkill.Add(combiDto);
-            }
-        }
-
-        // todo : 더 이상 뽑을게 없을 때 예외처리 필요
-        if (rollableSkill.Count == 0) return targetSkill;
-        
-        // 뽑기 가능한 애들 중 섞기
-        rollableSkill.Shuffle();
-        int rollableIndex = 0;
-
-        // 넣기
-        while (targetSkill.Count < _maxSlotcount)
-        {
-            targetSkill.Add(rollableSkill[rollableIndex]);
-            rollableIndex++;
-
-            if (rollableIndex >= rollableSkill.Count) rollableIndex = 0;
-        }
-
-        return targetSkill;
     }
 
 
