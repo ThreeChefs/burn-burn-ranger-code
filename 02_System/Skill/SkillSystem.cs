@@ -43,20 +43,21 @@ public class SkillSystem
     private void InitializeSkillTable(List<SkillData> skillDatabase)
     {
         int count = skillDatabase.Count;
+        _skillTable = new SkillData[count];
         _skillStates = new SkillState[count];
 
         for (int i = 0; i < skillDatabase.Count; i++)
         {
-            SkillData skillData = skillDatabase[i];
-            skillData.RuntimeIndex = i;
+            _skillTable[i] = skillDatabase[i];
+            _skillTable[i].RuntimeIndex = i;
 
-            if (skillData.DisplayName.Equals(_defaultSkillName))
+            if (_skillTable[i].DisplayName.Equals(_defaultSkillName))
             {
-                _defaultSkillData = skillData;
+                _defaultSkillData = _skillTable[i];
             }
 
             // 착용하지 않은 무기 스킬 뽑기 안됨
-            if (skillData is ActiveSkillData activeSkillData && activeSkillData.IsWeaponSkill)
+            if (_skillTable[i] is ActiveSkillData activeSkillData && activeSkillData.IsWeaponSkill)
             {
                 if (!PlayerManager.Instance.Equipment.HavingSkills.ContainsKey(activeSkillData))
                 {
@@ -66,7 +67,7 @@ public class SkillSystem
                 _hasWeapon = true;
             }
 
-            if (skillData.Type != SkillType.Combination)
+            if (_skillTable[i].Type != SkillType.Combination)
             {
                 _skillStates[i] |= SkillState.CanDraw;
             }
@@ -117,6 +118,11 @@ public class SkillSystem
         if (_ownedSkills.TryGetValue(index, out var skill))
         {
             skill.LevelUp();
+            if (skill.CurLevel == Define.SkillMaxLevel)
+            {
+                _skillStates[index] &= ~SkillState.CanDraw;
+                _skillStates[index] |= SkillState.LockedByMax;
+            }
             UpdateSkillStatesOnAcquire(data);
             return true;
         }
