@@ -1,26 +1,21 @@
-using Sirenix.OdinInspector;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class SkillIconPanel : MonoBehaviour
 {
     [SerializeField] private bool _isActiveSkillView;
-
-    [TableList(ShowIndexLabels = true)]
-    [SerializeField] List<SkillIconPanelElement> _panelElements;
+    [SerializeField] List<SkillSlot> _skillSlots;
 
 
     private void OnEnable()
     {
-        int maxSkillCount = _panelElements.Count;
+        int maxSkillCount = _skillSlots.Count;
         int skillCount = 0;
 
-        for(int i = 0; i < _panelElements.Count; i++)
+        for(int i = 0; i < _skillSlots.Count; i++)
         {
-            _panelElements[i].Icon.gameObject.SetActive(false);
-            if(_panelElements[i].SkillLevelPanel != null)
-                _panelElements[i].SkillLevelPanel.gameObject.SetActive(false);
+            _skillSlots[i]?.SetEmpty();
         }
 
         foreach (BaseSkill skill in StageManager.Instance.SkillSystem.OwnedSkills.Values)
@@ -54,32 +49,18 @@ public class SkillIconPanel : MonoBehaviour
     }
 
 
-    void SetSkillElement(int count, BaseSkill skill)
+    protected virtual void SetSkillElement(int count, BaseSkill skill)
     {
-        if(_panelElements.Count <= count)
+        if (_skillSlots.Count <= count)
         {
             return;
         }
 
-        if(_panelElements[count].Icon != null)
+        if (_skillSlots[count] !=null)
         {
-            _panelElements[count].Icon.sprite = skill.SkillData.Icon;
-            _panelElements[count].Icon.gameObject.SetActive(true);
-        }
-
-        if (_panelElements[count].SkillLevelPanel != null)
-        {
-            _panelElements[count].SkillLevelPanel.Init(skill.SkillData.Type, skill.CurLevel, false);
-            _panelElements[count].SkillLevelPanel.gameObject.SetActive(true);
+            _skillSlots[count].SetSkillElement(skill);
         }
     }
 
 
-}
-
-[System.Serializable]
-public struct SkillIconPanelElement
-{
-    public Image Icon;
-    public SkillLevelPanel SkillLevelPanel;
 }
