@@ -70,47 +70,6 @@ public class PlayerProjectile : BaseProjectile
     #endregion
 
     #region 충돌 처리
-    protected override void HandleHit(Collider2D collision)
-    {
-        switch (data.HitType)
-        {
-            case ProjectileHitType.Immediate:
-                HitContext context;
-                // 관통 무한
-                if (passCount == Define.InfinitePass)
-                {
-                    context = GetHitContext(collision);
-                    OnValidHit(in context);
-
-                    return;
-                }
-
-                passCount--;
-                if (passCount < 0)
-                {
-                    gameObject.SetActive(false);
-                    return;
-                }
-
-                context = GetHitContext(collision);
-                OnValidHit(in context);
-
-                if (passCount <= 0)
-                {
-                    if (data.HasAreaPhase)  // 장판 존재
-                    {
-                        UpdateAreaPhase();
-                    }
-
-                    PlaySfxOfExplodeType();
-                    gameObject.SetActive(false);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     protected override void HandleRefelction(Collider2D collision)
     {
         Vector2 norm = Vector2.zero;
@@ -234,7 +193,7 @@ public class PlayerProjectile : BaseProjectile
             * fatalMultiplier;
     }
 
-    private void OnValidHit(in HitContext context)
+    protected override void OnValidHit(in HitContext context)
     {
         foreach (BaseSkillEffectSO effect in data.HitEffects)
         {
@@ -246,7 +205,7 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
-    private void OnValidAoE(in HitContext context)
+    protected override void OnValidAoE(in HitContext context)
     {
         foreach (BaseSkillEffectSO effect in data.AoEData.AreaEffects)
         {
@@ -281,7 +240,7 @@ public class PlayerProjectile : BaseProjectile
         };
     }
 
-    private HitContext GetHitContext(Collider2D target)
+    protected override HitContext GetHitContext(Collider2D target)
     {
         return new()
         {

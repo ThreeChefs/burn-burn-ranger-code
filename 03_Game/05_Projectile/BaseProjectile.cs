@@ -6,7 +6,7 @@ using UnityEngine;
 /// 공용으로 사용하는 투사체
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
-public class BaseProjectile : PoolObject, IAttackable, IDamageable
+public class BaseProjectile : PoolObject, IDamageable
 {
     #region 필드
     [Header("비주얼")]
@@ -250,21 +250,37 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     protected virtual void HandleHit(Collider2D collision)
     {
-        collision.TryGetComponent<IDamageable>(out var damageable);
-
         switch (data.HitType)
         {
             case ProjectileHitType.Immediate:
-                Attack(damageable);
-                if (passCount < 0) return;
-                else if (passCount > 0)
+                HitContext context;
+                // 관통 무한
+                if (passCount == Define.InfinitePass)
                 {
-                    passCount--;
-                    gameObject.SetActive(false);
-                    passCount = data.PassCount;
+                    context = GetHitContext(collision);
+                    OnValidHit(in context);
+
+                    return;
                 }
-                if (passCount == 0)
+
+                passCount--;
+                if (passCount < 0)
                 {
+                    gameObject.SetActive(false);
+                    return;
+                }
+
+                context = GetHitContext(collision);
+                OnValidHit(in context);
+
+                if (passCount <= 0)
+                {
+                    if (data.HasAreaPhase)  // 장판 존재
+                    {
+                        UpdateAreaPhase();
+                    }
+
+                    PlaySfxOfExplodeType();
                     gameObject.SetActive(false);
                 }
                 break;
@@ -284,18 +300,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         }
 
         (move as ReflectionMove)?.OnHit(norm);
-    }
-    #endregion
-
-    #region 공격
-    public void Attack(IDamageable damageable)
-    {
-        damageable.TakeDamage(CalculateDamage());
-    }
-
-    protected virtual float CalculateDamage()
-    {
-        return attack.MaxValue;
     }
     #endregion
 
@@ -405,6 +409,40 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         {
             sfxCoroutine = StartCoroutine(PlaySfx());
         }
+    }
+    #endregion
+
+    #region Hit Utils
+    protected virtual float CalculateDamage()
+    {
+        return attack.MaxValue;
+    }
+
+    protected virtual void OnValidHit(in HitContext context)
+    {
+        foreach (BaseSkillEffectSO effect in data.HitEffects)
+        {
+            effect.Apply(in context);
+        }
+    }
+
+    protected virtual void OnValidAoE(in HitContext context)
+    {
+        foreach (BaseSkillEffectSO effect in data.AoEData.AreaEffects)
+        {
+            effect.Apply(in context);
+        }
+    }
+
+    protected virtual HitContext GetHitContext(Collider2D target)
+    {
+        return new()
+        {
+            damage = CalculateDamage(),
+            hitPos = transform.position,
+            directTarget = target,
+            projectileData = data
+        };
     }
     #endregion
 
