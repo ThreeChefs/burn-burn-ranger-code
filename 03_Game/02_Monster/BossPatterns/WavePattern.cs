@@ -14,7 +14,6 @@ public class WavePattern : MonoBehaviour
 
     [Header("Time")]
     [SerializeField] private float warningTime = 0.7f;
-    [SerializeField] private float activeTime = 0.3f;
     [SerializeField] private float stepInterval = 0.1f;
 
     [Header("데미지")]

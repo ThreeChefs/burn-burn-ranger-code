@@ -10,11 +10,8 @@ public class FireExplosionPattern : BossPatternBase
 
     [Header("Warning Circle Settings")]
     [SerializeField] private float warningTime = 0.8f;
-    [SerializeField] private float warningLifeTime = 0.5f;
     [SerializeField] private bool scaleWithTime = true;
     [Header("Settings")]
-    [SerializeField] private int spawnCount = 4;
-    [SerializeField] private float spawnInterval = 2f;
     [SerializeField] private float spawnOffsetRadius;
 
     [Header("Attack CalCulator")]

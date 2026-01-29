@@ -9,13 +9,11 @@ public class BossRushSkill : MonoBehaviour
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 50f;
-    [SerializeField] private float dashDuration = 0.3f;
 
     [Header("Warning")]
     [SerializeField] private GameObject rushWarning;
     [SerializeField] private float warningTime = 1f;
     private Rigidbody2D rb;
-    private bool isDashing;
     private bool isUsingSkill;
     public bool IsUsingSkill => isUsingSkill;
     private void Awake()
@@ -70,7 +68,7 @@ public class BossRushSkill : MonoBehaviour
          $"[BossRush] Dash Start | speed={dashSpeed}, dir={dashDir}"
      );
         // 돌진
-        isDashing = true;
+
 
         // startPos에서 targetDistance만큼 이동할 때까지 돌진
         while (Vector2.Distance(startPos, rb.position) < targetDistance)
@@ -80,7 +78,7 @@ public class BossRushSkill : MonoBehaviour
         }
 
         rb.velocity = Vector2.zero;
-        isDashing = false;
+
         rushWarning.SetActive(false);
         Debug.Log(
            $"[BossRush] Dash End | movedDistance={Vector2.Distance(startPos, rb.position):F2}"
