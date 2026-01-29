@@ -29,7 +29,7 @@ public class ReflectionMove : IProjectileMove
     public void MoveAndRotate(float deltaTime)
     {
         _baseMove.MoveAndRotate(deltaTime);
-        HandleScreenReflection();
+        HandleScreenBoundsReflection();
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class ReflectionMove : IProjectileMove
         _self.position += _projectile.MoveDir * 0.05f;        // 재충돌 방지
     }
 
-    private void HandleScreenReflection()
+    private void HandleScreenBoundsReflection()
     {
         if (((1 << Define.WallLayer) & _targetLayer) == 0) return;
 
