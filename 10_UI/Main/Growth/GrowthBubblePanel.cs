@@ -90,7 +90,7 @@ public class GrowthBubblePanel : MonoBehaviour
         if (PlayerManager.Instance.Wallet[WalletType.Gold].TryUse(_targetSlot.GrowthInfo.GrowthPrice))
         {
             GameManager.Instance.GrowthProgress.UnlockNormalGrowth(_targetSlot.UnlockInfo.unlockCount, _targetSlot.GrowthInfo);
-
+            GameManager.Instance.SaveData();
 
             _unlockBtn.gameObject.SetActive(false);
 
