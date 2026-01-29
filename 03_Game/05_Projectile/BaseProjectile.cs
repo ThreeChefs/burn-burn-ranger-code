@@ -265,46 +265,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     {
         move?.MoveAndRotate(Time.deltaTime);
     }
-
-    protected virtual void HandleScreenReflection()
-    {
-        if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
-
-        Vector2 pos = transform.position;
-        Vector2 dir = MoveDir;
-        Vector2 camPos = cam.transform.position;
-
-        float halfH = cam.orthographicSize;
-        float halfW = halfH * cam.aspect;
-
-        float minX = camPos.x - halfW;
-        float maxX = camPos.x + halfW;
-        float minY = camPos.y - halfH;
-        float maxY = camPos.y + halfH;
-
-        bool reflected = false;
-
-        if (pos.x < minX || pos.x > maxX)
-        {
-            pos.x = Mathf.Clamp(pos.x, minX, maxX);
-            dir.x *= -1;
-            reflected = true;
-        }
-
-        if (pos.y < minY || pos.y > maxY)
-        {
-            pos.y = Mathf.Clamp(pos.y, minY, maxY);
-            dir.y *= -1;
-            reflected = true;
-        }
-
-        if (reflected)
-        {
-            MoveDir = dir.normalized;
-            transform.position = pos;
-            PlaySfxOnce();
-        }
-    }
     #endregion
 
     #region 폭발 / 장판 처리
