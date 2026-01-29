@@ -5,19 +5,33 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New ProjectileData", menuName = "SO/Projectile/Data")]
 public class ProjectileData : PoolObjectData
 {
-    [field: Header("이동 / 좌표")]
+    [field: Title("생명 주기")]
+    [field: Tooltip("생존 시간")]
+    [field: SerializeField] public float AliveTime { get; private set; }
+    [field: Tooltip("관통 횟수(-100: 무제한 / 1 ~ n: 횟수")]
+    [field: SerializeField] public int PassCount { get; private set; }
+
+    [field: Title("이동")]
     [field: Tooltip("탄환 스피드")]
     [field: SerializeField] public float Speed { get; private set; }
-    [field: Tooltip("탄환 타입")]
-    [field: SerializeField] public ProjectileMoveType MoveType { get; private set; }
-    [field: Tooltip("소환 좌표 기준")]
-    [field: SerializeField] public ProjectileAnchorType AnchorType { get; private set; }
+    [field: Tooltip("탄환 이동 - 기본")]
+    [field: SerializeField] public ProjectileBaseMoveType BaseMoveType { get; private set; }
+    [field: ShowIf(nameof(BaseMoveType), ProjectileBaseMoveType.Straight)]
+    [field: Tooltip("탄환 이동 - 특성")]
+    [field: SerializeField] public ProjectileMoveFeature MoveFeature { get; private set; }
+
+
+    [field: ShowIf("@MoveFeature.HasFlag(ProjectileMoveFeature.Guidance)")]
+    [field: Tooltip("유도 성능(유도 시간")]
+    [field: SerializeField] public float GuidanceTime { get; private set; }
+
+    [field: ShowIf("@MoveFeature.HasFlag(ProjectileMoveFeature.Reflection)")]
+    [field: Tooltip("반사 타겟 레이어")]
+    [field: SerializeField] public LayerMask ReflectionLayerMask { get; private set; }
 
     [field: Header("공격")]
     [field: Tooltip("히트 모드(즉발 / 유지 / 특정 시점)")]
     [field: SerializeField] public ProjectileHitType HitType { get; private set; }
-    [field: Tooltip("생존 시간")]
-    [field: SerializeField] public float AliveTime { get; private set; }
     [field: Tooltip("타겟 레이어")]
     [field: SerializeField] public LayerMask TargetLayerMask { get; private set; }
     [field: Tooltip("넉백")]
@@ -28,19 +42,6 @@ public class ProjectileData : PoolObjectData
     [field: Tooltip("비주얼 (2D)")]
     [field: SerializeField] public ProjectileVisualData VisualData { get; private set; }
 
-    [field: Header("관통")]
-    [field: Tooltip("관통 횟수(-1: 무제한 / 1 ~ n: 횟수")]
-    [field: SerializeField] public int PassCount { get; private set; }
-
-    [field: Header("유도")]
-    [field: ShowIf(nameof(MoveType), ProjectileMoveType.Guidance)]
-    [field: Tooltip("유도 성능(유도 시간")]
-    [field: SerializeField] public float GuidanceTime { get; private set; }
-
-    [field: Header("반사")]
-    [field: ShowIf(nameof(MoveType), ProjectileMoveType.Reflection)]
-    [field: Tooltip("반사 타겟 레이어")]
-    [field: SerializeField] public LayerMask ReflectionLayerMask { get; private set; }
 
     [field: Header("폭발 / 장판 (2D)")]
     [field: SerializeField] public bool HasAreaPhase { get; private set; }

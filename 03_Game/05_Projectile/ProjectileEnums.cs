@@ -1,14 +1,24 @@
-﻿public enum ProjectilePhase
+﻿using System;
+
+public enum ProjectilePhase
 {
     Fly,
     Area
 }
 
-public enum ProjectileMoveType
+public enum ProjectileBaseMoveType
 {
-    Straight,       // 직선
-    Guidance,       // 유도
-    Reflection,     // 반사
+    Stop,
+    Straight,
+    // 추후 투사체 기본 이동 추가 (ex. 회전)
+}
+
+[Flags]
+public enum ProjectileMoveFeature
+{
+    None = 0,
+    Guidance = 1 << 0,
+    Reflection = 1 << 1,
 }
 
 public enum ProjectileHitType
@@ -16,12 +26,6 @@ public enum ProjectileHitType
     Immediate,      // 충돌 시점
     Persistent,     // 유지
     Timed,          // 특정 시점
-}
-
-public enum ProjectileAnchorType
-{
-    World,      // 월드 좌표 고정
-    Owner       // 시전자(플레이어)를 따라감
 }
 
 public enum AoEShape

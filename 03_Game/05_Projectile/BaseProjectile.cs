@@ -16,7 +16,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     protected ProjectileData data;
 
-    protected ProjectileMoveType type;
     protected int passCount;
 
     // 스텟
@@ -71,7 +70,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     protected virtual void Update()
     {
         UpdatePhase();
-        MoveAndRotate();
+        move?.MoveAndRotate(Time.deltaTime);
 
         if (data.AliveTime < 0) return;
 
@@ -140,7 +139,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
         data = originData as ProjectileData;
 
-        type = data.MoveType;
         passCount = data.PassCount;
 
         speedMultiplier = 1f;
@@ -197,19 +195,28 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     private void CreateMove()
     {
         IProjectileMove move;
-        move = new StraightMove(this);
+        move = CreateBaseMove();
 
-        if (type == ProjectileMoveType.Guidance)
+        if ((data.MoveFeature & ProjectileMoveFeature.Guidance) != 0)
         {
             move = new GudianceMove(this, move, data.GuidanceTime);
         }
 
-        if (type == ProjectileMoveType.Reflection)
+        if ((data.MoveFeature & ProjectileMoveFeature.Reflection) != 0)
         {
             move = new ReflectionMove(this, move, data.ReflectionLayerMask);
         }
 
         this.move = move;
+    }
+
+    private IProjectileMove CreateBaseMove()
+    {
+        return data.BaseMoveType switch
+        {
+            ProjectileBaseMoveType.Straight => new StraightMove(this),
+            _ => null
+        };
     }
     #endregion
 
@@ -257,13 +264,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     {
         gameObject.SetActive(false);
         Logger.Log("투사체 제거");
-    }
-    #endregion
-
-    #region 움직임
-    private void MoveAndRotate()
-    {
-        move?.MoveAndRotate(Time.deltaTime);
     }
     #endregion
 
