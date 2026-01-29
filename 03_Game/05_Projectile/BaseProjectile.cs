@@ -23,7 +23,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     protected BaseStat attack;          // 공격
 
     // 타겟
-    [SerializeField] protected Transform target;
+    public Transform Target { get; protected set; }
     public Vector3 MoveDir { get; set; }
 
     // 이동
@@ -76,17 +76,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         UpdatePhase();
 
         if (data.AliveTime < 0) return;
-
-        if (type == ProjectileMoveType.Guidance)
-        {
-            if (data.GuidanceTime < 0) return;
-
-            guidanceTimer += Time.deltaTime;
-            if (guidanceTimer > data.GuidanceTime)
-            {
-                type = ProjectileMoveType.Straight;
-            }
-        }
 
         lifeTimer += Time.deltaTime;
         if (lifeTimer > data.AliveTime)
@@ -190,7 +179,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     public virtual void Spawn(Vector2 spawnPos, Transform target)
     {
         transform.position = spawnPos;
-        this.target = target;
+        this.Target = target;
 
         if (target != null)
         {
@@ -212,7 +201,15 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     private void CreateMove()
     {
+        IProjectileMove move;
         move = new StraightMove(this);
+
+        if (type == ProjectileMoveType.Guidance)
+        {
+            move = new GudianceMove(move, this, data.GuidanceTime);
+        }
+
+        this.move = move;
     }
     #endregion
 
@@ -266,11 +263,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     #region 움직임
     private void MoveAndRotate()
     {
-        if (type == ProjectileMoveType.Guidance)
-        {
-            SetGuidance();
-        }
-
         move?.MoveAndRotate(Time.deltaTime);
 
         if (type == ProjectileMoveType.Reflection)
@@ -287,8 +279,8 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     protected virtual void SetGuidance()
     {
-        if (target == null) return;
-        MoveDir = (target.position - transform.position).normalized;
+        if (Target == null) return;
+        MoveDir = (Target.position - transform.position).normalized;
 
         float angle = Mathf.Atan2(MoveDir.y, MoveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);

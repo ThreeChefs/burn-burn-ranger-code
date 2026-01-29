@@ -16,17 +16,17 @@ public class WhistleArrowProjectile : PlayerProjectile
 
     protected override void SetGuidance()
     {
-        if (target == null || !target.gameObject.activeSelf)
+        if (Target == null || !Target.gameObject.activeSelf)
         {
-            target = MonsterManager.Instance.GetRandomMonster();
-            if (target == null)
+            Target = MonsterManager.Instance.GetRandomMonster();
+            if (Target == null)
             {
                 MoveDir = Vector2.zero;
                 return;
             }
         }
 
-        Vector2 toTarget = target.position - transform.position;
+        Vector2 toTarget = Target.position - transform.position;
 
         float currentAngle = transform.eulerAngles.z;
         float targetAngle = Mathf.Atan2(toTarget.y, toTarget.x) * Mathf.Rad2Deg;

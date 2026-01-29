@@ -1,0 +1,42 @@
+using UnityEngine;
+
+public class GudianceMove : IProjectileMove
+{
+    private readonly IProjectileMove _baseMove;
+    private readonly BaseProjectile _projectile;
+    private readonly Transform _self;
+
+    private float _gudianceTime;
+    private readonly float _turnSpeed;
+
+    public GudianceMove(
+        IProjectileMove baseMove,
+        BaseProjectile projectile,
+        float gudianceTime,
+        float turnSpeed = 1f)
+    {
+        _baseMove = baseMove;
+        _projectile = projectile;
+        _self = _projectile.transform;
+        _gudianceTime = gudianceTime;
+        _turnSpeed = turnSpeed;
+    }
+
+    public void MoveAndRotate(float deltaTime)
+    {
+        _baseMove.MoveAndRotate(deltaTime);
+
+        if (_gudianceTime < 0f || _projectile.Target == null) return;
+
+        Vector3 toTarget = (_projectile.Target.position - _self.position).normalized;
+        _projectile.MoveDir = Vector3.Lerp(
+            _projectile.MoveDir,
+            toTarget,
+            _turnSpeed * deltaTime);
+
+        float angle = Mathf.Atan2(_projectile.MoveDir.y, _projectile.MoveDir.x) * Mathf.Rad2Deg;
+        _self.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        _gudianceTime -= deltaTime;
+    }
+}
