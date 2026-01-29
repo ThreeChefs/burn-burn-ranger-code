@@ -413,7 +413,7 @@ public class SkillSystem
         GetLevelAndDescription(skillData, skill, out int curLevel, out string description);
         Sprite[] sprites = new Sprite[0];
 
-        if (skillData.Type == SkillType.Passive)
+        if (skillData.Type == SkillType.Passive && skillData.CombinationSkills != null)
         {
             // 조합 스킬 아이콘 가져오기 
             // 패시브 스킬에서만 조합스킬이 되는 액티브 스킬 아이콘이 보임
