@@ -71,13 +71,14 @@ public class GrowthUI : BaseUI
 
                 _growthSlotsCount += 1; // 슬롯 해금 번호는 1부터
 
-                GrowthUnlockInfo unlockInfo = new GrowthUnlockInfo 
+                GrowthUnlockInfo unlockInfo = new GrowthUnlockInfo
                 {
                     unlockCount = _growthSlotsCount,
                     unlockLevel = entries[i].UnlockLevel
                 };
 
                 newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], unlockInfo);
+                newSlot.SetLevelLabel(j == 0 ? entries[i].UnlockLevel : 0);
                 _growthSlots.Add(newSlot);
 
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
