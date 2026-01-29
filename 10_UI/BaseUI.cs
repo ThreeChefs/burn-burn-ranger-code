@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
@@ -27,7 +27,7 @@ public abstract class BaseUI : MonoBehaviour
     public event Action<BaseUI> OnCloseAction;
     public event Action<BaseUI> OnClosedAction;
 
-    Canvas _canvas;
+    protected Canvas _canvas;
 
     private void Awake()
     {

@@ -40,6 +40,10 @@ public class DimmedUI : BaseUI
         transform.SetSiblingIndex(target.transform.GetSiblingIndex());
     }
 
+    public void SetTopMost()
+    {
+        _canvas.sortingOrder = (int)UICanvasOrder.TopMost + 100;
+    }
     
 
     void FadeInDim()
