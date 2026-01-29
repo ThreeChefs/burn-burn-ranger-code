@@ -328,15 +328,19 @@ public class SkillSystem
         {
             if ((_skillStates[id] & SkillState.CombinationReady) != 0)
             {
-                targetSkill.Add(GetSkillSelectDto(_skillTable[id], null));
+                if(OwnedSkills.ContainsKey(id) == false)    // 가지고 있지 않으면!
+                    targetSkill.Add(GetSkillSelectDto(_skillTable[id], null));
             }
         }
 
         // ownedSkill 에서 레벨업 할 수 있는 횟수만큼 넣어두기
         foreach (BaseSkill ownedSkill in _ownedSkills.Values)
         {
+            if (ownedSkill.SkillData.Type == SkillType.Combination) continue;   // 조합스킬은 대상 아님.
+
             for (int j = 0; j < Define.SkillMaxLevel - ownedSkill.CurLevel; ++j)
             {
+
                 rollableSkill.Add(GetSkillSelectDto(ownedSkill.SkillData, ownedSkill));
             }
 

@@ -10,7 +10,6 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     public BaseStat Speed { get; private set; }
     public BaseStat Hp { get; private set; }
     public BaseStat Attack { get; private set; }
-    bool isLive;
     private float _maxHp;
     protected Rigidbody2D rb;
     SpriteRenderer spriter;
@@ -21,7 +20,6 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
     [SerializeField] protected bool allowFlip = true;
     [Header("Knockback")]
     [SerializeField] private float knockbackDuration = 0.1f;
-    [SerializeField] private bool Knockbackable = true;
     private bool _isKnockback;
     private Coroutine _knockbackCoroutine;
     private Coroutine _hitCooldownCoroutine;
@@ -195,7 +193,7 @@ public class Monster : PoolObject, IDamageable, IKnockbackable
 
 
         _canHit = true;
-        isLive = true;
+
 
 
         rb.velocity = Vector2.zero;

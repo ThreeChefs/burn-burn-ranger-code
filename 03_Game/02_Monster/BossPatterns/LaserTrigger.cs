@@ -9,8 +9,6 @@ public class LaserTrigger : MonoBehaviour
     [SerializeField] private GameObject impactEffectPrefab;
     [SerializeField] private float vfxTick = 0.1f;
 
-    [Header("Debug")]
-    [SerializeField] private bool debugLog = true;
 
     private float nextVfxTime;
 
