@@ -50,10 +50,10 @@ public enum UICanvasOrder
 
 public enum BottomBarMenuType
 {
-    Shop,
-    Equipment,
     Home,
-    Challenge,
     Growth,
+    Equipment,
+    Shop,
+    Challenge,
 
 }
