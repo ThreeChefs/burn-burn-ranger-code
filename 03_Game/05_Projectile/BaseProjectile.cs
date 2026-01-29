@@ -66,10 +66,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         }
     }
 
-    protected virtual void Start()
-    {
-        cam = Camera.main;
-    }
+    protected virtual void Start() { }
 
     protected virtual void Update()
     {
@@ -207,6 +204,11 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
             move = new GudianceMove(this, move, data.GuidanceTime);
         }
 
+        if (type == ProjectileMoveType.Reflection)
+        {
+            move = new ReflectionMove(this, move, data.ReflectionLayerMask);
+        }
+
         this.move = move;
     }
     #endregion
@@ -262,11 +264,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     private void MoveAndRotate()
     {
         move?.MoveAndRotate(Time.deltaTime);
-
-        if (type == ProjectileMoveType.Reflection)
-        {
-            HandleScreenReflection();
-        }
     }
 
     protected virtual void HandleScreenReflection()
@@ -348,7 +345,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     #endregion
 
     #region 사운드
-    protected void PlaySfxOnce()
+    public void PlaySfxOnce()
     {
         if (sfxIndex >= 0 && !useCustomSfx)
         {
