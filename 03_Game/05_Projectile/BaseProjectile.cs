@@ -220,11 +220,36 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     }
     #endregion
 
-    #region 공격
+    #region 충돌 처리
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (((1 << collision.gameObject.layer) & data.TargetLayerMask) == 0) return;
+        int layer = collision.gameObject.layer;
 
+        if (IsHitTarget(layer))
+        {
+            HandleHit(collision);
+            PlaySfxOfHitType();
+        }
+
+        if (IsReflectTarget(layer))
+        {
+            HandleRefelction(collision);
+            PlaySfxOfHitType();
+        }
+    }
+
+    private bool IsHitTarget(int layer)
+    {
+        return ((1 << layer) & data.TargetLayerMask) != 0;
+    }
+
+    private bool IsReflectTarget(int layer)
+    {
+        return ((1 << layer) & data.ReflectionLayerMask) != 0;
+    }
+
+    protected virtual void HandleHit(Collider2D collision)
+    {
         collision.TryGetComponent<IDamageable>(out var damageable);
 
         switch (data.HitType)
@@ -248,6 +273,21 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         }
     }
 
+    protected virtual void HandleRefelction(Collider2D collision)
+    {
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(transform.position);
+            norm = ((Vector2)transform.position - hitPos).normalized;
+        }
+
+        (move as ReflectionMove)?.OnHit(norm);
+    }
+    #endregion
+
+    #region 공격
     public void Attack(IDamageable damageable)
     {
         damageable.TakeDamage(CalculateDamage());

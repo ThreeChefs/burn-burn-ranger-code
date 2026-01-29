@@ -67,54 +67,10 @@ public class PlayerProjectile : BaseProjectile
         projectileRange = condition[StatType.ProjecttileRange];
         fatalProability = condition[StatType.FatalProbability];
     }
-
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        int layer = collision.gameObject.layer;
-
-        if (IsHitTarget(layer))
-        {
-            HandleHit(collision);
-            PlaySfxOfHitType();
-        }
-
-        if (IsReflectTarget(layer))
-        {
-            HandleRefelction(collision);
-            PlaySfxOfHitType();
-        }
-    }
     #endregion
 
-    private void HandleRefelction(Collider2D collision)
-    {
-        Vector2 norm = Vector2.zero;
-
-        if (collision.gameObject.layer == Define.WallLayer)
-        {
-            Vector2 hitPos = collision.ClosestPoint(transform.position);
-            norm = ((Vector2)transform.position - hitPos).normalized;
-        }
-        else if (collision.gameObject.layer == Define.MonsterLayer)
-        {
-            norm = (transform.position - collision.transform.position).normalized;
-        }
-
-        (move as ReflectionMove)?.OnHit(norm);
-    }
-
     #region 충돌 처리
-    private bool IsHitTarget(int layer)
-    {
-        return ((1 << layer) & data.TargetLayerMask) != 0;
-    }
-
-    private bool IsReflectTarget(int layer)
-    {
-        return ((1 << layer) & data.ReflectionLayerMask) != 0;
-    }
-
-    protected virtual void HandleHit(Collider2D collision)
+    protected override void HandleHit(Collider2D collision)
     {
         switch (data.HitType)
         {
@@ -155,6 +111,22 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
+    protected override void HandleRefelction(Collider2D collision)
+    {
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(transform.position);
+            norm = ((Vector2)transform.position - hitPos).normalized;
+        }
+        else if (collision.gameObject.layer == Define.MonsterLayer)
+        {
+            norm = (transform.position - collision.transform.position).normalized;
+        }
+
+        (move as ReflectionMove)?.OnHit(norm);
+    }
     #endregion
 
     #region Pool Object 관리 - Spawn / OnEnable / OnDisable
