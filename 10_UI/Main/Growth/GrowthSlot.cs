@@ -1,4 +1,4 @@
-using Sirenix.OdinInspector;
+﻿using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,6 +41,7 @@ public class GrowthSlot : BaseSlot
 
         if (nowUnlockCount >= growthUnlockInfo.unlockCount)
         {
+            _unlockableIcon.SetActive(false);
             SetLockImg(false);
         }
         else
