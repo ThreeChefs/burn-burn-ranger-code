@@ -26,7 +26,7 @@ public class GudianceMove : IProjectileMove
     {
         _baseMove.MoveAndRotate(deltaTime);
 
-        if (_gudianceTime < 0f || _projectile.Target == null) return;
+        if (_gudianceTime < 0f || !IsValidTarget()) return;
 
         Vector3 toTarget = (_projectile.Target.position - _self.position).normalized;
         _projectile.MoveDir = Vector3.Lerp(
@@ -38,5 +38,11 @@ public class GudianceMove : IProjectileMove
         _self.rotation = Quaternion.Euler(0f, 0f, angle);
 
         _gudianceTime -= deltaTime;
+    }
+
+    private bool IsValidTarget()
+    {
+        return _projectile.Target == null
+            || !_projectile.Target.gameObject.activeInHierarchy;
     }
 }
