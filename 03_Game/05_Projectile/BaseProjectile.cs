@@ -178,9 +178,8 @@ public class BaseProjectile : PoolObject, IDamageable
         {
             Vector3 movePos = target.position;
             MoveDir = (movePos - transform.position).normalized;
-            CreateMove();
         }
-
+        CreateMove();
         PlaySfxOfSpawnType();
     }
 
