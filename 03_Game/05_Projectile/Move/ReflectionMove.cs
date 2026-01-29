@@ -32,6 +32,30 @@ public class ReflectionMove : IProjectileMove
         HandleScreenReflection();
     }
 
+    /// <summary>
+    /// 특정 콜라이더에 충돌 시 반사 처리
+    /// </summary>
+    /// <param name="collision"></param>
+    public void OnHit(Collider2D collision)
+    {
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(_self.position);
+            norm = ((Vector2)_self.position - hitPos).normalized;
+        }
+        else if (collision.gameObject.layer == Define.MonsterLayer)
+        {
+            norm = (_self.position - collision.transform.position).normalized;
+        }
+
+        if (norm.sqrMagnitude < 0.0001f) return;
+
+        _projectile.MoveDir = Vector2.Reflect(_projectile.MoveDir, norm).normalized;
+        _self.position += _projectile.MoveDir * 0.05f;        // 재충돌 방지
+    }
+
     private void HandleScreenReflection()
     {
         if (((1 << Define.WallLayer) & _targetLayer) == 0) return;

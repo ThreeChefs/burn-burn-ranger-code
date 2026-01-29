@@ -80,7 +80,7 @@ public class PlayerProjectile : BaseProjectile
 
         if (IsReflectTarget(layer))
         {
-            HandleReflection(collision);
+            ((ReflectionMove)move)?.OnHit(collision);
             PlaySfxOfHitType();
         }
     }
@@ -138,29 +138,6 @@ public class PlayerProjectile : BaseProjectile
         }
     }
 
-    /// <summary>
-    /// 특정 콜라이더에 반사 처리
-    /// </summary>
-    /// <param name="collision"></param>
-    private void HandleReflection(Collider2D collision)
-    {
-        Vector2 norm = Vector2.zero;
-
-        if (collision.gameObject.layer == Define.WallLayer)
-        {
-            Vector2 hitPos = collision.ClosestPoint(transform.position);
-            norm = ((Vector2)transform.position - hitPos).normalized;
-        }
-        else if (collision.gameObject.layer == Define.MonsterLayer)
-        {
-            norm = (transform.position - collision.transform.position).normalized;
-        }
-
-        if (norm.sqrMagnitude < 0.0001f) return;
-
-        MoveDir = Vector2.Reflect(MoveDir, norm).normalized;
-        transform.position += MoveDir * 0.05f;        // 재충돌 방지
-    }
     #endregion
 
     #region Pool Object 관리 - Spawn / OnEnable / OnDisable
