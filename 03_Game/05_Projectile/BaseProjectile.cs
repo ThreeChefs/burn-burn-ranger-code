@@ -74,6 +74,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     protected virtual void Update()
     {
         UpdatePhase();
+        MoveAndRotate();
 
         if (data.AliveTime < 0) return;
 
@@ -84,10 +85,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         }
     }
 
-    protected virtual void FixedUpdate()
-    {
-        MoveAndRotate();
-    }
+    protected virtual void FixedUpdate() { }
     #endregion
 
     protected override void OnEnableInternal()
@@ -269,21 +267,6 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         {
             HandleScreenReflection();
         }
-    }
-
-    protected virtual void Move()
-    {
-        Vector3 targetPos = Speed * Time.deltaTime * MoveDir;
-        transform.position += targetPos;
-    }
-
-    protected virtual void SetGuidance()
-    {
-        if (Target == null) return;
-        MoveDir = (Target.position - transform.position).normalized;
-
-        float angle = Mathf.Atan2(MoveDir.y, MoveDir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
     protected virtual void HandleScreenReflection()

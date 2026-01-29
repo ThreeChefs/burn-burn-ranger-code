@@ -9,12 +9,13 @@ public class WhistleArrowProjectile : PlayerProjectile
         base.Init(activeSkill, originData);
     }
 
-    protected override void Move()
+    protected override void Update()
     {
-        base.Move();
+        base.Update();
+        SetGuidance();
     }
 
-    protected override void SetGuidance()
+    protected void SetGuidance()
     {
         if (Target == null || !Target.gameObject.activeSelf)
         {
