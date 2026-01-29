@@ -15,8 +15,7 @@ public class BossDiePattern : BossPatternBase
     [Header("기믹들")]
     [SerializeField] private WavePattern wavePattern;
     [SerializeField] private float prePareTime = 1f;
-    [Header("패턴 시퀀스")]
-    [SerializeField] private bool useAABB = true; // 테스트용 토글
+
 
     private void Awake()
     {

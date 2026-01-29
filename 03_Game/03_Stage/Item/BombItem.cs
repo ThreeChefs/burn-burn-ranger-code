@@ -3,7 +3,6 @@
 public class BombItem : MonoBehaviour
 {
 
-    [SerializeField] private bool destroyOnPickup = true;
 
 
     private void OnTriggerEnter2D(Collider2D other)
