@@ -98,8 +98,6 @@ public class FortuneBoxUI : PopupUI
         List<SkillSelectDto> slotList = null;
 
         int pickNum = Define.Random.Next(0, _maxSlotcount);
-        int idx = pickNum;
-
         int[] targetOrder = _defaultOrder;
 
         
@@ -132,21 +130,25 @@ public class FortuneBoxUI : PopupUI
         }
 
         //Debug.Log(type + " : " + actualCount);
-        //for(int i = 0; i < slotList.Count;++i)
+        //for (int i = 0; i < slotList.Count; ++i)
         //{
         //    Debug.Log(i + ": " + slotList[i].Name);
         //}
 
-
         for (int i = 0; i < _maxSlotcount; i++)
         {
-            int slotIndex = targetOrder[i];
+            int orderIndex = (pickNum + i) % _maxSlotcount;
+            int slotIndex = targetOrder[orderIndex];
+
             slots[slotIndex].SetSlot(slotList[i]);
         }
 
+        // 당첨 슬롯 세팅
+        _pickSlotIdx.Clear();
         for (int i = actualCount - 1; i >= 0; i--)
         {
-            _pickSlotIdx.Add(targetOrder[i]);
+            int orderIndex = (pickNum + i) % _maxSlotcount;
+            _pickSlotIdx.Add(targetOrder[orderIndex]);
         }
 
     }
