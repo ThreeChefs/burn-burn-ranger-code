@@ -1,4 +1,3 @@
-using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
@@ -39,8 +38,11 @@ public class PlayerProjectile : BaseProjectile
 
     // 크기
     private float[] _scaleMultipliers;
-    private Tween _scaleTween;
     private float _scaleDuration = 1f;
+
+    private bool _scaling;
+    private float _elapsed;
+    private Vector3 _startScale;
     #endregion
 
     public virtual void Init(ActiveSkill activeSkill, PoolObjectData originData)
@@ -66,6 +68,13 @@ public class PlayerProjectile : BaseProjectile
         projectileSpeed = condition[StatType.ProjectileSpeed];
         projectileRange = condition[StatType.ProjecttileRange];
         fatalProability = condition[StatType.FatalProbability];
+    }
+
+    protected override void Update()
+    {
+        base.Update();
+
+        UpdateScaleTo();
     }
     #endregion
 
@@ -107,13 +116,12 @@ public class PlayerProjectile : BaseProjectile
 
         if (skill != null)
         {
-            skill.OnLevelUp += UpdateScaleTo;
+            skill.OnLevelUp += SetScaleFlag;
         }
     }
 
     protected override void OnDisableInternal()
     {
-        _scaleTween?.Kill();
         base.OnDisableInternal();
 
         // 타이머 초기화
@@ -122,7 +130,7 @@ public class PlayerProjectile : BaseProjectile
 
         if (skill != null)
         {
-            skill.OnLevelUp -= UpdateScaleTo;
+            skill.OnLevelUp -= SetScaleFlag;
         }
     }
     #endregion
@@ -266,9 +274,18 @@ public class PlayerProjectile : BaseProjectile
     #endregion
 
     #region Level Value Utils
+    private void SetScaleFlag()
+    {
+        _scaling = true;
+        _elapsed = 0f;
+        _startScale = transform.localScale;
+    }
+
     private void UpdateScaleTo()
     {
-        if (projectileRange == null) return;
+        if (projectileRange == null || !_scaling) return;
+
+        _elapsed += Time.deltaTime;
         Vector3 scale = Vector3.one * projectileRange.MaxValue;
 
         // 스킬 시스템
@@ -277,8 +294,13 @@ public class PlayerProjectile : BaseProjectile
             scale *= _scaleMultipliers[skill.CurLevel - 1];
         }
 
-        _scaleTween?.Complete();
-        _scaleTween = transform.DOScale(scale, _scaleDuration);
+        transform.localScale = Vector3.Lerp(_startScale, scale, Mathf.Clamp01(_elapsed / _scaleDuration));
+
+        if (_elapsed > _scaleDuration)
+        {
+            transform.localScale = scale;
+            _scaling = false;
+        }
     }
 
     private void SetScale()
