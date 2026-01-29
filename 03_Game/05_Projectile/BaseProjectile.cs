@@ -206,7 +206,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
         if (type == ProjectileMoveType.Guidance)
         {
-            move = new GudianceMove(move, this, data.GuidanceTime);
+            move = new GudianceMove(this, move, data.GuidanceTime);
         }
 
         this.move = move;

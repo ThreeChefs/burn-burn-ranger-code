@@ -1,23 +1,27 @@
 using UnityEngine;
 
+/// <summary>
+/// 투사체 이동 - 유도
+/// </summary>
 public class GudianceMove : IProjectileMove
 {
-    private readonly IProjectileMove _baseMove;
     private readonly BaseProjectile _projectile;
     private readonly Transform _self;
+
+    private readonly IProjectileMove _baseMove;
 
     private float _gudianceTime;
     private readonly float _turnSpeed;
 
     public GudianceMove(
-        IProjectileMove baseMove,
         BaseProjectile projectile,
+        IProjectileMove baseMove,
         float gudianceTime,
         float turnSpeed = 1f)
     {
-        _baseMove = baseMove;
         _projectile = projectile;
         _self = _projectile.transform;
+        _baseMove = baseMove;
         _gudianceTime = gudianceTime;
         _turnSpeed = turnSpeed;
     }

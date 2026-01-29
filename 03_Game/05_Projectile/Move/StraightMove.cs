@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// 투사체 이동 - 직선
+/// </summary>
 public class StraightMove : IProjectileMove
 {
     private readonly BaseProjectile _projectile;
