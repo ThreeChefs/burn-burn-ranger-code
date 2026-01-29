@@ -9,6 +9,6 @@ public class DrillShotPlayerProjectile : PlayerProjectile
     {
         base.HandleScreenReflection();
 
-        transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg);
+        transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(MoveDir.y, MoveDir.x) * Mathf.Rad2Deg);
     }
 }

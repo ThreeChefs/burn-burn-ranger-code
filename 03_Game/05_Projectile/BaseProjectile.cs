@@ -24,11 +24,11 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     // 타겟
     [SerializeField] protected Transform target;
-    protected Vector3 movePos;
-    protected Vector3 moveDir;
+    public Vector3 MoveDir { get; set; }
 
     // 이동
-    protected virtual float Speed => data.Speed * speedMultiplier;
+    protected IProjectileMove move;
+    public virtual float Speed => data.Speed * speedMultiplier;
     protected float speedMultiplier;
     protected float lifeTimer;
 
@@ -194,10 +194,9 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
         if (target != null)
         {
-            movePos = target.position;
-            moveDir = (movePos - transform.position).normalized;
-            float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0f, 0f, angle);
+            Vector3 movePos = target.position;
+            MoveDir = (movePos - transform.position).normalized;
+            CreateMove();
         }
 
         PlaySfxOfSpawnType();
@@ -206,12 +205,14 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
     public virtual void Spawn(Vector2 spawnPos, Vector2 dir)
     {
         transform.position = spawnPos;
-
-        moveDir = dir;
-        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
-
+        MoveDir = dir;
+        CreateMove();
         PlaySfxOfSpawnType();
+    }
+
+    private void CreateMove()
+    {
+        move = new StraightMove(this);
     }
     #endregion
 
@@ -270,7 +271,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
             SetGuidance();
         }
 
-        Move();
+        move?.MoveAndRotate(Time.deltaTime);
 
         if (type == ProjectileMoveType.Reflection)
         {
@@ -280,16 +281,16 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
     protected virtual void Move()
     {
-        Vector3 targetPos = Speed * Time.fixedDeltaTime * moveDir;
+        Vector3 targetPos = Speed * Time.deltaTime * MoveDir;
         transform.position += targetPos;
     }
 
     protected virtual void SetGuidance()
     {
         if (target == null) return;
-        moveDir = (target.position - transform.position).normalized;
+        MoveDir = (target.position - transform.position).normalized;
 
-        float angle = Mathf.Atan2(moveDir.y, moveDir.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(MoveDir.y, MoveDir.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
     }
 
@@ -298,7 +299,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
         if (((1 << Define.WallLayer) & data.ReflectionLayerMask) == 0) return;
 
         Vector2 pos = transform.position;
-        Vector2 dir = moveDir;
+        Vector2 dir = MoveDir;
         Vector2 camPos = cam.transform.position;
 
         float halfH = cam.orthographicSize;
@@ -327,7 +328,7 @@ public class BaseProjectile : PoolObject, IAttackable, IDamageable
 
         if (reflected)
         {
-            moveDir = dir.normalized;
+            MoveDir = dir.normalized;
             transform.position = pos;
             PlaySfxOnce();
         }

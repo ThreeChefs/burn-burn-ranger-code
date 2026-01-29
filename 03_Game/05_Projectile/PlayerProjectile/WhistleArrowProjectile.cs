@@ -21,7 +21,7 @@ public class WhistleArrowProjectile : PlayerProjectile
             target = MonsterManager.Instance.GetRandomMonster();
             if (target == null)
             {
-                moveDir = Vector2.zero;
+                MoveDir = Vector2.zero;
                 return;
             }
         }
@@ -40,6 +40,6 @@ public class WhistleArrowProjectile : PlayerProjectile
         );
 
         transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
-        moveDir = transform.right;
+        MoveDir = transform.right;
     }
 }

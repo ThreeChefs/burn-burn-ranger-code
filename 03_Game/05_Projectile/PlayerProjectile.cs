@@ -23,7 +23,7 @@ public class PlayerProjectile : BaseProjectile
     protected float tickIntervalTimer;
 
     // 이동 속도
-    protected override float Speed
+    public override float Speed
     {
         get
         {
@@ -158,8 +158,8 @@ public class PlayerProjectile : BaseProjectile
 
         if (norm.sqrMagnitude < 0.0001f) return;
 
-        moveDir = Vector2.Reflect(moveDir, norm).normalized;
-        transform.position += moveDir * 0.05f;        // 재충돌 방지
+        MoveDir = Vector2.Reflect(MoveDir, norm).normalized;
+        transform.position += MoveDir * 0.05f;        // 재충돌 방지
     }
     #endregion
 
