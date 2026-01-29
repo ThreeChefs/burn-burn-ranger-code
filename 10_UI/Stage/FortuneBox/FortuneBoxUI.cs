@@ -27,6 +27,9 @@ public class FortuneBoxUI : PopupUI
 
 
     static int _maxSlotcount = Define.FortuneBoxSkillSlotCount;
+    
+    const int _healAmount = 50;
+    const int _goldAmount = 100;
 
 
     #region 연출 슬롯 순서
@@ -100,25 +103,27 @@ public class FortuneBoxUI : PopupUI
         int pickNum = Define.Random.Next(0, _maxSlotcount);
         int[] targetOrder = _defaultOrder;
 
-        
+
         SkillSystem system = StageManager.Instance.SkillSystem;
+
+        int pickCount = 0;
         int actualCount = 0;
 
         switch (_type)
         {
             case WaveClearRewardType.Fortune_Skill_1:
-                actualCount = 1;
-                slotList = system.GetRolledSkills(actualCount, out actualCount);
+                pickCount = 1;
+                slotList = system.GetRolledSkills(pickCount, out actualCount);
                 break;
 
             case WaveClearRewardType.Fortune_Skill_3:
-                actualCount = 3;
-                slotList = system.GetRolledSkills(actualCount, out actualCount);
+                pickCount = 3;
+                slotList = system.GetRolledSkills(pickCount, out actualCount);
                 targetOrder = _spiralOrder;
                 break;
             case WaveClearRewardType.Fortune_Skill_5:
-                actualCount = 5;
-                slotList = system.GetRolledSkills(actualCount, out actualCount);
+                pickCount = 5;
+                slotList = system.GetRolledSkills(pickCount, out actualCount);
                 targetOrder = _zigzagOrder;
                 break;
         }
@@ -126,6 +131,22 @@ public class FortuneBoxUI : PopupUI
         if (slotList == null || slotList.Count == 0)
         {
             // 음식 뽑기로 세팅
+            for (int i = 0; i < slots.Length; ++i)
+            {
+                if(i%2 ==0)
+                {
+                    slots[i].SetSlot(FortuneBoxSlotType.Food);
+                }
+                else
+                    slots[i].SetSlot(FortuneBoxSlotType.Gold);
+            }
+
+            for (int i = pickCount - 1; i >= 0; i--)
+            {
+                int orderIndex = (pickNum + i) % _maxSlotcount;
+                _pickSlotIdx.Add(targetOrder[orderIndex]);
+            }
+
             return;
         }
 
@@ -144,7 +165,6 @@ public class FortuneBoxUI : PopupUI
         }
 
         // 당첨 슬롯 세팅
-        _pickSlotIdx.Clear();
         for (int i = actualCount - 1; i >= 0; i--)
         {
             int orderIndex = (pickNum + i) % _maxSlotcount;
@@ -325,7 +345,20 @@ public class FortuneBoxUI : PopupUI
 
             if (slot.Skill == null) continue;
 
-            StageManager.Instance.SkillSystem.TryAcquireSkill(slot.Skill.Id);
+            switch (slot.SlotType)
+            {
+                case FortuneBoxSlotType.Skill:
+                    StageManager.Instance.SkillSystem.TryAcquireSkill(slot.Skill.Id);
+                    break;
+                
+                case FortuneBoxSlotType.Food:
+                    PlayerManager.Instance.StagePlayer.Condition[StatType.Health].Add(_healAmount);
+                    break;
+                
+                case FortuneBoxSlotType.Gold:
+                    PlayerManager.Instance.StagePlayer.AddGold(_goldAmount);
+                    break;
+            }
         }
 
         for (int i = 0; i < _maxSlotcount; i++)
@@ -363,7 +396,6 @@ public class FortuneBoxUI : PopupUI
         {
             for (int j = 0; j < order.Length; j++)
             {
-
                 int slotIndex = order[j];
 
                 SoundManager.Instance.PlaySfx(SfxName.Sfx_FortuneBox, idx: 0);
