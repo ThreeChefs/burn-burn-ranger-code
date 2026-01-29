@@ -80,11 +80,28 @@ public class PlayerProjectile : BaseProjectile
 
         if (IsReflectTarget(layer))
         {
-            ((ReflectionMove)move)?.OnHit(collision);
+            HandleRefelction(collision);
             PlaySfxOfHitType();
         }
     }
     #endregion
+
+    private void HandleRefelction(Collider2D collision)
+    {
+        Vector2 norm = Vector2.zero;
+
+        if (collision.gameObject.layer == Define.WallLayer)
+        {
+            Vector2 hitPos = collision.ClosestPoint(transform.position);
+            norm = ((Vector2)transform.position - hitPos).normalized;
+        }
+        else if (collision.gameObject.layer == Define.MonsterLayer)
+        {
+            norm = (transform.position - collision.transform.position).normalized;
+        }
+
+        (move as ReflectionMove)?.OnHit(norm);
+    }
 
     #region 충돌 처리
     private bool IsHitTarget(int layer)
