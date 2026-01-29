@@ -1,4 +1,4 @@
-public enum ProjectilePhase
+﻿public enum ProjectilePhase
 {
     Fly,
     Area
@@ -68,9 +68,11 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     DeathLaserProjectileData,       // 죽음의 레이저
     GuardianProjectileData,         // 수호자
     SuperGuardianProjectileData,    // 수비수
-
+    PoisonArea,
     RangedAttack,                   // 
-
+    DragonProjectile,
     // 공통
     RangedProjectile
+
+
 }

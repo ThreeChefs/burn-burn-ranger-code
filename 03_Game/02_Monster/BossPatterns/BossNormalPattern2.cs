@@ -48,18 +48,22 @@ public class BossNormalPattern2 : BossPatternBase
 
         float rad = angleDeg * Mathf.Deg2Rad;
         Vector2 dir = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad)).normalized;
+        var proj = ProjectileManager.Instance.Spawn(
+            ProjectileDataIndex.DragonProjectile,
+            boss.Attack,
+            dir,
+            pos,
+            Quaternion.Euler(0f, 0f, angleDeg)
+        );
 
-        var go = Instantiate(projectilePrefab, pos, Quaternion.Euler(0f, 0f, angleDeg));
+        if (proj == null) return;
 
-        // Rigidbody2D 기반이면 이게 제일 깔끔
-        if (go.TryGetComponent<Rigidbody2D>(out var rb))
+        // 🔹 이동을 BaseProjectile이 안 한다면 여기서 보완
+        if (proj.TryGetComponent<Rigidbody2D>(out var rb))
         {
+            rb.velocity = Vector2.zero;
+            rb.angularVelocity = 0f;
             rb.velocity = dir * projectileSpeed;
-        }
-        else
-        {
-            // Rigidbody2D 없으면: 너 프로젝트의 Projectile 스크립트에 dir/speed 넣는 함수가 있으면 여기서 호출해줘
-            // 예) go.GetComponent<BaseProjectile>()?.Init(dir, projectileSpeed);
         }
     }
 }

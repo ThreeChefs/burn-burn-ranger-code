@@ -57,7 +57,7 @@ public class FireExplosionPattern : BossPatternBase
             var dot = fireBall.GetComponent<FireArea>();
             if (dot != null)
             {
-                float damagePerTick = boss.Attack * AttackMultiplier;
+                float damagePerTick = boss.Attack.CurValue * AttackMultiplier;
                 dot.SetDamage(damagePerTick, tickInterval);
             }
             Destroy(fireBall, lifeTime);

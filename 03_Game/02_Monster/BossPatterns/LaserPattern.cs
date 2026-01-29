@@ -219,7 +219,7 @@ public class LaserPattern : BossPatternBase
 
         nextTickTime[id] = now + tickInterval;
 
-        float damage = boss.Attack * damageMultiplierPerTick;
+        float damage = boss.AttackValue * damageMultiplierPerTick;
         dmg.TakeDamage(damage);
     }
     private void OnDisable()

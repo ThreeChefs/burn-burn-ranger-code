@@ -9,7 +9,8 @@ public class BossController : MonoBehaviour   // 보스 모든 패턴의 총괄 
     [SerializeField] private float maxHp;   // SO에서 읽어온 최대 체력
     [SerializeField] private float curHp;   // 현재 체력(데미지 받으면 감소)
     [SerializeField] private float attack;
-    public float Attack => attack;
+    public BaseStat Attack { get; private set; }
+    public float AttackValue => Attack != null ? Attack.CurValue : 0f;
     [Header("Refs")]
     [SerializeField] private BossPatternController patternController;
     private Monster monster;
@@ -73,20 +74,7 @@ public class BossController : MonoBehaviour   // 보스 모든 패턴의 총괄 
     }
 
 
-    private void LateUpdate()
-    {
-        // HP 10 감소
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ApplyDamage(10f);
-        }
 
-        // HP 50 감소
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            ApplyDamage(50f);
-        }
-    }
     public void ApplyDataSO()
     {
 
@@ -99,6 +87,7 @@ public class BossController : MonoBehaviour   // 보스 모든 패턴의 총괄 
         // 현재 체력은 최대 체력으로 초기화(풀피 시작)
         curHp = maxHp;
         attack = monsterData.Get(StatType.Attack);
+        Attack = new BaseStat(attack, StatType.Attack);
 
     }
     public void ApplyDamage(float damage)
@@ -114,15 +103,6 @@ public class BossController : MonoBehaviour   // 보스 모든 패턴의 총괄 
         if (IsDead)
             monster.Die();
     }
-    private void TestDamage10()
-    {
-        ApplyDamage(10f);
-    }
 
-    [ContextMenu("TEST: Damage 50")]
-    private void TestDamage50()
-    {
-        ApplyDamage(50f);
-    }
 
 }

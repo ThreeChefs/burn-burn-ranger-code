@@ -45,8 +45,6 @@ public class BossWavePattern : BossPatternBase
 
         // 시계 방향 (0 → 360)
         yield return FireCircle(center, clockwise: true);
-
-
         yield return FireCircle(center, clockwise: false);
     }
 
@@ -57,7 +55,7 @@ public class BossWavePattern : BossPatternBase
         {
             for (float angle = 0f; angle < 360f; angle += angleStep)
             {
-                SpawnProjectileDiameter(center, radius, angle);
+                SpawnProjectileDiameter(center, radius, angle, inward: false);
                 yield return new WaitForSeconds(fireInterval);
             }
         }
@@ -65,7 +63,7 @@ public class BossWavePattern : BossPatternBase
         {
             for (float angle = 360f; angle > 0f; angle -= angleStep)
             {
-                SpawnProjectileDiameter(center, radius, angle);
+                SpawnProjectileDiameter(center, radius, angle, inward: true);
                 yield return new WaitForSeconds(fireInterval);
             }
         }
@@ -87,23 +85,19 @@ public class BossWavePattern : BossPatternBase
     }
 
 
-    private void SpawnProjectileDiameter(Vector3 center, float r, float angleDeg)
+    private void SpawnProjectileDiameter(Vector3 center, float r, float angleDeg, bool inward)
     {
         Vector2 dir = AngleToDir(angleDeg);
+        Vector3 startPos = inward
+       ? center + (Vector3)(dir * r)      // 바깥 원에서
+       : center - (Vector3)(dir * r);     // 반대쪽 바깥 원에서(기존)
 
+        Vector2 moveDir = inward ? -dir : dir; // ⭐ 방향을 반대로
 
-        Vector3 startPos = center - (Vector3)(dir * r);
+        float rotZ = inward ? angleDeg + 180f : angleDeg;
 
-        GameObject proj = Instantiate(projectilePrefab, startPos, Quaternion.identity);
-        proj.transform.rotation = Quaternion.Euler(0f, 0f, angleDeg);
+        ProjectileManager.Instance.Spawn(ProjectileDataIndex.DragonProjectile, boss.Attack, moveDir, startPos, Quaternion.Euler(0f, 0f, angleDeg), parent: null);
 
-        if (proj.TryGetComponent<Rigidbody2D>(out var rb))
-        {
-            rb.velocity = dir * projectileSpeed;
-        }
-
-        float life = (2f * r) / projectileSpeed;
-        Destroy(proj, life);
     }
 
     private Vector2 AngleToDir(float deg)

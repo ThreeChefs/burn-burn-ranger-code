@@ -16,7 +16,7 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
             return false;
         }
 
-        BasePool pool = Instantiate(poolPrefab, gemRoot != null ? gemRoot : transform);
+        BasePool pool = Instantiate(poolPrefab, gemRoot);
         pool.Init(data);
         nowPoolDic[poolIndex] = pool;
         return true;
@@ -72,7 +72,9 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
     }
     public GemItem SpawnGem(GemPoolIndex type, Vector3 position, int dropCount)
     {
+        Debug.Log($"[SpawnGem] type={type} pos={position} dropCount={dropCount}\n{System.Environment.StackTrace}");
         return SpawnObject<GemItem>(type, position);
     }
+
 
 }

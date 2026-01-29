@@ -10,10 +10,6 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
     [Header("Settings")]
     [SerializeField] private float thinkInterval = 0.1f; // 보스 패턴 진입 딜레이시간 
     [SerializeField] private bool CollectPatternBase = true;
-
-
-
-
     public event Action<BossPatternBase> OnPatternStarted;
     public event Action<BossPatternBase> OnPatternFinished;
 
@@ -69,16 +65,9 @@ public class BossPatternController : MonoBehaviour    // 보스가 가진 패턴
     public void Tick()
     {
         if (boss == null || boss.IsDead) return;
-
-
-
-
-
         if (IsRunning) return;
-
         if (Time.unscaledTime < _nextThinkTime) return;
         _nextThinkTime = Time.unscaledTime + thinkInterval;
-
         var next = ChooseNextPattern();
         if (next != null)
             Play(next);

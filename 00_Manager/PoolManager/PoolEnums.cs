@@ -11,6 +11,7 @@ public enum CommonPoolIndex
     Particle_Blood,
     Particle_Lighting,
     Particle_Hit,
+
 }
 
 public enum GemPoolIndex

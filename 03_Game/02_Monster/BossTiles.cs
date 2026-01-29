@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 
-public class BossTiles : MonoBehaviour
+public class BossTiles : BaseProjectile
 {
+    private float damage;
 
-    [SerializeField] private float damage = 10f;
-    // Start is called before the first frame update
-    private void OnTriggerEnter2D(Collider2D other)
+    [SerializeField] private float lifeTime = 3f;
+    private float _disableTile;
+    public void Init(float damage, float lifeTime)
     {
-        if (!other.TryGetComponent<StagePlayer>(out var player)) return;
-
-        if (other.TryGetComponent<IDamageable>(out var dmg))
-            dmg.TakeDamage(damage);
+        this.damage = damage;
+        this.lifeTime = lifeTime;
     }
+
+    protected override void OnEnableInternal()
+    {
+        base.OnEnableInternal();
+        _disableTile = Time.time + lifeTime;
+    }
+
+
+
+
+
 }

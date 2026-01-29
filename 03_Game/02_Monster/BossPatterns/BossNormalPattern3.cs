@@ -33,30 +33,42 @@ public class BossNormalPattern3 : BossPatternBase
         for (int i = 0; i < shotCount; i++)
         {
             if (boss == null || boss.IsDead) yield break;
-            if (boss.target == null) yield break;
-            Vector3 spawnPos =
-              (firePoint != null) ? firePoint.position :
-              (boss != null ? boss.transform.position : transform.position);
-            Vector2 dir = (boss.target.position - firePoint.position).normalized;
+            if (boss.Target == null) yield break;
 
-            // 발사
-            var proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+            Vector3 spawnPos = firePoint.position;
 
-            // 너가 이미 쓰는 투사체 구조에 맞춰 아래 중 하나만 선택해서 연결하면 됨.
-            // 1) Rigidbody2D 기반이면:
-            if (proj.TryGetComponent<Rigidbody2D>(out var rb))
+            Vector3 toTarget = boss.Target.position - spawnPos;
+            float dist = toTarget.magnitude;
+            if (dist <= minDistanceToRun)
+            {
+                // 너무 붙었으면 발사 스킵(원하면 그냥 break 해도 됨)
+                if (i < shotCount - 1)
+                    yield return new WaitForSeconds(shotInterval);
+                continue;
+            }
+
+            Vector2 dir = (toTarget / dist); // normalized
+
+
+            var proj = ProjectileManager.Instance.Spawn(
+                ProjectileDataIndex.DragonProjectile,
+                boss.Attack, // BaseStat
+                dir,
+                spawnPos,
+                Quaternion.identity,
+                parent: null
+            );
+
+            if (proj != null && proj.TryGetComponent<Rigidbody2D>(out var rb))
+            {
+                rb.velocity = Vector2.zero;
+                rb.angularVelocity = 0f;
                 rb.velocity = dir * projectileSpeed;
+            }
 
-            // 2) 커스텀 Init이 있다면 예시:
-            // proj.Init(dir, projectileSpeed, bossAttackStatOrDamage);
-
-
-
-            // 마지막 샷 뒤에는 대기 안 하고 종료
             if (i < shotCount - 1)
                 yield return new WaitForSeconds(shotInterval);
         }
-
 
     }
 

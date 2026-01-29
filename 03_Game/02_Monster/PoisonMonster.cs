@@ -12,11 +12,9 @@ public class PoisonMonster : Monster
 
     private void SpawnPoisonArea()
     {
-        if (poisonAreaPrefab == null)
-        {
-            return;
-        }
-        Instantiate(poisonAreaPrefab, transform.position, Quaternion.identity);
+        if (poisonAreaPrefab == null) return;
+        ProjectileManager.Instance.Spawn(ProjectileDataIndex.PoisonArea, Attack, Vector2.zero, transform.position, Quaternion.identity, parent: null);
+
     }
 
 
