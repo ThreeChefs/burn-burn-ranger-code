@@ -53,6 +53,7 @@ public enum ProjectileDataIndex     // SO 이름과 동일하게 맞추기
     FireBombProjectileData,         // 화염병
     RocketProjectileData,           // 로켓
     ShieldProjectileData,           // 방어막
+    GravityFieldProjectileData,     // 중력장
     SoccerBallProjectileData,       // 축구공
     BrickProjectileData,            // 벽돌
     DumbelProjectileData,           // 덤벨

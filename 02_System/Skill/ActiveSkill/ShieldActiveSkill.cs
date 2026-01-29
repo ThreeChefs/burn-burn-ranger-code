@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -51,7 +51,7 @@ public class ShieldActiveSkill : ActiveSkill
         if (_shieldProjectile != null)
             _shieldProjectile.gameObject.SetActive(false);
 
-        _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(ProjectileDataIndex.ShieldProjectileData, this, this.transform);
+        _shieldProjectile = (PlayerProjectile)ProjectileManager.Instance.Spawn(projectileIndex, this, this.transform);
     }
 
     protected override void OnDestroy()
