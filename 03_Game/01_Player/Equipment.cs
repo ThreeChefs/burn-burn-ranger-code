@@ -123,17 +123,17 @@ public class Equipment
         {
             if (equipmentEffect.UnlockClass > item.ItemClass) return;
 
-            switch (equipmentEffect.EffectType)
+            if (equipmentEffect is StatEffectData statEffect)
             {
-                case EquipmentEffectType.Stat:
-                    UpdateStat(equipmentEffect.ApplyType, equipmentEffect.Stat, equipmentEffect.Value * sign);
-                    break;
-                case EquipmentEffectType.Skill:
-                    UpdateSkill(equipmentEffect.SkillData, equipmentEffect.SkillLevel, type);
-                    break;
-                case EquipmentEffectType.Buff:
-                    UpdateBuff(equipmentEffect.EffectSO, type);
-                    break;
+                UpdateStat(statEffect.ApplyType, statEffect.Stat, statEffect.Value * sign);
+            }
+            else if (equipmentEffect is SkillEffectData skillEffect)
+            {
+                UpdateSkill(skillEffect.SkillData, skillEffect.SkillLevel, type);
+            }
+            else if (equipmentEffect is BuffEffectData buffEffect)
+            {
+                UpdateBuff(buffEffect.EffectSO, type);
             }
         }
     }

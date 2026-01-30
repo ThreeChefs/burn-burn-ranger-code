@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,7 +19,7 @@ public class ItemData : ScriptableObject
     [field: ShowIf("Type", ItemType.Equipment)]
     [field: SerializeField] public EquipmentType EquipmentType { get; private set; }
     [field: ShowIf("Type", ItemType.Equipment)]
-    [field: SerializeField] public EquipmentEffectData[] Equipments { get; private set; }
+    [field: SerializeReference] public List<EquipmentEffectData> Equipments { get; private set; }
 
     public override string ToString()
     {
@@ -58,52 +59,48 @@ public class ItemData : ScriptableObject
 }
 
 [System.Serializable]
-public class EquipmentEffectData
+public abstract class EquipmentEffectData
 {
     [field: BoxGroup("공통")]
     [field: SerializeField] public ItemClass UnlockClass { get; private set; }
     [field: BoxGroup("공통")]
-    [field: EnumToggleButtons]
-    [field: SerializeField] public EquipmentEffectType EffectType { get; private set; }
-    [field: BoxGroup("공통")]
     [field: MultiLineProperty]
     [field: SerializeField] public string Description { get; private set; }
+}
 
+[System.Serializable]
+public class StatEffectData : EquipmentEffectData
+{
     [field: BoxGroup("스텟")]
-    [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
     [field: EnumToggleButtons]
     [field: SerializeField] public EffectApplyType ApplyType { get; private set; }
-    [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
     [field: HorizontalGroup("스텟/", width: 0.8f)]
     [field: HideLabel]
     [field: SerializeField] public StatType Stat { get; private set; }
-    [field: ShowIf("EffectType", EquipmentEffectType.Stat)]
     [field: HorizontalGroup("스텟/", width: 0.2f)]
     [field: HideLabel]
     [field: SerializeField] public int Value { get; private set; }
+}
 
+[System.Serializable]
+public class SkillEffectData : EquipmentEffectData
+{
     [field: BoxGroup("스킬 데이터 | 레벨")]
-    [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
     [field: HorizontalGroup("스킬 데이터 | 레벨/", width: 0.8f)]
     [field: SerializeField] public SkillData SkillData { get; private set; }
-    [field: ShowIf("EffectType", EquipmentEffectType.Skill)]
     [field: HorizontalGroup("스킬 데이터 | 레벨/", width: 0.2f)]
     [field: HideLabel]
     [field: SerializeField] public int SkillLevel { get; private set; }
+}
 
+[System.Serializable]
+public class BuffEffectData : EquipmentEffectData
+{
     [field: BoxGroup("조건부 버프")]
-    [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public EffectTriggerType TriggerType { get; private set; }
     [field: BoxGroup("조건부 버프")]
-    [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public EffectTargetType TargetType { get; private set; }
     [field: BoxGroup("조건부 버프")]
     [field: Tooltip("스킬 효과 SO")]
-    [field: ShowIf("EffectType", EquipmentEffectType.Buff)]
     [field: SerializeField] public BaseEquipmentEffectSO EffectSO { get; private set; }
-
-    public EquipmentEffectData()
-    {
-        ApplyType = EffectApplyType.Percent;
-    }
 }

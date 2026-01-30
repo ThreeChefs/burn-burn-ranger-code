@@ -111,13 +111,13 @@ public class ItemDetailUI : BaseUI
         _itemDescription.text = itemData.Description;
 
         for (int uiIndex = 0, dataIndex = 0;
-            uiIndex < MaxEffectCount && dataIndex < itemData.Equipments.Length;
+            uiIndex < MaxEffectCount && dataIndex < itemData.Equipments.Count;
             uiIndex++, dataIndex++)
         {
             if (itemData.Equipments[dataIndex].UnlockClass == ItemClass.None)
             {
                 dataIndex++;
-                if (dataIndex >= itemData.Equipments.Length) return;
+                if (dataIndex >= itemData.Equipments.Count) return;
             }
 
             _effectDetails[uiIndex].SetData(
