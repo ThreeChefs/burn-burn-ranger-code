@@ -1,5 +1,6 @@
 ﻿using Sirenix.OdinInspector;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 public class GrowthSlot : BaseSlot
@@ -10,6 +11,10 @@ public class GrowthSlot : BaseSlot
 
     [Title("흑백 Material")]
     [SerializeField] Material _grayScaleMat;
+
+    [Title("레벨")]
+    [SerializeField] GameObject _levelLabel;
+    [SerializeField] TextMeshProUGUI _levelText;
 
     public GrowthInfo GrowthInfo => _growthInfo;
     GrowthInfo _growthInfo;
@@ -58,6 +63,18 @@ public class GrowthSlot : BaseSlot
             SetLockImg(true);
 
         }
+    }
+
+    public void SetLevelLabel(int level)
+    {
+        if (level <= 0)
+        {
+            _levelLabel.SetActive(false);
+            return;
+        }
+
+        _levelLabel.SetActive(true);
+        _levelText.text = $"Lv. {level}";
     }
 
     public void OnClickSlot()

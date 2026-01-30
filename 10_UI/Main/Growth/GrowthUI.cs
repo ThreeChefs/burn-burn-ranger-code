@@ -2,6 +2,7 @@ using Sirenix.OdinInspector;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GrowthUI : BaseUI
 {
@@ -71,13 +72,14 @@ public class GrowthUI : BaseUI
 
                 _growthSlotsCount += 1; // 슬롯 해금 번호는 1부터
 
-                GrowthUnlockInfo unlockInfo = new GrowthUnlockInfo 
+                GrowthUnlockInfo unlockInfo = new GrowthUnlockInfo
                 {
                     unlockCount = _growthSlotsCount,
                     unlockLevel = entries[i].UnlockLevel
                 };
 
                 newSlot.SetSlot(slotInfo, entries[i].GrowthInfos[j], unlockInfo);
+                newSlot.SetLevelLabel(j == 0 ? entries[i].UnlockLevel : 0);
                 _growthSlots.Add(newSlot);
 
                 newSlot.OnClickGrowthButtonAction += OnClickGrowthSlot;
@@ -92,9 +94,77 @@ public class GrowthUI : BaseUI
 
     }
 
+    public override void OpenUIInternal()
+    {
+        base.OpenUIInternal();
+
+        int unlockCount = GameManager.Instance.GrowthProgress.NormalUnlockCount;
+
+        
+        ScrollToSlot(Mathf.Min(unlockCount, _growthSlots.Count - 1),false);
+
+    }
+
+    void ScrollToSlot(int index, bool animated = true)
+    {
+        if (index < 0 || index >= _growthSlots.Count) return;
+        
+        Canvas.ForceUpdateCanvases();
+        
+        GrowthSlot slot = _growthSlots[index];
+        RectTransform targetRect = slot.GetComponent<RectTransform>();
+        RectTransform viewportRect = _content.parent as RectTransform;
+        
+        Vector3 itemWorldCenter = GetWidgetWorldPoint(targetRect);
+        
+        Vector3 viewportWorldCenter = GetWidgetWorldPoint(viewportRect);
+        
+        Vector3 itemPositionInContent = _content.InverseTransformPoint(itemWorldCenter);
+        Vector3 viewportPositionInContent = _content.InverseTransformPoint(viewportWorldCenter);
+        
+        Vector3 difference = viewportPositionInContent - itemPositionInContent;
+
+        difference.z = 0f;
+        difference.x = 0f;
+        
+        // 위치 계산
+        Vector2 newPosition = _content.anchoredPosition + new Vector2(difference.x, difference.y);
+        
+        // 끝에는 도달하지 않도록 클램핑
+        float contentHeight = _content.rect.height;
+        float viewportHeight = viewportRect.rect.height;
+        float minY = -(contentHeight - viewportHeight);
+        
+        newPosition.y = Mathf.Clamp(newPosition.y, minY, 0);
+        
+        _content.DOKill();
+        
+        if (animated)
+        {
+            _content.DOAnchorPos(newPosition, 0.5f).SetEase(Ease.OutCubic);
+        }
+        else
+        {
+            _content.anchoredPosition = newPosition;
+        }
+    }
+    
+    // 위젯의 중앙 월드 위치를 계산 (pivot 고려)
+    Vector3 GetWidgetWorldPoint(RectTransform target)
+    {
+        // pivot offset을 고려하여 중앙 위치 계산
+        Vector3 pivotOffset = new Vector3(
+            (0.5f - target.pivot.x) * target.rect.size.x,
+            (0.5f - target.pivot.y) * target.rect.size.y,
+            0f);
+        Vector3 localPosition = target.localPosition + pivotOffset;
+        return target.parent.TransformPoint(localPosition);
+    }
+
 
     void OnClickGrowthSlot(GrowthSlot slot, int unlcokCount)
     {
+        ScrollToSlot(unlcokCount - 1);
         _panel.transform.position = slot.transform.position;
         _panel.Open(slot);
     }
