@@ -77,7 +77,7 @@ public class DronActiveSkill : ActiveSkill
         }
 
         AlphaFadeout fadeOut = (AlphaFadeout)CommonPoolManager.Instance.Spawn(CommonPoolIndex.DronAim, targetRandoPos);
-        fadeOut.SetDuration(Data.ProjectileData.AliveTime);
+        fadeOut.SetDuration(Data.ProjectileData.AliveTime, 0.5f);
     }
 
     protected override void OnDestroy()
