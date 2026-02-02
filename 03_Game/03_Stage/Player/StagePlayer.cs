@@ -48,6 +48,10 @@ public class StagePlayer : MonoBehaviour, IDamageable
     }
     private Color[] _originColors;
 
+    // 애니메이션
+    private Animator _animator;
+    private PlayerAnimation _playerAnimation;
+
     [field: Title("Skill")]
     // 액티브 스킬 컨테이너
     [field: SerializeField] public Transform SkillContainer { get; private set; }
@@ -97,6 +101,9 @@ public class StagePlayer : MonoBehaviour, IDamageable
         GoldValue = 0;
         _defaultRadius = _gemCollector.radius;
         _effects = new();
+
+        _animator = GetComponentInChildren<Animator>();
+        _playerAnimation = new(_animator);
 
         _originColors = new Color[_sprs.Length];
         for (int i = 0; i < _originColors.Length; i++)
@@ -229,6 +236,16 @@ public class StagePlayer : MonoBehaviour, IDamageable
         {
             _inputVector = _joyStick.Direction;
         }
+
+        if (_inputVector != Vector2.zero)
+        {
+            _playerAnimation.Run();
+        }
+        else
+        {
+            _playerAnimation.Idle();
+        }
+
         Vector2 nextVec = _speed.MaxValue * Time.fixedDeltaTime * _inputVector.normalized;
         if (nextVec.x != 0)
         {
@@ -323,6 +340,7 @@ public class StagePlayer : MonoBehaviour, IDamageable
             Revive(data);
             return;
         }
+        _playerAnimation.Die();
         OnDieAction?.Invoke();
     }
 
