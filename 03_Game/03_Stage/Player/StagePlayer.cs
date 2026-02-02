@@ -161,9 +161,6 @@ public class StagePlayer : MonoBehaviour, IDamageable
     {
         BuffSystem = new(Condition);
 
-        // effectSO에서 런타임 동안 생성되는 readonly struct buffInstanceKey 값 초기화
-        BuffInstanceKey.ResetGenerator();
-
         // 장비 effect data 가져와서 effect instance 생성하기
         foreach (BaseEquipmentEffectSO effectSO in PlayerManager.Instance.Equipment.EffectSOs)
         {

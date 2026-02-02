@@ -1,12 +1,12 @@
 public sealed class BuffInstance
 {
-    public BuffInstanceKey Key { get; }
+    public BuffKey Key { get; }
     public BaseBuff Source { get; }
     public float RemainingTime { get; private set; }
     public bool IsActive { get; private set; }
     private BuffEndCondition _endCondition;
 
-    public BuffInstance(BuffInstanceKey key, BaseBuff source)
+    public BuffInstance(BuffKey key, BaseBuff source)
     {
         Key = key;
         Source = source;

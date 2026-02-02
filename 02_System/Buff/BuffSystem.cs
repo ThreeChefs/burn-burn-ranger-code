@@ -19,7 +19,7 @@ public class BuffSystem
     /// </summary>
     /// <param name="key"></param>
     /// <param name="buff"></param>
-    public void Add(BuffInstanceKey key, BaseBuff buff)
+    public void Add(BuffKey key, BaseBuff buff)
     {
         BuffInstance existing = null;
         for (int i = 0; i < _active.Count; i++)
