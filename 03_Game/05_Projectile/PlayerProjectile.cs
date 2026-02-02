@@ -79,7 +79,7 @@ public class PlayerProjectile : BaseProjectile
     #endregion
 
     #region 충돌 처리
-    protected override void HandleRefelction(Collider2D collision)
+    protected override void HandleReflection(Collider2D collision)
     {
         Vector2 norm = Vector2.zero;
 

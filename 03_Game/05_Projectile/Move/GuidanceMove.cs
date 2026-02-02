@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// 투사체 이동 - 유도
 /// </summary>
-public class GudianceMove : IProjectileMove
+public class GuidanceMove : IProjectileMove
 {
     private readonly BaseProjectile _projectile;
     private readonly Transform _self;
@@ -13,7 +13,7 @@ public class GudianceMove : IProjectileMove
     private float _gudianceTime;
     private readonly float _turnSpeed;
 
-    public GudianceMove(
+    public GuidanceMove(
         BaseProjectile projectile,
         IProjectileMove baseMove,
         float gudianceTime,

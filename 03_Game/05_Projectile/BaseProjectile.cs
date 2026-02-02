@@ -198,7 +198,7 @@ public class BaseProjectile : PoolObject, IDamageable
 
         if ((data.MoveFeature & ProjectileMoveFeature.Guidance) != 0)
         {
-            move = new GudianceMove(this, move, data.GuidanceTime);
+            move = new GuidanceMove(this, move, data.GuidanceTime);
         }
 
         if ((data.MoveFeature & ProjectileMoveFeature.Reflection) != 0)
@@ -232,7 +232,7 @@ public class BaseProjectile : PoolObject, IDamageable
 
         if (IsReflectTarget(layer))
         {
-            HandleRefelction(collision);
+            HandleReflection(collision);
             PlaySfxOfHitType();
         }
     }
@@ -288,7 +288,7 @@ public class BaseProjectile : PoolObject, IDamageable
         }
     }
 
-    protected virtual void HandleRefelction(Collider2D collision)
+    protected virtual void HandleReflection(Collider2D collision)
     {
         Vector2 norm = Vector2.zero;
 
