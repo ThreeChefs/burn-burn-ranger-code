@@ -119,6 +119,12 @@ public class Inventory
 
         for (int i = _items.Count - 1; i >= 0;)
         {
+            if (_items[i].ItemClass == ItemClass.Legendary)
+            {
+                i--;
+                continue;
+            }
+
             if (_items[i].ItemData.Id != id || _items[i].ItemClass != itemClass)
             {
                 tempItems.Clear();
