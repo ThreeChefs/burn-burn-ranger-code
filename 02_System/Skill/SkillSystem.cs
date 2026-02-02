@@ -251,6 +251,8 @@ public class SkillSystem
     /// <param name="combinationSkills"></param>
     private void EvaluateCombinationSkills(SkillData[] combinationSkills)
     {
+        if (combinationSkills == null || combinationSkills.Length == 0) return;
+
         foreach (SkillData combinationSkill in combinationSkills)
         {
             SkillData[] requiredSkills = combinationSkill.CombinationSkills;
