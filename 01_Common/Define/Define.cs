@@ -22,6 +22,8 @@ public static class Define
 
     public const int FortuneBoxSkillSlotCount = 16;
 
+    public const string DefaultSkillWeaponName = "쿠나이";
+
     // 플레이어 맥스 레벨
     public const int PlayerMaxLevel = 100;
     public const int StageMaxLevel = 50;

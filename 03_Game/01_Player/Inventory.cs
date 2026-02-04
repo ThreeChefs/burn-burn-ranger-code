@@ -14,8 +14,6 @@ public class Inventory
 
     public event Action OnInventoryChanged;
 
-    public const string DefaultWeapon = "쿠나이";
-
     // todo: 장비 아이템은 따로 관리
     // 현재는 테스트용으로 열기 -> private set으로 닫아두기
     public Dictionary<int, int> RequiredSkills = new();
@@ -30,7 +28,7 @@ public class Inventory
         if (_items.Count > 0) return;
 
         // 기본 무기 제공 및 장비
-        ItemData data = GameManager.Instance.ItemDatabase.FindFirstByName(DefaultWeapon);
+        ItemData data = GameManager.Instance.ItemDatabase.FindFirstByName(Define.DefaultSkillWeaponName);
         ItemInstance instance = new(ItemClass.Normal, data);
         Add(instance);
 
