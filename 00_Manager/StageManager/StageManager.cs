@@ -276,75 +276,57 @@ public class StageManager : SceneSingletonManager<StageManager>
     {
         List<StageRewardInfo> rewardInfos = new List<StageRewardInfo>();
 
-        StageRewardInfo weaponMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Weapon };
-        StageRewardInfo armortMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Armor };
-        StageRewardInfo shoesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Shoes };
-        StageRewardInfo glovesMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Gloves };
-        StageRewardInfo beltMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Belt };
-        StageRewardInfo necklaceMaterial = new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Necklace };
+        // 딕셔너리로 재료 타입별 보상 정보 관리
+        Dictionary<WalletType, StageRewardInfo> upgradeMaterials = new Dictionary<WalletType, StageRewardInfo>
+        {
+            { WalletType.UpgradeMaterial_Weapon, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Weapon } },
+            { WalletType.UpgradeMaterial_Armor, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Armor } },
+            { WalletType.UpgradeMaterial_Shoes, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Shoes } },
+            { WalletType.UpgradeMaterial_Gloves, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Gloves } },
+            { WalletType.UpgradeMaterial_Belt, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Belt } },
+            { WalletType.UpgradeMaterial_Necklace, new StageRewardInfo { type = ItemType.UpgradeMaterial, upgradeMaterialType = WalletType.UpgradeMaterial_Necklace } }
+        };
 
         for (int i = 0; i < _nowStage.RewardBoxCount; i++)
         {
             float rand = UnityEngine.Random.value;
-            StageRewardInfo newRewardInfo = default;
 
             if (rand <= StageDefine.StageClearEquipRewardWeight)
             {
                 // 장비 주기
-                newRewardInfo.type = ItemType.Equipment;
+                StageRewardInfo newRewardInfo = new StageRewardInfo
+                {
+                    type = ItemType.Equipment,
+                    itemInfo = GameManager.Instance.PickUpSystem.PickUp(0),
+                    count = 1
+                };
 
-                newRewardInfo.itemInfo = GameManager.Instance.PickUpSystem.PickUp(0);
                 PlayerManager.Instance.Inventory.Add(newRewardInfo.itemInfo);
-
-                newRewardInfo.count += 1;
-
                 rewardInfos.Add(newRewardInfo);
-
             }
             else
             {
+                // 업그레이드 재료 주기
                 WalletType randomUpgradeMaterial = (WalletType)Define.Random.Next((int)WalletType.UpgradeMaterial_Weapon, (int)WalletType.UpgradeMaterial_Weapon + StageDefine.EquipTypeCount);
-
-
-                switch (randomUpgradeMaterial)
+                
+                if (upgradeMaterials.ContainsKey(randomUpgradeMaterial))
                 {
-                    case WalletType.UpgradeMaterial_Weapon:
-                        weaponMaterial.count += 1;
-                        break;
-                    case WalletType.UpgradeMaterial_Armor:
-                        armortMaterial.count += 1;
-                        break;
-                    case WalletType.UpgradeMaterial_Shoes:
-                        shoesMaterial.count += 1;
-                        break;
-                    case WalletType.UpgradeMaterial_Gloves:
-                        glovesMaterial.count += 1;
-                        break;
-                    case WalletType.UpgradeMaterial_Belt:
-                        beltMaterial.count += 1;
-                        break;
-                    case WalletType.UpgradeMaterial_Necklace:
-                        necklaceMaterial.count += 1;
-                        break;
+                    StageRewardInfo material = upgradeMaterials[randomUpgradeMaterial];
+                    material.count += 1;
+                    upgradeMaterials[randomUpgradeMaterial] = material;
                 }
             }
         }
 
-        if (weaponMaterial.count > 0) rewardInfos.Add(weaponMaterial);
-        if (armortMaterial.count > 0) rewardInfos.Add(armortMaterial);
-        if (shoesMaterial.count > 0) rewardInfos.Add(shoesMaterial);
-        if (glovesMaterial.count > 0) rewardInfos.Add(glovesMaterial);
-        if (beltMaterial.count > 0) rewardInfos.Add(beltMaterial);
-        if (necklaceMaterial.count > 0) rewardInfos.Add(necklaceMaterial);
-
-        for (int i = 0; i < rewardInfos.Count; ++i)
+        // count > 0인 재료만 추가하고 지갑에 반영
+        foreach (var material in upgradeMaterials.Values)
         {
-            // 장비 어떻게 주면 되는지?
-
-            if (rewardInfos[i].type == ItemType.UpgradeMaterial)
-                PlayerManager.Instance.Wallet[rewardInfos[i].upgradeMaterialType].Add(rewardInfos.Count);
+            if (material.count > 0)
+            {
+                rewardInfos.Add(material);
+                PlayerManager.Instance.Wallet[material.upgradeMaterialType].Add(material.count);
+            }
         }
-
 
         return rewardInfos;
     }
