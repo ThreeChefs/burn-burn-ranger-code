@@ -82,24 +82,19 @@ public class MonsterManager : PoolManager<MonsterManager, MonsterPoolIndex>
     {
         Monster nearestMonster = null;
         StagePlayer player = PlayerManager.Instance.StagePlayer;
+        Vector3 playerPos = player.transform.position;
+        float nearestDistance = float.PositiveInfinity;
 
 
-        foreach (var pool in activatedMonsters)
+        foreach (Monster monster in activatedMonsters)
         {
-            var monster = pool as Monster;
             if (monster == null) continue;
 
-            if (nearestMonster == null)
-            {
-                nearestMonster = monster;
-                continue;
-            }
-
-            float currentDistance = Vector2.Distance(monster.transform.position, player.transform.position);
-            float nearestDistance = Vector2.Distance(nearestMonster.transform.position, player.transform.position);
+            float currentDistance = Vector2.Distance(monster.transform.position, playerPos);
 
             if (currentDistance < nearestDistance)
             {
+                nearestDistance = currentDistance;
                 nearestMonster = monster;
             }
         }
