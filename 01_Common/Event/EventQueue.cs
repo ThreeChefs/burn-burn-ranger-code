@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public sealed class EvenetQueue
+public sealed class EventQueue
 {
     private readonly Queue<Action<Action>> _queue = new();
     private bool _running;
