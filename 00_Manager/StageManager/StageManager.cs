@@ -35,7 +35,7 @@ public class StageManager : SceneSingletonManager<StageManager>
 
 
     // 스테이지 이벤트
-    private readonly EvenetQueue _eventQueue = new EvenetQueue();
+    private readonly EventQueue _eventQueue = new EventQueue();
 
 
     // 액션

@@ -72,7 +72,6 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
     }
     public GemItem SpawnGem(GemPoolIndex type, Vector3 position, int dropCount)
     {
-        Debug.Log($"[SpawnGem] type={type} pos={position} dropCount={dropCount}\n{System.Environment.StackTrace}");
         return SpawnObject<GemItem>(type, position);
     }
 

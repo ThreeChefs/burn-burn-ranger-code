@@ -1,27 +1,16 @@
-using System;
 using UnityEngine;
 
-public readonly struct BuffInstanceKey : IEquatable<BuffInstanceKey>
+[System.Serializable]
+public struct BuffKey : System.IEquatable<BuffKey>
 {
-    private static int Next;
-    public readonly int Value;
+    [UnityEngine.SerializeField] private int _value;
+    public readonly int Value => _value;
 
-    private BuffInstanceKey(int value)
-    {
-        Value = value;
-    }
-
-    public static BuffInstanceKey New() => new(Next++);
-
-    public static void ResetGenerator() => Next = 0;
-
-    public bool Equals(BuffInstanceKey other)
-    {
-        return Value == other.Value;
-    }
+    public BuffKey(int value) { _value = value; }
+    public bool Equals(BuffKey other) { return Value == other.Value; }
 }
 
-[Serializable]
+[System.Serializable]
 public struct HpRatioCondition
 {
     [field: SerializeField] public HpCompareType CompareType { get; private set; }

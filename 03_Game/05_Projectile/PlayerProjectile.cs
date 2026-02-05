@@ -79,7 +79,7 @@ public class PlayerProjectile : BaseProjectile
     #endregion
 
     #region 충돌 처리
-    protected override void HandleRefelction(Collider2D collision)
+    protected override void HandleReflection(Collider2D collision)
     {
         Vector2 norm = Vector2.zero;
 
@@ -191,7 +191,7 @@ public class PlayerProjectile : BaseProjectile
         float rand = Random.Range(0f, 1f);
         if (fatalProability.MaxValue * 0.01f > rand)
         {
-            Logger.Log($"치명타! 확률: {rand} / {fatalProability.MaxValue * 0.01f}");
+            //Logger.Log($"치명타! 확률: {rand} / {fatalProability.MaxValue * 0.01f}");
             fatalMultiplier = 2f;
         }
 

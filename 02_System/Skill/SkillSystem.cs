@@ -14,7 +14,6 @@ public class SkillSystem
     private SkillState[] _skillStates;
 
     private bool _hasWeapon;
-    private string _defaultSkillName = "쿠나이";
     private SkillData _defaultSkillData;
 
     // 스킬 조건
@@ -49,7 +48,7 @@ public class SkillSystem
             _skillTable[i] = skillDatabase[i];
             _skillTable[i].RuntimeIndex = i;
 
-            if (_skillTable[i].DisplayName.Equals(_defaultSkillName))
+            if (_skillTable[i].DisplayName.Equals(Define.DefaultSkillWeaponName))
             {
                 _defaultSkillData = _skillTable[i];
             }
@@ -251,6 +250,8 @@ public class SkillSystem
     /// <param name="combinationSkills"></param>
     private void EvaluateCombinationSkills(SkillData[] combinationSkills)
     {
+        if (combinationSkills == null || combinationSkills.Length == 0) return;
+
         foreach (SkillData combinationSkill in combinationSkills)
         {
             SkillData[] requiredSkills = combinationSkill.CombinationSkills;
