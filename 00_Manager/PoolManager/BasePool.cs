@@ -81,26 +81,16 @@ public class BasePool : MonoBehaviour
     /// </summary>
     protected void OnDestroyPoolObject(PoolObject poolObject)
     {
-        if(activatedObjectsPool.Contains(poolObject))
-            activatedObjectsPool.Remove(poolObject);
-
-        if (deactivatedObjectsPool.Contains(poolObject))
-            deactivatedObjectsPool.Remove(poolObject);
+        activatedObjectsPool.Remove(poolObject);
+        deactivatedObjectsPool.Remove(poolObject);
         
         OnDeactivateAction?.Invoke(poolObject);
     }
 
     protected void OnDeactivatePoolObject(PoolObject poolObject)
     {
-        if (activatedObjectsPool.Contains(poolObject) == true)
-        {
-            activatedObjectsPool.Remove(poolObject);
-        }
-
-        if (deactivatedObjectsPool.Contains(poolObject) == false)
-        {
-            deactivatedObjectsPool.Add(poolObject);
-        }
+        activatedObjectsPool.Remove(poolObject);
+        deactivatedObjectsPool.Add(poolObject);
 
         OnDeactivateAction?.Invoke(poolObject);
     }
@@ -108,14 +98,9 @@ public class BasePool : MonoBehaviour
     void ActivateGameObject(PoolObject poolObject)
     {
         poolObject.gameObject.SetActive(true);
-        if (deactivatedObjectsPool.Contains(poolObject)==true)
-        {
-            deactivatedObjectsPool.Remove(poolObject);
-        }
-        if (activatedObjectsPool.Contains(poolObject) == false)
-        {
-            activatedObjectsPool.Add(poolObject);
-        }
+        
+        deactivatedObjectsPool.Remove(poolObject);
+        activatedObjectsPool.Add(poolObject);
 
         OnActivateAction?.Invoke(poolObject);
     }
