@@ -133,6 +133,11 @@ public class StageManager : SceneSingletonManager<StageManager>
             {
                 ShowSkillSelectUI(_player.StageLevel.Level);
             }
+
+            if( Keyboard.current.digit1Key.wasPressedThisFrame)
+            {
+                _waveController.AddPlayTime(10f);
+            }
         }
 
 

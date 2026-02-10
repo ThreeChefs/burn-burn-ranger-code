@@ -42,6 +42,7 @@ public class StageWaveController
 
     public int SaveExp => _saveExp;
     public float PlayeTime => _playTime;
+    public void AddPlayTime(float time) => _playTime += time;
 
     #endregion
 
