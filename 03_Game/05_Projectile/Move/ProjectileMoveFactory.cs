@@ -1,3 +1,5 @@
+using System;
+
 /// <summary>
 /// 투사체 이동 로직 조합 클래스
 /// </summary>
@@ -26,7 +28,10 @@ public static class ProjectileMoveFactory
         return data.BaseMoveType switch
         {
             ProjectileBaseMoveType.Straight => new StraightMove(projectile),
-            _ => null
+            _ => throw new ArgumentOutOfRangeException(
+                nameof(data.BaseMoveType),
+                data.BaseMoveType,
+                "지원하지 않는 BaseMoveType")
         };
     }
 }
