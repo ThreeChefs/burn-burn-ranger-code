@@ -179,7 +179,7 @@ public class BaseProjectile : PoolObject, IDamageable
             Vector3 movePos = target.position;
             MoveDir = (movePos - transform.position).normalized;
         }
-        CreateMove();
+        move = ProjectileMoveFactory.CreateMove(this, data);
         PlaySfxOfSpawnType();
     }
 
@@ -187,35 +187,8 @@ public class BaseProjectile : PoolObject, IDamageable
     {
         transform.position = spawnPos;
         MoveDir = dir;
-        CreateMove();
+        move = ProjectileMoveFactory.CreateMove(this, data);
         PlaySfxOfSpawnType();
-    }
-
-    private void CreateMove()
-    {
-        IProjectileMove move;
-        move = CreateBaseMove();
-
-        if ((data.MoveFeature & ProjectileMoveFeature.Guidance) != 0)
-        {
-            move = new GuidanceMove(this, move, data.GuidanceTime);
-        }
-
-        if ((data.MoveFeature & ProjectileMoveFeature.Reflection) != 0)
-        {
-            move = new ReflectionMove(this, move, data.ReflectionLayerMask);
-        }
-
-        this.move = move;
-    }
-
-    private IProjectileMove CreateBaseMove()
-    {
-        return data.BaseMoveType switch
-        {
-            ProjectileBaseMoveType.Straight => new StraightMove(this),
-            _ => null
-        };
     }
     #endregion
 
