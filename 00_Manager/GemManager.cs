@@ -4,31 +4,14 @@ using UnityEngine;
 public class GemManager : PoolManager<GemManager, GemPoolIndex>
 {
     [SerializeField] private Transform gemRoot;
-    public override bool UsePool(GemPoolIndex poolIndex)
-    {
-        if (nowPoolDic.ContainsKey(poolIndex) && nowPoolDic[poolIndex] != null)
-        {
-            return true;
-        }
-
-        if (!_originPoolDic.TryGetValue(poolIndex, out var data))
-        {
-            return false;
-        }
-
-        BasePool pool = Instantiate(poolPrefab, gemRoot);
-        pool.Init(data);
-        nowPoolDic[poolIndex] = pool;
-        return true;
-    }
-
+ 
     public void MagnetGems(Transform target)
     {
-
         if (nowPoolDic == null || nowPoolDic.Count == 0)
         {
             return;
         }
+
         foreach (var kv in nowPoolDic)
         {
             var pool = kv.Value;
@@ -48,6 +31,7 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
             }
         }
     }
+
     public void CollectAllGemsInstant(StagePlayer player)
     {
         foreach (var kv in nowPoolDic)
@@ -70,6 +54,7 @@ public class GemManager : PoolManager<GemManager, GemPoolIndex>
             }
         }
     }
+    
     public GemItem SpawnGem(GemPoolIndex type, Vector3 position, int dropCount)
     {
         return SpawnObject<GemItem>(type, position);

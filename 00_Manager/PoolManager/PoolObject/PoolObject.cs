@@ -9,30 +9,27 @@ using UnityEngine;
 /// </summary>
 public class PoolObject : MonoBehaviour
 {
-    public event Action<PoolObject> OnEnableAction;
-    public event Action<PoolObject> OnDisableAction;
-    public event Action<PoolObject> OnDestroyAction;
-
+    public event Action<PoolObject> OnEnableAction;     // 활성화 될 때 호출되는 이벤트
+    public event Action<PoolObject> OnDisableAction;    // 비활성화 될 때 호출되는 이벤트
+    public event Action<PoolObject> OnDestroyAction;    // 파괴 될 때 호출되는 이벤트
 
     /// <summary>
     /// PoolObject 가 Create 될 때 초기화할 내용을 넣어 주세요
     /// </summary>
-    public virtual void InitPoolObject()
-    {
+    // PoolObject 가 생성될 때 호출되는 초기화 함수
+    public virtual void InitPoolObject(){}
 
-    }
-
+    // PoolObject 가 활성화 될 때 호출되는 함수
     private void OnEnable()
     {
         OnEnableAction?.Invoke(this);
         OnEnableInternal();
     }
 
-    protected virtual void OnEnableInternal()
-    {
+    // PoolObject 가 활성화 될 때 내부에서 처리할 내용이 있으면 여기에 작성
+    protected virtual void OnEnableInternal(){}
 
-    }
-
+    // PoolObject 가 비활성화 될 때 호출되는 함수
     private void OnDisable()
     {
         OnDisableInternal();
@@ -40,18 +37,16 @@ public class PoolObject : MonoBehaviour
         this.transform.localScale = Vector3.one;
     }
 
-    protected virtual void OnDisableInternal()
-    {
+    // PoolObject 가 비활성화 될 때 내부에서 처리할 내용이 있으면 여기에 작성
+    protected virtual void OnDisableInternal(){}
 
-    }
-
+    // PoolObject 가 파괴될 때 호출되는 함수
     private void OnDestroy()
     {
         OnDestroyInternal();
         OnDestroyAction?.Invoke(this);
     }
 
-    protected void OnDestroyInternal()
-    {
-    }
+    // PoolObject 가 파괴될 때 내부에서 처리할 내용이 있으면 여기에 작성
+    protected void OnDestroyInternal(){}
 }

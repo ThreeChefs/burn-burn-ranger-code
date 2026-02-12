@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class BasePool : MonoBehaviour
 {
-    protected PoolObjectData poolObjectData;
+    protected PoolObjectData poolObjectData;        // 이 Pool 이 어떤 PoolObjectData 를 사용하는지 저장 
 
-    protected HashSet<PoolObject> activatedObjectsPool;
-    protected HashSet<PoolObject> deactivatedObjectsPool;
+    protected HashSet<PoolObject> activatedObjectsPool;     // 활성화된 오브젝트들
+    protected HashSet<PoolObject> deactivatedObjectsPool;   // 비활성화된 오브젝트들
 
     public HashSet<PoolObject> ActivatedObjectsPool => activatedObjectsPool;
 
-    protected PoolObject originPrefab;
-    protected int nowPoolSize = 0;
+    protected PoolObject originPrefab;              // 이 Pool 이 생성할 오브젝트의 원본 프리팹
+    protected int nowPoolSize = 0;                  // 현재 Pool 에 생성된 오브젝트 수
 
-    public event Action<PoolObject> OnActivateAction;
-    public event Action<PoolObject> OnDeactivateAction;
+    public event Action<PoolObject> OnActivateAction;   // PoolObject 가 활성화 될 때 호출되는 이벤트
+    public event Action<PoolObject> OnDeactivateAction; // PoolObject 가 비활성화 될 때 호출되는 이벤트
 
+    // PoolObjectData 로 Pool 초기화
     public void Init(PoolObjectData poolObjectData)
     {  
         this.poolObjectData = poolObjectData;
@@ -36,6 +36,7 @@ public class BasePool : MonoBehaviour
         }
     }
 
+    // 새로운 PoolObject 생성
     protected virtual PoolObject CreateGameObject()
     {
         PoolObject newGameObject = Instantiate(originPrefab);
@@ -47,17 +48,14 @@ public class BasePool : MonoBehaviour
         newGameObject.InitPoolObject();
         deactivatedObjectsPool.Add(newGameObject);
         
-        // PoolObject 가 Disable 될 때 
+        // PoolObject 가 Disable 될 때 호출되는 이벤트 등록
         newGameObject.OnDisableAction += OnDeactivatePoolObject;
         newGameObject.OnDestroyAction += OnDestroyPoolObject;
 
         return newGameObject;
     }
 
-    /// <summary>
-    /// PoolManager 에서 Spawn 할 때 접근해서 쓰고 있음
-    /// </summary>
-    /// <returns></returns>
+    // PoolObject 하나 가져오기
     public PoolObject GetPoolObject()
     {
         foreach (PoolObject poolObject in deactivatedObjectsPool)
@@ -76,9 +74,6 @@ public class BasePool : MonoBehaviour
         return newObject;
     }
 
-    /// <summary>
-    /// PoolObject가 OnDestroy 되었다면
-    /// </summary>
     protected void OnDestroyPoolObject(PoolObject poolObject)
     {
         activatedObjectsPool.Remove(poolObject);
@@ -105,16 +100,27 @@ public class BasePool : MonoBehaviour
         OnActivateAction?.Invoke(poolObject);
     }
 
-
+    // Pool 내 모든 오브젝트 비활성화
     public void DeactivateAllPoolObjects()
-    {
-        PoolObject[] activatedArray = activatedObjectsPool.ToArray();
-
-        for (int i = 0; i < activatedArray.Length; i++)
+    {   
+        // 이벤트로 activatedObjectsPool 에서 제거되니 하나씩 반복문 돌리기
+        while (activatedObjectsPool.Count > 0)
         {
-            activatedArray[i].gameObject.SetActive(false);
-        }
+            PoolObject target = null;
 
+            foreach (PoolObject poolObject in activatedObjectsPool)
+            {
+                target = poolObject;
+                break;
+            }
+
+            if (target == null)
+            {
+                break;
+            }
+
+            target.gameObject.SetActive(false);
+        }
     }
 
     

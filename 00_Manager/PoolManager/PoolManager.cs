@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-// todo : Capacity 추가해보기
 public abstract class PoolManager<T, TEnumIndex> : GlobalSingletonManager<T>
-    where T : PoolManager<T, TEnumIndex> where TEnumIndex : struct, Enum       // Enum.TryParse 쓰려면 Generic 제약 struct 필요하대
+    where T : PoolManager<T, TEnumIndex> where TEnumIndex : struct, Enum
 {
-    [SerializeField] protected BasePool poolPrefab;             // 풀 프리팹
+    [SerializeField] protected BasePool poolPrefab;                                      // 풀 프리팹
     [SerializeField] protected PoolObjectDatabase poolDatabase;
 
-    protected Dictionary<TEnumIndex, PoolObjectData> _originPoolDic;  // Database 에서 어떤 PoolIndex 가 있는지 확인용 Dictionary
-    protected Dictionary<TEnumIndex, BasePool> nowPoolDic;      // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
+    protected Dictionary<TEnumIndex, PoolObjectData> _originPoolDic;                     // Database 에서 어떤 PoolIndex 가 있는지 확인용 Dictionary
+    protected Dictionary<TEnumIndex, BasePool> nowPoolDic;                               // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
 
     protected override void Init()
     {
@@ -33,22 +32,35 @@ public abstract class PoolManager<T, TEnumIndex> : GlobalSingletonManager<T>
     }
 
     /// <summary>
-    /// Scene에서 사용할 Pool 들 사용하겠다고 알려줘야해요
+    /// 사용할 Pool 을 생성하고 nowPoolDic 에 추가
     /// </summary>
-    /// <param name="poolType"></param>
-    public abstract bool UsePool(TEnumIndex poolIndex);
+    public virtual BasePool UsePool(TEnumIndex poolIndex)
+    {
+        if (nowPoolDic.ContainsKey(poolIndex)) return null;
+        if (_originPoolDic.ContainsKey(poolIndex) == false) return null;
+
+        PoolObjectData data = _originPoolDic[poolIndex];
+        if (data == null) return null;
+        if (data.OriginPrefab == null) return null;
+
+        BasePool newPool = Instantiate(poolPrefab);
+        newPool.Init(_originPoolDic[poolIndex]);
+        newPool.name = $"{poolIndex}_Pool";
+
+        nowPoolDic.Add(poolIndex, newPool);
+        return newPool;
+    }
 
 
-    protected PoolObject SpawnObject(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
+
+    protected PoolObject SpawnObject(   
+        TEnumIndex poolType, 
+        Vector3 position = default, Quaternion rotation = default,Transform parent = null)
     {
         if (nowPoolDic.ContainsKey(poolType) == false)
         {
             UsePool(poolType);
-            
-            if (nowPoolDic[poolType] == null)
-            {
-                return null;
-            }
+            if (nowPoolDic[poolType] == null) return null;
         }
 
         PoolObject newGameObject = nowPoolDic[poolType].GetPoolObject();
@@ -63,22 +75,19 @@ public abstract class PoolManager<T, TEnumIndex> : GlobalSingletonManager<T>
         else
             newGameObject.transform.rotation = Quaternion.identity;
 
-
         if (parent != null)
-        {
             newGameObject.transform.SetParent(parent);
-        }
         else
-        {
             newGameObject.transform.SetParent(nowPoolDic[poolType].transform);
-        }
 
         return newGameObject;
 
     }
 
-    protected TPoolObject SpawnObject<TPoolObject>(TEnumIndex poolType, Vector3 position = default, Quaternion rotation = default, Transform parent = null)
-    where TPoolObject : PoolObject
+    protected TPoolObject SpawnObject<TPoolObject>(
+        TEnumIndex poolType,
+        Vector3 position = default, Quaternion rotation = default, Transform parent = null) 
+        where TPoolObject : PoolObject
     {
         PoolObject go = SpawnObject(poolType, position, rotation, parent);
 
