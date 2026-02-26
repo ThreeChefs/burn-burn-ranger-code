@@ -1,4 +1,4 @@
-﻿
+
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,11 +17,12 @@ public class PopupUIElement : MonoBehaviour
     [MinMaxSlider(0f, 1f, true)]
     [SerializeField] Vector2 _tweenTime = Vector2.up;
 
+#region Caching Parameters
     RectTransform _parentCanvas;
     RectTransform _rect;
-    
     Vector2 _originPos;
     Vector2 _originScale;
+#endregion
 
     private void Awake()
     {
@@ -33,26 +34,12 @@ public class PopupUIElement : MonoBehaviour
         _parentCanvas = rootCanvas.transform as RectTransform;
     }
 
-    void CalcTweenTime(float total, Vector2 tween01, out float delay, out float tweenDuration)
-    {
-        delay = total * tween01.x;
-        tweenDuration = total * (tween01.y - tween01.x);
-    }
-
-    Vector2 CalcReverseTweenTime()
-    {
-        return new Vector2(1f - _tweenTime.y, 1f - _tweenTime.x);
-    }
-
-
+    // 팝업 UI 가 열렸을 때 재생되는 애니메이션
     public void Open(float duration)
     {
         if (_parentCanvas == null) return;
 
         CalcTweenTime(duration, _tweenTime, out float delay, out float tweenDuration);
-
-        Vector2 parentSize = _parentCanvas.rect.size;
-        Vector2 selfSize = _rect.rect.size;
 
         switch (_openType)
         {
@@ -97,9 +84,6 @@ public class PopupUIElement : MonoBehaviour
     {
         if (_parentCanvas == null) return;
 
-        Vector2 parentSize = _parentCanvas.rect.size;
-        Vector2 selfSize = _rect.rect.size;
-
         Vector2 reverseTime = CalcReverseTweenTime();
         CalcTweenTime(duration, reverseTime, out float delay, out float tweenDuration);
 
@@ -137,6 +121,17 @@ public class PopupUIElement : MonoBehaviour
                     .SetDelay(delay).SetEase(_closeEase).SetUpdate(true);
                 break;
         }
+    }
+
+    void CalcTweenTime(float total, Vector2 tweenTime, out float delay, out float tweenDuration)
+    {
+        delay = total * tweenTime.x;
+        tweenDuration = total * (tweenTime.y - tweenTime.x);
+    }
+
+    Vector2 CalcReverseTweenTime()
+    {
+        return new Vector2(1f - _tweenTime.y, 1f - _tweenTime.x);
     }
 }
 
