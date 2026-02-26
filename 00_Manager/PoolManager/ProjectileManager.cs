@@ -30,7 +30,6 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         if (projectile == null) return projectile;
 
         projectile.Init(baseStat, _originPoolDic[poolIndex] as ProjectileData);
-        projectile.Spawn(position, dir);
 
         return projectile;
     }
@@ -46,7 +45,6 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         if (projectile == null) return projectile;
 
         projectile.Init(baseStat, _originPoolDic[poolIndex] as ProjectileData);
-        projectile.Spawn(position, targetPos);
 
         return projectile;
     }
@@ -93,7 +91,6 @@ public class ProjectileManager : PoolManager<ProjectileManager, ProjectileDataIn
         if (projectile == null) return projectile;
 
         projectile.Init(skillStat, _originPoolDic[poolIndex]);
-        projectile.Spawn(position, targetPos);
 
         return projectile;
     } 
