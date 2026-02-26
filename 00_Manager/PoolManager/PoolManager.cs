@@ -7,11 +7,15 @@ using UnityEngine.SceneManagement;
 public abstract class PoolManager<T, TEnumIndex> : GlobalSingletonManager<T>
     where T : PoolManager<T, TEnumIndex> where TEnumIndex : struct, Enum
 {
-    [SerializeField] protected BasePool poolPrefab;                                      // 풀 프리팹
+    // 풀 프리팹
+    [SerializeField] protected BasePool poolPrefab;
     [SerializeField] protected PoolObjectDatabase poolDatabase;
 
-    protected Dictionary<TEnumIndex, PoolObjectData> _originPoolDic;                     // Database 에서 어떤 PoolIndex 가 있는지 확인용 Dictionary
-    protected Dictionary<TEnumIndex, BasePool> nowPoolDic;                               // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
+    // Database 에서 어떤 PoolIndex 가 있는지 확인용 Dictionary
+    protected Dictionary<TEnumIndex, PoolObjectData> _originPoolDic;
+
+    // Scene 에서 사용할 Pool 들을 Instantiate 하고 넣어둘 Dictionary.
+    protected Dictionary<TEnumIndex, BasePool> nowPoolDic;                               
 
     protected override void Init()
     {

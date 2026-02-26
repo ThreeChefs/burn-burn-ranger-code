@@ -6,15 +6,22 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : GlobalSingletonManager<UIManager>
 {
-    [SerializeField] GoDatabase _uiDatabase;
+    [SerializeField] GoDatabase _uiDatabase;   // UI 원본 프리팹들이 저장된 데이터베이스
+
+    // UIName 과 BaseUI 원본 프리팹 매핑 딕셔너리
     Dictionary<UIName, BaseUI> _originUiDict = new Dictionary<UIName, BaseUI>();
+    
+    // 현재 씬에서 로드된 UI 들을 저장하는 딕셔너리
     Dictionary<UIName, BaseUI> _nowLoadedUiDict = new Dictionary<UIName, BaseUI>();
 
+    // 캔버스 원본 프리팹
     [SerializeField] private Canvas _originCanvasPrefab;
-    Dictionary<UICanvasOrder, Canvas> _canvasDict;
+    Dictionary<UICanvasOrder, Canvas> _canvasDict;  // 각 오더별 캔버스 매핑 딕셔너리
 
     GameObject _canvasRoot;
 
+    // UIManager 초기화
+    // Dictionary 에 UIName 과 BaseUI 원본 프리팹 매핑
     protected override void Init()
     {
         _originUiDict = ((UIName[])Enum.GetValues(typeof(UIName))).ToDictionary(part => part, part => (BaseUI)null);
@@ -30,9 +37,10 @@ public class UIManager : GlobalSingletonManager<UIManager>
         }
     }
 
+    // 씬 로드 시 처리
+    // 캔버스 루트 오브젝트 및 각 오더별 캔버스 생성
     protected override void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-
         _canvasRoot = new GameObject();
         _canvasRoot.name = "CanvasRoot";
         _canvasRoot.transform.position = Vector3.zero;
@@ -50,15 +58,13 @@ public class UIManager : GlobalSingletonManager<UIManager>
             newCanvas.transform.SetParent(_canvasRoot.transform, false);
         }
 
-
         // 항상 스폰해둘 UI
         LoadUI(UIName.UI_Dimmed, false);
-
     }
 
 
     /// <summary>
-    /// 1회성
+    /// 1회성 UI 스폰
     /// </summary>
     public BaseUI SpawnUI(UIName uiName)
     {
@@ -94,6 +100,9 @@ public class UIManager : GlobalSingletonManager<UIManager>
         return null;
     }
 
+    /// <summary>
+    /// 월드 UI 스폰
+    /// </summary>
     public BaseUI SpawnWorldUI(UIName uiName, Transform parent = null)
     {
         BaseUI ui = GetOriginUI(uiName);
@@ -108,7 +117,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
     }
 
     /// <summary>
-    /// 현재 씬에서 Dictionary에 저장해두고 쓸 애들
+    /// 현재 씬에서 Dictionary에 저장해두고 쓸 UI 스폰
     /// </summary>
     public BaseUI LoadUI(UIName uiName, bool active = true)
     {
@@ -150,12 +159,15 @@ public class UIManager : GlobalSingletonManager<UIManager>
     }
 
 
+    /// <summary>
+    /// Load 되어있는 UI 중 골라서 열기
+    /// </summary>
     public BaseUI ShowUI(UIName uiName)
     {
         BaseUI ui = GetLoadedUI(uiName);
         if (ui != null)
         {
-            ui.transform.SetAsLastSibling();
+            ui.transform.SetAsLastSibling();    // UI 현재 부모 안에서 최상단으로 올리기
             ui.gameObject.SetActive(true);
             ui.OpenUI();
             return ui;
@@ -178,7 +190,7 @@ public class UIManager : GlobalSingletonManager<UIManager>
         return null;
     }
 
-
+    // UIManager 를 통해 UI를 가져오는 함수들
     #region GetUI
 
     BaseUI GetOriginUI(UIName uiName)
@@ -198,7 +210,9 @@ public class UIManager : GlobalSingletonManager<UIManager>
 
     #endregion
 
-
+    /// <summary>
+    /// 씬 언로드 시 처리
+    /// </summary>
     protected override void OnSceneUnloaded(Scene scene)
     {
         _canvasRoot = null;
