@@ -3,31 +3,27 @@ using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
 public class PopupUI : BaseUI
 {
     static public float DefaultPopupDuration = 0.25f;
 
-    [BoxGroup("Popup UI Settings")][SerializeField] bool _useDim;
-    [BoxGroup("Popup UI Settings")][ReadOnly, SerializeField] CanvasGroup _canvasGroup;
-    [BoxGroup("Popup UI Settings")][SerializeField] float _popupDurationRate = 1f;
+    [BoxGroup("Popup UI Settings")][SerializeField] 
+    bool _useDim;   // Dimmed UI 사용 여부
+    
+    [BoxGroup("Popup UI Settings")][SerializeField]
+    float _popupDurationRate = 1f;      // 팝업 애니메이션 재생 속도 비율
 
-    PopupUIElement[] _popupElements;
-
+    PopupUIElement[] _popupElements;    // 팝업 애니메이션 요소들
 
     protected override void AwakeInternal()
-    {
+    {   
+        // 팝업 애니메이션 요소들 가져오기
         _popupElements = transform.GetComponentsInChildren<PopupUIElement>(true);
-        _canvasGroup = GetComponent<CanvasGroup>();
     }
-
 
     public override void OpenUIInternal()
     {
-        // 자식 찾아서 애니메이션 주기
-        //Transform transform = this.transform.GetChild(0);
-
-        if (_useDim)
+        if (_useDim)    // Dimmed UI 사용 시 처리
         {
             DimmedUI dim = (DimmedUI)UIManager.Instance.ShowUI(UIName.UI_Dimmed);
             if (dim != null)
@@ -36,29 +32,24 @@ public class PopupUI : BaseUI
             }
         }
 
-        _canvasGroup.interactable = false;
-
+        canvasGroup.interactable = false;
         if (_popupElements != null && _popupElements.Length > 0)
         {
             _popupElements.ForEach(e => e.Open(DefaultPopupDuration* _popupDurationRate));
 
             DOVirtual.DelayedCall(DefaultPopupDuration* _popupDurationRate,
-                () => { _canvasGroup.interactable = true; })
+                () => { canvasGroup.interactable = true; })
                 .SetUpdate(true);
         }
         else
         {
-            _canvasGroup.interactable = true;
+            canvasGroup.interactable = true;
         }
-
-
     }
 
     public override Tween CloseUIInternal()
     {
-        // 자식 찾아서 애니메이션 주기
-
-        _canvasGroup.interactable = false;
+        canvasGroup.interactable = false;
 
         if (_popupElements != null && _popupElements.Length > 0)
         {
@@ -66,14 +57,10 @@ public class PopupUI : BaseUI
             return DOVirtual.DelayedCall(DefaultPopupDuration * _popupDurationRate, null).SetUpdate(true);
         }
 
-        // 팝업 애니메이션 요소 없으면 바로 꺼지기
+        // 팝업 애니메이션 요소 없으면 바로 반환
         return null;
     }
-
-    private void OnValidate()
-    {
-        _canvasGroup = GetComponent<CanvasGroup>();
-    }
+   
 }
 
 public enum PopupUIOpenType

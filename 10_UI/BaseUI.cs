@@ -4,11 +4,14 @@ using System;
 using UnityEngine;
 
 
+[RequireComponent(typeof(CanvasGroup))]
 public abstract class BaseUI : MonoBehaviour
 {
     [BoxGroup("BaseUI")]
 
-
+    [BoxGroup("BaseUI")][ReadOnly, SerializeField]
+    protected CanvasGroup canvasGroup;
+    
 
     [BoxGroup("BaseUI/UI 순서")]
     [EnumToggleButtons]
@@ -19,6 +22,8 @@ public abstract class BaseUI : MonoBehaviour
     [Range(0, 99)]
     [SerializeField]
     private int _customOrder = 0;
+
+    
 
 
     public event Action<BaseUI> OnOpenAction;
@@ -32,6 +37,7 @@ public abstract class BaseUI : MonoBehaviour
     private void Awake()
     {
         _canvas = GetComponent<Canvas>();
+        canvasGroup = GetComponent<CanvasGroup>();
 
         if (_customOrder > 0)
         {
@@ -58,7 +64,6 @@ public abstract class BaseUI : MonoBehaviour
 
     public void CloseUI()
     {
-
         Tween closeTween = CloseUIInternal();
         OnCloseAction?.Invoke(this);
 
@@ -84,13 +89,11 @@ public abstract class BaseUI : MonoBehaviour
 
 
     public virtual void OpenUIInternal() { }
+    
     public virtual Tween CloseUIInternal()
     {
         return null;
     }
-
-
-
 
 
 }
